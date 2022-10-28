@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,19 +16,21 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 use PrestaShop\PrestaShop\Adapter\LegacyLogger;
 use PrestaShop\PrestaShop\Adapter\Module\ModuleDataProvider;
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\PrestaShop\Adapter\ServiceLocator;
-use PrestaShop\PrestaShop\Core\Module\ModuleInterface;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Core\Foundation\Filesystem\FileSystem;
+use PrestaShop\PrestaShop\Core\Module\ModuleInterface;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+use PrestaShop\TranslationToolsBundle\Translation\Helper\DomainHelper;
 
 abstract class ModuleCore implements ModuleInterface
 {
@@ -516,6 +518,7 @@ abstract class ModuleCore implements ModuleInterface
                 if (function_exists($item)) {
                     $upgrade['success'] = false;
                     $upgrade['duplicate'] = true;
+
                     break 2;
                 }
             }
@@ -541,6 +544,7 @@ abstract class ModuleCore implements ModuleInterface
 
                 // If any errors, the module is disabled
                 $this->disable();
+
                 break;
             }
         }
@@ -633,7 +637,7 @@ abstract class ModuleCore implements ModuleInterface
                             'upgrade_function' => array(
                                 'upgrade_module_' . str_replace('.', '_', $file_version),
                                 'upgradeModule' . str_replace('.', '', $file_version), ),
-                            );
+                        );
                     }
                 }
             }
@@ -1102,7 +1106,7 @@ abstract class ModuleCore implements ModuleInterface
     {
         if (!Validate::isModuleName($module_name)) {
             if (_PS_MODE_DEV_) {
-                die(Context::getContext()->getTranslator()->trans('%1$s is not a valid module name.', array(Tools::safeOutput($module_name)), 'Admin.Modules.Notification'));
+                die(Tools::displayError(Context::getContext()->getTranslator()->trans('%1$s is not a valid module name.', array(Tools::safeOutput($module_name)), 'Admin.Modules.Notification')));
             }
 
             return false;
@@ -1269,6 +1273,7 @@ abstract class ModuleCore implements ModuleInterface
             $module_errors = array();
             if (Module::useTooMuchMemory()) {
                 $module_errors[] = Context::getContext()->getTranslator()->trans('All modules cannot be loaded due to memory limit restrictions, please increase your memory_limit value on your server configuration', array(), 'Admin.Modules.Notification');
+
                 break;
             }
 
@@ -1296,6 +1301,7 @@ abstract class ModuleCore implements ModuleInterface
                         array($config_file),
                         'Admin.Modules.Notification'
                     );
+
                     break;
                 }
                 foreach (libxml_get_errors() as $error) {
@@ -1336,7 +1342,7 @@ abstract class ModuleCore implements ModuleInterface
                     $module_list[$item->name . '_disk'] = $item;
 
                     $module_name_list[] = '\'' . pSQL($item->name) . '\'';
-                    $modules_name_to_cursor[Tools::strtolower(strval($item->name))] = $item;
+                    $modules_name_to_cursor[Tools::strtolower((string) ($item->name))] = $item;
                 }
             }
 
@@ -1455,6 +1461,7 @@ abstract class ModuleCore implements ModuleInterface
             if (file_exists($f['file']) && ($f['loggedOnAddons'] == 0 || $logged_on_addons)) {
                 if (Module::useTooMuchMemory()) {
                     $errors[] = Context::getContext()->getTranslator()->trans('All modules cannot be loaded due to memory limit restrictions, please increase your memory_limit value on your server configuration', array(), 'Admin.Modules.Notification');
+
                     break;
                 }
 
@@ -1794,10 +1801,10 @@ abstract class ModuleCore implements ModuleInterface
         $untrusted = array();
 
         $trusted_modules_xml = array(
-                                    _PS_ROOT_DIR_ . self::CACHE_FILE_ALL_COUNTRY_MODULES_LIST,
-                                    _PS_ROOT_DIR_ . self::CACHE_FILE_MUST_HAVE_MODULES_LIST,
-                                    _PS_ROOT_DIR_ . self::CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST,
-                                );
+            _PS_ROOT_DIR_ . self::CACHE_FILE_ALL_COUNTRY_MODULES_LIST,
+            _PS_ROOT_DIR_ . self::CACHE_FILE_MUST_HAVE_MODULES_LIST,
+            _PS_ROOT_DIR_ . self::CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST,
+        );
 
         if (file_exists(_PS_ROOT_DIR_ . self::CACHE_FILE_CUSTOMER_MODULES_LIST)) {
             $trusted_modules_xml[] = _PS_ROOT_DIR_ . self::CACHE_FILE_CUSTOMER_MODULES_LIST;
@@ -1954,7 +1961,7 @@ abstract class ModuleCore implements ModuleInterface
      *
      * @param string $string String to translate
      * @param bool|string $specific filename to use in translation key
-     * @param string|null $locale Give a context for the translation
+     * @param string|null $locale Locale to translate to
      *
      * @return string Translation
      */
@@ -1964,10 +1971,17 @@ abstract class ModuleCore implements ModuleInterface
             return $string;
         }
 
-        return Translate::getModuleTranslation($this, $string, ($specific) ? $specific : $this->name);
+        return Translate::getModuleTranslation(
+            $this,
+            $string,
+            ($specific) ? $specific : $this->name,
+            null,
+            false,
+            $locale
+        );
     }
 
-    /*
+    /**
      * Reposition module
      *
      * @param bool $id_hook Hook ID
@@ -1977,27 +1991,45 @@ abstract class ModuleCore implements ModuleInterface
     public function updatePosition($id_hook, $way, $position = null)
     {
         foreach (Shop::getContextListShopID() as $shop_id) {
-            $sql = 'SELECT hm.`id_module`, hm.`position`, hm.`id_hook`
+            $getAvailableHookPositionsSql = 'SELECT hm.`id_module`, hm.`position`, hm.`id_hook`
                     FROM `' . _DB_PREFIX_ . 'hook_module` hm
                     WHERE hm.`id_hook` = ' . (int) $id_hook . ' AND hm.`id_shop` = ' . $shop_id . '
                     ORDER BY hm.`position` ' . ($way ? 'ASC' : 'DESC');
-            if (!$res = Db::getInstance()->executeS($sql)) {
+
+            if (!$sqlResult = Db::getInstance()->executeS($getAvailableHookPositionsSql)) {
+                // no hook positions available
                 continue;
             }
+            if (count($sqlResult) === 1) {
+                // if there is only 1 position available, it cannot be updated
+                return false;
+            }
 
-            foreach ($res as $key => $values) {
-                if ((int) $values[$this->identifier] == (int) $this->id) {
-                    $k = $key;
+            foreach ($sqlResult as $positionNumber => $positionSettings) {
+                $thisIsTheSettingsForThisModule = ((int) $positionSettings[$this->identifier] == (int) $this->id);
+
+                if ($thisIsTheSettingsForThisModule) {
+                    $thisModulePositionNumber = $positionNumber;
+
                     break;
                 }
             }
 
-            if (!isset($k) || !isset($res[$k]) || !isset($res[$k + 1])) {
+            if (!isset($thisModulePositionNumber)) {
+                // could not find hook positions for this module
+                return false;
+            }
+            if (!isset($sqlResult[$thisModulePositionNumber])) {
+                // ok this one is really weird
+                return false;
+            }
+            if (!isset($sqlResult[$thisModulePositionNumber + 1])) {
+                // no alternative position available following $way, so position cannot be updated
                 return false;
             }
 
-            $from = $res[$k];
-            $to = $res[$k + 1];
+            $from = $sqlResult[$thisModulePositionNumber];
+            $to = $sqlResult[$thisModulePositionNumber + 1];
 
             if (!empty($position)) {
                 $to['position'] = (int) $position;
@@ -2006,20 +2038,20 @@ abstract class ModuleCore implements ModuleInterface
             $minPosition = min((int) $from['position'], (int) $to['position']);
             $maxPosition = max((int) $from['position'], (int) $to['position']);
 
-            $sql = 'UPDATE `' . _DB_PREFIX_ . 'hook_module`
+            $shiftHookPositionsSql = 'UPDATE `' . _DB_PREFIX_ . 'hook_module`
                 SET position = position ' . ($way ? '- 1' : '+ 1') . '
                 WHERE position BETWEEN ' . $minPosition . ' AND ' . $maxPosition . '
                 AND `id_hook` = ' . (int) $from['id_hook'] . ' AND `id_shop` = ' . $shop_id;
 
-            if (!Db::getInstance()->execute($sql)) {
+            if (!Db::getInstance()->execute($shiftHookPositionsSql)) {
                 return false;
             }
 
-            $sql = 'UPDATE `' . _DB_PREFIX_ . 'hook_module`
+            $createMissingPositionSql = 'UPDATE `' . _DB_PREFIX_ . 'hook_module`
                 SET `position`=' . (int) $to['position'] . '
                 WHERE `' . pSQL($this->identifier) . '` = ' . (int) $from[$this->identifier] . '
                 AND `id_hook` = ' . (int) $to['id_hook'] . ' AND `id_shop` = ' . $shop_id;
-            if (!Db::getInstance()->execute($sql)) {
+            if (!Db::getInstance()->execute($createMissingPositionSql)) {
                 return false;
             }
         }
@@ -2027,7 +2059,7 @@ abstract class ModuleCore implements ModuleInterface
         return true;
     }
 
-    /*
+    /**
      * Reorder modules position
      *
      * @param bool $id_hook Hook ID
@@ -2038,7 +2070,7 @@ abstract class ModuleCore implements ModuleInterface
         $sql = 'SELECT `id_module`, `id_shop`
             FROM `' . _DB_PREFIX_ . 'hook_module`
             WHERE `id_hook` = ' . (int) $id_hook . '
-            ' . ((!is_null($shop_list) && $shop_list) ? ' AND `id_shop` IN(' . implode(', ', array_map('intval', $shop_list)) . ')' : '') . '
+            ' . ((null !== $shop_list && $shop_list) ? ' AND `id_shop` IN(' . implode(', ', array_map('intval', $shop_list)) . ')' : '') . '
             ORDER BY `position`';
         $results = Db::getInstance()->executeS($sql);
         $position = array();
@@ -2170,11 +2202,12 @@ abstract class ModuleCore implements ModuleInterface
         return $output;
     }
 
-    /*
+    /**
      * Return exceptions for module in hook
      *
      * @param int $id_module Module ID
      * @param int $id_hook Hook ID
+     *
      * @return array Exceptions
      */
     public static function getExceptionsStatic($id_module, $id_hook, $dispatch = false)
@@ -2227,10 +2260,11 @@ abstract class ModuleCore implements ModuleInterface
         return $array_return;
     }
 
-    /*
+    /**
      * Return exceptions for module in hook
      *
      * @param int $id_hook Hook ID
+     *
      * @return array Exceptions
      */
     public function getExceptions($id_hook, $dispatch = false)
@@ -2806,10 +2840,11 @@ abstract class ModuleCore implements ModuleInterface
         return $this->_path;
     }
 
-    /*
+    /**
      * Return module position for a given hook
      *
      * @param bool $id_hook Hook ID
+     *
      * @return int position
      */
     public function getPosition($id_hook)
@@ -2990,6 +3025,7 @@ abstract class ModuleCore implements ModuleInterface
                     if (preg_match('/module: (.*)/ism', $override_file[$method_override->getStartLine() - 5], $name) && preg_match('/date: (.*)/ism', $override_file[$method_override->getStartLine() - 4], $date) && preg_match('/version: ([0-9.]+)/ism', $override_file[$method_override->getStartLine() - 3], $version)) {
                         throw new Exception(Context::getContext()->getTranslator()->trans('The method %1$s in the class %2$s is already overridden by the module %3$s version %4$s at %5$s.', array($method->getName(), $classname, $name[1], $version[1], $date[1]), 'Admin.Modules.Notification'));
                     }
+
                     throw new Exception(Context::getContext()->getTranslator()->trans('The method %1$s in the class %2$s is already overridden.', array($method->getName(), $classname), 'Admin.Modules.Notification'));
                 }
 
@@ -3035,9 +3071,7 @@ abstract class ModuleCore implements ModuleInterface
             $dir_name = dirname($override_dest);
 
             if (!$orig_path && !is_dir($dir_name)) {
-                $oldumask = umask(0000);
-                @mkdir($dir_name, 0777);
-                umask($oldumask);
+                @mkdir($dir_name, FileSystem::DEFAULT_MODE_FOLDER);
             }
 
             if (!is_writable($dir_name)) {
@@ -3178,6 +3212,7 @@ abstract class ModuleCore implements ModuleInterface
                             $override_file[$line_number - 5] = $override_file[$line_number - 4] = $override_file[$line_number - 3] = $override_file[$line_number - 2] = $override_file[$line_number - 1] = '#--remove--#';
                         }
                         $line_content = '#--remove--#';
+
                         break;
                     }
                 }
@@ -3196,6 +3231,7 @@ abstract class ModuleCore implements ModuleInterface
                             $override_file[$line_number - 5] = $override_file[$line_number - 4] = $override_file[$line_number - 3] = $override_file[$line_number - 2] = $override_file[$line_number - 1] = '#--remove--#';
                         }
                         $line_content = '#--remove--#';
+
                         break;
                     }
                 }
@@ -3245,7 +3281,14 @@ abstract class ModuleCore implements ModuleInterface
 
     private function getWidgetHooks()
     {
-        return array_values(Hook::getHooks(false, true));
+        $hooks = array_values(Hook::getHooks(false, true));
+        $registeredHookList = Hook::getHookModuleList();
+
+        foreach ($hooks as &$hook) {
+            $hook['registered'] = !empty($registeredHookList[$hook['id_hook']][$this->id]);
+        }
+
+        return $hooks;
     }
 
     /**
@@ -3261,6 +3304,7 @@ abstract class ModuleCore implements ModuleInterface
 
         $hooks_list = Hook::getHooks();
         $possible_hooks_list = array();
+        $registeredHookList = Hook::getHookModuleList();
         foreach ($hooks_list as &$current_hook) {
             $hook_name = $current_hook['name'];
             $retro_hook_name = Hook::getRetroHookName($hook_name);
@@ -3271,6 +3315,7 @@ abstract class ModuleCore implements ModuleInterface
                     'name' => $hook_name,
                     'description' => $current_hook['description'],
                     'title' => $current_hook['title'],
+                    'registered' => !empty($registeredHookList[$current_hook['id_hook']][$this->id]),
                 );
             }
         }
@@ -3321,10 +3366,11 @@ abstract class ModuleCore implements ModuleInterface
     {
         $moduleName = $this->name;
         $domains = array_keys($this->context->getTranslator()->getCatalogue()->all());
-        $moduleName = preg_replace('/^ps_(\w+)/', '$1', $moduleName);
+        $moduleBaseDomain = DomainHelper::buildModuleBaseDomain($moduleName);
+        $length = strlen($moduleBaseDomain);
 
         foreach ($domains as $domain) {
-            if (false !== stripos($domain, $moduleName)) {
+            if (substr($domain, 0, $length) === $moduleBaseDomain) {
                 return true;
             }
         }

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -37,8 +37,16 @@ class AdminRequestSqlControllerCore extends AdminController
         array('value' => 2, 'name' => 'iso-8859-1'),
     );
 
+    /**
+     * @deprecated since 1.7.6, to be removed in the next minor
+     */
     public function __construct()
     {
+        @trigger_error(
+            'The AdminRequestSqlController is deprecated and will be removed in the next minor',
+            E_USER_DEPRECATED
+        );
+
         $this->bootstrap = true;
         $this->table = 'request_sql';
         $this->className = 'RequestSql';
@@ -195,10 +203,12 @@ class AdminRequestSqlControllerCore extends AdminController
             $request_sql = new RequestSql();
             $attributes = $request_sql->getAttributesByTable($table);
             foreach ($attributes as $key => $attribute) {
-                unset($attributes[$key]['Null']);
-                unset($attributes[$key]['Key']);
-                unset($attributes[$key]['Default']);
-                unset($attributes[$key]['Extra']);
+                unset(
+                    $attributes[$key]['Null'],
+                    $attributes[$key]['Key'],
+                    $attributes[$key]['Default'],
+                    $attributes[$key]['Extra']
+                );
             }
             die(json_encode($attributes));
         }
@@ -331,19 +341,19 @@ class AdminRequestSqlControllerCore extends AdminController
             die(Tools::displayError());
         }
         $file = 'request_sql_' . $id . '.csv';
-        if ($csv = fopen($export_dir . $file, 'w')) {
+        if ($csv = fopen($export_dir . $file, 'wb')) {
             $sql = RequestSql::getRequestSqlById($id);
 
             if ($sql) {
                 $results = Db::getInstance()->executeS($sql[0]['sql']);
                 foreach (array_keys($results[0]) as $key) {
                     $tab_key[] = $key;
-                    fputs($csv, $key . ';');
+                    fwrite($csv, $key . ';');
                 }
                 foreach ($results as $result) {
-                    fputs($csv, "\n");
+                    fwrite($csv, "\n");
                     foreach ($tab_key as $name) {
-                        fputs($csv, $textDelimiter . strip_tags($result[$name]) . $textDelimiter . ';');
+                        fwrite($csv, $textDelimiter . strip_tags($result[$name]) . $textDelimiter . ';');
                     }
                 }
                 if (file_exists($export_dir . $file)) {
@@ -400,6 +410,7 @@ class AdminRequestSqlControllerCore extends AdminController
                     } else {
                         $this->errors[] = $this->trans('Undefined "%s" error', array('checkedForm'), 'Admin.Advparameters.Notification');
                     }
+
                     break;
 
                 case 'checkedSelect':
@@ -425,6 +436,7 @@ class AdminRequestSqlControllerCore extends AdminController
                     } else {
                         $this->errors[] = $this->trans('Undefined "%s" error', array('checkedSelect'), 'Admin.Advparameters.Notification');
                     }
+
                     break;
 
                 case 'checkedWhere':
@@ -448,6 +460,7 @@ class AdminRequestSqlControllerCore extends AdminController
                     } else {
                         $this->errors[] = $this->trans('Undefined "%s" error', array('checkedWhere'), 'Admin.Advparameters.Notification');
                     }
+
                     break;
 
                 case 'checkedHaving':
@@ -471,6 +484,7 @@ class AdminRequestSqlControllerCore extends AdminController
                     } else {
                         $this->errors[] = $this->trans('Undefined "%s" error', array('checkedHaving'), 'Admin.Advparameters.Notification');
                     }
+
                     break;
 
                 case 'checkedOrder':
@@ -486,6 +500,7 @@ class AdminRequestSqlControllerCore extends AdminController
                     } else {
                         $this->errors[] = $this->trans('Undefined "%s" error', array('checkedOrder'), 'Admin.Advparameters.Notification');
                     }
+
                     break;
 
                 case 'checkedGroupBy':
@@ -501,10 +516,12 @@ class AdminRequestSqlControllerCore extends AdminController
                     } else {
                         $this->errors[] = $this->trans('Undefined "%s" error', array('checkedGroupBy'), 'Admin.Advparameters.Notification');
                     }
+
                     break;
 
                 case 'checkedLimit':
                     $this->errors[] = $this->trans('The LIMIT clause must contain numeric arguments.', array(), 'Admin.Advparameters.Notification');
+
                     break;
 
                 case 'returnNameTable':
@@ -520,14 +537,17 @@ class AdminRequestSqlControllerCore extends AdminController
                     } else {
                         $this->errors[] = $this->trans('When multiple tables are used, each attribute must refer back to a table.', array(), 'Admin.Advparameters.Notification');
                     }
+
                     break;
 
                 case 'testedRequired':
                     $this->errors[] = $this->trans('"%key%" does not exist.', array('%key%' => $e[$key]), 'Admin.Notifications.Error');
+
                     break;
 
                 case 'testedUnauthorized':
                     $this->errors[] = $this->trans('"%key%" is an unauthorized keyword.', array('%key%' => $e[$key]), 'Admin.Advparameters.Notification');
+
                     break;
             }
         }

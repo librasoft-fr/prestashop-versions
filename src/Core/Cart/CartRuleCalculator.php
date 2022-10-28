@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,15 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2017 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Cart;
+
+use Cart;
 
 class CartRuleCalculator
 {
@@ -48,10 +50,23 @@ class CartRuleCalculator
      */
     protected $fees;
 
+    /**
+     * process cartrules calculation
+     */
     public function applyCartRules()
     {
         foreach ($this->cartRules as $cartRule) {
             $this->applyCartRule($cartRule);
+        }
+    }
+
+    /**
+     * process cartrules calculation, excluding free-shipping processing
+     */
+    public function applyCartRulesWithoutFreeShipping()
+    {
+        foreach ($this->cartRules as $cartRule) {
+            $this->applyCartRule($cartRule, false);
         }
     }
 
@@ -67,7 +82,13 @@ class CartRuleCalculator
         return $this;
     }
 
-    protected function applyCartRule(CartRuleData $cartRuleData)
+    /**
+     * @param CartRuleData $cartRuleData
+     * @param bool $withFreeShipping used to calculate free shipping discount (avoid loop on shipping calculation)
+     *
+     * @throws \PrestaShopDatabaseException
+     */
+    protected function applyCartRule(CartRuleData $cartRuleData, $withFreeShipping = true)
     {
         $cartRule = $cartRuleData->getCartRule();
         $cart = $this->calculator->getCart();
@@ -77,8 +98,11 @@ class CartRuleCalculator
         }
 
         // Free shipping on selected carriers
-        if ($cartRule->free_shipping) {
-            $initialShippingFees = $this->calculator->getFees()->getInitialShippingFees();
+        if ($cartRule->free_shipping && $withFreeShipping) {
+            $initialShippingFees = new AmountImmutable(
+                $cart->getOrderTotal(true, Cart::ONLY_SHIPPING),
+                $cart->getOrderTotal(false, Cart::ONLY_SHIPPING)
+            );
             $this->calculator->getFees()->subDiscountValueShipping($initialShippingFees);
             $cartRuleData->addDiscountApplied($initialShippingFees);
         }
@@ -91,8 +115,8 @@ class CartRuleCalculator
                     && ($product['id_product_attribute'] == $cartRule->gift_product_attribute
                         || !(int) $cartRule->gift_product_attribute)
                 ) {
-                    $cartRow->applyFlatDiscount($cartRow->getFinalUnitPrice());
                     $cartRuleData->addDiscountApplied($cartRow->getFinalUnitPrice());
+                    $cartRow->applyFlatDiscount($cartRow->getFinalUnitPrice());
                 }
             }
         }
@@ -159,13 +183,6 @@ class CartRuleCalculator
         // Discount (¤) : weighted calculation on all concerned rows
         //                weight factor got from price with same tax (incl/excl) as voucher
         if ((float) $cartRule->reduction_amount > 0) {
-            // currency conversion
-            $discountConverted = $this->convertAmountBetweenCurrencies(
-                $cartRule->reduction_amount,
-                new \Currency($cartRule->reduction_currency),
-                new \Currency($cart->id_currency)
-            );
-
             $concernedRows = new CartRowCollection();
             if ($cartRule->reduction_product > 0) {
                 // discount on single product
@@ -185,12 +202,23 @@ class CartRuleCalculator
              * elseif ($this->reduction_product == -2)
              */
 
+            // currency conversion
+            $discountConverted = $this->convertAmountBetweenCurrencies(
+                $cartRule->reduction_amount,
+                new \Currency($cartRule->reduction_currency),
+                new \Currency($cart->id_currency)
+            );
+
             // get total of concerned rows
             $totalTaxIncl = $totalTaxExcl = 0;
             foreach ($concernedRows as $concernedRow) {
                 $totalTaxIncl += $concernedRow->getFinalTotalPrice()->getTaxIncluded();
                 $totalTaxExcl += $concernedRow->getFinalTotalPrice()->getTaxExcluded();
             }
+
+            // The reduction cannot exceed the products total, except when we do not want it to be limited (for the partial use calculation)
+            $discountConverted = min($discountConverted, $cartRule->reduction_tax ? $totalTaxIncl : $totalTaxExcl);
+
             // apply weighted discount :
             // on each line we apply a part of the discount corresponding to discount*rowWeight/total
             foreach ($concernedRows as $concernedRow) {
@@ -262,5 +290,13 @@ class CartRuleCalculator
         $this->cartRows = $cartRows;
 
         return $this;
+    }
+
+    /**
+     * @return CartRuleCollection
+     */
+    public function getCartRulesData()
+    {
+        return $this->cartRules;
     }
 }

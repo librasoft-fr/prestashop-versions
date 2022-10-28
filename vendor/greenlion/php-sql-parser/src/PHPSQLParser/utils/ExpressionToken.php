@@ -15,6 +15,7 @@ class ExpressionToken {
     private $trim;
     private $upper;
     private $noQuotes;
+    private $delim;
 
     public function __construct($key = "", $token = "") {
         $this->subTree = false;
@@ -33,7 +34,7 @@ class ExpressionToken {
     }
 
     public function isEnclosedWithinParenthesis() {
-        return ($this->upper[0] === '(' && substr($this->upper, -1) === ')');
+        return (!empty( $this->upper ) && $this->upper[0] === '(' && substr($this->upper, -1) === ')');
     }
 
     public function setSubTree($tree) {
@@ -64,6 +65,10 @@ class ExpressionToken {
         $this->tokenType = $type;
     }
 
+    public function setDelim($delim) {
+        $this->delim = $delim;
+    }
+
     public function endsWith($needle) {
         $length = strlen($needle);
         if ($length == 0) {
@@ -87,7 +92,7 @@ class ExpressionToken {
     }
 
     public function isSubQueryToken() {
-        return preg_match("/^\\(\\s*SELECT/i", $this->trim);
+        return preg_match("/^\\(\\s*(-- [\\w\\s]+\\n)?\\s*SELECT/i", $this->trim);
     }
 
     public function isExpression() {
@@ -155,6 +160,9 @@ class ExpressionToken {
             $result['no_quotes'] = $this->noQuotes;
         }
         $result['sub_tree'] = $this->subTree;
+        if ($this->delim) {
+            $result['delim'] = $this->delim;
+        }
         return $result;
     }
 }

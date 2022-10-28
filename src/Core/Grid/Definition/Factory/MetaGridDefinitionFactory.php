@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -48,30 +48,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 final class MetaGridDefinitionFactory extends AbstractGridDefinitionFactory
 {
     /**
-     * @var string
-     */
-    private $resetActionUrl;
-
-    /**
-     * @var string
-     */
-    private $redirectionUrl;
-
-    /**
-     * MetaGridDefinitionFactory constructor.
-     *
-     * @param string $resetActionUrl
-     * @param string $redirectionUrl
-     */
-    public function __construct(
-        $resetActionUrl,
-        $redirectionUrl
-    ) {
-        $this->resetActionUrl = $resetActionUrl;
-        $this->redirectionUrl = $redirectionUrl;
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function getId()
@@ -93,40 +69,47 @@ final class MetaGridDefinitionFactory extends AbstractGridDefinitionFactory
     protected function getColumns()
     {
         return (new ColumnCollection())
-            ->add((new BulkActionColumn('bulk'))
+            ->add(
+                (new BulkActionColumn('bulk'))
                 ->setOptions([
                     'bulk_field' => 'id_meta',
                 ])
             )
-            ->add((new DataColumn('id_meta'))
+            ->add(
+                (new DataColumn('id_meta'))
                 ->setName($this->trans('ID', [], 'Admin.Global'))
                 ->setOptions([
                     'field' => 'id_meta',
                 ])
             )
-            ->add((new DataColumn('page'))
+            ->add(
+                (new DataColumn('page'))
                 ->setName($this->trans('Page', [], 'Admin.Shopparameters.Feature'))
                 ->setOptions([
                     'field' => 'page',
                 ])
             )
-            ->add((new DataColumn('title'))
+            ->add(
+                (new DataColumn('title'))
                 ->setName($this->trans('Page title', [], 'Admin.Shopparameters.Feature'))
                 ->setOptions([
                     'field' => 'title',
                 ])
             )
-            ->add((new DataColumn('url_rewrite'))
+            ->add(
+                (new DataColumn('url_rewrite'))
                 ->setName($this->trans('Friendly URL', [], 'Admin.Global'))
                 ->setOptions([
                     'field' => 'url_rewrite',
                 ])
             )
-            ->add((new ActionColumn('actions'))
+            ->add(
+                (new ActionColumn('actions'))
                 ->setName($this->trans('Actions', [], 'Admin.Global'))
                 ->setOptions([
                     'actions' => (new RowActionCollection())
-                        ->add((new LinkRowAction('edit'))
+                        ->add(
+                            (new LinkRowAction('edit'))
                             ->setIcon('edit')
                             ->setOptions([
                                 'route' => 'admin_metas_edit',
@@ -134,7 +117,8 @@ final class MetaGridDefinitionFactory extends AbstractGridDefinitionFactory
                                 'route_param_field' => 'id_meta',
                             ])
                         )
-                        ->add((new SubmitRowAction('delete'))
+                        ->add(
+                            (new SubmitRowAction('delete'))
                             ->setName($this->trans('Delete', [], 'Admin.Actions'))
                             ->setIcon('delete')
                             ->setOptions([
@@ -150,8 +134,7 @@ final class MetaGridDefinitionFactory extends AbstractGridDefinitionFactory
                             ])
                         ),
                 ])
-            )
-        ;
+            );
     }
 
     /**
@@ -160,40 +143,46 @@ final class MetaGridDefinitionFactory extends AbstractGridDefinitionFactory
     protected function getFilters()
     {
         return (new FilterCollection())
-            ->add((new Filter('id_meta', TextType::class))
+            ->add(
+                (new Filter('id_meta', TextType::class))
                 ->setTypeOptions([
                     'required' => false,
                 ])
                 ->setAssociatedColumn('id_meta')
             )
-            ->add((new Filter('page', TextType::class))
+            ->add(
+                (new Filter('page', TextType::class))
                 ->setTypeOptions([
                     'required' => false,
                 ])
                 ->setAssociatedColumn('page')
             )
-            ->add((new Filter('title', TextType::class))
+            ->add(
+                (new Filter('title', TextType::class))
                 ->setTypeOptions([
                     'required' => false,
                 ])
                 ->setAssociatedColumn('title')
             )
-            ->add((new Filter('url_rewrite', TextType::class))
+            ->add(
+                (new Filter('url_rewrite', TextType::class))
                 ->setTypeOptions([
                     'required' => false,
                 ])
                 ->setAssociatedColumn('url_rewrite')
             )
-            ->add((new Filter('actions', SearchAndResetType::class))
-                ->setTypeOptions([
-                    'attr' => [
-                        'data-url' => $this->resetActionUrl,
-                        'data-redirect' => $this->redirectionUrl,
-                    ],
-                ])
+            ->add(
+                (new Filter('actions', SearchAndResetType::class))
+                    ->setTypeOptions([
+                        'reset_route' => 'admin_common_reset_search',
+                        'reset_route_params' => [
+                            'controller' => 'meta',
+                            'action' => 'index',
+                        ],
+                        'redirect_route' => 'admin_metas_index',
+                    ])
                 ->setAssociatedColumn('actions')
-            )
-        ;
+            );
     }
 
     /**
@@ -202,19 +191,21 @@ final class MetaGridDefinitionFactory extends AbstractGridDefinitionFactory
     protected function getGridActions()
     {
         return (new GridActionCollection())
-            ->add((new SimpleGridAction('common_refresh_list'))
+            ->add(
+                (new SimpleGridAction('common_refresh_list'))
                 ->setName($this->trans('Refresh list', [], 'Admin.Advparameters.Feature'))
                 ->setIcon('refresh')
             )
-            ->add((new SimpleGridAction('common_show_query'))
+            ->add(
+                (new SimpleGridAction('common_show_query'))
                 ->setName($this->trans('Show SQL query', [], 'Admin.Actions'))
                 ->setIcon('code')
             )
-            ->add((new SimpleGridAction('common_export_sql_manager'))
+            ->add(
+                (new SimpleGridAction('common_export_sql_manager'))
                 ->setName($this->trans('Export to SQL Manager', [], 'Admin.Actions'))
                 ->setIcon('storage')
-            )
-        ;
+            );
     }
 
     /**
@@ -223,13 +214,13 @@ final class MetaGridDefinitionFactory extends AbstractGridDefinitionFactory
     protected function getBulkActions()
     {
         return (new BulkActionCollection())
-            ->add((new SubmitBulkAction('delete_seo_urls'))
+            ->add(
+                (new SubmitBulkAction('delete_seo_urls'))
                 ->setName($this->trans('Delete selected', [], 'Admin.Actions'))
                 ->setOptions([
                     'submit_route' => 'admin_metas_delete_bulk',
                     'confirm_message' => $this->trans('Delete selected items?', [], 'Admin.Notifications.Warning'),
                 ])
-            )
-        ;
+            );
     }
 }

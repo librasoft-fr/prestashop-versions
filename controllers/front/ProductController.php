@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -49,18 +49,24 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
      */
     protected $combinations;
 
-    private $quantity_discounts;
-    private $adminNotifications = array();
+    protected $quantity_discounts;
+    protected $adminNotifications = array();
 
     public function canonicalRedirection($canonical_url = '')
     {
         if (Validate::isLoadedObject($this->product)) {
-            if (!$this->product->hasCombinations()) {
+            if (!$this->product->hasCombinations() ||
+                !$this->isValidCombination(Tools::getValue('id_product_attribute'), $this->product->id)) {
+                //Invalid combination we redirect to the canonical url (without attribute id)
                 unset($_GET['id_product_attribute']);
-            } elseif (!$this->isValidCombination(Tools::getValue('id_product_attribute'), $this->product->id)) {
-                $_GET['id_product_attribute'] = Product::getDefaultAttribute($this->product->id);
+            } else {
+                //Only redirect to canonical (parent product without combination) when the requested combination is not valid
+                //In this case we are in a valid combination url and we must display it with redirection for SEO purpose
+                return;
             }
-            $idProductAttribute = $this->getIdProductAttributeByRequest();
+
+            //Note: we NEED these 6 arguments to have $ipa=null or else a parameter will be added
+            //id_product_attribute=0 and force the redirection
             parent::canonicalRedirection($this->context->link->getProductLink(
                 $this->product,
                 null,
@@ -68,7 +74,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                 null,
                 null,
                 null,
-                $idProductAttribute
+                null
             ));
         }
     }
@@ -134,23 +140,27 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                             header('HTTP/1.1 301 Moved Permanently');
                             header('Location: ' . $this->context->link->getProductLink($this->product->id_type_redirected));
                             exit;
+
                         break;
                         case ProductInterface::REDIRECT_TYPE_PRODUCT_FOUND:
                             header('HTTP/1.1 302 Moved Temporarily');
                             header('Cache-Control: no-cache');
                             header('Location: ' . $this->context->link->getProductLink($this->product->id_type_redirected));
                             exit;
+
                         break;
                         case ProductInterface::REDIRECT_TYPE_CATEGORY_MOVED_PERMANENTLY:
                             header('HTTP/1.1 301 Moved Permanently');
                             header('Location: ' . $this->context->link->getCategoryLink($this->product->id_type_redirected));
                             exit;
+
                             break;
                         case ProductInterface::REDIRECT_TYPE_CATEGORY_FOUND:
                             header('HTTP/1.1 302 Moved Temporarily');
                             header('Cache-Control: no-cache');
                             header('Location: ' . $this->context->link->getCategoryLink($this->product->id_type_redirected));
                             exit;
+
                             break;
                         case ProductInterface::REDIRECT_TYPE_NOT_FOUND:
                         default:
@@ -158,6 +168,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                             header('Status: 404 Not Found');
                             $this->errors[] = $this->trans('This product is no longer available.', array(), 'Shop.Notifications.Error');
                             $this->setTemplate('errors/404');
+
                             break;
                     }
                 }
@@ -200,7 +211,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                 $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
                 $moduleManager = $moduleManagerBuilder->build();
 
-                if (isset($this->context->cookie) && isset($this->category->id_category) && !($moduleManager->isInstalled('ps_categorytree') && $moduleManager->isEnabled('ps_categorytree'))) {
+                if (isset($this->context->cookie, $this->category->id_category) && !($moduleManager->isInstalled('ps_categorytree') && $moduleManager->isEnabled('ps_categorytree'))) {
                     $this->context->cookie->last_visited_category = (int) $this->category->id_category;
                 }
             }
@@ -271,9 +282,9 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
             $customization_fields = $this->product->customizable ? $this->product->getCustomizationFields($this->context->language->id) : false;
             if (is_array($customization_fields)) {
                 foreach ($customization_fields as &$customization_field) {
-                    if ($customization_field['type'] == 0) {
+                    if ($customization_field['type'] == Product::CUSTOMIZE_FILE) {
                         $customization_field['key'] = 'pictures_' . $this->product->id . '_' . $customization_field['id_customization_field'];
-                    } elseif ($customization_field['type'] == 1) {
+                    } elseif ($customization_field['type'] == Product::CUSTOMIZE_TEXTFIELD) {
                         $customization_field['key'] = 'textFields_' . $this->product->id . '_' . $customization_field['id_customization_field'];
                     }
                 }
@@ -393,8 +404,6 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
             ),
             'product' => $productForTemplate,
         )));
-
-        return;
     }
 
     public function displayAjaxRefresh()
@@ -420,6 +429,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
             'product_add_to_cart' => $this->render('catalog/_partials/product-add-to-cart'),
             'product_additional_info' => $this->render('catalog/_partials/product-additional-info'),
             'product_images_modal' => $this->render('catalog/_partials/product-images-modal'),
+            'product_flags' => $this->render('catalog/_partials/product-flags'),
             'product_url' => $this->context->link->getProductLink(
                 $product['id_product'],
                 null,
@@ -438,8 +448,6 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
             'id_product_attribute' => $product['id_product_attribute'],
             'product_title' => $product['title'],
         )));
-
-        return;
     }
 
     /**
@@ -488,7 +496,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
 
         $id_currency = (int) $this->context->cookie->id_currency;
         $id_product = (int) $this->product->id;
-        $id_product_attribute = Tools::getValue('id_product_attribute', null);
+        $id_product_attribute = $this->getIdProductAttributeByRequestOrGroup();
         $id_shop = $this->context->shop->id;
 
         $quantity_discounts = SpecificPrice::getQuantityDiscounts($id_product, $id_shop, $id_currency, $id_country, $id_group, $id_product_attribute, false, (int) $this->context->customer->id);
@@ -506,7 +514,8 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
             }
         }
 
-        $product_price = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC, false);
+        $product_price = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC, $id_product_attribute);
+
         $this->quantity_discounts = $this->formatQuantityDiscounts($quantity_discounts, $product_price, (float) $tax, $this->product->ecotax);
 
         $this->context->smarty->assign(array(
@@ -525,7 +534,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
         $groups = array();
         $this->combinations = array();
 
-        // @todo (RM) should only get groups and not all declination ?
+        /** @todo (RM) should only get groups and not all declination ? */
         $attributes_groups = $this->product->getAttributesGroups($this->context->language->id);
         if (is_array($attributes_groups) && $attributes_groups) {
             $combination_images = $this->product->getCombinationImages($this->context->language->id);
@@ -607,6 +616,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                             foreach ($combination_images[$row['id_product_attribute']] as $tmp) {
                                 if ($tmp['id_image'] == $current_cover['id_image']) {
                                     $this->combinations[$row['id_product_attribute']]['id_image'] = $id_image = (int) $tmp['id_image'];
+
                                     break;
                                 }
                             }
@@ -667,8 +677,10 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                     }
                     foreach ($group['attributes'] as $key => $attribute) {
                         if (!in_array((int) $key, $id_attributes)) {
-                            unset($group['attributes'][$key]);
-                            unset($group['attributes_quantity'][$key]);
+                            unset(
+                                $group['attributes'][$key],
+                                $group['attributes_quantity'][$key]
+                            );
                         }
                     }
                 }
@@ -681,6 +693,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                     }
                     if ($attribute['selected']) {
                         $current_selected_attribute = $key;
+
                         break;
                     }
                 }
@@ -804,7 +817,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
         $indexes = array_flip($authorized_file_fields);
         foreach ($_FILES as $field_name => $file) {
             if (in_array($field_name, $authorized_file_fields) && isset($file['tmp_name']) && !empty($file['tmp_name'])) {
-                $file_name = md5(uniqid(rand(), true));
+                $file_name = md5(uniqid(mt_rand(0, mt_getrandmax()), true));
                 if ($error = ImageManager::validateUpload($file, (int) Configuration::get('PS_PRODUCT_PICTURE_MAX_SIZE'))) {
                     $this->errors[] = $error;
                 }
@@ -819,8 +832,6 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                 if (!ImageManager::resize($tmp_name, _PS_UPLOAD_DIR_ . $file_name)) {
                     $this->errors[] = $this->trans('An error occurred during the image upload process.', array(), 'Shop.Notifications.Error');
                 } elseif (!ImageManager::resize($tmp_name, _PS_UPLOAD_DIR_ . $file_name . '_small', $product_picture_width, $product_picture_height)) {
-                    $this->errors[] = $this->trans('An error occurred during the image upload process.', array(), 'Shop.Notifications.Error');
-                } elseif (!chmod(_PS_UPLOAD_DIR_ . $file_name, 0777) || !chmod(_PS_UPLOAD_DIR_ . $file_name . '_small', 0777)) {
                     $this->errors[] = $this->trans('An error occurred during the image upload process.', array(), 'Shop.Notifications.Error');
                 } else {
                     $this->context->cart->addPictureToProduct($this->product->id, $indexes[$field_name], Product::CUSTOMIZE_FILE, $file_name);
@@ -1114,7 +1125,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
     /**
      * @param $combinationId
      *
-     * @return null|ProductController
+     * @return ProductController|null
      */
     public function findProductCombinationById($combinationId)
     {
@@ -1207,11 +1218,13 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                             $field['type'] = 'image';
                             $field['image'] = null;
                             $field['input_name'] = 'file' . $customization_field['id_customization_field'];
+
                             break;
                         case Product::CUSTOMIZE_TEXTFIELD:
                             $field['type'] = 'text';
                             $field['text'] = '';
                             $field['input_name'] = 'textField' . $customization_field['id_customization_field'];
+
                             break;
                         default:
                             $field['type'] = null;
@@ -1230,9 +1243,11 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                                     $product_full,
                                     $customization_field['id_customization_field']
                                 );
+
                                 break;
                             case Product::CUSTOMIZE_TEXTFIELD:
                                 $field['text'] = $data['value'];
+
                                 break;
                         }
                     } else {
@@ -1332,8 +1347,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
 
             return
                 Validate::isLoadedObject($combination)
-                && $combination->id_product == $productId
-            ;
+                && $combination->id_product == $productId;
         }
 
         return false;

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -35,8 +35,16 @@ class AdminCmsControllerCore extends AdminController
 
     protected $position_identifier = 'id_cms';
 
+    /**
+     * @deprecated since 1.7.6, to be removed in the next minor
+     */
     public function __construct()
     {
+        @trigger_error(
+            'The AdminCmsController is deprecated and will be removed in the next minor',
+            E_USER_DEPRECATED
+        );
+
         $this->bootstrap = true;
         $this->table = 'cms';
         $this->list_id = 'cms';
@@ -197,7 +205,7 @@ class AdminCmsControllerCore extends AdminController
                     'name' => 'meta_keywords',
                     'lang' => true,
                     'hint' => array(
-                        $this->trans('To add "tags" click in the field, write something, and then press "Enter."', array(), 'Admin.Design.Help'),
+                        $this->trans('To add tags, click in the field, write something, and then press the "Enter" key.', array(), 'Admin.Shopparameters.Help'),
                         $this->trans('Invalid characters:', array(), 'Admin.Notifications.Info') . ' &lt;&gt;;=#{}',
                     ),
                 ),
@@ -445,10 +453,11 @@ class AdminCmsControllerCore extends AdminController
     {
         $preview_url = $this->context->link->getCMSLink($cms, null, null, $this->context->language->id);
         if (!$cms->active) {
-            $params = http_build_query(array(
-                'adtoken' => Tools::getAdminTokenLite('AdminCmsContent'),
-                'ad' => basename(_PS_ADMIN_DIR_),
-                'id_employee' => (int) $this->context->employee->id,
+            $params = http_build_query(
+                array(
+                    'adtoken' => Tools::getAdminTokenLite('AdminCmsContent'),
+                    'ad' => basename(_PS_ADMIN_DIR_),
+                    'id_employee' => (int) $this->context->employee->id,
                 )
             );
             $preview_url .= (strpos($preview_url, '?') === false ? '?' : '&') . $params;

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,15 +16,15 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 class HookCore extends ObjectModel
 {
@@ -101,6 +101,9 @@ class HookCore extends ObjectModel
         // Product page
         'displayProductTabContent' => array('from' => '1.7.0.0'),
         'displayProductTab' => array('from' => '1.7.0.0'),
+
+        // Controller
+        'actionAjaxDieBefore' => array('from' => '1.6.1.1'),
     );
 
     const MODULE_LIST_BY_HOOK_KEY = 'hook_module_exec_list_';
@@ -147,7 +150,8 @@ class HookCore extends ObjectModel
      */
     public static function getHooks($position = false, $only_display_hooks = false)
     {
-        $hooks = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+        $hooks = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
 			SELECT * FROM `' . _DB_PREFIX_ . 'hook` h
 			' . ($position ? 'WHERE h.`position` = 1' : '') . '
 			ORDER BY `name`'
@@ -511,7 +515,7 @@ class HookCore extends ObjectModel
             }
 
             // If shop lists is null, we fill it with all shops
-            if (is_null($shop_list)) {
+            if (null === $shop_list) {
                 $shop_list = Shop::getCompleteListOfShopsID();
             }
 
@@ -744,7 +748,7 @@ class HookCore extends ObjectModel
         }
 
         $hookRegistry = self::getHookRegistry();
-        $isRegistryEnabled = !is_null($hookRegistry);
+        $isRegistryEnabled = null !== $hookRegistry;
 
         if ($isRegistryEnabled) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
@@ -972,12 +976,12 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @return null|\PrestaShopBundle\DataCollector\HookRegistry
+     * @return \PrestaShopBundle\DataCollector\HookRegistry|null
      */
     private static function getHookRegistry()
     {
         $sfContainer = SymfonyContainer::getInstance();
-        if (!is_null($sfContainer) && 'dev' === $sfContainer->getParameter('kernel.environment')) {
+        if (null !== $sfContainer && 'dev' === $sfContainer->getParameter('kernel.environment')) {
             return $sfContainer->get('prestashop.hooks_registry');
         }
 

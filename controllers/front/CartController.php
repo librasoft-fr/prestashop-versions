@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -46,7 +46,7 @@ class CartControllerCore extends FrontController
      *
      * @var string[]
      */
-    private $updateOperationError = array();
+    protected $updateOperationError = array();
 
     /**
      * This is not a public page, so the canonical redirection is disabled.
@@ -170,12 +170,11 @@ class CartControllerCore extends FrontController
             'cart_detailed' => $this->render('checkout/_partials/cart-detailed'),
             'cart_detailed_totals' => $this->render('checkout/_partials/cart-detailed-totals'),
             'cart_summary_items_subtotal' => $this->render('checkout/_partials/cart-summary-items-subtotal'),
+            'cart_summary_subtotals_container' => $this->render('checkout/_partials/cart-summary-subtotals'),
             'cart_summary_totals' => $this->render('checkout/_partials/cart-summary-totals'),
             'cart_detailed_actions' => $this->render('checkout/_partials/cart-detailed-actions'),
             'cart_voucher' => $this->render('checkout/_partials/cart-voucher'),
         ]));
-
-        return;
     }
 
     /**
@@ -220,8 +219,6 @@ class CartControllerCore extends FrontController
             'success' => true,
             'productUrl' => $url,
         ]));
-
-        return;
     }
 
     public function postProcess()
@@ -437,10 +434,10 @@ class CartControllerCore extends FrontController
         if (!$this->id_product_attribute) {
             if ($qty_to_check < $product->minimal_quantity) {
                 $this->errors[] = $this->trans(
-                     'The minimum purchase order quantity for the product %product% is %quantity%.',
-                     array('%product%' => $product->name, '%quantity%' => $product->minimal_quantity),
-                     'Shop.Notifications.Error'
-                 );
+                    'The minimum purchase order quantity for the product %product% is %quantity%.',
+                    array('%product%' => $product->name, '%quantity%' => $product->minimal_quantity),
+                    'Shop.Notifications.Error'
+                );
 
                 return;
             }
@@ -448,10 +445,10 @@ class CartControllerCore extends FrontController
             $combination = new Combination($this->id_product_attribute);
             if ($qty_to_check < $combination->minimal_quantity) {
                 $this->errors[] = $this->trans(
-                     'The minimum purchase order quantity for the product %product% is %quantity%.',
-                     array('%product%' => $product->name, '%quantity%' => $combination->minimal_quantity),
-                     'Shop.Notifications.Error'
-                 );
+                    'The minimum purchase order quantity for the product %product% is %quantity%.',
+                    array('%product%' => $product->name, '%quantity%' => $combination->minimal_quantity),
+                    'Shop.Notifications.Error'
+                );
 
                 return;
             }
@@ -572,7 +569,7 @@ class CartControllerCore extends FrontController
      *
      * @return bool
      */
-    private function shouldAvailabilityErrorBeRaised($product, $qtyToCheck)
+    protected function shouldAvailabilityErrorBeRaised($product, $qtyToCheck)
     {
         if (($this->id_product_attribute)) {
             return !Product::isAvailableWhenOutOfStock($product->out_of_stock)
@@ -598,7 +595,7 @@ class CartControllerCore extends FrontController
      *
      * @return bool|string
      */
-    private function areProductsAvailable()
+    protected function areProductsAvailable()
     {
         $product = $this->context->cart->checkQuantities(true);
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -168,6 +168,15 @@ class AddressCore extends ObjectModel
         if ($this->id) {
             $this->country = Country::getNameById($id_lang ? $id_lang : Configuration::get('PS_LANG_DEFAULT'), $this->id_country);
         }
+    }
+
+    /**
+     * reset static cache (eg unit testing purpose).
+     */
+    public static function resetStaticCache()
+    {
+        static::$_idZones = array();
+        static::$_idCountries = array();
     }
 
     /**
@@ -328,6 +337,41 @@ class AddressCore extends ObjectModel
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function validateField($field, $value, $id_lang = null, $skip = array(), $human_errors = false)
+    {
+        $error = parent::validateField($field, $value, $id_lang, $skip, $human_errors);
+        if (true !== $error || 'dni' !== $field) {
+            return $error;
+        }
+
+        // Special validation for dni, check if the country needs it
+        $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
+			SELECT c.`need_identification_number`
+			FROM `' . _DB_PREFIX_ . 'country` c
+			WHERE c.`id_country` = ' . (int) $this->id_country);
+
+        if ($result && Tools::isEmpty($value)) {
+            if ($human_errors) {
+                return $this->trans(
+                    'The %s field is required.',
+                    [$this->displayFieldName($field, get_class($this))],
+                    'Admin.Notifications.Error'
+                );
+            }
+
+            return $this->trans(
+                'Property %s is empty.',
+                [get_class($this) . '->' . $field],
+                'Admin.Notifications.Error'
+            );
+        }
+
+        return true;
+    }
+
+    /**
      * Check if Address is used (at least one order placed).
      *
      * @return int Order count for this Address
@@ -424,7 +468,8 @@ class AddressCore extends ObjectModel
         }
         $cache_id = 'Address::getFirstCustomerAddressId_' . (int) $id_customer . '-' . (bool) $active;
         if (!Cache::isStored($cache_id)) {
-            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
+            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                '
 				SELECT `id_address`
 				FROM `' . _DB_PREFIX_ . 'address`
 				WHERE `id_customer` = ' . (int) $id_customer . ' AND `deleted` = 0' . ($active ? ' AND `active` = 1' : '')
@@ -532,7 +577,7 @@ class AddressCore extends ObjectModel
      * @param int $id_address Address id
      * @param int $id_customer Customer id
      *
-     * @return false|null|string Amount of aliases found
+     * @return false|string|null Amount of aliases found
      * @todo: Find out if we shouldn't be returning an int instead? (breaking change)
      */
     public static function aliasExist($alias, $id_address, $id_customer)

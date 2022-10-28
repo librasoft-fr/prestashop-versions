@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -27,8 +27,9 @@
 namespace PrestaShop\PrestaShop\Adapter\Feature;
 
 use PrestaShop\PrestaShop\Adapter\Entity\Shop;
-use PrestaShop\PrestaShop\Adapter\Configuration;
+use PrestaShop\PrestaShop\Core\ConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
+use PrestaShop\PrestaShop\Core\Multistore\MultistoreConfig;
 
 /**
  * Class MultistoreFeature provides data about multishop feature usage.
@@ -38,14 +39,14 @@ use PrestaShop\PrestaShop\Core\Feature\FeatureInterface;
 final class MultistoreFeature implements FeatureInterface
 {
     /**
-     * @var Configuration
+     * @var ConfigurationInterface
      */
     private $configuration;
 
     /**
-     * @param Configuration $configuration
+     * @param ConfigurationInterface $configuration
      */
-    public function __construct(Configuration $configuration)
+    public function __construct(ConfigurationInterface $configuration)
     {
         $this->configuration = $configuration;
     }
@@ -65,7 +66,7 @@ final class MultistoreFeature implements FeatureInterface
      */
     public function isActive()
     {
-        return $this->configuration->getBoolean('PS_MULTISHOP_FEATURE_ACTIVE');
+        return (bool) $this->configuration->get(MultistoreConfig::FEATURE_STATUS);
     }
 
     /**
@@ -73,7 +74,7 @@ final class MultistoreFeature implements FeatureInterface
      */
     public function enable()
     {
-        $this->configuration->set('PS_MULTISHOP_FEATURE_ACTIVE', 1);
+        $this->configuration->set(MultistoreConfig::FEATURE_STATUS, 1);
     }
 
     /**
@@ -81,7 +82,7 @@ final class MultistoreFeature implements FeatureInterface
      */
     public function disable()
     {
-        $this->configuration->set('PS_MULTISHOP_FEATURE_ACTIVE', 0);
+        $this->configuration->set(MultistoreConfig::FEATURE_STATUS, 0);
     }
 
     /**

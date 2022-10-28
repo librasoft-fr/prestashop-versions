@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -294,9 +294,11 @@ class DispatcherCore
                         $defaultController = $tabClassName;
                     }
                 }
+
                 break;
             case self::FC_MODULE:
                 $defaultController = 'default';
+
                 break;
             default:
                 $defaultController = 'index';
@@ -376,6 +378,7 @@ class DispatcherCore
                     'controller_class' => $controller_class,
                     'is_module' => 0,
                 );
+
                 break;
 
             // Dispatch module controller for front office
@@ -402,6 +405,7 @@ class DispatcherCore
                     'controller_class' => $controller_class,
                     'is_module' => 1,
                 );
+
                 break;
 
             // Dispatch back office controller + module back office controller
@@ -807,8 +811,7 @@ class DispatcherCore
             $id_shop = (int) Context::getContext()->shop->id;
         }
 
-        return isset($this->routes[$id_shop]) && isset($this->routes[$id_shop][$id_lang])
-            && isset($this->routes[$id_shop][$id_lang][$route_id]);
+        return isset($this->routes[$id_shop][$id_lang][$route_id]);
     }
 
     /**
@@ -1063,6 +1066,7 @@ class DispatcherCore
                             if (isset($_GET['fc']) && $_GET['fc'] == 'module') {
                                 $this->front_controller = self::FC_MODULE;
                             }
+
                             break;
                         }
                     }
@@ -1112,7 +1116,7 @@ class DispatcherCore
     public static function getModuleControllers($type = 'all', $module = null)
     {
         $modules_controllers = array();
-        if (is_null($module)) {
+        if (null === $module) {
             $modules = Module::getModulesOnDisk(true);
         } elseif (!is_array($module)) {
             $modules = array(Module::getInstanceByName($module));

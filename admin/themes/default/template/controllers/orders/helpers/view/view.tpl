@@ -1,5 +1,5 @@
 {**
- * 2007-2018 PrestaShop
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -15,10 +15,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  *}
@@ -577,7 +577,7 @@
             <i class="icon-user"></i>
             {l s='Customer' d='Admin.Global'}
             <span class="badge">
-              <a href="?tab=AdminCustomers&amp;id_customer={$customer->id}&amp;viewcustomer&amp;token={getAdminToken tab='AdminCustomers'}">
+              <a href="{$link->getAdminLink('AdminCustomers', true, [], ['id_customer' => $customer->id,'viewcustomer' => 1])}">
                 {if Configuration::get('PS_B2B_ENABLE')}{$customer->company} - {/if}
                 {$gender->name|escape:'html':'UTF-8'}
                 {$customer->firstname}
@@ -625,14 +625,17 @@
 
             <div class="col-xs-6">
               <div class="form-group hidden-print">
-                <a href="?tab=AdminCustomers&amp;id_customer={$customer->id}&amp;viewcustomer&amp;token={getAdminToken tab='AdminCustomers'}" class="btn btn-default btn-block">{l s='View full details...' d='Admin.Orderscustomers.Feature'}</a>
+                <a href="{$link->getAdminLink('AdminCustomers', true, [], ['id_customer' => $customer->id,'viewcustomer' => 1])}" class="btn btn-default btn-block">{l s='View full details...' d='Admin.Orderscustomers.Feature'}</a>
               </div>
               <div class="panel panel-sm">
                 <div class="panel-heading">
                   <i class="icon-eye-slash"></i>
                   {l s='Private note' d='Admin.Orderscustomers.Feature'}
                 </div>
-                <form id="customer_note" class="form-horizontal" action="ajax.php" method="post" onsubmit="saveCustomerNote({$customer->id});return false;" >
+                <form id="customer_note"
+                      class="form-horizontal"
+                      action="{$link->getAdminLink('AdminCustomers', true, [], ['updateCustomerNote' => 1, 'id_customer' => $customer->id])}"
+                      method="post" onsubmit="saveCustomerNote();return false;" >
                   <div class="form-group">
                     <div class="col-lg-12">
                       <textarea name="note" id="noteContent" class="textarea-autosize" onkeyup="$(this).val().length > 0 ? $('#submitCustomerNote').removeAttr('disabled') : $('#submitCustomerNote').attr('disabled', 'disabled')">{$customer->note}</textarea>

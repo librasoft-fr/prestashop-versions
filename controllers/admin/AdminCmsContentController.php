@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -38,8 +38,16 @@ class AdminCmsContentControllerCore extends AdminController
     /** @var object Category() instance for navigation */
     protected static $category = null;
 
+    /**
+     * @deprecated since 1.7.6, to be removed in the next minor
+     */
     public function __construct()
     {
+        @trigger_error(
+            'The AdminCmsContentController is deprecated and will be removed in the next minor',
+            E_USER_DEPRECATED
+        );
+
         $this->bootstrap = true;
         /* Get current category */
         $id_cms_category = (int) Tools::getValue('id_cms_category', Tools::getValue('id_cms_category_parent', 1));
@@ -227,8 +235,9 @@ class AdminCmsContentControllerCore extends AdminController
             if (is_array($positions)) {
                 foreach ($positions as $key => $value) {
                     $pos = explode('_', $value);
-                    if ((isset($pos[1]) && isset($pos[2])) && ($pos[1] == $id_category && $pos[2] == $id_cms)) {
+                    if ((isset($pos[1], $pos[2])) && ($pos[1] == $id_category && $pos[2] == $id_cms)) {
                         $position = $key;
+
                         break;
                     }
                 }
@@ -256,8 +265,9 @@ class AdminCmsContentControllerCore extends AdminController
             if (is_array($positions)) {
                 foreach ($positions as $key => $value) {
                     $pos = explode('_', $value);
-                    if ((isset($pos[1]) && isset($pos[2])) && ($pos[1] == $id_cms_category_parent && $pos[2] == $id_cms_category_to_move)) {
+                    if ((isset($pos[1], $pos[2])) && ($pos[1] == $id_cms_category_parent && $pos[2] == $id_cms_category_to_move)) {
                         $position = $key;
+
                         break;
                     }
                 }

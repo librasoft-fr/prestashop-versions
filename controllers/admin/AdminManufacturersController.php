@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -33,8 +33,16 @@ class AdminManufacturersControllerCore extends AdminController
     /** @var array countries list */
     protected $countries_array = array();
 
+    /**
+     * @deprecated since 1.7.6, to be removed in the next minor
+     */
     public function __construct()
     {
+        @trigger_error(
+            'The AdminManufacturersController is deprecated and will be removed in the next minor',
+            E_USER_DEPRECATED
+        );
+
         $this->table = 'manufacturer';
         $this->className = 'Manufacturer';
         $this->lang = false;
@@ -304,8 +312,14 @@ class AdminManufacturersControllerCore extends AdminController
         }
 
         $image = _PS_MANU_IMG_DIR_ . $manufacturer->id . '.jpg';
-        $image_url = ImageManager::thumbnail($image, $this->table . '_' . (int) $manufacturer->id . '.' . $this->imageType, 350,
-            $this->imageType, true, true);
+        $image_url = ImageManager::thumbnail(
+            $image,
+            $this->table . '_' . (int) $manufacturer->id . '.' . $this->imageType,
+            350,
+            $this->imageType,
+            true,
+            true
+        );
         $image_size = file_exists($image) ? filesize($image) / 1000 : false;
 
         $this->fields_form = array(
@@ -670,6 +684,7 @@ class AdminManufacturersControllerCore extends AdminController
                         'desc' => $this->trans('Cancel', array(), 'Admin.Actions'),
                     );
                 }
+
                 break;
 
             default:
@@ -693,9 +708,9 @@ class AdminManufacturersControllerCore extends AdminController
         /* @var Manufacturer $manufacturer */
 
         $this->toolbar_btn['new'] = array(
-                    'href' => $this->context->link->getAdminLink('AdminManufacturers') . '&addaddress=1&id_manufacturer=' . (int) $manufacturer->id,
-                    'desc' => $this->trans('Add address', array(), 'Admin.Catalog.Feature'),
-                );
+            'href' => $this->context->link->getAdminLink('AdminManufacturers') . '&addaddress=1&id_manufacturer=' . (int) $manufacturer->id,
+            'desc' => $this->trans('Add address', array(), 'Admin.Catalog.Feature'),
+        );
 
         $this->toolbar_title = is_array($this->breadcrumbs) ? array_unique($this->breadcrumbs) : array($this->breadcrumbs);
         $this->toolbar_title[] = $manufacturer->name;

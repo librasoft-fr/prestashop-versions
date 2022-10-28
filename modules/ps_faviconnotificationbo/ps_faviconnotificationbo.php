@@ -42,7 +42,7 @@ class Ps_faviconnotificationbo extends Module
     {
         $this->name = 'ps_faviconnotificationbo';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '2.0.0';
         $this->author = 'PrestaShop';
         $this->bootstrap = true;
 
@@ -55,8 +55,8 @@ class Ps_faviconnotificationbo extends Module
 
         parent::__construct();
 
-        $this->displayName = $this->l('Order Notifications on the Favicon');
-        $this->description = $this->l('Get notified when you get new order, new client or new message directly on your browser tab of your back office even if you are working on another page');
+        $this->displayName = $this->trans('Order Notifications on the Favicon', array(), 'Modules.Faviconnotificationbo.Admin');
+        $this->description = $this->trans('Be notified of each new order, client or message directly in the browser tab of your back office, even when working on another page', array(), 'Modules.Faviconnotificationbo.Admin');
 
         // Settings paths
         $this->js_path = $this->_path.'views/js/';
@@ -68,8 +68,8 @@ class Ps_faviconnotificationbo extends Module
         $this->ps_version = (bool)version_compare(_PS_VERSION_, '1.7', '>=');
 
         // Confirm uninstall
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
-        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => _PS_VERSION_);
+        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall this module?', array(), 'Admin.Modules.Notification');
+        $this->ps_versions_compliancy = array('min' => '1.7.6.0', 'max' => _PS_VERSION_);
     }
 
     /**
@@ -98,7 +98,7 @@ class Ps_faviconnotificationbo extends Module
             $this->uninstallTab()) {
             return true;
         } else {
-            $this->_errors[] = $this->l('There was an error during the uninstallation.');
+            $this->_errors[] = $this->trans('There was an error during the uninstallation.', array(), 'Admin.Modules.Notification');
             return false;
         }
     }

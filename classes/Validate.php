@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -112,12 +112,12 @@ class ValidateCore
      */
     public static function isFloat($float)
     {
-        return strval((float) $float) == strval($float);
+        return (string) ((float) $float) == (string) $float;
     }
 
     public static function isUnsignedFloat($float)
     {
-        return strval((float) $float) == strval($float) && $float >= 0;
+        return (string) ((float) $float) == (string) $float && $float >= 0;
     }
 
     /**
@@ -602,7 +602,7 @@ class ValidateCore
 
     public static function isDateOrNull($date)
     {
-        if (is_null($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00') {
+        if (null === $date || $date === '0000-00-00 00:00:00' || $date === '0000-00-00') {
             return true;
         }
 
@@ -613,27 +613,22 @@ class ValidateCore
      * Check for birthDate validity.
      *
      * @param string $date birthdate to validate
+     * @param string $format optional format
      *
      * @return bool Validity is ok or not
      */
-    public static function isBirthDate($date)
+    public static function isBirthDate($date, $format = 'Y-m-d')
     {
         if (empty($date) || $date == '0000-00-00') {
             return true;
         }
-        if (preg_match('/^([0-9]{4})-((?:0?[1-9])|(?:1[0-2]))-((?:0?[1-9])|(?:[1-2][0-9])|(?:3[01]))([0-9]{2}:[0-9]{2}:[0-9]{2})?$/', $date, $birth_date)) {
-            if ($birth_date[1] > date('Y')
-                || ($birth_date[1] > date('Y') && $birth_date[2] > date('m'))
-                || ($birth_date[1] > date('Y') && $birth_date[2] > date('m') && $birth_date[3] > date('d'))
-                || ($birth_date[1] == date('Y') && $birth_date[2] == date('m') && $birth_date[3] > date('d'))
-                || ($birth_date[1] == date('Y') && $birth_date[2] > date('m'))) {
-                return false;
-            }
 
-            return true;
+        $d = DateTime::createFromFormat($format, $date);
+        if (!empty(DateTime::getLastErrors()['warning_count']) || false === $d) {
+            return false;
         }
 
-        return false;
+        return $d->getTimestamp() <= time();
     }
 
     /**
@@ -854,9 +849,9 @@ class ValidateCore
     }
 
     /**
-     * Check object validity.
+     * Check color validity.
      *
-     * @param int $object Object to validate
+     * @param string $color Color to validate
      *
      * @return bool Validity is ok or not
      */
@@ -1203,7 +1198,7 @@ class ValidateCore
         }
         $sum = 0;
         for ($i = 0; $i != 14; ++$i) {
-            $tmp = ((($i + 1) % 2) + 1) * intval($siret[$i]);
+            $tmp = ((($i + 1) % 2) + 1) * (int) ($siret[$i]);
             if ($tmp >= 10) {
                 $tmp -= 9;
             }

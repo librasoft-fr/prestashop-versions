@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -29,8 +29,16 @@
  */
 class AdminPreferencesControllerCore extends AdminController
 {
+    /**
+     * @deprecated since 1.7.6, to be removed in the next minor
+     */
     public function __construct()
     {
+        @trigger_error(
+            'The AdminPreferencesController is deprecated and will be removed in the next minor',
+            E_USER_DEPRECATED
+        );
+
         $this->bootstrap = true;
         $this->className = 'Configuration';
         $this->table = 'configuration';
@@ -233,22 +241,6 @@ class AdminPreferencesControllerCore extends AdminController
                     'submit' => array('title' => $this->trans('Save', array(), 'Admin.Actions')),
                 ),
             );
-        }
-    }
-
-    /**
-     * Enable / disable multishop menu if multishop feature is activated.
-     *
-     * @param string $value
-     */
-    public function updateOptionPsMultishopFeatureActive($value)
-    {
-        Configuration::updateValue('PS_MULTISHOP_FEATURE_ACTIVE', $value);
-
-        $tab = Tab::getInstanceFromClassName('AdminShopGroup');
-        if (Validate::isLoadedObject($tab)) {
-            $tab->active = (bool) Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE');
-            $tab->update();
         }
     }
 }

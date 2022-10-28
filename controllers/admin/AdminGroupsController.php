@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,10 +16,10 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -367,6 +367,7 @@ class AdminGroupsControllerCore extends AdminController
                         ),
                     ),
                     'hint' => $this->trans('Customers in this group can view prices.', array(), 'Admin.Shopparameters.Help'),
+                    'desc' => $this->trans('Need to hide prices for all groups? Save time, enable catalog mode in Product Settings instead.', array(), 'Admin.Shopparameters.Help'),
                 ),
                 array(
                     'type' => 'group_discount_category',
@@ -556,11 +557,13 @@ class AdminGroupsControllerCore extends AdminController
     protected function updateCategoryReduction()
     {
         $category_reduction = Tools::getValue('category_reduction');
-        Db::getInstance()->execute('
+        Db::getInstance()->execute(
+            '
 			DELETE FROM `' . _DB_PREFIX_ . 'group_reduction`
 			WHERE `id_group` = ' . (int) Tools::getValue('id_group')
         );
-        Db::getInstance()->execute('
+        Db::getInstance()->execute(
+            '
 			DELETE FROM `' . _DB_PREFIX_ . 'product_group_reduction_cache`
 			WHERE `id_group` = ' . (int) Tools::getValue('id_group')
         );
@@ -631,7 +634,11 @@ class AdminGroupsControllerCore extends AdminController
         $href = self::$currentIndex . '&' . $this->identifier . '=' . $id . '&update' . $this->table . '&token=' . ($token != null ? $token : $this->token);
 
         if ($this->display == 'view') {
-            $href = Context::getContext()->link->getAdminLink('AdminCustomers') . '&id_customer=' . (int) $id . '&updatecustomer&back=' . urlencode($href);
+            $href = Context::getContext()->link->getAdminLink('AdminCustomers', true, [], [
+                'id_customer' => $id,
+                'updatecustomer' => 1,
+                'back' => urlencode($href),
+            ]);
         }
 
         $tpl->assign(array(

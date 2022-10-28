@@ -61,9 +61,17 @@ class SQLProcessor extends SQLChunkProcessor {
         $skip_next = 0;
         $out = false;
 
-        $tokenCount = count($tokens);
+	// $tokens may come as a numeric indexed array starting with an index greater than 0 (or as a boolean)
+	$tokenCount = count($tokens);
+        if ( is_array($tokens) ){
+          $tokens = array_values($tokens);
+        }
         for ($tokenNumber = 0; $tokenNumber < $tokenCount; ++$tokenNumber) {
 
+            // https://github.com/greenlion/PHP-SQL-Parser/issues/279
+            // https://github.com/sinri/PHP-SQL-Parser/commit/eac592a0e19f1df6f420af3777a6d5504837faa7
+            // as there is no pull request for 279 by the user. His solution works and tested.
+            if (!isset($tokens[$tokenNumber])) continue;// as a fix by Sinri 20180528
             $token = $tokens[$tokenNumber];
             $trim = trim($token); // this removes also \n and \t!
 
@@ -298,11 +306,11 @@ class SQLProcessor extends SQLChunkProcessor {
                 break;
 
             case 'INDEX':
-                if ($prev_category === 'CREATE') {
-                    $out[$prev_category][] = $trim;
-                    $token_category = $upper;
-                }
-                break;
+	            if ( in_array( $prev_category, array( 'CREATE', 'DROP' ) ) ) {
+		            $out[ $prev_category ][] = $trim;
+		            $token_category          = $upper;
+	            }
+	            break;
 
             case 'TABLE':
                 if ($prev_category === 'CREATE') {

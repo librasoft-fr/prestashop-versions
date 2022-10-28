@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,30 +16,30 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Product;
 
-use PrestaShopBundle\Service\DataUpdater\Admin\ProductInterface;
-use PrestaShopBundle\Exception\UpdateProductException;
+use Category;
+use Configuration;
+use Db;
+use GroupReduction;
+use Image;
+use Pack;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
+use PrestaShopBundle\Exception\UpdateProductException;
+use PrestaShopBundle\Service\DataUpdater\Admin\ProductInterface;
 use Product;
-use Validate;
+use Search;
 use Shop;
 use ShopGroup;
-use Category;
-use GroupReduction;
-use Pack;
-use Search;
-use Db;
-use Configuration;
-use Image;
+use Validate;
 
 /**
  * This class will update/insert/delete data from DB / ORM about Product, for both Front and Admin interfaces.
@@ -73,8 +73,11 @@ class AdminProductDataUpdater implements ProductInterface
         $failedIdList = array();
         foreach ($productListId as $productId) {
             $product = new Product($productId);
-            if (!Validate::isLoadedObject($product)) {
+            if (!Validate::isLoadedObject($product)
+                || $product->validateFields(false, true) !== true
+                || $product->validateFieldsLang(false, true) !== true) {
                 $failedIdList[] = $productId;
+
                 continue;
             }
             $product->active = ($activate ? 1 : 0);
@@ -124,6 +127,7 @@ class AdminProductDataUpdater implements ProductInterface
                 $this->duplicateProduct($productId);
             } catch (\Exception $e) {
                 $failedIdList[] = $productId;
+
                 continue;
             }
         }
@@ -167,6 +171,11 @@ class AdminProductDataUpdater implements ProductInterface
             throw new \Exception('AdminProductDataUpdater->duplicateProduct() received an unknown ID.', 5005);
         }
 
+        if (($error = $product->validateFields(false, true)) !== true
+            || ($error = $product->validateFieldsLang(false, true)) !== true) {
+            throw new UpdateProductException(sprintf('Cannot duplicate this product: %s', $error));
+        }
+
         $id_product_old = $product->id;
         if (empty($product->price) && Shop::getContext() == Shop::CONTEXT_GROUP) {
             $shops = ShopGroup::getShopsFromGroup(Shop::getContextShopGroupID());
@@ -178,8 +187,11 @@ class AdminProductDataUpdater implements ProductInterface
             }
         }
 
-        unset($product->id);
-        unset($product->id_product);
+        unset(
+            $product->id,
+            $product->id_product
+        );
+
         $product->indexed = 0;
         $product->active = 0;
 
@@ -212,7 +224,7 @@ class AdminProductDataUpdater implements ProductInterface
             if (!Image::duplicateProductImages($id_product_old, $product->id, $combination_images)) {
                 throw new UpdateProductException('An error occurred while copying images.', 5008);
             } else {
-                $this->hookDispatcher->dispatchWithParameters('actionProductAdd', array('id_product' => (int) $product->id, 'product' => $product));
+                $this->hookDispatcher->dispatchWithParameters('actionProductAdd', array('id_product_old' => $id_product_old, 'id_product' => (int) $product->id, 'product' => $product));
                 if (in_array($product->visibility, array('both', 'search')) && Configuration::get('PS_SEARCH_INDEXATION')) {
                     Search::indexation(false, $product->id);
                 }
@@ -244,6 +256,7 @@ class AdminProductDataUpdater implements ProductInterface
             if ($k == 'filter_category') {
                 continue;
             }
+
             throw new \Exception('Cannot sort when filterParams contains other filter than \'filter_category\'.', 5010);
         }
 

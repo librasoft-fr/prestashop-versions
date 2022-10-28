@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,15 +16,15 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-use PrestaShop\PrestaShop\Adapter\ServiceLocator;
 use PrestaShop\PrestaShop\Adapter\CoreException;
+use PrestaShop\PrestaShop\Adapter\ServiceLocator;
 
 /***
  * Class CustomerCore
@@ -218,6 +218,7 @@ class CustomerCore extends ObjectModel
      */
     public function __construct($id = null)
     {
+        // It sets default value for customer group even when customer does not exist
         $this->id_default_group = (int) Configuration::get('PS_CUSTOMER_GROUP');
         parent::__construct($id);
     }
@@ -239,7 +240,7 @@ class CustomerCore extends ObjectModel
         $this->id_shop_group = ($this->id_shop_group) ? $this->id_shop_group : Context::getContext()->shop->id_shop_group;
         $this->id_lang = ($this->id_lang) ? $this->id_lang : Context::getContext()->language->id;
         $this->birthday = (empty($this->years) ? $this->birthday : (int) $this->years . '-' . (int) $this->months . '-' . (int) $this->days);
-        $this->secure_key = md5(uniqid(rand(), true));
+        $this->secure_key = md5(uniqid(mt_rand(0, mt_getrandmax()), true));
         $this->last_passwd_gen = date('Y-m-d H:i:s', strtotime('-' . Configuration::get('PS_PASSWD_TIME_FRONT') . 'minutes'));
 
         if ($this->newsletter && !Validate::isDate($this->newsletter_date_add)) {
@@ -348,13 +349,14 @@ class CustomerCore extends ObjectModel
     /**
      * Return customers list.
      *
-     * @param null|bool $onlyActive Returns only active customers when `true`
+     * @param bool|null $onlyActive Returns only active customers when `true`
      *
      * @return array Customers
      */
     public static function getCustomers($onlyActive = null)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
             SELECT `id_customer`, `email`, `firstname`, `lastname`
             FROM `' . _DB_PREFIX_ . 'customer`
             WHERE 1 ' . Shop::addSqlRestriction(Shop::SHARE_CUSTOMER) .
@@ -396,6 +398,7 @@ class CustomerCore extends ObjectModel
         $sql->where('c.`deleted` = 0');
 
         $passwordHash = Db::getInstance()->getValue($sql);
+
         try {
             /** @var \PrestaShop\PrestaShop\Core\Crypto\Hashing $crypto */
             $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
@@ -403,7 +406,7 @@ class CustomerCore extends ObjectModel
             return false;
         }
 
-        $shouldCheckPassword = !is_null($plaintextPassword);
+        $shouldCheckPassword = null !== $plaintextPassword;
         if ($shouldCheckPassword && !$crypto->checkHash($plaintextPassword, $passwordHash)) {
             return false;
         }
@@ -543,8 +546,13 @@ class CustomerCore extends ObjectModel
      * @param int $idCustomer Customer ID
      * @param int $idAddress Address ID
      */
-    public static function resetAddressCache($idCustomer, $idAddress)
+    public static function resetAddressCache($idCustomer = null, $idAddress = null)
     {
+        if ($idCustomer === null || $idAddress === null) {
+            self::$_customerHasAddress = array();
+            self::$_customer_groups = array();
+            self::$_defaultGroupId = array();
+        }
         $key = (int) $idCustomer . '-' . (int) $idAddress;
         if (array_key_exists($key, self::$_customerHasAddress)) {
             unset(self::$_customerHasAddress[$key]);
@@ -597,7 +605,7 @@ class CustomerCore extends ObjectModel
             return array();
         }
 
-        if (is_null($idLang)) {
+        if (null === $idLang) {
             $idLang = Context::getContext()->language->id;
         }
 
@@ -617,11 +625,11 @@ class CustomerCore extends ObjectModel
      * @param int $idAddress Address ID
      * @param int|null $idLang Language ID
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false|mysqli_result|PDOStatement|resource|null
      */
     public function getSimpleAddress($idAddress, $idLang = null)
     {
-        if (!$this->id || !intval($idAddress) || !$idAddress) {
+        if (!$this->id || !(int) $idAddress || !$idAddress) {
             return array(
                 'id' => '',
                 'alias' => '',
@@ -665,7 +673,7 @@ class CustomerCore extends ObjectModel
      */
     public function getSimpleAddressSql($idAddress = null, $idLang = null)
     {
-        if (is_null($idLang)) {
+        if (null === $idLang) {
             $idLang = Context::getContext()->language->id;
         }
         $shareOrder = (bool) Context::getContext()->shop->getGroup()->share_order;
@@ -702,7 +710,7 @@ class CustomerCore extends ObjectModel
                         AND a.`deleted` = 0
                         AND a.`active` = 1';
 
-        if (!is_null($idAddress)) {
+        if (null !== $idAddress) {
             $sql .= ' AND a.`id_address` = ' . (int) $idAddress;
         }
 
@@ -718,7 +726,8 @@ class CustomerCore extends ObjectModel
      */
     public static function getAddressesTotalById($idCustomer)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            '
             SELECT COUNT(`id_address`)
             FROM `' . _DB_PREFIX_ . 'address`
             WHERE `id_customer` = ' . (int) $idCustomer . '
@@ -739,6 +748,13 @@ class CustomerCore extends ObjectModel
         if (!Validate::isUnsignedId($idCustomer)) {
             die(Tools::displayError());
         }
+
+        // Check that customers password hasn't changed since last login
+        $context = Context::getContext();
+        if ($passwordHash != $context->cookie->__get('passwd')) {
+            return false;
+        }
+
         $cacheId = 'Customer::checkPassword' . (int) $idCustomer . '-' . $passwordHash;
         if (!Cache::isStored($cacheId)) {
             $sql = new DbQuery();
@@ -761,9 +777,9 @@ class CustomerCore extends ObjectModel
      * Light back office search for customers.
      *
      * @param string $query Searched string
-     * @param null|int $limit Limit query results
+     * @param int|null $limit Limit query results
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource Corresponding customers
+     * @return array|false|mysqli_result|PDOStatement|resource|null Corresponding customers
      *
      * @throws PrestaShopDatabaseException
      */
@@ -803,7 +819,7 @@ class CustomerCore extends ObjectModel
      *
      * @param string $ip Searched string
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false|mysqli_result|PDOStatement|resource|null
      */
     public static function searchByIp($ip)
     {
@@ -848,7 +864,7 @@ class CustomerCore extends ObjectModel
     /**
      * Get last 10 emails sent to the Customer.
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false|mysqli_result|PDOStatement|resource|null
      */
     public function getLastEmails()
     {
@@ -868,7 +884,7 @@ class CustomerCore extends ObjectModel
     /**
      * Get last 10 Connections of the Customer.
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false|mysqli_result|PDOStatement|resource|null
      */
     public function getLastConnections()
     {
@@ -876,7 +892,8 @@ class CustomerCore extends ObjectModel
             return array();
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
     		SELECT c.id_connections, c.date_add, COUNT(cp.id_page) AS pages, TIMEDIFF(MAX(cp.time_end), c.date_add) as time, http_referer,INET_NTOA(ip_address) as ipaddress
     		FROM `' . _DB_PREFIX_ . 'guest` g
     		LEFT JOIN `' . _DB_PREFIX_ . 'connections` c ON c.id_guest = g.id_guest
@@ -991,7 +1008,7 @@ class CustomerCore extends ObjectModel
     /**
      * Get Products bought by this Customer.
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false|mysqli_result|PDOStatement|resource|null
      */
     public function getBoughtProducts()
     {
@@ -1006,7 +1023,7 @@ class CustomerCore extends ObjectModel
      *
      * @param int $idCustomer Customer ID
      *
-     * @return mixed|null|string
+     * @return mixed|string|null
      */
     public static function getDefaultGroupId($idCustomer)
     {
@@ -1020,7 +1037,8 @@ class CustomerCore extends ObjectModel
         }
 
         if (!isset(self::$_defaultGroupId[(int) $idCustomer])) {
-            self::$_defaultGroupId[(int) $idCustomer] = Db::getInstance()->getValue('
+            self::$_defaultGroupId[(int) $idCustomer] = Db::getInstance()->getValue(
+                '
                 SELECT `id_default_group`
                 FROM `' . _DB_PREFIX_ . 'customer`
                 WHERE `id_customer` = ' . (int) $idCustomer
@@ -1044,7 +1062,8 @@ class CustomerCore extends ObjectModel
             $cart = Context::getContext()->cart;
         }
         if (!$cart || !$cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}) {
-            $idAddress = (int) Db::getInstance()->getValue('
+            $idAddress = (int) Db::getInstance()->getValue(
+                '
                 SELECT `id_address`
                 FROM `' . _DB_PREFIX_ . 'address`
                 WHERE `id_customer` = ' . (int) $idCustomer . '
@@ -1277,11 +1296,12 @@ class CustomerCore extends ObjectModel
      * Get Customer Groups
      * (for webservice).
      *
-     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @return array|false|mysqli_result|PDOStatement|resource|null
      */
     public function getWsGroups()
     {
-        return Db::getInstance()->executeS('
+        return Db::getInstance()->executeS(
+            '
             SELECT cg.`id_group` as id
             FROM ' . _DB_PREFIX_ . 'customer_group cg
             ' . Shop::addSqlAssociation('group', 'cg') . '

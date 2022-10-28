@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -16,19 +16,19 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Twig;
 
+use Doctrine\Common\Util\Inflector;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Doctrine\Common\Util\Inflector;
 
 class TranslationsExtension extends \Twig_Extension
 {
@@ -239,7 +239,8 @@ class TranslationsExtension extends \Twig_Extension
         $translationValue = $this->getTranslationValue($properties['translation']);
         $defaultTranslationValue = $this->getDefaultTranslationValue(
             $properties['translation_key'],
-            $domain, $locale,
+            $domain,
+            $locale,
             $properties['translation']
         );
 
@@ -418,7 +419,8 @@ class TranslationsExtension extends \Twig_Extension
         $totalTranslationsAttribute = '';
         if (array_key_exists('__messages', $subtree)) {
             $totalTranslations = count(array_values($subtree['__messages'])[0]);
-            $totalTranslationsAttribute = ' data-total-translations="' . $this->translator->trans('%nb_translations% expressions',
+            $totalTranslationsAttribute = ' data-total-translations="' . $this->translator->trans(
+                '%nb_translations% expressions',
                     array('%nb_translations%' => $totalTranslations),
                     'Admin.International.Feature'
                 ) . '"';
@@ -461,12 +463,12 @@ class TranslationsExtension extends \Twig_Extension
 
             $missingTranslationsMessage =
                 '<div class="missing-translations-short-message pull-right hide">' .
-                $this->translator->trans('%nb_translations% missing',
+                $this->translator->trans(
+                    '%nb_translations% missing',
                     array('%nb_translations%' => $missingTranslationsCount),
                     'Admin.International.Feature'
                 ) .
-                '</div>'
-            ;
+                '</div>';
             $missingTranslationsLongMessage =
                 '<div class="missing-translations-long-message hide">' .
                 $this->translator->trans(
@@ -477,8 +479,7 @@ class TranslationsExtension extends \Twig_Extension
                     ),
                     'Admin.International.Feature'
                 ) .
-                '</div>'
-            ;
+                '</div>';
             $missingTranslationsClass = ' missing-translations';
         }
 
