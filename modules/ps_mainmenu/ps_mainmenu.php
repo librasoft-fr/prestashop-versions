@@ -56,7 +56,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
     {
         $this->name = 'ps_mainmenu';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.5';
+        $this->version = '1.0.6';
         $this->author = 'PrestaShop';
 
         $this->bootstrap = true;
@@ -158,8 +158,6 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
     public function getContent()
     {
-        $this->context->controller->addjQueryPlugin('hoverIntent');
-
         $id_lang = (int)Context::getContext()->language->id;
         $languages = $this->context->controller->getLanguages();
         $default_language = (int)Configuration::get('PS_LANG_DEFAULT');

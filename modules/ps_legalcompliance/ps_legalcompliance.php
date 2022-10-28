@@ -64,7 +64,7 @@ class Ps_LegalCompliance extends Module
     {
         $this->name = 'ps_legalcompliance';
         $this->tab = 'administration';
-        $this->version = '1.1.6';
+        $this->version = '1.1.8';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -206,7 +206,6 @@ class Ps_LegalCompliance extends Module
             $new_hook->title = $hook_name;
             $new_hook->description = $hook['description'];
             $new_hook->position = true;
-            $new_hook->live_edit = false;
 
             if (!$new_hook->add()) {
                 $return &= false;
@@ -330,7 +329,7 @@ class Ps_LegalCompliance extends Module
                 if ($conditions_found) {
                     $content['cms'] = array_values($content['cms']);
                     $content = json_encode($content);
-                    Db::getInstance()->update('link_block', array('content' => $content), '`id_link_block` = '.(int) $link_block['id_link_block']);
+                    Db::getInstance()->update('link_block', array('content' => pSQL($content)), '`id_link_block` = '.(int) $link_block['id_link_block']);
                 }
             }
         }

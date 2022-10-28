@@ -53,7 +53,7 @@ class LinkBlockPresenter
         $cmsLinks = array();
         foreach ($cmsIds as $cmsId) {
             $cms = new CMS((int)$cmsId);
-            if (null !== $cms->id) {
+            if (null !== $cms->id && $cms->active) {
                 $cmsLinks[] = array(
                     'id' => 'link-cms-page-'.$cms->id,
                     'class' => 'cms-page-link',

@@ -35,7 +35,7 @@ class Dashactivity extends Module
 	{
 		$this->name = 'dashactivity';
 		$this->tab = 'dashboard';
-		$this->version = '0.6.0';
+		$this->version = '1.0.0';
 		$this->author = 'PrestaShop';
 		$this->push_filename = _PS_CACHE_DIR_.'push/activity';
 		$this->allow_push = true;
@@ -43,7 +43,7 @@ class Dashactivity extends Module
 
 		parent::__construct();
 		$this->displayName = $this->l('Dashboard Activity');
-		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.7.0.99');
 	}
 
 	public function install()

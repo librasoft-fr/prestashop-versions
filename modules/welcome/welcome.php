@@ -47,7 +47,7 @@ class Welcome extends Module
     public function __construct()
     {
         $this->name = 'welcome';
-        $this->version = '1.0.9';
+        $this->version = '1.1.1';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -89,6 +89,8 @@ class Welcome extends Module
      */
     public function uninstall()
     {
+        $this->onBoarding->setCurrentStep(0);
+
         return parent::uninstall();
     }
 

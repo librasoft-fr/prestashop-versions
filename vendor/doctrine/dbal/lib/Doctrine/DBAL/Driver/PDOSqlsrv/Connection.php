@@ -29,6 +29,15 @@ use Doctrine\DBAL\Driver\PDOConnection;
 class Connection extends PDOConnection implements \Doctrine\DBAL\Driver\Connection
 {
     /**
+     * {@inheritdoc}
+     */
+    public function __construct($dsn, $user = null, $password = null, array $options = null)
+    {
+        parent::__construct($dsn, $user, $password, $options);
+        $this->setAttribute(\PDO::ATTR_STATEMENT_CLASS, array(Statement::class, array()));
+    }
+
+    /**
      * @override
      */
     public function quote($value, $type=\PDO::PARAM_STR)

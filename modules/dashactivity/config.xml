@@ -2,7 +2,7 @@
 <module>
 	<name>dashactivity</name>
 	<displayName><![CDATA[Dashboard Activity]]></displayName>
-	<version><![CDATA[0.6.0]]></version>
+	<version><![CDATA[1.0.0]]></version>
 	<description><![CDATA[]]></description>
 	<author><![CDATA[PrestaShop]]></author>
 	<tab><![CDATA[dashboard]]></tab>

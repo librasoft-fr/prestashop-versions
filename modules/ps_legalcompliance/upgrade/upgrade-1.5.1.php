@@ -38,7 +38,6 @@ function upgrade_module_1_5_1($module)
     $new_hook->title = 'Display EU payment options (helper)';
     $new_hook->description = 'Hook to display payment options';
     $new_hook->position = true;
-    $new_hook->live_edit = false;
 
     return (bool)$new_hook->add() &&
            (bool)$module->registerModulesBackwardCompatHook();

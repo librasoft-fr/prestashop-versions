@@ -25,6 +25,7 @@
  */
 namespace PrestaShop\PrestaShop\Adapter\Admin;
 
+use PrestaShop\PrestaShop\Adapter\Validate;
 use Symfony\Component\Process\Exception\LogicException;
 
 /**
@@ -167,7 +168,18 @@ abstract class AbstractAdminQueryBuilder
 
         // ORDER
         if (count($order) > 0) {
-            $sql[] = 'ORDER BY '.implode(', ', $order).PHP_EOL;
+
+            $goodOrder = array();
+            foreach ($order as $k => $o) {
+                $value = explode(' ', $o);
+                if (!empty($value) && 2 === count($value) && Validate::isOrderBy($value[0]) && Validate::isOrderWay($value[1])) {
+                    $goodOrder[] = ' `'.bqSQL($value[0]).'` '. $value[1];
+                }
+            }
+
+            if (count($goodOrder) > 0) {
+                $sql[] = 'ORDER BY ' . implode(', ', $goodOrder) . PHP_EOL;
+            }
         }
 
         // LIMIT
