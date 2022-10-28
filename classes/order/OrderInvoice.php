@@ -130,24 +130,21 @@ class OrderInvoiceCore extends ObjectModel
     {
         $order = new Order($this->id_order);
 
-        $this->shop_address = self::getCurrentFormattedShopAddress($order->id_shop);
+        $this->shop_address = OrderInvoice::getCurrentFormattedShopAddress($order->id_shop);
 
         return parent::add();
     }
 
     public function getProductsDetail()
     {
-        $id_lang = Context::getContext()->language->id;
-
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-		SELECT *, pl.`name` as product_name
+		SELECT *
 		FROM `'._DB_PREFIX_.'order_detail` od
 		LEFT JOIN `'._DB_PREFIX_.'product` p
 		ON p.id_product = od.product_id
 		LEFT JOIN `'._DB_PREFIX_.'product_shop` ps ON (ps.id_product = p.id_product AND ps.id_shop = od.id_shop)
-		LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (pl.id_product = p.id_product AND pl.id_lang = '.$id_lang.' AND pl.id_shop = od.id_shop)
 		WHERE od.`id_order` = '.(int)$this->id_order.'
-		'.($this->id && $this->number ? ' AND od.`id_order_invoice` = '.(int)$this->id : '').' ORDER BY pl.`name`');
+		'.($this->id && $this->number ? ' AND od.`id_order_invoice` = '.(int)$this->id : '').' ORDER BY od.`product_name`');
     }
 
     public static function getInvoiceByNumber($id_invoice)
@@ -907,7 +904,7 @@ class OrderInvoiceCore extends ObjectModel
         $shop_ids = Shop::getShops(false, null, true);
         $db = Db::getInstance();
         foreach ($shop_ids as $id_shop) {
-            $address = self::getCurrentFormattedShopAddress($id_shop);
+            $address = OrderInvoice::getCurrentFormattedShopAddress($id_shop);
             $escaped_address = $db->escape($address, true, true);
 
             $db->execute('UPDATE `'._DB_PREFIX_.'order_invoice` INNER JOIN `'._DB_PREFIX_.'orders` USING (`id_order`)
