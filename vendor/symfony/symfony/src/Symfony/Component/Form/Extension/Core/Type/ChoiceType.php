@@ -171,8 +171,8 @@ class ChoiceType extends AbstractType
             }
 
             foreach ($data as $v) {
-                if (null !== $v && !is_string($v)) {
-                    throw new TransformationFailedException('All choices submitted must be NULL or strings.');
+                if (null !== $v && !is_string($v) && !is_int($v)) {
+                    throw new TransformationFailedException('All choices submitted must be NULL, strings or ints.');
                 }
             }
         }, 256);
@@ -357,7 +357,7 @@ class ChoiceType extends AbstractType
         };
 
         $choicesAsValuesNormalizer = function (Options $options, $choicesAsValues) use ($that) {
-            if (true !== $choicesAsValues) {
+            if (true !== $choicesAsValues && null === $options['choice_loader']) {
                 @trigger_error(sprintf('The value "false" for the "choices_as_values" option of the "%s" form type (%s) is deprecated since version 2.8 and will not be supported anymore in 3.0. Set this option to "true" and flip the contents of the "choices" option instead.', $that->getName(), __CLASS__), E_USER_DEPRECATED);
             }
 

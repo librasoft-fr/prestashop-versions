@@ -66,19 +66,7 @@ class AddressControllerCore extends FrontController
                 $this->should_redirect = true;
             }
         } elseif (($id_address = (int)Tools::getValue('id_address'))) {
-            $addressForm = $this->address_form->loadAddressById($id_address);
-
-            if ($addressForm->getAddress()->id === null) {
-                return Tools::redirect('index.php?controller=404');
-            }
-
-            if (!$this->context->customer->isLogged()) {
-                return $this->redirectWithNotifications('/index.php?controller=authentication');
-            }
-
-            if ($addressForm->getAddress()->id_customer != $this->context->customer->id) {
-                return Tools::redirect('index.php?controller=404');
-            }
+            $this->address_form->loadAddressById($id_address);
 
             if (Tools::getValue('delete')) {
                 $ok = $this->makeAddressPersister()->delete(
@@ -128,5 +116,27 @@ class AddressControllerCore extends FrontController
         ];
 
         return $breadcrumb;
+    }
+
+    public function displayAjaxAddressForm()
+    {
+        $addressForm = $this->makeAddressForm();
+
+        if (Tools::getIsset('id_address') && ($id_address = (int)Tools::getValue('id_address'))) {
+            $addressForm->loadAddressById($id_address);
+        }
+
+        if (Tools::getIsset('id_country')) {
+            $addressForm->fillWith(array('id_country' => Tools::getValue('id_country')));
+        }
+
+        ob_end_clean();
+        header('Content-Type: application/json');
+        $this->ajaxDie(Tools::jsonEncode(array(
+            'address_form' => $this->render(
+                'customer/_partials/address-form',
+                $addressForm->getTemplateVariables()
+            ),
+        )));
     }
 }

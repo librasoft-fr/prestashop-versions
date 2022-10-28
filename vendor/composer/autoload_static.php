@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit299b4a229b14993dba31010fd086193b
+class ComposerStaticInit8216172486c54ecf6601a2810b92f6ea
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -2190,6 +2190,7 @@ class ComposerStaticInit299b4a229b14993dba31010fd086193b
         'PrestaShopBundle\\Command\\ExportThemeCommand' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Command/ExportThemeCommand.php',
         'PrestaShopBundle\\Command\\UpdateEUTaxruleGroupsCommand' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Command/UpdateEUTaxruleGroupsCommand.php',
         'PrestaShopBundle\\Command\\UpdateLicencesCommand' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Command/UpdateLicencesCommand.php',
+        'PrestaShopBundle\\Command\\UpdateSchemaCommand' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Command/UpdateSchemaCommand.php',
         'PrestaShopBundle\\Controller\\Admin\\AddonsController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/AddonsController.php',
         'PrestaShopBundle\\Controller\\Admin\\AttachementProductController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/AttachementProductController.php',
         'PrestaShopBundle\\Controller\\Admin\\AttributeController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/AttributeController.php',
@@ -2285,6 +2286,7 @@ class ComposerStaticInit299b4a229b14993dba31010fd086193b
         'PrestaShopBundle\\Security\\Role\\DynamicRoleHierarchy' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Role/DynamicRoleHierarchy.php',
         'PrestaShopBundle\\Security\\Voter\\PageVoter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Voter/PageVoter.php',
         'PrestaShopBundle\\Service\\Cache\\Refresh' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Cache/Refresh.php',
+        'PrestaShopBundle\\Service\\Command\\AbstractCommand' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Command/AbstractCommand.php',
         'PrestaShopBundle\\Service\\Csv' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Csv.php',
         'PrestaShopBundle\\Service\\DataProvider\\Admin\\AddonsInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/DataProvider/Admin/AddonsInterface.php',
         'PrestaShopBundle\\Service\\DataProvider\\Admin\\CategoriesProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/DataProvider/Admin/CategoriesProvider.php',
@@ -2296,6 +2298,7 @@ class ComposerStaticInit299b4a229b14993dba31010fd086193b
         'PrestaShopBundle\\Service\\DataProvider\\UserProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/DataProvider/UserProvider.php',
         'PrestaShopBundle\\Service\\DataUpdater\\Admin\\ProductInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/DataUpdater/Admin/ProductInterface.php',
         'PrestaShopBundle\\Service\\Database\\DoctrineNamingStrategy' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Database/DoctrineNamingStrategy.php',
+        'PrestaShopBundle\\Service\\Database\\Upgrade' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Database/Upgrade.php',
         'PrestaShopBundle\\Service\\Hook\\HookContentClassInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Hook/HookContentClassInterface.php',
         'PrestaShopBundle\\Service\\Hook\\HookDispatcher' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Hook/HookDispatcher.php',
         'PrestaShopBundle\\Service\\Hook\\HookEvent' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Hook/HookEvent.php',
@@ -4797,11 +4800,11 @@ class ComposerStaticInit299b4a229b14993dba31010fd086193b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit299b4a229b14993dba31010fd086193b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit8216172486c54ecf6601a2810b92f6ea::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit8216172486c54ecf6601a2810b92f6ea::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit8216172486c54ecf6601a2810b92f6ea::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit8216172486c54ecf6601a2810b92f6ea::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit8216172486c54ecf6601a2810b92f6ea::$classMap;
 
         }, null, ClassLoader::class);
     }
