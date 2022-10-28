@@ -14,6 +14,7 @@ doctrine:
                  dayofyear: DoctrineExtensions\Query\Mysql\DayOfYear
                  div: DoctrineExtensions\Query\Mysql\Div
                  from_unixtime: DoctrineExtensions\Query\Mysql\FromUnixtime
+                 hour: DoctrineExtensions\Query\Mysql\Hour
                  last_day: DoctrineExtensions\Query\Mysql\LastDay
                  minute: DoctrineExtensions\Query\Mysql\Minute
                  now: DoctrineExtensions\Query\Mysql\Now
@@ -42,17 +43,20 @@ doctrine:
                  ceil: DoctrineExtensions\Query\Mysql\Ceil
                  cos: DoctrineExtensions\Query\Mysql\Cos
                  cot: DoctrineExtensions\Query\Mysql\Cot
+                 degrees: DoctrineExtensions\Query\Mysql\Degrees
                  floor: DoctrineExtensions\Query\Mysql\Floor
-                 hour: DoctrineExtensions\Query\Mysql\Hour
+                 log10: DoctrineExtensions\Query\Mysql\Log10
                  pi: DoctrineExtensions\Query\Mysql\Pi
                  power: DoctrineExtensions\Query\Mysql\Power
                  quarter: DoctrineExtensions\Query\Mysql\Quarter
+                 radians: DoctrineExtensions\Query\Mysql\Radians
                  rand: DoctrineExtensions\Query\Mysql\Rand
                  round: DoctrineExtensions\Query\Mysql\Round
                  stddev: DoctrineExtensions\Query\Mysql\StdDev
                  sin: DoctrineExtensions\Query\Mysql\Sin
                  std: DoctrineExtensions\Query\Mysql\Std
                  tan: DoctrineExtensions\Query\Mysql\Tan
+                 variance: DoctrineExtensions\Query\Mysql\Variance
 
              string_functions:
                  ascii: DoctrineExtensions\Query\Mysql\Ascii
@@ -70,7 +74,7 @@ doctrine:
                  ifnull: DoctrineExtensions\Query\Mysql\IfNull
                  least: DoctrineExtensions\Query\Mysql\Least
                  lpad: DoctrineExtensions\Query\Mysql\Lpad
-                 match_against: DoctrineExtensions\Query\Mysql\MatchAgainst
+                 match: DoctrineExtensions\Query\Mysql\MatchAgainst
                  md5: DoctrineExtensions\Query\Mysql\Md5
                  nullif: DoctrineExtensions\Query\Mysql\NullIf
                  radians: DoctrineExtensions\Query\Mysql\Radians
@@ -80,6 +84,7 @@ doctrine:
                  sha1: DoctrineExtensions\Query\Mysql\Sha1
                  sha2: DoctrineExtensions\Query\Mysql\Sha2
                  soundex: DoctrineExtensions\Query\Mysql\Soundex
+                 str_to_date: DoctrineExtensions\Query\Mysql\StrToDate
                  substring_index: DoctrineExtensions\Query\Mysql\SubstringIndex
                  uuid_short: DoctrineExtensions\Query\Mysql\UuidShort
                  hex: DoctrineExtensions\Query\Mysql\Hex

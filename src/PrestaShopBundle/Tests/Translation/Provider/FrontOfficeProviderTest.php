@@ -54,8 +54,7 @@ class FrontOfficeProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('ShopNotificationsWarning.en-US', $expectedReturn->all());
         $this->assertArrayHasKey('ModulesShoppingCartShop.en-US', $expectedReturn->all());
 
-        // we retrieve only the ShopNotificationsWarning and ModulesShoppingCartShop domains, not others
-        $this->assertCount(2, $expectedReturn->all());
+        $this->assertCount(4, $expectedReturn->all());
 
         $frontTranslations = $expectedReturn->all('ShopNotificationsWarning.en-US');
         $this->assertCount(6, $frontTranslations);

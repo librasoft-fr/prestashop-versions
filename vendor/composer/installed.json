@@ -1761,17 +1761,17 @@
     },
     {
         "name": "swiftmailer/swiftmailer",
-        "version": "v5.4.3",
-        "version_normalized": "5.4.3.0",
+        "version": "v5.4.4",
+        "version_normalized": "5.4.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "4cc92842069c2bbc1f28daaaf1d2576ec4dfe153"
+            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/4cc92842069c2bbc1f28daaaf1d2576ec4dfe153",
-            "reference": "4cc92842069c2bbc1f28daaaf1d2576ec4dfe153",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/545ce9136690cea74f98f86fbb9c92dd9ab1a756",
+            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756",
             "shasum": ""
         },
         "require": {
@@ -1780,7 +1780,7 @@
         "require-dev": {
             "mockery/mockery": "~0.9.1"
         },
-        "time": "2016-07-08 11:51:25",
+        "time": "2016-11-24 01:01:23",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2095,17 +2095,17 @@
     },
     {
         "name": "monolog/monolog",
-        "version": "1.21.0",
-        "version_normalized": "1.21.0.0",
+        "version": "1.22.0",
+        "version_normalized": "1.22.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Seldaek/monolog.git",
-            "reference": "f42fbdfd53e306bda545845e4dbfd3e72edb4952"
+            "reference": "bad29cb8d18ab0315e6c477751418a82c850d558"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f42fbdfd53e306bda545845e4dbfd3e72edb4952",
-            "reference": "f42fbdfd53e306bda545845e4dbfd3e72edb4952",
+            "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bad29cb8d18ab0315e6c477751418a82c850d558",
+            "reference": "bad29cb8d18ab0315e6c477751418a82c850d558",
             "shasum": ""
         },
         "require": {
@@ -2116,7 +2116,7 @@
             "psr/log-implementation": "1.0.0"
         },
         "require-dev": {
-            "aws/aws-sdk-php": "^2.4.9",
+            "aws/aws-sdk-php": "^2.4.9 || ^3.0",
             "doctrine/couchdb": "~1.0@dev",
             "graylog2/gelf-php": "~1.0",
             "jakub-onderka/php-parallel-lint": "0.9",
@@ -2141,7 +2141,7 @@
             "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
             "sentry/sentry": "Allow sending log messages to a Sentry server"
         },
-        "time": "2016-07-29 03:23:52",
+        "time": "2016-11-26 00:15:39",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -3628,18 +3628,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_languageselector.git",
-            "reference": "0ba338e318356d12d4fa55aab602cd1e1a47b90c"
+            "reference": "8bfada8b30d646f5aacaded96f711da0d01a09a3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_languageselector/zipball/0ba338e318356d12d4fa55aab602cd1e1a47b90c",
-            "reference": "0ba338e318356d12d4fa55aab602cd1e1a47b90c",
+            "url": "https://api.github.com/repos/PrestaShop/ps_languageselector/zipball/8bfada8b30d646f5aacaded96f711da0d01a09a3",
+            "reference": "8bfada8b30d646f5aacaded96f711da0d01a09a3",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2016-11-15 10:59:01",
+        "time": "2016-11-28 10:44:32",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3798,18 +3798,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_sharebuttons.git",
-            "reference": "8fa5c99c218c1c611a7cfe27c6b44991fc0ffa6b"
+            "reference": "1723693d003db34a931dd7e8fe4b934504a81e03"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_sharebuttons/zipball/8fa5c99c218c1c611a7cfe27c6b44991fc0ffa6b",
-            "reference": "8fa5c99c218c1c611a7cfe27c6b44991fc0ffa6b",
+            "url": "https://api.github.com/repos/PrestaShop/ps_sharebuttons/zipball/1723693d003db34a931dd7e8fe4b934504a81e03",
+            "reference": "1723693d003db34a931dd7e8fe4b934504a81e03",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2016-11-04 16:20:03",
+        "time": "2016-11-25 13:36:11",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -5873,17 +5873,17 @@
     },
     {
         "name": "beberlei/DoctrineExtensions",
-        "version": "v1.0.11",
-        "version_normalized": "1.0.11.0",
+        "version": "v1.0.12",
+        "version_normalized": "1.0.12.0",
         "source": {
             "type": "git",
             "url": "https://github.com/beberlei/DoctrineExtensions.git",
-            "reference": "6dbe65e469e8bdcfe165ea16636b7049af479a24"
+            "reference": "7b5e5ef31e606e6bcd18a6bb7cc6f5b9bbd1fede"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/6dbe65e469e8bdcfe165ea16636b7049af479a24",
-            "reference": "6dbe65e469e8bdcfe165ea16636b7049af479a24",
+            "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/7b5e5ef31e606e6bcd18a6bb7cc6f5b9bbd1fede",
+            "reference": "7b5e5ef31e606e6bcd18a6bb7cc6f5b9bbd1fede",
             "shasum": ""
         },
         "require": {
@@ -5901,7 +5901,7 @@
             "nesbot/carbon": "Alternative to DateTime",
             "zf1/zend-date": "Alternative to DateTime"
         },
-        "time": "2016-07-06 17:12:30",
+        "time": "2016-12-06 02:57:23",
         "type": "library",
         "extra": {
             "branch-alias": {

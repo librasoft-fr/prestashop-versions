@@ -8,6 +8,7 @@ doctrine:
                  #datediff: DoctrineExtensions\Query\Sqlite\DateDiff
                  day: DoctrineExtensions\Query\Sqlite\Day
                  dayname: DoctrineExtensions\Query\Sqlite\DayName
+                 hour: DoctrineExtensions\Query\Sqlite\Hour
                  minute: DoctrineExtensions\Query\Sqlite\Minute
                  #month: DoctrineExtensions\Query\Sqlite\Month
                  #monthname: DoctrineExtensions\Query\Sqlite\MonthName
@@ -35,7 +36,7 @@ doctrine:
 #                 group_concat: DoctrineExtensions\Query\Sqlite\GroupConcat
 #                 ifelse: DoctrineExtensions\Query\Sqlite\IfElse
                  ifnull: DoctrineExtensions\Query\Sqlite\IfNull
-#                 match_against: DoctrineExtensions\Query\Sqlite\MatchAgainst
+#                 match: DoctrineExtensions\Query\Sqlite\MatchAgainst
 #                 md5: DoctrineExtensions\Query\Sqlite\Md5
 #                 nullif: DoctrineExtensions\Query\Sqlite\NullIf
 #                 radians: DoctrineExtensions\Query\Sqlite\Radians
