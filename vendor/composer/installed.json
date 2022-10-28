@@ -5120,17 +5120,17 @@
     },
     {
         "name": "maxmind-db/reader",
-        "version": "v1.1.1",
-        "version_normalized": "1.1.1.0",
+        "version": "v1.1.2",
+        "version_normalized": "1.1.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/maxmind/MaxMind-DB-Reader-php.git",
-            "reference": "8da3b4fcd439779d4b16bba0a4ba98365f78d788"
+            "reference": "571279051c3339414dc91b422fb61af540c3431d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/maxmind/MaxMind-DB-Reader-php/zipball/8da3b4fcd439779d4b16bba0a4ba98365f78d788",
-            "reference": "8da3b4fcd439779d4b16bba0a4ba98365f78d788",
+            "url": "https://api.github.com/repos/maxmind/MaxMind-DB-Reader-php/zipball/571279051c3339414dc91b422fb61af540c3431d",
+            "reference": "571279051c3339414dc91b422fb61af540c3431d",
             "shasum": ""
         },
         "require": {
@@ -5141,12 +5141,17 @@
             "satooshi/php-coveralls": "1.0.*",
             "squizlabs/php_codesniffer": "2.*"
         },
-        "time": "2016-09-15 21:26:50",
+        "suggest": {
+            "ext-bcmath": "bcmath or gmp is requred for decoding larger integers with the pure PHP decoder",
+            "ext-gmp": "bcmath or gmp is requred for decoding larger integers with the pure PHP decoder",
+            "ext-maxminddb": "A C-based database decoder that provides significantly faster lookups"
+        },
+        "time": "2016-11-21 21:33:24",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
-            "psr-0": {
-                "MaxMind": "src/"
+            "psr-4": {
+                "MaxMind\\Db\\": "src/MaxMind/Db"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -5276,17 +5281,17 @@
     },
     {
         "name": "matthiasmullie/minify",
-        "version": "1.3.41",
-        "version_normalized": "1.3.41.0",
+        "version": "1.3.42",
+        "version_normalized": "1.3.42.0",
         "source": {
             "type": "git",
             "url": "https://github.com/matthiasmullie/minify.git",
-            "reference": "101a56354da8de185eb3464bb27f05cec798bb89"
+            "reference": "b473affbb76ae6ec4e46d368b5081b5bfcdd3ed2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/101a56354da8de185eb3464bb27f05cec798bb89",
-            "reference": "101a56354da8de185eb3464bb27f05cec798bb89",
+            "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/b473affbb76ae6ec4e46d368b5081b5bfcdd3ed2",
+            "reference": "b473affbb76ae6ec4e46d368b5081b5bfcdd3ed2",
             "shasum": ""
         },
         "require": {
@@ -5295,10 +5300,11 @@
             "php": ">=5.3.0"
         },
         "require-dev": {
+            "friendsofphp/php-cs-fixer": "~1.0",
             "matthiasmullie/scrapbook": "~1.0",
             "phpunit/phpunit": "~4.8"
         },
-        "time": "2016-11-11 20:29:29",
+        "time": "2016-11-23 10:16:14",
         "bin": [
             "bin/minifycss",
             "bin/minifyjs"

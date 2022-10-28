@@ -32,6 +32,7 @@ return array(
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'OnBoarding\\' => array($baseDir . '/modules/welcome/OnBoarding'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'MaxMind\\Db\\' => array($vendorDir . '/maxmind-db/reader/src/MaxMind/Db'),
     'MaxMind\\' => array($vendorDir . '/maxmind/web-service-common/src'),
     'MatthiasMullie\\PathConverter\\' => array($vendorDir . '/matthiasmullie/path-converter/src'),
     'MatthiasMullie\\Minify\\' => array($vendorDir . '/matthiasmullie/minify/src'),
