@@ -42,7 +42,7 @@ class Ps_Contactinfo extends Module implements WidgetInterface
     {
         $this->name = 'ps_contactinfo';
         $this->author = 'PrestaShop';
-        $this->version = '3.2.0';
+        $this->version = '3.3.0';
 
         $this->bootstrap = true;
         parent::__construct();
@@ -72,7 +72,7 @@ class Ps_Contactinfo extends Module implements WidgetInterface
 
         if (preg_match('/^displayNav\d*$/', $hookName)) {
             $template_file = $this->templates['light'];
-        } elseif ($hookName == 'displayLeftColumn') {
+        } elseif ($hookName == 'displayLeftColumn' || $hookName == 'displayRightColumn') {
             $template_file = $this->templates['rich'];
         } else {
             $template_file = $this->templates['default'];
@@ -87,6 +87,9 @@ class Ps_Contactinfo extends Module implements WidgetInterface
     {
         $address = $this->context->shop->getAddress();
 
+        $is_state_multilang = !empty(State::$definition['multilang']);
+        $state_name = (new State($address->id_state))->name;
+
         $contact_infos = [
             'company' => Configuration::get('PS_SHOP_NAME'),
             'address' => [
@@ -95,7 +98,7 @@ class Ps_Contactinfo extends Module implements WidgetInterface
                 'address2' => $address->address2,
                 'postcode' => $address->postcode,
                 'city' => $address->city,
-                'state' => (new State($address->id_state))->name[$this->context->language->id],
+                'state' => $is_state_multilang ? $state_name[$this->context->language->id] : $state_name,
                 'country' => (new Country($address->id_country))->name[$this->context->language->id],
             ],
             'phone' => Configuration::get('PS_SHOP_PHONE'),

@@ -2,6 +2,7 @@ doctrine:
      orm:
          dql:
              datetime_functions:
+                 addtime: DoctrineExtensions\Query\Mysql\AddTime
                  convert_tz: DoctrineExtensions\Query\Mysql\ConvertTz
                  date: DoctrineExtensions\Query\Mysql\Date
                  date_format: DoctrineExtensions\Query\Mysql\DateFormat
@@ -16,6 +17,7 @@ doctrine:
                  from_unixtime: DoctrineExtensions\Query\Mysql\FromUnixtime
                  hour: DoctrineExtensions\Query\Mysql\Hour
                  last_day: DoctrineExtensions\Query\Mysql\LastDay
+                 makedate: DoctrineExtensions\Query\Mysql\MakeDate
                  minute: DoctrineExtensions\Query\Mysql\Minute
                  now: DoctrineExtensions\Query\Mysql\Now
                  month: DoctrineExtensions\Query\Mysql\Month
@@ -81,6 +83,7 @@ doctrine:
                  degrees: DoctrineExtensions\Query\Mysql\Degrees
                  field: DoctrineExtensions\Query\Mysql\Field
                  find_in_set: DoctrineExtensions\Query\Mysql\FindInSet
+                 format: DoctrineExtensions\Query\Mysql\Format
                  greatest: DoctrineExtensions\Query\Mysql\Greatest
                  group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
                  hex: DoctrineExtensions\Query\Mysql\Hex
@@ -95,11 +98,14 @@ doctrine:
                  is_ipv4_compat: DoctrineExtensions\Query\Mysql\IsIpv4Compat
                  is_ipv4_mapped: DoctrineExtensions\Query\Mysql\IsIpv4Mapped
                  is_ipv6: DoctrineExtensions\Query\Mysql\IsIpv6
+                 lag: DoctrineExtensions\Query\Mysql\Lag
+                 lead: DoctrineExtensions\Query\Mysql\Lead
                  least: DoctrineExtensions\Query\Mysql\Least
                  lpad: DoctrineExtensions\Query\Mysql\Lpad
                  match: DoctrineExtensions\Query\Mysql\MatchAgainst
                  md5: DoctrineExtensions\Query\Mysql\Md5
                  nullif: DoctrineExtensions\Query\Mysql\NullIf
+                 over: DoctrineExtensions\Query\Mysql\Over
                  radians: DoctrineExtensions\Query\Mysql\Radians
                  regexp: DoctrineExtensions\Query\Mysql\Regexp
                  replace: DoctrineExtensions\Query\Mysql\Replace

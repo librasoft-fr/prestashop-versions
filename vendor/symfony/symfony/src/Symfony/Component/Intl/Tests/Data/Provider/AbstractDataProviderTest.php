@@ -341,6 +341,7 @@ abstract class AbstractDataProviderTest extends TestCase
         'fy',
         'fy_NL',
         'ga',
+        'ga_GB',
         'ga_IE',
         'gd',
         'gd_GB',
@@ -703,7 +704,7 @@ abstract class AbstractDataProviderTest extends TestCase
 
     protected function setUp()
     {
-        Locale::setDefault('en');
+        \Locale::setDefault('en');
         Locale::setDefaultFallback('en');
     }
 

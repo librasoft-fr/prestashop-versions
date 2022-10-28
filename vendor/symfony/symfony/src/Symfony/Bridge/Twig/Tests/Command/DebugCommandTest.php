@@ -26,7 +26,7 @@ class DebugCommandTest extends TestCase
         $ret = $tester->execute([], ['decorated' => false]);
 
         $this->assertEquals(0, $ret, 'Returns 0 in case of success');
-        $this->assertContains('Functions', trim($tester->getDisplay()));
+        $this->assertStringContainsString('Functions', trim($tester->getDisplay()));
     }
 
     public function testLineSeparatorInLoaderPaths()
@@ -59,7 +59,7 @@ Loader Paths
 TXT;
 
         $this->assertEquals(0, $ret, 'Returns 0 in case of success');
-        $this->assertContains($loaderPaths, trim($tester->getDisplay(true)));
+        $this->assertStringContainsString($loaderPaths, trim($tester->getDisplay(true)));
     }
 
     public function testWithGlobals()
@@ -70,7 +70,7 @@ TXT;
 
         $display = $tester->getDisplay();
 
-        $this->assertContains(\json_encode($message), $display);
+        $this->assertStringContainsString(json_encode($message), $display);
     }
 
     public function testWithGlobalsJson()
@@ -81,7 +81,7 @@ TXT;
         $tester->execute(['--format' => 'json'], ['decorated' => true]);
 
         $display = $tester->getDisplay();
-        $display = \json_decode($display, true);
+        $display = json_decode($display, true);
 
         $this->assertSame($globals, $display['globals']);
     }
@@ -91,11 +91,11 @@ TXT;
         $tester = $this->createCommandTester([]);
         $tester->execute(['--format' => 'json'], ['decorated' => false]);
         $display = $tester->getDisplay();
-        $display1 = \json_decode($display, true);
+        $display1 = json_decode($display, true);
 
         $tester->execute(['filter' => 'date', '--format' => 'json'], ['decorated' => false]);
         $display = $tester->getDisplay();
-        $display2 = \json_decode($display, true);
+        $display2 = json_decode($display, true);
 
         $this->assertNotSame($display1, $display2);
     }

@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Command\DebugCommand;
 use Symfony\Component\Form\DependencyInjection\FormPass;
 use Symfony\Component\Form\FormRegistry;
@@ -157,12 +156,10 @@ class FormPassTest extends TestCase
         ];
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage extended-type attribute, none was configured for the "my.type_extension" service
-     */
     public function testAddTaggedFormTypeExtensionWithoutExtendedTypeAttribute()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('extended-type attribute, none was configured for the "my.type_extension" service');
         $container = $this->createContainerBuilder();
 
         $container->setDefinition('form.extension', $this->createExtensionDefinition());
@@ -271,12 +268,4 @@ class FormPassTest extends TestCase
 
         return $container;
     }
-}
-
-class FormPassTest_Type1 extends AbstractType
-{
-}
-
-class FormPassTest_Type2 extends AbstractType
-{
 }

@@ -17,7 +17,7 @@ use Symfony\Component\Console\Tester\ApplicationTester;
 /**
  * @group functional
  */
-class ContainerDebugCommandTest extends WebTestCase
+class ContainerDebugCommandTest extends AbstractWebTestCase
 {
     public function testDumpContainerIfNotExists()
     {
@@ -44,7 +44,7 @@ class ContainerDebugCommandTest extends WebTestCase
         $tester = new ApplicationTester($application);
         $tester->run(['command' => 'debug:container']);
 
-        $this->assertContains('public', $tester->getDisplay());
+        $this->assertStringContainsString('public', $tester->getDisplay());
     }
 
     public function testPrivateAlias()
@@ -56,11 +56,11 @@ class ContainerDebugCommandTest extends WebTestCase
 
         $tester = new ApplicationTester($application);
         $tester->run(['command' => 'debug:container', '--show-private' => true]);
-        $this->assertContains('public', $tester->getDisplay());
-        $this->assertContains('private_alias', $tester->getDisplay());
+        $this->assertStringContainsString('public', $tester->getDisplay());
+        $this->assertStringContainsString('private_alias', $tester->getDisplay());
 
         $tester->run(['command' => 'debug:container']);
-        $this->assertContains('public', $tester->getDisplay());
-        $this->assertNotContains('private_alias', $tester->getDisplay());
+        $this->assertStringContainsString('public', $tester->getDisplay());
+        $this->assertStringNotContainsString('private_alias', $tester->getDisplay());
     }
 }

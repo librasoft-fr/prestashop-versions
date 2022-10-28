@@ -40,11 +40,9 @@ class DependencyInjectionExtensionTest extends TestCase
         $this->assertSame([$typeExtension3], $extension->getTypeExtensions('other'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Form\Exception\InvalidArgumentException
-     */
     public function testThrowExceptionForInvalidExtendedType()
     {
+        $this->expectException('Symfony\Component\Form\Exception\InvalidArgumentException');
         $extensions = [
             'test' => new \ArrayIterator([new DummyExtension('unmatched')]),
         ];
@@ -79,11 +77,11 @@ class DependencyInjectionExtensionTest extends TestCase
 
     /**
      * @group legacy
-     * @expectedException \Symfony\Component\Form\Exception\InvalidArgumentException
      * @expectedDeprecation Passing four arguments to the Symfony\Component\Form\Extension\DependencyInjection\DependencyInjectionExtension::__construct() method is deprecated since Symfony 3.3 and will be disallowed in Symfony 4.0. The new constructor only accepts three arguments.
      */
     public function testLegacyThrowExceptionForInvalidExtendedType()
     {
+        $this->expectException('Symfony\Component\Form\Exception\InvalidArgumentException');
         $formTypeExtension = new DummyExtension('unmatched');
 
         $container = new ContainerBuilder();

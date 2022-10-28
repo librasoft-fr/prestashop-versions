@@ -1,5 +1,5 @@
 {
-    "Version": "2.1.48.17",
+    "Version": "36",
     "Names": {
         "AC": "Ynys Ascension",
         "AD": "Andorra",
@@ -18,7 +18,7 @@
         "AW": "Aruba",
         "AX": "Ynysoedd Åland",
         "AZ": "Azerbaijan",
-        "BA": "Bosnia & Herzegovina",
+        "BA": "Bosnia a Herzegovina",
         "BB": "Barbados",
         "BD": "Bangladesh",
         "BE": "Gwlad Belg",
@@ -146,7 +146,7 @@
         "MF": "Saint Martin",
         "MG": "Madagascar",
         "MH": "Ynysoedd Marshall",
-        "MK": "Macedonia",
+        "MK": "Gogledd Macedonia",
         "ML": "Mali",
         "MM": "Myanmar (Burma)",
         "MN": "Mongolia",

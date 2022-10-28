@@ -52,7 +52,7 @@ class CssToAttributeConverter extends AbstractHtmlProcessor
     /**
      * Maps the CSS from the style nodes to visual HTML attributes.
      *
-     * @return CssToAttributeConverter fluent interface
+     * @return self fluent interface
      */
     public function convertCssToVisualAttributes()
     {
@@ -72,9 +72,7 @@ class CssToAttributeConverter extends AbstractHtmlProcessor
      */
     private function getAllNodesWithStyleAttribute()
     {
-        $xPath = new \DOMXPath($this->domDocument);
-
-        return $xPath->query('//*[@style]');
+        return $this->xPath->query('//*[@style]');
     }
 
     /**

@@ -2189,14 +2189,14 @@ abstract class AbstractLayoutTest extends FormIntegrationTestCase
 
     public function testUrlWithDefaultProtocol()
     {
-        $url = 'http://www.google.com?foo1=bar1&foo2=bar2';
+        $url = 'http://www.example.com?foo1=bar1&foo2=bar2';
         $form = $this->factory->createNamed('name', 'Symfony\Component\Form\Extension\Core\Type\UrlType', $url, ['default_protocol' => 'http']);
 
         $this->assertWidgetMatchesXpath($form->createView(), [],
 '/input
     [@type="text"]
     [@name="name"]
-    [@value="http://www.google.com?foo1=bar1&foo2=bar2"]
+    [@value="http://www.example.com?foo1=bar1&foo2=bar2"]
     [@inputmode="url"]
 '
         );
@@ -2204,14 +2204,14 @@ abstract class AbstractLayoutTest extends FormIntegrationTestCase
 
     public function testUrlWithoutDefaultProtocol()
     {
-        $url = 'http://www.google.com?foo1=bar1&foo2=bar2';
+        $url = 'http://www.example.com?foo1=bar1&foo2=bar2';
         $form = $this->factory->createNamed('name', 'Symfony\Component\Form\Extension\Core\Type\UrlType', $url, ['default_protocol' => null]);
 
         $this->assertWidgetMatchesXpath($form->createView(), [],
 '/input
     [@type="url"]
     [@name="name"]
-    [@value="http://www.google.com?foo1=bar1&foo2=bar2"]
+    [@value="http://www.example.com?foo1=bar1&foo2=bar2"]
 '
         );
     }
@@ -2395,7 +2395,7 @@ abstract class AbstractLayoutTest extends FormIntegrationTestCase
 
         $html = $this->renderWidget($form->createView());
 
-        $this->assertNotContains('foo="', $html);
+        $this->assertStringNotContainsString('foo="', $html);
     }
 
     public function testButtonAttributes()
@@ -2431,7 +2431,7 @@ abstract class AbstractLayoutTest extends FormIntegrationTestCase
 
         $html = $this->renderWidget($form->createView());
 
-        $this->assertNotContains('foo="', $html);
+        $this->assertStringNotContainsString('foo="', $html);
     }
 
     public function testTextareaWithWhitespaceOnlyContentRetainsValue()
@@ -2440,7 +2440,7 @@ abstract class AbstractLayoutTest extends FormIntegrationTestCase
 
         $html = $this->renderWidget($form->createView());
 
-        $this->assertContains('>  </textarea>', $html);
+        $this->assertStringContainsString('>  </textarea>', $html);
     }
 
     public function testTextareaWithWhitespaceOnlyContentRetainsValueWhenRenderingForm()
@@ -2451,7 +2451,7 @@ abstract class AbstractLayoutTest extends FormIntegrationTestCase
 
         $html = $this->renderForm($form->createView());
 
-        $this->assertContains('>  </textarea>', $html);
+        $this->assertStringContainsString('>  </textarea>', $html);
     }
 
     public function testWidgetContainerAttributeHiddenIfFalse()
@@ -2463,7 +2463,7 @@ abstract class AbstractLayoutTest extends FormIntegrationTestCase
         $html = $this->renderWidget($form->createView());
 
         // no foo
-        $this->assertNotContains('foo="', $html);
+        $this->assertStringNotContainsString('foo="', $html);
     }
 
     public function testTranslatedAttributes()
