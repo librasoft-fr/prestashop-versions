@@ -52,7 +52,7 @@ class Blocktopmenu extends Module
 	{
 		$this->name = 'blocktopmenu';
 		$this->tab = 'front_office_features';
-		$this->version = 1.6;
+		$this->version = 1.7;
 		$this->author = 'PrestaShop';
 
 		parent::__construct();
@@ -72,12 +72,16 @@ class Blocktopmenu extends Module
 			!$this->registerHook('actionObjectCategoryAddAfter') ||
 			!$this->registerHook('actionObjectCmsUpdateAfter') ||
 			!$this->registerHook('actionObjectCmsDeleteAfter') ||
+			!$this->registerHook('actionObjectCmsAddAfter') ||
 			!$this->registerHook('actionObjectSupplierUpdateAfter') ||
 			!$this->registerHook('actionObjectSupplierDeleteAfter') ||
+			!$this->registerHook('actionObjectSupplierAddAfter') ||
 			!$this->registerHook('actionObjectManufacturerUpdateAfter') ||
 			!$this->registerHook('actionObjectManufacturerDeleteAfter') ||
+			!$this->registerHook('actionObjectManufacturerAddAfter') ||
 			!$this->registerHook('actionObjectProductUpdateAfter') ||
 			!$this->registerHook('actionObjectProductDeleteAfter') ||
+			!$this->registerHook('actionObjectProductAddAfter') ||
 			!$this->registerHook('categoryUpdate') ||
 			!$this->registerHook('actionShopDataDuplication') ||
 			!$this->installDB())
@@ -287,51 +291,83 @@ class Blocktopmenu extends Module
 								<br/>
 								<a href="#" id="removeItem" style="border: 1px solid rgb(170, 170, 170); margin: 2px; padding: 2px; text-align: center; display: block; text-decoration: none; background-color: rgb(250, 250, 250); color: rgb(18, 52, 86);">&lt;&lt; '.$this->l('Remove').'</a>
 							</td>
+							<td style="vertical-align:top;padding:5px 15px;">
+								<h4 style="margin-top:5px;">'.$this->l('Change position').'</h4> 
+								<a href="#" id="menuOrderUp" class="button" style="font-size:20px;display:block;">&uarr;</a><br/>
+								<a href="#" id="menuOrderDown" class="button" style="font-size:20px;display:block;">&darr;</a><br/>
+							</td>
 						</tr>
 					</tbody>
 				</table>
 				<div class="clear">&nbsp;</div>
 				<script type="text/javascript">
+				function add()
+				{
+					$("#availableItems option:selected").each(function(i){
+						var val = $(this).val();
+						var text = $(this).text();
+						text = text.replace(/(^\s*)|(\s*$)/gi,"");
+						if (val == "PRODUCT")
+						{
+							val = prompt("'.$this->l('Set ID product').'");
+							if (val == null || val == "" || isNaN(val))
+								return;
+							text = "'.$this->l('Product ID').' "+val;
+							val = "PRD"+val;
+						}
+						$("#items").append("<option value=\""+val+"\">"+text+"</option>");
+					});
+					serialize();
+					return false;
+				}
+
+				function remove()
+				{
+					$("#items option:selected").each(function(i){
+						$(this).remove();
+					});
+					serialize();
+					return false;
+				}
+
+				function serialize()
+				{
+					var options = "";
+					$("#items option").each(function(i){
+						options += $(this).val() + ",";
+					});
+					$("#itemsInput").val(options.substr(0, options.length - 1));
+				}
+
+				function move(up)
+				{
+					var tomove = $("#items option:selected");
+					if (tomove.length >1)
+					{
+						alert(\''.Tools::htmlentitiesUTF8($this->l('Please select just one item')).'\');
+						return false;
+					}
+					if (up)
+						tomove.prev().insertAfter(tomove);
+					else
+						tomove.next().insertBefore(tomove);
+					serialize();
+					return false;
+				}
+
 				$(document).ready(function(){
 					$("#addItem").click(add);
 					$("#availableItems").dblclick(add);
 					$("#removeItem").click(remove);
 					$("#items").dblclick(remove);
-					function add()
-					{
-						$("#availableItems option:selected").each(function(i){
-							var val = $(this).val();
-							var text = $(this).text();
-							text = text.replace(/(^\s*)|(\s*$)/gi,"");
-							if (val == "PRODUCT")
-							{
-								val = prompt("'.$this->l('Set ID product').'");
-								if (val == null || val == "" || isNaN(val))
-									return;
-								text = "'.$this->l('Product ID').' "+val;
-								val = "PRD"+val;
-							}
-							$("#items").append("<option value=\""+val+"\">"+text+"</option>");
-						});
-						serialize();
-						return false;
-					}
-					function remove()
-					{
-						$("#items option:selected").each(function(i){
-							$(this).remove();
-						});
-						serialize();
-						return false;
-					}
-					function serialize()
-					{
-						var options = "";
-						$("#items option").each(function(i){
-							options += $(this).val()+",";
-						});
-						$("#itemsInput").val(options.substr(0, options.length - 1));
-					}
+					$("#menuOrderUp").click(function(e){
+						e.preventDefault();
+						move(true);
+					});
+					$("#menuOrderDown").click(function(e){
+						e.preventDefault();
+						move();
+					});
 				});
 				</script>
 				<label for="s">'.$this->l('Search Bar').'</label>
@@ -536,7 +572,7 @@ class Blocktopmenu extends Module
 			switch (substr($item, 0, strlen($value[1])))
 			{
 				case 'CAT':
-					$this->getCategory((int)$id);
+					$this->getCategory($id, $id_lang, $id_shop);
 					break;
 
 				case 'PRD':
@@ -651,9 +687,7 @@ class Blocktopmenu extends Module
 
 		if (isset($children) && count($children))
 			foreach ($children as $child)
-			{
 				$this->getCategoryOption((int)$child['id_category'], (int)$id_lang, (int)$child['id_shop']);
-			}
 	}
 
 	private function getCategory($id_category, $id_lang = false, $id_shop = false)
@@ -858,6 +892,11 @@ class Blocktopmenu extends Module
 		$this->clearMenuCache();
 	}
 	
+	public function hookActionObjectCmsAddAfter($params)
+	{
+		$this->clearMenuCache();
+	}
+	
 	public function hookActionObjectSupplierUpdateAfter($params)
 	{
 		$this->clearMenuCache();
@@ -866,7 +905,12 @@ class Blocktopmenu extends Module
 	public function hookActionObjectSupplierDeleteAfter($params)
 	{
 		$this->clearMenuCache();
-	}	
+	}
+	
+	public function hookActionObjectSupplierAddAfter($params)
+	{
+		$this->clearMenuCache();
+	}
 
 	public function hookActionObjectManufacturerUpdateAfter($params)
 	{
@@ -878,12 +922,22 @@ class Blocktopmenu extends Module
 		$this->clearMenuCache();
 	}
 	
+	public function hookActionObjectManufacturerAddAfter($params)
+	{
+		$this->clearMenuCache();
+	}
+	
 	public function hookActionObjectProductUpdateAfter($params)
 	{
 		$this->clearMenuCache();
 	}
 	
 	public function hookActionObjectProductDeleteAfter($params)
+	{
+		$this->clearMenuCache();
+	}
+	
+	public function hookActionObjectProductAddAfter($params)
 	{
 		$this->clearMenuCache();
 	}

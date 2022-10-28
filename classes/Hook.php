@@ -56,6 +56,8 @@ class HookCore extends ObjectModel
 	 */
 	public static $executed_hooks = array();
 
+	public static $native_module;
+
 	/**
 	 * @see ObjectModel::$definition
 	 */
@@ -316,7 +318,7 @@ class HookCore extends ObjectModel
 				if (Validate::isLoadedObject($context->country))
 					$sql->where('(h.name = "displayPayment" AND (SELECT id_country FROM '._DB_PREFIX_.'module_country mc WHERE mc.id_module = m.id_module AND id_country = '.(int)$context->country->id.' AND id_shop = '.(int)$context->shop->id.' LIMIT 1) = '.(int)$context->country->id.')');
 				if (Validate::isLoadedObject($context->currency))
-					$sql->where('(h.name = "displayPayment" AND (SELECT id_currency FROM '._DB_PREFIX_.'module_currency mcr WHERE mcr.id_module = m.id_module AND id_currency IN ('.(int)$context->currency->id.', -2) LIMIT 1) IN ('.(int)$context->currency->id.', -2))');
+					$sql->where('(h.name = "displayPayment" AND (SELECT id_currency FROM '._DB_PREFIX_.'module_currency mcr WHERE mcr.id_module = m.id_module AND id_currency IN ('.(int)$context->currency->id.', -1, -2) LIMIT 1) IN ('.(int)$context->currency->id.', -1, -2))');
 			}
 			if (Validate::isLoadedObject($context->shop))
 				$sql->where('hm.id_shop = '.(int)$context->shop->id);
@@ -324,7 +326,10 @@ class HookCore extends ObjectModel
 			if ($frontend)
 			{
 				$sql->leftJoin('module_group', 'mg', 'mg.`id_module` = m.`id_module`');
-				$sql->where('mg.`id_group` IN ('.implode(', ', $groups).')');
+				if (Validate::isLoadedObject($context->shop))
+					$sql->where('mg.id_shop = '.((int)$context->shop->id).' AND  mg.`id_group` IN ('.implode(', ', $groups).')');
+				else
+					$sql->where('mg.`id_group` IN ('.implode(', ', $groups).')');
 				$sql->groupBy('hm.id_hook, hm.id_module');
 			}
 
@@ -388,6 +393,10 @@ class HookCore extends ObjectModel
 	 */
 	public static function exec($hook_name, $hook_args = array(), $id_module = null, $array_return = false, $check_exceptions = true)
 	{
+		static $disable_non_native_modules = null;
+		if ($disable_non_native_modules === null)
+			$disable_non_native_modules = (bool)Configuration::get('PS_DISABLE_NON_NATIVE_MODULE');
+
 		// Check arguments validity
 		if (($id_module && !is_numeric($id_module)) || !Validate::isHookName($hook_name))
 			throw new PrestaShopException('Invalid id_module or hook_name');
@@ -416,12 +425,19 @@ class HookCore extends ObjectModel
 		// Look on modules list
 		$altern = 0;
 		$output = '';
-						
+
+		if ($disable_non_native_modules && !isset(Hook::$native_module))
+			Hook::$native_module = Module::getNativeModuleList();
+
 		foreach ($module_list as $array)
 		{
 			// Check errors
 			if ($id_module && $id_module != $array['id_module'])
 				continue;
+
+			if ((bool)$disable_non_native_modules && Hook::$native_module && count(Hook::$native_module) && !in_array($array['module'], self::$native_module))
+				continue;
+
 			if (!($moduleInstance = Module::getInstanceByName($array['module'])))
 				continue;
 

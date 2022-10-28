@@ -305,17 +305,43 @@ class GroupCore extends ObjectModel
 	public static function getCurrent()
 	{
 		static $groups = array();
+
 		$customer = Context::getContext()->customer;
 		if (Validate::isLoadedObject($customer))
+		{
 			$id_group = (int)$customer->id_default_group;
+			$group = new Group((int)$id_group);
+			if (!$group->isAssociatedToShop(Context::getContext()->shop->id))
+				$group = new Group((int)Configuration::get('PS_CUSTOMER_GROUP'));
+		}
 		else
 			$id_group = (int)Configuration::get('PS_UNIDENTIFIED_GROUP');
-		
+
+		if (!isset($groups[$id_group]) && isset($group))
+			$groups[$id_group] = $group;
+
 		if (!isset($groups[$id_group]))
 			$groups[$id_group] = new Group($id_group);
 
 		return $groups[$id_group];
 	}
+
+	/**
+	  * Light back office search for Group
+	  *
+	  * @param integer $id_lang Language ID
+	  * @param string $query Searched string
+	  * @param boolean $unrestricted allows search without lang and includes first group and exact match
+	  * @return array Corresponding groupes
+	  */
+	public static function searchByName($query)
+	{
+		return Db::getInstance()->getRow('
+			SELECT g.*, gl.*
+			FROM `'._DB_PREFIX_.'group` g
+			LEFT JOIN `'._DB_PREFIX_.'group_lang` gl
+				ON (g.`id_group` = gl.`id_group`)
+			WHERE `name` LIKE \''.pSQL($query).'\'
+		');
+	}
 }
-
-

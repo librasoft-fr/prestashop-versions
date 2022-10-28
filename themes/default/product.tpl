@@ -183,7 +183,7 @@ var fieldRequired = '{l s='Please fill in all the required fields before saving 
 		<div id="image-block">
 		{if $have_image}
 			<span id="view_full_size">
-				<img src="{$link->getImageLink($product->link_rewrite, $cover.id_image, 'large_default')|escape:'html'}"{if $jqZoomEnabled && $have_image} class="jqzoom"{/if} title="{$product->name|escape:'htmlall':'UTF-8'}" alt="{$product->name|escape:'htmlall':'UTF-8'}" id="bigpic" width="{$largeSize.width}" height="{$largeSize.height}"/>
+				<img src="{$link->getImageLink($product->link_rewrite, $cover.id_image, 'large_default')|escape:'html'}"{if $jqZoomEnabled && $have_image} class="jqzoom"{/if} title="{if !empty($cover.legend)}{$cover.legend|escape:'htmlall':'UTF-8'}{else}{$product->name|escape:'htmlall':'UTF-8'}{/if}" alt="{if !empty($cover.legend)}{$cover.legend|escape:'htmlall':'UTF-8'}{else}{$product->name|escape:'htmlall':'UTF-8'}{/if}" id="bigpic" width="{$largeSize.width}" height="{$largeSize.height}"/>
 				<span class="span_link">{l s='Maximize'}</span>
 			</span>
 		{else}
@@ -199,16 +199,21 @@ var fieldRequired = '{l s='Please fill in all the required fields before saving 
 		{if isset($images) && count($images) > 3}<span class="view_scroll_spacer"><a id="view_scroll_left" class="hidden" title="{l s='Other views'}" href="javascript:{ldelim}{rdelim}">{l s='Previous'}</a></span>{/if}
 		<div id="thumbs_list">
 			<ul id="thumbs_list_frame">
-				{if isset($images)}
-					{foreach from=$images item=image name=thumbnails}
+			{if isset($images)}
+				{foreach from=$images item=image name=thumbnails}
 					{assign var=imageIds value="`$product->id`-`$image.id_image`"}
+					{if !empty($image.legend)}
+						{assign var=imageTitlte value=$image.legend|escape:'htmlall':'UTF-8'}
+					{else}
+						{assign var=imageTitlte value=$product->name|escape:'htmlall':'UTF-8'}
+					{/if}
 					<li id="thumbnail_{$image.id_image}">
-						<a href="{$link->getImageLink($product->link_rewrite, $imageIds, 'thickbox_default')|escape:'html'}" rel="other-views" class="thickbox{if $smarty.foreach.thumbnails.first} shown{/if}" title="{$image.legend|htmlspecialchars}">
-							<img id="thumb_{$image.id_image}" src="{$link->getImageLink($product->link_rewrite, $imageIds, 'medium_default')|escape:'html'}" alt="{$image.legend|htmlspecialchars}" height="{$mediumSize.height}" width="{$mediumSize.width}" />
+						<a href="{$link->getImageLink($product->link_rewrite, $imageIds, 'thickbox_default')|escape:'html'}" rel="other-views" class="thickbox{if $smarty.foreach.thumbnails.first} shown{/if}" title="{$imageTitlte}">
+							<img id="thumb_{$image.id_image}" src="{$link->getImageLink($product->link_rewrite, $imageIds, 'medium_default')|escape:'html'}" alt="{$imageTitlte}" title="{$imageTitlte}" height="{$mediumSize.height}" width="{$mediumSize.width}" />
 						</a>
 					</li>
-					{/foreach}
-				{/if}
+				{/foreach}
+			{/if}
 			</ul>
 		</div>
 		{if isset($images) && count($images) > 3}<a id="view_scroll_right" title="{l s='Other views'}" href="javascript:{ldelim}{rdelim}">{l s='Next'}</a>{/if}
@@ -454,34 +459,42 @@ var fieldRequired = '{l s='Please fill in all the required fields before saving 
 </ul>
 <div id="quantityDiscount">
 	<table class="std">
-        <thead>
-            <tr>
-                <th>{l s='Product'}</th>
-                <th>{l s='From (qty)'}</th>
-                <th>{l s='Discount'}</th>
-            </tr>
-        </thead>
-		<tbody>
-            {foreach from=$quantity_discounts item='quantity_discount' name='quantity_discounts'}
-            <tr id="quantityDiscount_{$quantity_discount.id_product_attribute}" class="quantityDiscount_{$quantity_discount.id_product_attribute}">
-                <td>
-                    {if (isset($quantity_discount.attributes) && ($quantity_discount.attributes))}
-                        {$product->getProductName($quantity_discount.id_product, $quantity_discount.id_product_attribute)}
-                    {else}
-                        {$product->getProductName($quantity_discount.id_product)}
-                    {/if}
-                </td>
-                <td>{$quantity_discount.quantity|intval}</td>
-                <td>
-                    {if $quantity_discount.price >= 0 OR $quantity_discount.reduction_type == 'amount'}
-                       -{convertPrice price=$quantity_discount.real_value|floatval}
-                   {else}
-                       -{$quantity_discount.real_value|floatval}%
-                   {/if}
-                </td>
-            </tr>
-            {/foreach}
-        </tbody>
+	<thead>
+		<tr>
+			<th>{l s='Product'}</th>
+			<th>{l s='From (qty)'}</th>
+			<th>{if Configuration::get('PS_DISPLAY_DISCOUNT_PRICE')}{l s='Price'}{else}{l s='Discount'}{/if}</th>
+		</tr>
+	</thead>
+	<tbody>
+		{foreach from=$quantity_discounts item='quantity_discount' name='quantity_discounts'}
+		<tr id="quantityDiscount_{$quantity_discount.id_product_attribute}" class="quantityDiscount_{$quantity_discount.id_product_attribute}">
+			<td>
+				{if (isset($quantity_discount.attributes) && ($quantity_discount.attributes))}
+					{$product->getProductName($quantity_discount.id_product, $quantity_discount.id_product_attribute)}
+				{else}
+					{$product->getProductName($quantity_discount.id_product)}
+				{/if}
+			</td>
+			<td>{$quantity_discount.quantity|intval}</td>
+			<td>
+				{if $quantity_discount.price >= 0 OR $quantity_discount.reduction_type == 'amount'}
+					{if Configuration::get('PS_DISPLAY_DISCOUNT_PRICE')}
+						{convertPrice price=$productPrice-$quantity_discount.real_value|floatval}
+					{else}
+						-{convertPrice price=$quantity_discount.real_value|floatval}
+					{/if}
+				{else}
+					{if Configuration::get('PS_DISPLAY_DISCOUNT_PRICE')}
+						{convertPrice price = $productPrice-($productPrice*$quantity_discount.reduction)|floatval}
+					{else}
+						-{$quantity_discount.real_value|floatval}%
+					{/if}
+				{/if}
+			</td>
+		</tr>
+		{/foreach}
+	</tbody>
 	</table>
 </div>
 {/if}

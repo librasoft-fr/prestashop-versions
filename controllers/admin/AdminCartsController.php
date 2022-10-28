@@ -401,7 +401,7 @@ class AdminCartsControllerCore extends AdminController
 			{
 				if (Validate::isMessage($message_content))
 				{
-					$message->message = htmlentities($message_content, ENT_COMPAT, 'UTF-8');
+					$message->message = $message_content;
 					$message->id_cart = (int)$this->context->cart->id;
 					$message->id_customer = (int)$this->context->cart->id_customer;
 					$message->save();
@@ -551,6 +551,8 @@ class AdminCartsControllerCore extends AdminController
 		if (count($summary['products']))
 			foreach ($summary['products'] as &$product)
 			{
+				$product['numeric_price'] = $product['price'];
+				$product['numeric_total'] = $product['total'];
 				$product['price'] = str_replace($currency->sign, '', Tools::displayPrice($product['price'], $currency));
 				$product['total'] = str_replace($currency->sign, '', Tools::displayPrice($product['total'], $currency));
 				$product['image_link'] = $this->context->link->getImageLink($product['link_rewrite'], $product['id_image'], 'small_default');

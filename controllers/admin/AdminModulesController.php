@@ -651,7 +651,7 @@ class AdminModulesControllerCore extends AdminController
 						$this->errors[] = $this->l('Module not found');
 					elseif ($key == 'install' && $this->tabAccess['add'] !== '1')
 						$this->errors[] = Tools::displayError('You do not have permission to install this module.');
-					elseif ($key == 'uninstall' && ($this->tabAccess['delete'] !== '1' || !$module->getPermission('configure')))
+					elseif ($key == 'delete' && ($this->tabAccess['delete'] !== '1' || !$module->getPermission('configure')))
 						$this->errors[] = Tools::displayError('You do not have permission to delete this module.');
 					elseif ($key == 'configure' && ($this->tabAccess['edit'] !== '1' || !$module->getPermission('configure') || !Module::isInstalled(urldecode($name))))
 						$this->errors[] = Tools::displayError('You do not have permission to configure this module.');
@@ -714,7 +714,7 @@ class AdminModulesControllerCore extends AdminController
 								$activateOnclick = 'onclick="location.href = \''.$this->getCurrentUrl('enable').'&enable=\'+(($(this).attr(\'checked\')) ? 1 : 0)"';
 								$toolbar .= '<tr>
 										<th colspan="4">
-											<input type="checkbox" name="activateModule" value="1" '.(($module->active) ? 'checked="checked"' : '').' '.$activateOnclick.' /> '.$this->l('Activate module for').' ';
+											<input type="checkbox" name="activateModule" value="1" '.($module->isEnabledForShopContext() ? 'checked="checked"' : '').' '.$activateOnclick.' /> '.$this->l('Activate module for').' ';
 								if (Shop::getContext() == Shop::CONTEXT_SHOP)
 									$toolbar .= 'shop <b>'.$this->context->shop->name.'</b>';
 								elseif (Shop::getContext() == Shop::CONTEXT_GROUP)

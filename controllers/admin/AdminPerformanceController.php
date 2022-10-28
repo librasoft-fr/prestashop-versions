@@ -134,9 +134,68 @@ class AdminPerformanceControllerCore extends AdminController
 		$this->fields_value['smarty_console_key'] = Configuration::get('PS_SMARTY_CONSOLE_KEY');
 	}
 
-	public function initFieldsetFeaturesDetachables()
+	public function initFieldsetDebugMode()
 	{
 		$this->fields_form[1]['form'] = array(
+			'legend' => array(
+				'title' => $this->l('Debug mode'),
+				'image' => '../img/admin/prefs.gif'
+			),
+			'input' => array(
+				array(
+					'type' => 'radio',
+					'label' => $this->l('Disable non PrestaShop modules'),
+					'name' => 'native_module',
+					'class' => 't',
+					'is_bool' => true,
+					'values' => array(
+						array(
+							'id' => 'native_module_on',
+							'value' => 1,
+							'label' => $this->l('Enabled')
+						),
+						array(
+							'id' => 'native_module_off',
+							'value' => 0,
+							'label' => $this->l('Disabled')
+						)
+					),
+					'desc' => $this->l('Enable or disable non PrestaShop Modules.')
+				),
+				array(
+					'type' => 'radio',
+					'label' => $this->l('Disable all overrides'),
+					'name' => 'overrides',
+					'class' => 't',
+					'is_bool' => true,
+					'values' => array(
+						array(
+							'id' => 'overrides_module_on',
+							'value' => 1,
+							'label' => $this->l('Enabled')
+						),
+						array(
+							'id' => 'overrides_module_off',
+							'value' => 0,
+							'label' => $this->l('Disabled')
+						)
+					),
+					'desc' => $this->l('Enable or disable all classes and controllers overrides')
+				),
+			),
+			'submit' => array(
+				'title' => $this->l('   Save   '),
+				'class' => 'button'
+			),
+		);
+
+		$this->fields_value['native_module'] = Configuration::get('PS_DISABLE_NON_NATIVE_MODULE');
+		$this->fields_value['overrides'] = Configuration::get('PS_DISABLE_OVERRIDES');
+	}
+
+	public function initFieldsetFeaturesDetachables()
+	{
+		$this->fields_form[2]['form'] = array(
 			'legend' => array(
 				'title' => $this->l('Optional features'),
 				'image' => '../img/admin/tab-plugins.gif'
@@ -197,7 +256,7 @@ class AdminPerformanceControllerCore extends AdminController
 
 	public function initFieldsetCCC()
 	{
-		$this->fields_form[2]['form'] = array(
+		$this->fields_form[3]['form'] = array(
 			'legend' => array(
 				'title' => $this->l('CCC (Combine, Compress and Cache)'),
 				'image' => '../img/admin/arrow_in.png'
@@ -317,7 +376,7 @@ class AdminPerformanceControllerCore extends AdminController
 
 	public function initFieldsetMediaServer()
 	{
-		$this->fields_form[3]['form'] = array(
+		$this->fields_form[4]['form'] = array(
 			'legend' => array(
 				'title' => $this->l('Media servers (use only with CCC)'),
 				'image' => '../img/admin/subdomain.gif'
@@ -359,7 +418,7 @@ class AdminPerformanceControllerCore extends AdminController
 
 	public function initFieldsetCiphering()
 	{
-		$this->fields_form[4]['form'] = array(
+		$this->fields_form[5]['form'] = array(
 			'legend' => array(
 				'title' => $this->l('Ciphering'),
 				'image' => '../img/admin/computer_key.png'
@@ -416,7 +475,7 @@ class AdminPerformanceControllerCore extends AdminController
 			)
 		);
 
-		$this->fields_form[5]['form'] = array(
+		$this->fields_form[6]['form'] = array(
 			'legend' => array(
 				'title' => $this->l('Caching'),
 				'image' => '../img/admin/computer_key.png'
@@ -483,11 +542,18 @@ class AdminPerformanceControllerCore extends AdminController
 	{
 		// Initialize fieldset for a form
 		$this->initFieldsetSmarty();
+
+		if (_PS_MODE_DEV_)
+			$this->initFieldsetDebugMode();
+
 		$this->initFieldsetFeaturesDetachables();
 		$this->initFieldsetCCC();
 		$this->initFieldsetMediaServer();
 		$this->initFieldsetCiphering();
 		$this->initFieldsetCaching();
+
+		// Reindex fields
+		$this->fields_form = array_values($this->fields_form);
 
 		// Activate multiple fieldset
 		$this->multiple_fieldsets = true;
@@ -501,19 +567,22 @@ class AdminPerformanceControllerCore extends AdminController
 		$php_lang = in_array($this->context->language->iso_code, $php_dot_net_supported_langs) ?
 			$this->context->language->iso_code : 'en';
 
-		if (!extension_loaded('memcache'))
+		if (_PS_CACHE_ENABLED_ && _PS_CACHING_SYSTEM_ == 'CacheMemcache' && !CacheMemcache::getMemcachedServers())
+			$this->warnings[] = $this->l('To use Memcached, you must configure memcached servers.');
+
+		if (_PS_CACHE_ENABLED_ && _PS_CACHING_SYSTEM_ == 'CacheMemcache' && !extension_loaded('memcache'))
 			$this->warnings[] = $this->l('To use Memcached, you must install the Memcache PECL extension on your server.').'
 				<a href="http://www.php.net/manual/'.substr($php_lang, 0, 2).'/memcache.installation.php" target="_blank">
 					http://www.php.net/manual/'.substr($php_lang, 0, 2).'/memcache.installation.php
 				</a>';
-		if (!extension_loaded('apc'))
+		if (_PS_CACHE_ENABLED_ && _PS_CACHING_SYSTEM_ == 'apc' && !extension_loaded('apc'))
 		{
 			$this->warnings[] = $this->l('To use APC, you must install the APC PECL extension on your server.').'
 				<a href="http://php.net/manual/'.substr($php_lang, 0, 2).'/apc.installation.php" target="_blank">
 					http://php.net/manual/'.substr($php_lang, 0, 2).'/apc.installation.php
 				</a>';
 		}
-		if (!extension_loaded('xcache'))
+		if (_PS_CACHE_ENABLED_ && _PS_CACHING_SYSTEM_ == 'xcache' && !extension_loaded('xcache'))
 			$this->warnings[] = $this->l('To use Xcache, you must install the Xcache extension on your server.').'
 				<a href="http://xcache.lighttpd.net" target="_blank">http://xcache.lighttpd.net</a>';
 
@@ -742,7 +811,7 @@ class AdminPerformanceControllerCore extends AdminController
 						'define(\'_PS_CACHING_SYSTEM_\', \''.$caching_system.'\');',
 						$new_settings
 					);
-					
+
 				if ($cache_active && $caching_system == 'CacheMemcache' && !extension_loaded('memcache'))
 					$this->errors[] = Tools::displayError('To use Memcached, you must install the Memcache PECL extension on your server.').'
 						<a href="http://www.php.net/manual/en/memcache.installation.php">http://www.php.net/manual/en/memcache.installation.php</a>';
@@ -796,6 +865,17 @@ class AdminPerformanceControllerCore extends AdminController
 		{
 			$redirectAdmin = true;
 			Tools::clearSmartyCache();
+			Autoload::getInstance()->generateIndex();
+		}
+
+		if (Tools::isSubmit('submitAddconfiguration') && _PS_MODE_DEV_)
+		{
+			Configuration::updateGlobalValue('PS_DISABLE_NON_NATIVE_MODULE', (int)Tools::getValue('native_module'));
+			Configuration::updateGlobalValue('PS_DISABLE_OVERRIDES', (int)Tools::getValue('overrides'));
+
+			if (Tools::getValue('overrides'))
+				Autoload::getInstance()->_include_override_path = false;
+
 			Autoload::getInstance()->generateIndex();
 		}
 

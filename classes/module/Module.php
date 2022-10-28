@@ -203,7 +203,7 @@ abstract class ModuleCore
 		}
 
 		// Check PS version compliancy
-		if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min']) < 0 || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max']) >= 0)
+		if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min']) < 0 || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max']) > 0)
 		{
 			$this->_errors[] = $this->l('The version of your module is not compliant with your PrestaShop version.');
 			return false;
@@ -938,7 +938,7 @@ abstract class ModuleCore
 
 	public static function configXmlStringFormat($string)
 	{
-		return str_replace('\'', '\\\'', Tools::htmlentitiesDecodeUTF8($string));
+		return Tools::htmlentitiesDecodeUTF8($string);
 	}
 
 
@@ -1234,11 +1234,7 @@ abstract class ModuleCore
 				$module->interest = 0;
 			}
 
-		usort($module_list, create_function('$a,$b', '
-			if ($a->displayName == $b->displayName)
-				return 0;
-			return ($a->displayName < $b->displayName) ? -1 : 1;
-		'));
+		usort($module_list, create_function('$a,$b', 'return strnatcasecmp($a->displayName, $b->displayName);'));
 
 		if ($errors)
 		{
@@ -1262,7 +1258,7 @@ abstract class ModuleCore
 		$modules = scandir(_PS_MODULE_DIR_);
 		foreach ($modules as $name)
 		{
-			if (is_dir(_PS_MODULE_DIR_.$name) && Tools::file_exists_cache(_PS_MODULE_DIR_.$name.'/'.$name.'.php'))
+			if (is_dir(_PS_MODULE_DIR_.$name.DIRECTORY_SEPARATOR) && Tools::file_exists_cache(_PS_MODULE_DIR_.$name.'/'.$name.'.php'))
 			{
 				if (!Validate::isModuleName($name))
 					throw new PrestaShopException(sprintf('Module %s is not a valid module name', $name));
@@ -1295,6 +1291,26 @@ abstract class ModuleCore
 			}
 
 		return $db->executeS('SELECT * FROM `'._DB_PREFIX_.'module` m WHERE `name` NOT IN ('.implode(',', $arr_native_modules).') ');
+	}
+
+	public static function getNativeModuleList()
+	{
+		$module_list_xml = _PS_ROOT_DIR_.self::CACHE_FILE_MODULES_LIST;
+		if (!file_exists($module_list_xml))
+			return false;
+
+		$native_modules = simplexml_load_file($module_list_xml);
+		$native_modules = $native_modules->modules;
+		$modules = array();
+
+		foreach ($native_modules as $native_modules_type)
+			if (in_array($native_modules_type['type'], array('native', 'partner')))
+			{
+				foreach ($native_modules_type->module as $module)
+					$modules[] = $module['name'];
+			}
+
+		return $modules;
 	}
 
 	/**
@@ -1580,6 +1596,18 @@ abstract class ModuleCore
 		return Cache::retrieve('Module::isInstalled'.$module_name);
 	}
 
+	public function isEnabledForShopContext()
+	{
+		$shop_list = Shop::getContextListShopID();
+		return (bool)Db::getInstance()->getValue('
+			SELECT COUNT(*) n
+			FROM `'._DB_PREFIX_.'module_shop`
+			WHERE id_module='.(int)$this->id.' AND id_shop IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).')
+			GROUP BY id_module
+			HAVING n='.(int)count(Shop::getContextListShopID())
+		);
+	}
+
 	public static function isEnabled($module_name)
 	{
 		if (!Cache::isStored('Module::isEnabled'.$module_name))
@@ -1757,6 +1785,7 @@ abstract class ModuleCore
 					@unlink($file);
 					@file_put_contents($file, $xml);
 				}
+			@chmod($file, 0664);
 		}
 	}
 
@@ -1835,7 +1864,13 @@ abstract class ModuleCore
 	 */
 	public static function getModuleIdByName($name)
 	{
-		return Db::getInstance()->getValue('SELECT `id_module` FROM `'._DB_PREFIX_.'module` WHERE `name` = "'.pSQL($name).'"');
+		$cache_id = 'Module::getModuleIdByName_'.pSQL($name);
+		if (!Cache::isStored($cache_id))
+		{
+			$result = (int)Db::getInstance()->getValue('SELECT `id_module` FROM `'._DB_PREFIX_.'module` WHERE `name` = "'.pSQL($name).'"');
+			Cache::store($cache_id, $result);
+		}
+		return Cache::retrieve($cache_id);
 	}
 
 	/**
@@ -2082,7 +2117,7 @@ abstract class ModuleCore
 
 			// Remplacer la ligne de declaration par "remove"
 			foreach ($override_file as $line_number => &$line_content)
-				if (preg_match('/(public|private|protected)\s+(static\s+)?\$'.$property->getName().'/i', $line_content))
+				if (preg_match('/(public|private|protected|const)\s+(static\s+)?(\$)?'.$property->getName().'/i', $line_content))
 				{
 					$line_content = '#--remove--#';
 					break;

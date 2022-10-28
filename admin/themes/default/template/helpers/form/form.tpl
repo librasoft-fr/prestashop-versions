@@ -68,7 +68,7 @@
 														<script type="text/javascript">
 															$().ready(function () {
 																var input_id = '{/literal}{if isset($input.id)}{$input.id}_{$language.id_lang}{else}{$input.name}_{$language.id_lang}{/if}{literal}';
-																$('#'+input_id).tagify({addTagPrompt: '{/literal}{l s='Add tag' js=1}{literal}'});
+																$('#'+input_id).tagify({delimiters: [13,44], addTagPrompt: '{/literal}{l s='Add tag' js=1}{literal}'});
 																$({/literal}'#{$table}{literal}_form').submit( function() {
 																	$(this).find('#'+input_id).val($('#'+input_id).tagify('serialize'));
 																});
@@ -97,8 +97,7 @@
 											<script type="text/javascript">
 												$().ready(function () {
 													var input_id = '{/literal}{if isset($input.id)}{$input.id}{else}{$input.name}{/if}{literal}';
-													$('#'+input_id).tagify();
-													$('#'+input_id).tagify({addTagPrompt: '{/literal}{l s='Add tag'}{literal}'});
+													$('#'+input_id).tagify({delimiters: [13,44], addTagPrompt: '{/literal}{l s='Add tag'}{literal}'});
 													$({/literal}'#{$table}{literal}_form').submit( function() {
 														$(this).find('#'+input_id).val($('#'+input_id).tagify('serialize'));
 													});
@@ -168,7 +167,7 @@
 															{/if}
 														>{$option->$input.options.name}</option>
 													{elseif $option == "-"}
-														<option value="">--</option>
+														<option value="">-</option>
 													{else}
 														<option value="{$option[$input.options.id]}"
 															{if isset($input.multiple)}
@@ -237,7 +236,7 @@
 										{if isset($fields_value[$input.name].image) && $fields_value[$input.name].image}
 											<div id="image">
 												{$fields_value[$input.name].image}
-												<p align="center">{l s='File size'} {$fields_value[$input.name].size}kb</p>
+												<p align="center">{l s='File size'} {$fields_value[$input.name].size}{l s='kb'}</p>
 												<a href="{$current}&{$identifier}={$form_id}&token={$token}&deleteImage=1">
 													<img src="../img/admin/delete.gif" alt="{l s='Delete'}" /> {l s='Delete'}
 												</a>

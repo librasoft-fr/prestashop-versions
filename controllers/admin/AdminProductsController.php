@@ -174,7 +174,7 @@ class AdminProductsControllerCore extends AdminController
 				LEFT JOIN `'._DB_PREFIX_.'shop` shop ON (shop.id_shop = '.$id_shop.') 
 				LEFT JOIN `'._DB_PREFIX_.'image_shop` image_shop ON (image_shop.`id_image` = i.`id_image` AND image_shop.`cover` = 1 AND image_shop.id_shop = '.$id_shop.')';
 		
-		$this->_select .= 'shop.name as shopname, ';
+		$this->_select .= 'shop.name as shopname, a.id_shop_default, ';
 		$this->_select .= 'MAX('.$alias_image.'.id_image) id_image, cl.name `name_category`, '.$alias.'.`price`, 0 AS price_final, sav.`quantity` as sav_quantity, '.$alias.'.`active`';
 		
 		if ($join_category)
@@ -331,12 +331,17 @@ class AdminProductsControllerCore extends AdminController
 		$nb = count($this->_list);
 		if ($this->_list)
 		{
+			$context = $this->context->cloneContext();
+			$context->shop = clone($context->shop);
 			/* update product final price */
 			for ($i = 0; $i < $nb; $i++)
 			{
+				if (Context::getContext()->shop->getContext() != Shop::CONTEXT_SHOP)
+					$context->shop = new Shop((int)$this->_list[$i]['id_shop_default']);
+
 				// convert price with the currency from context
 				$this->_list[$i]['price'] = Tools::convertPrice($this->_list[$i]['price'], $this->context->currency, true, $this->context);
-				$this->_list[$i]['price_tmp'] = Product::getPriceStatic($this->_list[$i]['id_product'], true, null, 2, null, false, true, 1, true);
+				$this->_list[$i]['price_tmp'] = Product::getPriceStatic($this->_list[$i]['id_product'], true, null, 2, null, false, true, 1, true, null, null, null, $nothing, true, true, $context);
 			}
 		}
 
@@ -367,9 +372,9 @@ class AdminProductsControllerCore extends AdminController
 				{
 					if (is_array($default_product->$field_name))
 						foreach ($default_product->$field_name as $key => $value)
-							$this->object->{$field_name}[$key] = ObjectModel::formatValue($value, $def['fields'][$field_name]['type']);
+							$this->object->{$field_name}[$key] = $value;
 					else
-						$this->object->$field_name = ObjectModel::formatValue($default_product->$field_name, $def['fields'][$field_name]['type']);
+						$this->object->$field_name = $default_product->$field_name;
 				}
 			}
 			$this->object->loadStockData();
@@ -630,7 +635,7 @@ class AdminProductsControllerCore extends AdminController
 					{
 						$id_category = (int)Tools::getValue('id_category');
 						$category_url = empty($id_category) ? '' : '&id_category='.(int)$id_category;
-						Logger::addLog(sprintf($this->l('%s deletion'), $this->className), 1, null, $this->className, (int)$object->id, true, (int)$this->context->employee->id);
+						Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$object->id, true, (int)$this->context->employee->id);
 						$this->redirect_after = self::$currentIndex.'&conf=1&token='.$this->token.$category_url;
 					}
 					else
@@ -729,7 +734,7 @@ class AdminProductsControllerCore extends AdminController
 							if (!count($this->errors))
 							{
 								if ($product->delete())
-									Logger::addLog(sprintf($this->l('%s deletion'), $this->className), 1, null, $this->className, (int)$product->id, true, (int)$this->context->employee->id);
+									Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$product->id, true, (int)$this->context->employee->id);
 								else
 									$success = false;
 							}
@@ -1285,14 +1290,6 @@ class AdminProductsControllerCore extends AdminController
 
 		if ($this->display == 'edit' || $this->display == 'add')
 		{
-			$this->addjQueryPlugin(array(
-				'autocomplete',
-				'tablednd',
-				'thickbox',
-				'ajaxfileupload',
-				'date'
-			));
-
 			$this->addJqueryUI(array(
 				'ui.core',
 				'ui.widget',
@@ -1300,6 +1297,15 @@ class AdminProductsControllerCore extends AdminController
 				'ui.slider',
 				'ui.datepicker'
 			));
+
+			$this->addjQueryPlugin(array(
+				'autocomplete',
+				'tablednd',
+				'thickbox',
+				'ajaxfileupload',
+				'date',
+				'tagify'
+			));			
 
 			$this->addJS(array(
 				_PS_JS_DIR_.'productTabsManager.js',
@@ -1336,7 +1342,6 @@ class AdminProductsControllerCore extends AdminController
 		if (isset($result['success']))
 		{
 			$obj = new Image((int)$result['success']['id_image']);
-
 			// Associate image to shop from context
 			$shops = Shop::getContextListShopID();
 			$obj->associateTo($shops);
@@ -1350,6 +1355,7 @@ class AdminProductsControllerCore extends AdminController
 				'id'=>$obj->id,
 				'path' => $obj->getExistingImgPath(),
 				'position' => $obj->position,
+				'legend' => $obj->legend,
 				'cover' => $obj->cover,
 				'shops' => $json_shops,
 			);
@@ -1714,7 +1720,7 @@ class AdminProductsControllerCore extends AdminController
 
 		if ($this->object->add())
 		{
-			Logger::addLog(sprintf($this->l('%s addition'), $this->className), 1, null, $this->className, (int)$this->object->id, true, (int)$this->context->employee->id);
+			Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$this->object->id, true, (int)$this->context->employee->id);
 			$this->addCarriers();
 			$this->updateAccessories($this->object);
 			$this->updatePackItems($this->object);
@@ -1836,7 +1842,7 @@ class AdminProductsControllerCore extends AdminController
 
 				if ($object->update())
 				{
-					Logger::addLog(sprintf($this->l('%s edition'), $this->className), 1, null, $this->className, (int)$this->object->id, true, (int)$this->context->employee->id);
+					Logger::addLog(sprintf($this->l('%s edition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$this->object->id, true, (int)$this->context->employee->id);
 					if (in_array($this->context->shop->getContext(), array(Shop::CONTEXT_SHOP, Shop::CONTEXT_ALL)))
 					{
 						if ($this->isTabSubmitted('Shipping'))
@@ -2654,6 +2660,10 @@ class AdminProductsControllerCore extends AdminController
 					$product_supplier->id_product = $product->id;
 					$product_supplier->id_product_attribute = 0;
 					$product_supplier->id_supplier = $id;
+					if ($this->context->currency->id)
+						$product_supplier->id_currency = (int)$this->context->currency->id;
+					else
+						$product_supplier->id_currency = (int)Configuration::get('PS_CURRENCY_DEFAULT');
 					$product_supplier->save();
 
 					$associated_suppliers[] = $product_supplier;
@@ -3590,6 +3600,7 @@ class AdminProductsControllerCore extends AdminController
 				foreach ($images as $k => $image)
 					$images[$k] = new Image($image['id_image']);
 
+
 				if ($this->context->shop->getContext() == Shop::CONTEXT_SHOP)
 					$current_shop_id = (int)$this->context->shop->id;
 				else
@@ -3608,8 +3619,16 @@ class AdminProductsControllerCore extends AdminController
 						'max_image_size' => $this->max_image_size / 1024 / 1024,
 						'up_filename' => (string)Tools::getValue('virtual_product_filename_attribute'),
 						'currency' => $this->context->currency,
-						'current_shop_id' => $current_shop_id
+						'current_shop_id' => $current_shop_id,
+						'languages' => $this->_languages,
+						'default_language' => (int)Configuration::get('PS_LANG_DEFAULT')
 				));
+
+				$type = ImageType::getByNameNType('%', 'products', 'height');
+				if (isset($type['name']))
+					$data->assign('imageType', $type['name']);
+				else
+					$data->assign('imageType', 'small_default');
 			}
 			else
 				$this->displayWarning($this->l('You must save the product in this shop before adding images.'));	
@@ -3666,7 +3685,11 @@ class AdminProductsControllerCore extends AdminController
 					$data->assign('available_date', ($this->getFieldValue($product, 'available_date') != 0) ? stripslashes(htmlentities($this->getFieldValue($product, 'available_date'), $this->context->language->id)) : '0000-00-00');
 
 					$i = 0;
-					$data->assign('imageType', ImageType::getByNameNType('small_default', 'products'));
+					$type = ImageType::getByNameNType('%', 'products', 'height');
+					if (isset($type['name']))
+						$data->assign('imageType', $type['name']);
+					else
+						$data->assign('imageType', 'small_default');
 					$data->assign('imageWidth', (isset($image_type['width']) ? (int)($image_type['width']) : 64) + 25);
 					foreach ($images as $k => $image)
 					{

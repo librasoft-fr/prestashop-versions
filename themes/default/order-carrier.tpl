@@ -171,10 +171,13 @@
 								<td>
 								<div class="delivery_option_price">
 									{if $option.total_price_with_tax && (!isset($free_shipping) || (isset($free_shipping) && !$free_shipping))}
+
 										{if $use_taxes == 1}
-											{convertPrice price=$option.total_price_with_tax} {l s='(tax incl.)'}
-										{else}
-											{convertPrice price=$option.total_price_without_tax} {l s='(tax excl.)'}
+											{if $priceDisplay == 1}
+												{convertPrice price=$option.total_price_without_tax} {l s='(tax excl.)'}
+											{else}
+												{convertPrice price=$option.total_price_with_tax} {l s='(tax incl.)'}
+											{/if}
 										{/if}
 									{else}
 										{l s='Free'}
@@ -208,7 +211,7 @@
 										{/if}
 										{* This foreach is on one line, to avoid tabulation in the title attribute of the acronym *}
 										{foreach $carrier.product_list as $product}
-										{if $product@index == 4}<acronym title="{/if}{if $product@index >= 4}{$product.name}{if !$product@last}, {else}">...</acronym>){/if}{else}{$product.name}{if !$product@last}, {else}){/if}{/if}{/foreach}
+										{if $product@index == 4}<acronym title="{/if}{if $product@index >= 4}{$product.name}{if isset($product.attributes) && $product.attributes} {$product.attributes|escape:'htmlall':'UTF-8'}{/if}{if !$product@last}, {else}">...</acronym>){/if}{else}{$product.name}{if isset($product.attributes) && $product.attributes} {$product.attributes|escape:'htmlall':'UTF-8'}{/if}{if !$product@last}, {else}){/if}{/if}{/foreach}
 									{/if}
 								</td>
 							</tr>

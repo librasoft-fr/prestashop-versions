@@ -191,7 +191,7 @@ abstract class ObjectModelCore
 		if ($id)
 		{
 			// Load object from database if object id is present
-			$cache_id = 'objectmodel_'.$this->def['classname'].'_'.(int)$id.'_'.(int)$id_shop.'_'.(int)$id_lang;
+			$cache_id = 'objectmodel_'.$this->def['classname'].'_'.(int)$id.'_'.(int)$this->id_shop.'_'.(int)$id_lang;
 			if (!Cache::isStored($cache_id))
 			{
 				$sql = new DbQuery();
@@ -893,7 +893,7 @@ abstract class ObjectModelCore
 	 * @param int $id_lang
 	 * @return bool|string
 	 */
-	public function validateField($field, $value, $id_lang = null)
+	public function validateField($field, $value, $id_lang = null, $skip = array(), $human_errors = false)
 	{
 		$this->cacheFieldsRequiredDatabase();
 		$data = $this->def['fields'][$field];
@@ -901,9 +901,12 @@ abstract class ObjectModelCore
 		// Check if field is required
 		$required_fields = (isset(self::$fieldsRequiredDatabase[get_class($this)])) ? self::$fieldsRequiredDatabase[get_class($this)] : array();
 		if (!$id_lang || $id_lang == Configuration::get('PS_LANG_DEFAULT'))
-			if (!empty($data['required']) || in_array($field, $required_fields))
+			if (!in_array('required', $skip) && (!empty($data['required']) || in_array($field, $required_fields)))
 				if (Tools::isEmpty($value))
-					return 'Property '.get_class($this).'->'.$field.' is empty';
+					if ($human_errors)
+						return sprintf(Tools::displayError('The %s field is required.'), $this->displayFieldName($field, get_class($this)));
+					else
+						return 'Property '.get_class($this).'->'.$field.' is empty';
 
 		// Default value
 		if (!$value && !empty($data['default']))
@@ -913,11 +916,11 @@ abstract class ObjectModelCore
 		}
 
 		// Check field values
-		if (!empty($data['values']) && is_array($data['values']) && !in_array($value, $data['values']))
-			return 'Property '.get_class($this).'->'.$field.' has bad value (allowed values are: '.implode(', ', $data['values']).')';
+		if (!in_array('values', $skip) && !empty($data['values']) && is_array($data['values']) && !in_array($value, $data['values']))
+				return 'Property '.get_class($this).'->'.$field.' has bad value (allowed values are: '.implode(', ', $data['values']).')';
 
 		// Check field size
-		if (!empty($data['size']))
+		if (!in_array('size', $skip) && !empty($data['size']))
 		{
 			$size = $data['size'];
 			if (!is_array($data['size']))
@@ -925,11 +928,24 @@ abstract class ObjectModelCore
 
 			$length = Tools::strlen($value);
 			if ($length < $size['min'] || $length > $size['max'])
-				return 'Property '.get_class($this).'->'.$field.' length ('.$length.') must be between '.$size['min'].' and '.$size['max'];
+			{
+				if ($human_errors)
+				{
+					if (isset($data['lang']) && $data['lang'])
+					{
+						$language = new Language((int)$id_lang);
+						return sprintf(Tools::displayError('The field %1$s (%2$s) is too long (%3$d chars max, html chars including).'), $this->displayFieldName($field, get_class($this)), $language->name, $size['max']);
+					}
+					else
+					 	return sprintf(Tools::displayError('The %1$s field is too long (%2$d chars max).'), $this->displayFieldName($field, get_class($this)), $size['max']);
+				}
+				else
+					return 'Property '.get_class($this).'->'.$field.' length ('.$length.') must be between '.$size['min'].' and '.$size['max'];
+			}
 		}
 
 		// Check field validator
-		if (!empty($data['validate']))
+		if (!in_array('validate', $skip) && !empty($data['validate']))
 		{
 			if (!method_exists('Validate', $data['validate']))
 				throw new PrestaShopException('Validation function not found. '.$data['validate']);
@@ -948,7 +964,12 @@ abstract class ObjectModelCore
 						$res = false;
 				}
 				if (!$res)
-					return 'Property '.get_class($this).'->'.$field.' is not valid';
+				{
+					if ($human_errors)
+							return sprintf(Tools::displayError('The %s field is invalid.'), $this->displayFieldName($field, get_class($this)));
+					else
+						return 'Property '.get_class($this).'->'.$field.' is not valid';
+				}
 			}
 		}
 
@@ -1118,7 +1139,7 @@ abstract class ObjectModelCore
 			{
 				$vars = get_class_vars($class_name);
 				foreach ($vars['shopIDs'] as $id_shop)
-					$or[] = ' main.id_shop = '.(int)$id_shop.' ';
+					$or[] = '(main.id_shop = '.(int)$id_shop.(isset($this->def['fields']['id_shop_group']) ? ' OR (id_shop = 0 AND id_shop_group='.(int)Shop::getGroupFromShop((int)$id_shop).')' : '').')';
 				
 				$prepend = '';
 				if (count($or))
@@ -1213,11 +1234,16 @@ abstract class ObjectModelCore
 		if ($id_shop === null)
 			$id_shop = Context::getContext()->shop->id;
 
-		$sql = 'SELECT id_shop
-				FROM `'.pSQL(_DB_PREFIX_.$this->def['table']).'_shop`
-				WHERE `'.$this->def['primary'].'` = '.(int)$this->id.'
-					AND id_shop = '.(int)$id_shop;
-		return (bool)Db::getInstance()->getValue($sql);
+		$cache_id = 'objectmodel_shop_'.$this->def['classname'].'_'.(int)$this->id.'-'.(int)$id_shop;
+		if (!Cache::isStored($cache_id))
+		{
+			$sql = 'SELECT id_shop
+					FROM `'.pSQL(_DB_PREFIX_.$this->def['table']).'_shop`
+					WHERE `'.$this->def['primary'].'` = '.(int)$this->id.'
+						AND id_shop = '.(int)$id_shop;
+			Cache::store($cache_id, (bool)Db::getInstance()->getValue($sql));
+		}
+		return Cache::retrieve($cache_id);
 	}
 
 	/**

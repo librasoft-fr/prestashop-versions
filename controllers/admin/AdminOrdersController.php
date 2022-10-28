@@ -306,7 +306,7 @@ class AdminOrdersControllerCore extends AdminController
 							'{shipping_number}' => $order->shipping_number,
 							'{order_name}' => $order->getUniqReference()
 						);
-						if (@Mail::Send((int)$order->id_lang, 'in_transit', Mail::l('Package in transit'), $templateVars,
+						if (@Mail::Send((int)$order->id_lang, 'in_transit', Mail::l('Package in transit', (int)$order->id_lang), $templateVars,
 							$customer->email, $customer->firstname.' '.$customer->lastname, null, null, null, null,
 							_PS_MAIL_DIR_, true, (int)$order->id_shop))
 						{
@@ -426,7 +426,7 @@ class AdminOrdersControllerCore extends AdminController
 						$customer_message = new CustomerMessage();
 						$customer_message->id_customer_thread = $customer_thread->id;
 						$customer_message->id_employee = (int)$this->context->employee->id;
-						$customer_message->message = htmlentities(Tools::getValue('message'), ENT_COMPAT, 'UTF-8');
+						$customer_message->message = Tools::getValue('message');
 						$customer_message->private = Tools::getValue('visibility');
 
 						if (!$customer_message->add())
@@ -704,7 +704,7 @@ class AdminOrdersControllerCore extends AdminController
 								@Mail::Send(
 									(int)$order->id_lang,
 									'credit_slip',
-									Mail::l('New credit slip regarding your order', $order->id_lang),
+									Mail::l('New credit slip regarding your order', (int)$order->id_lang),
 									$params,
 									$customer->email,
 									$customer->firstname.' '.$customer->lastname,
@@ -886,7 +886,7 @@ class AdminOrdersControllerCore extends AdminController
 					Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
 				}
 				else
-					$this->errors[] = Tools::displayErrror('This address can\'t be loaded');
+					$this->errors[] = Tools::displayError('This address can\'t be loaded');
 			}
 			else
 				$this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -1809,7 +1809,7 @@ class AdminOrdersControllerCore extends AdminController
 		Mail::Send(
 			(int)$order->id_lang,
 			'order_changed',
-			Mail::l('Your order has been changed', $order->id_lang),
+			Mail::l('Your order has been changed', (int)$order->id_lang),
 			$data,
 			$order->getCustomer()->email,
 			$order->getCustomer()->firstname.' '.$order->getCustomer()->lastname,

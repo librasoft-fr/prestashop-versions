@@ -175,8 +175,8 @@ abstract class ControllerCore
 			// then using displayAjax[action]
 			if ($this->ajax)
 			{
-				$action = Tools::getValue('action');
-				if (!empty($action) && method_exists($this, 'displayAjax'.Tools::toCamelCase($action, true))) 
+				$action = Tools::toCamelCase(Tools::getValue('action'), true);
+				if (!empty($action) && method_exists($this, 'displayAjax'.$action)) 
 					$this->{'displayAjax'.$action}();
 				elseif (method_exists($this, 'displayAjax'))
 					$this->displayAjax();
@@ -334,12 +334,14 @@ abstract class ControllerCore
 			}
 		}
 		else
+		{
 			$plugin_path = Media::getJqueryPluginPath($name, $folder);
 
 		if(!empty($plugin_path['css']))
 			$this->addCSS($plugin_path['css']);
 		if(!empty($plugin_path['js']))
 			$this->addJS($plugin_path['js']);
+		}
 	}
 
 	/**

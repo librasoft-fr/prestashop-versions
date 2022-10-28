@@ -656,11 +656,11 @@
 			var id_product = Number(this.id_product);
 			var id_product_attribute = Number(this.id_product_attribute);
 			cart_quantity[Number(this.id_product)+'_'+Number(this.id_product_attribute)+'_'+Number(this.id_customization)] = this.cart_quantity;
-			cart_content += '<tr><td><img src="'+this.image_link+'" title="'+this.name+'" /></td><td>'+this.name+'<br />'+this.attributes_small+'</td><td>'+this.reference+'</td><td><input type="text" size="7" rel="'+this.id_product+'_'+this.id_product_attribute+'" class="product_unit_price" value="' + formatCurrency(parseFloat(this.price.replace(',', '.')), currency_format, currency_sign, currency_blank) + '" /></td><td>';
+			cart_content += '<tr><td><img src="'+this.image_link+'" title="'+this.name+'" /></td><td>'+this.name+'<br />'+this.attributes_small+'</td><td>'+this.reference+'</td><td><input type="text" size="7" rel="'+this.id_product+'_'+this.id_product_attribute+'" class="product_unit_price" value="'+this.numeric_price+'" /></td><td>';
 			cart_content += (!this.id_customization ? '<div style="float:left;"><a href="#" class="increaseqty_product" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" ><img src="../img/admin/up.gif" /></a><br /><a href="#" class="decreaseqty_product" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'"><img src="../img/admin/down.gif" /></a></div>' : '');
 			cart_content += (!this.id_customization ? '<div style="float:left;"><input type="text" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" class="cart_quantity" size="2" value="'+this.cart_quantity+'" />' : '');
 			cart_content += (!this.id_customization ? '<a href="#" class="delete_product" rel="delete_'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" ><img src="../img/admin/delete.gif" /></a></div>' : '');
-			cart_content += '</td><td>' + formatCurrency(parseFloat(this.total.replace(',', '.')), currency_format, currency_sign, currency_blank) + '</td></tr>';
+			cart_content += '</td><td>' + formatCurrency(this.numeric_total, currency_format, currency_sign, currency_blank) + '</td></tr>';
 			
 			if (this.id_customization && this.id_customization != 0)
 			{
@@ -715,6 +715,16 @@
 		$('#payment_list').html(payment_list);
 	}
 
+	function fixPriceFormat(price)
+	{
+		if(price.indexOf(',') > 0 && price.indexOf('.') > 0) // if contains , and .
+			if(price.indexOf(',') < price.indexOf('.')) // if , is before .
+				price = price.replace(',','');  // remove ,
+		price = price.replace(' ',''); // remove any spaces
+		price = price.replace(',','.'); // remove , if price did not cotain both , and .
+		return price;
+	}
+
 	function displaySummary(jsonSummary)
 	{
 		currency_format = jsonSummary.currency.format;
@@ -750,13 +760,13 @@
 		if (!changed_shipping_price)
 			$('#shipping_price').html('<b>' + formatCurrency(parseFloat(jsonSummary.summary.total_shipping), currency_format, currency_sign, currency_blank) + '</b>');
 		shipping_price_selected_carrier = jsonSummary.summary.total_shipping;
-		
-		$('#total_vouchers').html(formatCurrency(parseFloat(jsonSummary.summary.total_discounts_tax_exc.replace(',', '.')), currency_format, currency_sign, currency_blank));
-		$('#total_shipping').html(formatCurrency(parseFloat(jsonSummary.summary.total_shipping_tax_exc.replace(',', '.')), currency_format, currency_sign, currency_blank));
-		$('#total_taxes').html(formatCurrency(parseFloat(jsonSummary.summary.total_tax.replace(',', '.')), currency_format, currency_sign, currency_blank));
-		$('#total_without_taxes').html(formatCurrency(parseFloat(jsonSummary.summary.total_price_without_tax.replace(',', '.')), currency_format, currency_sign, currency_blank));
-		$('#total_with_taxes').html(formatCurrency(parseFloat(jsonSummary.summary.total_price.replace(',', '.')), currency_format, currency_sign, currency_blank));
-		$('#total_products').html(formatCurrency(parseFloat(jsonSummary.summary.total_products.replace(',', '.')), currency_format, currency_sign, currency_blank));
+
+		$('#total_vouchers').html(formatCurrency(parseFloat(fixPriceFormat(jsonSummary.summary.total_discounts_tax_exc)), currency_format, currency_sign, currency_blank));
+		$('#total_shipping').html(formatCurrency(parseFloat(fixPriceFormat(jsonSummary.summary.total_shipping_tax_exc)), currency_format, currency_sign, currency_blank));
+		$('#total_taxes').html(formatCurrency(parseFloat(fixPriceFormat(jsonSummary.summary.total_tax)), currency_format, currency_sign, currency_blank));
+		$('#total_without_taxes').html(formatCurrency(parseFloat(fixPriceFormat(jsonSummary.summary.total_price_without_tax)), currency_format, currency_sign, currency_blank));
+		$('#total_with_taxes').html(formatCurrency(parseFloat(fixPriceFormat(jsonSummary.summary.total_price)), currency_format, currency_sign, currency_blank));
+		$('#total_products').html(formatCurrency(parseFloat(fixPriceFormat(jsonSummary.summary.total_products)), currency_format, currency_sign, currency_blank));
 		id_currency = jsonSummary.cart.id_currency;
 		$('#id_currency option').removeAttr('selected');
 		$('#id_currency option[value="'+id_currency+'"]').attr('selected', true);
@@ -929,11 +939,33 @@
 		var addresses_invoice_options = '';
 		var address_invoice_detail = '';
 		var address_delivery_detail = '';
+		var delivery_address_edit_link = '';
+		var invoice_address_edit_link = '';
+
 		$.each(addresses, function() {
 			if (this.id_address == id_address_invoice)
-				address_invoice_detail = this.company+' '+this.firstname+' '+this.lastname+'<br />'+this.address1+'<br />'+this.address2+'<br />'+this.postcode+' '+this.city+' '+this.country;
+			{
+				address_invoice_detail = this.company+' '+this.firstname+' '+this.lastname+'<br />'+this.address1+'<br />'+this.address2+'<br />'+this.postcode+' '+this.city;
+
+				if (this.state != null)
+					address_invoice_detail += ' '+this.state;
+
+				address_invoice_detail += '</br>'+this.country;
+
+				invoice_address_edit_link = "{$link->getAdminLink('AdminAddresses')}&id_address="+this.id_address+"&updateaddress&realedit=1&liteDisplaying=1&submitFormAjax=1#";
+			}
+
 			if(this.id_address == id_address_delivery)
-				address_delivery_detail = this.company+' '+this.firstname+' '+this.lastname+'<br />'+this.address1+'<br />'+this.address2+'<br />'+this.postcode+' '+this.city+' '+this.country;
+			{
+				address_delivery_detail = this.company+' '+this.firstname+' '+this.lastname+'<br />'+this.address1+'<br />'+this.address2+'<br />'+this.postcode+' '+this.city;
+
+				if (this.state != null)
+					address_delivery_detail += ' '+this.state;
+
+				address_delivery_detail += '</br>'+this.country;
+
+				delivery_address_edit_link = "{$link->getAdminLink('AdminAddresses')}&id_address="+this.id_address+"&updateaddress&realedit=1&liteDisplaying=1&submitFormAjax=1#";
+			}
 
 			addresses_delivery_options += '<option value="'+this.id_address+'" '+(this.id_address == id_address_delivery ? 'selected="selected"' : '')+'>'+this.alias+'</option>';
 			addresses_invoice_options += '<option value="'+this.id_address+'" '+(this.id_address == id_address_invoice ? 'selected="selected"' : '')+'>'+this.alias+'</option>';
@@ -953,6 +985,8 @@
 		$('#id_address_invoice').html(addresses_invoice_options);
 		$('#address_delivery_detail').html(address_delivery_detail);
 		$('#address_invoice_detail').html(address_invoice_detail);
+		$('#edit_delivery_address').attr('href', delivery_address_edit_link);
+		$('#edit_invoice_address').attr('href', invoice_address_edit_link);
 	}
 
 	function updateAddresses()
@@ -1163,14 +1197,14 @@
 	<div id="address_delivery">
 		<h3>{l s='Delivery'}</h3>
 		<select id="id_address_delivery" name="id_address_delivery">
-		</select>
+		</select>&nbsp;<a class="fancybox" id="edit_delivery_address" href="#"><img src="../img/admin/edit.gif" /></a>
 		<div id="address_delivery_detail">
 		</div>
 	</div>
 	<div id="address_invoice">
 		<h3>{l s='Invoice'}</h3>
 		<select id="id_address_invoice" name="id_address_invoice">
-		</select>
+		</select>&nbsp;<a class="fancybox" id="edit_invoice_address" href="#"><img src="../img/admin/edit.gif" /></a>
 		<div id="address_invoice_detail">
 		</div>
 	</div>

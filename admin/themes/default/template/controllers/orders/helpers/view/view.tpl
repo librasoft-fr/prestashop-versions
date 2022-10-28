@@ -65,7 +65,7 @@
 <div class="bloc-command">
 	<div class="button-command">
 			{if (count($invoices_collection))}
-				<a class="button" href="{$link->getAdminLink('AdminPdf')|escape:'htmlall':'UTF-8'}&submitAction=generateInvoicePDF&id_order={$order->id}" target="_blank">
+				<a class="button" href="{$link->getAdminLink('AdminPdf')|escape:'htmlall':'UTF-8'}&submitAction=generateInvoicePDF&id_order={$order->id}">
 					<img src="../img/admin/charged_ok.gif" alt="{l s='View invoice'}" /> {l s='View invoice'}
 				</a>
 			{else}
@@ -73,7 +73,7 @@
 			{/if}
 			 |
 			{if (($currentState && $currentState->delivery) || $order->delivery_number)}
-				<a class="button"  href="{$link->getAdminLink('AdminPdf')|escape:'htmlall':'UTF-8'}&submitAction=generateDeliverySlipPDF&id_order={$order->id}" target="_blank">
+				<a class="button"  href="{$link->getAdminLink('AdminPdf')|escape:'htmlall':'UTF-8'}&submitAction=generateDeliverySlipPDF&id_order={$order->id}">
 					<img src="../img/admin/delivery.gif" alt="{l s='View delivery slip'}" /> {l s='View delivery slip'}
 				</a>
 			{else}
@@ -124,10 +124,10 @@
 			<!-- History of status -->
 			<table cellspacing="0" cellpadding="0" class="table history-status" style="width: 100%;">
 				<colgroup>
-					<col width="1%">
-					<col width="">
-					<col width="20%">
-					<col width="20%">
+					<col width="1%"/>
+					<col width=""/>
+					<col width="20%"/>
+					<col width="20%"/>
 				</colgroup>
 			{foreach from=$history item=row key=key}
 				{if ($key == 0)}
@@ -299,12 +299,12 @@
 				<form id="formAddPayment" method="post" action="{$current_index}&vieworder&id_order={$order->id}&token={$smarty.get.token|escape:'htmlall':'UTF-8'}">
 					<table class="table" width="100%" cellspacing="0" cellpadding="0">
 						<colgroup>
-							<col width="15%">
-							<col width="">
-							<col width="20%">
-							<col width="10%">
-							<col width="10%">
-							<col width="1%">
+							<col width="15%"/>
+							<col width=""/>
+							<col width="20%"/>
+							<col width="10%"/>
+							<col width="10%"/>
+							<col width="1%"/>
 						</colgroup>
 						<thead>
 							<tr>
@@ -751,7 +751,7 @@
 			<a href="{$link->getAdminLink('AdminCustomerThreads')|escape:'htmlall':'UTF-8'}"><b>{l s='Click here'}</b> {l s='to see all messages.'}</a><br>
 			<div id="message" style="display: {if Tools::getValue('message')}block{else}none{/if}">
 						<select name="order_message" id="order_message" onchange="orderOverwriteMessage(this, '{l s='Do you want to overwrite your existing message?'}')">
-							<option value="0" selected="selected">-- {l s='Choose a standard message'} --</option>
+							<option value="0" selected="selected">- {l s='Choose a standard message'} -</option>
 			{foreach from=$orderMessages item=orderMessage}
 				<option value="{$orderMessage['message']|escape:'htmlall':'UTF-8'}">{$orderMessage['name']}</option>
 			{/foreach}
@@ -787,8 +787,6 @@
 		</fieldset>
 	{/if}
 	</div>
-
-
 	<div class="clear">&nbsp;</div>
 	<br /><br /><a href="{$current_index}&token={$smarty.get.token}"><img src="../img/admin/arrow2.gif" /> {l s='Back to list'}</a><br />
 {/block}
