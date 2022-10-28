@@ -34,7 +34,7 @@ class StatsData extends Module
     {
         $this->name = 'statsdata';
         $this->tab = 'analytics_stats';
-        $this->version = '1.6.0';
+        $this->version = '1.6.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -105,7 +105,7 @@ class StatsData extends Module
 
             if (Configuration::get('PS_STATSDATA_PLUGINS')) {
                 if (_PS_VERSION_ >= 1.7) {
-                    $this->context->controller->registerJavascript('modules-plugindetect', 'modules/'.$this->name.'/js/plugindetect.js', ['position' => 'bottom', 'priority' => 150]);
+                    $this->context->controller->registerJavascript('modules-plugindetect', 'modules/'.$this->name.'/js/plugindetect.js', array('position' => 'bottom', 'priority' => 150));
                 } else {
                     $this->context->controller->addJS($this->_path.'js/plugindetect.js');
                 }
