@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,13 +18,15 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2007-2017 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
-abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterface
+use PrestaShop\PrestaShop\Adapter\ServiceLocator;
+
+abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation\Database\EntityInterface
 {
     /**
      * List of field types
@@ -229,7 +231,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         if ($id) {
-            $entity_mapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
+            $entity_mapper = \PrestaShop\PrestaShop\Adapter\ServiceLocator::get("\\PrestaShop\\PrestaShop\\Adapter\\EntityMapper");
             $entity_mapper->load($id, $id_lang, $this, $this->def, $this->id_shop, self::$cache_objects);
         }
     }
@@ -396,7 +398,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             case self::TYPE_DATE:
                 if (!$value) {
-                    return '0000-00-00';
+                    $value = '0000-00-00';
                 }
 
                 if ($with_quotes) {
@@ -675,18 +677,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 // A little explanation of what we do here : we want to create multishop entry when update is called, but
                 // only if we are in a shop context (if we are in all context, we just want to update entries that alread exists)
                 $shop_exists = Db::getInstance()->getValue('SELECT '.$this->def['primary'].' FROM '._DB_PREFIX_.$this->def['table'].'_shop WHERE '.$where);
-
                 if ($shop_exists) {
-                    if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) {
-                        foreach ($fields as $key => $val) {
-                            if (!array_key_exists($key, (array)$this->update_fields)) {
-                                unset($fields[$key]);
-                            }
-                        }
-                    }
-                    $result &= Db::getInstance()->update($this->def['table'] . '_shop', $fields, $where, 0, $null_values);
+                    $result &= Db::getInstance()->update($this->def['table'].'_shop', $fields, $where, 0, $null_values);
                 } elseif (Shop::getContext() == Shop::CONTEXT_SHOP) {
-                    $result &= Db::getInstance()->insert($this->def['table'] . '_shop', $all_fields, $null_values);
+                    $result &= Db::getInstance()->insert($this->def['table'].'_shop', $all_fields, $null_values);
                 }
             }
         }
@@ -763,22 +757,26 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $id_shop_list = $this->id_shop_list;
             }
 
-            $result &= Db::getInstance()->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.(int)$this->id.' AND id_shop IN ('.implode(', ', $id_shop_list).')');
+            $id_shop_list = array_map('intval', $id_shop_list);
+
+            $result &= Db::getInstance()->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.
+                (int)$this->id.' AND id_shop IN ('.implode(', ', $id_shop_list).')');
         }
 
         // Database deletion
         $has_multishop_entries = $this->hasMultishopEntries();
+
+        // Database deletion for multilingual fields related to the object
+        if (!empty($this->def['multilang']) && !$has_multishop_entries) {
+            $result &= Db::getInstance()->delete($this->def['table'].'_lang', '`'.bqSQL($this->def['primary']).'` = '.(int)$this->id);
+        }
+
         if ($result && !$has_multishop_entries) {
             $result &= Db::getInstance()->delete($this->def['table'], '`'.bqSQL($this->def['primary']).'` = '.(int)$this->id);
         }
 
         if (!$result) {
             return false;
-        }
-
-        // Database deletion for multilingual fields related to the object
-        if (!empty($this->def['multilang']) && !$has_multishop_entries) {
-            $result &= Db::getInstance()->delete($this->def['table'].'_lang', '`'.bqSQL($this->def['primary']).'` = '.(int)$this->id);
         }
 
         // @hook actionObject*DeleteAfter
@@ -927,13 +925,14 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Checks if multilingual object field values are valid before database interaction.
      *
      * @param bool $die
-     * @param bool $error_return
+     * @param bool $errorReturn
      *
      * @return bool|string True, false or error message.
      * @throws PrestaShopException
      */
-    public function validateFieldsLang($die = true, $error_return = false)
+    public function validateFieldsLang($die = true, $errorReturn = false)
     {
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
         foreach ($this->def['fields'] as $field => $data) {
             if (empty($data['lang'])) {
                 continue;
@@ -947,8 +946,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // The value for the default must always be set, so we put an empty string if it does not exists
-            if (!isset($values[Configuration::get('PS_LANG_DEFAULT')])) {
-                $values[Configuration::get('PS_LANG_DEFAULT')] = '';
+            if (!isset($values[$defaultLang])) {
+                $values[$defaultLang] = '';
             }
 
             foreach ($values as $id_lang => $value) {
@@ -961,7 +960,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                     if ($die) {
                         throw new PrestaShopException($message);
                     }
-                    return $error_return ? $message : false;
+                    return $errorReturn ? $message : false;
                 }
             }
         }
@@ -1105,18 +1104,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     }
 
     /**
-     * @deprecated 1.5.0.1 Use validateController() instead
-     * @param bool $htmlentities
-     *
-     * @return array
-     */
-    public function validateControler($htmlentities = true)
-    {
-        Tools::displayAsDeprecated();
-        return $this->validateController($htmlentities);
-    }
-
-    /**
      * Validates submitted values and returns an array of errors, if any.
      *
      * @param bool $htmlentities If true, uses htmlentities() for field name translations in errors.
@@ -1154,23 +1141,20 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             // Checking for fields validity
             // Hack for postcode required for country which does not have postcodes
             if (!empty($value) || $value === '0' || ($field == 'postcode' && $value == '0')) {
-                $validation_error = false;
                 if (isset($data['validate'])) {
-                    $data_validate = $data['validate'];
-                    if (!Validate::$data_validate($value) && (!empty($value) || $data['required'])) {
+                    if (!call_user_func('Validate::'.$data['validate'],$value) && (!empty($value) || $data['required'])) {
                         $errors[$field] = '<b>'.self::displayFieldName($field, get_class($this), $htmlentities).
                             '</b> '.Tools::displayError('is invalid.');
-                        $validation_error = true;
                     }
-                }
-
-                if (!$validation_error) {
+                } else {
                     if (isset($data['copy_post']) && !$data['copy_post']) {
                         continue;
                     }
                     if ($field == 'passwd') {
+                        /** @var \PrestaShop\PrestaShop\Core\Crypto\Hashing $crypto */
+                        $crypto = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing');
                         if ($value = Tools::getValue($field)) {
-                            $this->{$field} = Tools::encrypt($value);
+                            $this->{$field} = $crypto->hash($value, _COOKIE_KEY_);
                         }
                     } else {
                         $this->{$field} = $value;
@@ -1374,6 +1358,27 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 		SELECT id_required_field, object_name, field_name
 		FROM '._DB_PREFIX_.'required_field
 		'.(!$all ? 'WHERE object_name = \''.pSQL(get_class($this)).'\'' : ''));
+    }
+
+    /**
+     * Returns true if required field exists
+     *
+     * @param string $field_name to search
+     * @param bool $all If true, returns required fields of all object classes.
+     *
+     * @return boolean
+     */
+    public function isFieldRequired($field_name, $all = false)
+    {
+        if (empty($field_name)) {
+            return false;
+        } else {
+            return (bool) Db::getInstance()->getValue('
+            SELECT id_required_field
+            FROM '._DB_PREFIX_.'required_field
+            WHERE field_name = "'. Db::getInstance()->escape($field_name) .'"
+            '.(!$all ? ' AND object_name = \''.pSQL(get_class($this)).'\'' : ''));
+        }
     }
 
     /**
@@ -1611,11 +1616,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @param string $classname
      * @param array  $data
      * @param string $where
-     * @param string $specific_where Only executed for common table
      *
      * @return bool
      */
-    public static function updateMultishopTable($classname, $data, $where = '', $specific_where = '')
+    public static function updateMultishopTable($classname, $data, $where = '')
     {
         $def = ObjectModel::getDefinition($classname);
         $update_data = array();

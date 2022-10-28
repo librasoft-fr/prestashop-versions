@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @property WebserviceKey $object
@@ -43,6 +43,8 @@ class AdminWebserviceControllerCore extends AdminController
         $this->delete = true;
         $this->id_lang_default = Configuration::get('PS_LANG_DEFAULT');
 
+        parent::__construct();
+
         $this->bulk_actions = array(
             'delete' => array(
                 'text' => $this->l('Delete selected'),
@@ -62,7 +64,7 @@ class AdminWebserviceControllerCore extends AdminController
                 'orderby' => false
             ),
             'active' => array(
-                'title' => $this->l('Enabled'),
+                'title' => $this->trans('Enabled', array(), 'Admin.Global'),
                 'align' => 'center',
                 'active' => 'status',
                 'type' => 'bool',
@@ -73,7 +75,7 @@ class AdminWebserviceControllerCore extends AdminController
 
         $this->fields_options = array(
                 'general' => array(
-                    'title' =>    $this->l('Configuration'),
+                    'title' =>    $this->trans('Configuration', array(), 'Admin.Global'),
                     'fields' =>    array(
                         'PS_WEBSERVICE' => array('title' => $this->l('Enable PrestaShop\'s webservice'),
                             'desc' => $this->l('Before activating the webservice, you must be sure to: ').
@@ -84,7 +86,7 @@ class AdminWebserviceControllerCore extends AdminController
                             'cast' => 'intval',
                             'type' => 'bool'),
                     ),
-                    'submit' => array('title' => $this->l('Save'))
+                    'submit' => array('title' => $this->trans('Save', array(), 'Admin.Actions'))
                 ),
             );
 
@@ -96,8 +98,6 @@ class AdminWebserviceControllerCore extends AdminController
                 'type' => 'bool'
             );
         }
-
-        parent::__construct();
     }
 
     public function initPageHeaderToolbar()
@@ -160,12 +160,12 @@ class AdminWebserviceControllerCore extends AdminController
                         array(
                             'id' => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->trans('Enabled', array(), 'Admin.Global')
                         ),
                         array(
                             'id' => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
+                            'label' => $this->trans('Disabled', array(), 'Admin.Global')
                         )
                     )
                 ),
@@ -186,7 +186,7 @@ class AdminWebserviceControllerCore extends AdminController
         }
 
         $this->fields_form['submit'] = array(
-            'title' => $this->l('Save'),
+            'title' => $this->trans('Save', array(), 'Admin.Actions'),
         );
 
         if (!($obj = $this->loadObject(true))) {
@@ -224,7 +224,7 @@ class AdminWebserviceControllerCore extends AdminController
             $helper->toolbar_scroll = true;
             $helper->toolbar_btn = array('save' => array(
                                 'href' => '#',
-                                'desc' => $this->l('Save')
+                                'desc' => $this->trans('Save', array(), 'Admin.Actions')
                             ));
             $helper->id = $this->id;
             $helper->tpl_vars = $this->tpl_option_vars;
@@ -246,10 +246,10 @@ class AdminWebserviceControllerCore extends AdminController
     public function postProcess()
     {
         if (Tools::getValue('key') && strlen(Tools::getValue('key')) < 32) {
-            $this->errors[] = Tools::displayError('Key length must be 32 character long.');
+            $this->errors[] = $this->trans('Key length must be 32 character long.', array(), 'Admin.AdvParameters.Notification');
         }
         if (WebserviceKey::keyExists(Tools::getValue('key')) && !Tools::getValue('id_webservice_account')) {
-            $this->errors[] = Tools::displayError('This key already exists.');
+            $this->errors[] = $this->trans('This key already exists.', array(), 'Admin.AdvParameters.Notification');
         }
         return parent::postProcess();
     }

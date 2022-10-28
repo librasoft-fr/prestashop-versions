@@ -1,26 +1,27 @@
-/*
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 //build confirmation modal
 function confirm_modal(heading, question, left_button_txt, right_button_txt, left_button_callback, right_button_callback) {
@@ -286,9 +287,14 @@ $(document).ready(function() {
 	//show footer when reach bottom
 	function animateFooter(){
 		if($(window).scrollTop() + $(window).height() === $(document).height()) {
+			$('div.onboarding-navbar').animate({
+				bottom: "+=50"
+			}, 500, function() {
+			});
 			$('#footer:hidden').removeClass('hide');
 		} else {
 			$('#footer').addClass('hide');
+			$('div.onboarding-navbar').css('bottom', '0px');
 		}
 	}
 
@@ -474,4 +480,51 @@ $(document).ready(function() {
 
 	//scroll_if_anchor(window.location.hash);
 	$("body").on("click", "a.anchor", scroll_if_anchor);
+
+	//manage curency status switcher
+	$('#currencyStatus input').change(function(){
+		var parentZone = $(this).parent().parent().parent().parent();
+		parentZone.find('.status').addClass('hide');
+
+		if($(this).attr('checked') == 'checked'){
+			parentZone.find('.enabled').removeClass('hide');
+			$('#currency_form #active').val(1);
+		}else{
+			parentZone.find('.disabled').removeClass('hide');
+			$('#currency_form #active').val(0);
+		}
+	});
+
+
+	$('#currencyCronjobLiveExchangeRate input').change(function(){
+		var enable = 0;
+		var parentZone = $(this).parent().parent().parent().parent();
+		parentZone.find('.status').addClass('hide');
+
+		if($(this).attr('checked') == 'checked'){
+			enable = 1;
+			parentZone.find('.enabled').removeClass('hide');
+		}else{
+			enable = 0;
+			parentZone.find('.disabled').removeClass('hide');
+		}
+
+		$.ajax({
+			url: "index.php?controller=AdminCurrencies&token="+token,
+			cache: false,
+			data: "ajax=1&action=cronjobLiveExchangeRate&tab=AdminCurrencies&enable="+enable
+		});
+	});
+
+	// Order details: show modal to update shipping details
+	$(document).on('click', '.edit_shipping_link', function(e) {
+		e.preventDefault();
+
+		$('#id_order_carrier').val($(this).data('id-order-carrier'));
+		$('#shipping_tracking_number').val($(this).data('tracking-number'));
+		$('#shipping_carrier option[value='+$(this).data('id-carrier')+']').prop('selected', true);
+
+		$('#modal-shipping').modal();
+	});
+
 }); //end dom ready

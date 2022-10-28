@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author Prestashop SA <contact@prestashop.com>
-*  @copyright  2007-2017 Prestashop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 class WebserviceRequestCore
 {
@@ -255,7 +255,7 @@ class WebserviceRequestCore
     public static function getResources()
     {
         $resources = array(
-            'addresses' => array('description' => 'The Customer, Manufacturer and Customer addresses','class' => 'Address'),
+            'addresses' => array('description' => 'The Customer, Brand and Customer addresses','class' => 'Address'),
             'carriers' => array('description' => 'The Carriers','class' => 'Carrier'),
             'carts' => array('description' => 'Customer\'s carts', 'class' => 'Cart'),
             'cart_rules' => array('description' => 'Cart rules management', 'class' => 'CartRule'),
@@ -274,10 +274,10 @@ class WebserviceRequestCore
             'images' => array('description' => 'The images', 'specific_management' => true),
             'image_types' => array('description' => 'The image types', 'class' => 'ImageType'),
             'languages' => array('description' => 'Shop languages', 'class' => 'Language'),
-            'manufacturers' => array('description' => 'The product manufacturers','class' => 'Manufacturer'),
+            'manufacturers' => array('description' => 'The product brands','class' => 'Manufacturer'),
+            'messages' => array('description' => 'The Messages','class' => 'Message'),
             'order_carriers' => array('description' => 'The Order carriers','class' => 'OrderCarrier'),
             'order_details' => array('description' => 'Details of an order', 'class' => 'OrderDetail'),
-            'order_discounts' => array('description' => 'Discounts of an order', 'class' => 'OrderDiscount'),
             'order_histories' => array('description' => 'The Order histories','class' => 'OrderHistory'),
             'order_invoices' => array('description' => 'The Order invoices','class' => 'OrderInvoice'),
             'orders' => array('description' => 'The Customers orders','class' => 'Order'),
@@ -323,6 +323,14 @@ class WebserviceRequestCore
             'product_customization_fields' => array('description' => 'Customization Field', 'class' => 'CustomizationField'),
             'customizations' => array('description' => 'Customization values', 'class' => 'Customization'),
         );
+        $extra_resources = Hook::exec('addWebserviceResources', array('resources' => $resources), null, true, false);
+        if (is_array($extra_resources) && count($extra_resources)) {
+            foreach ($extra_resources as $new_resources) {
+                if (is_array($new_resources) && count($new_resources)) {
+                    $resources = array_merge($resources, $new_resources);
+                }
+            }
+        }
         ksort($resources);
         return $resources;
     }
@@ -498,8 +506,7 @@ class WebserviceRequestCore
                     // load resource configuration
                     if ($this->urlSegment[0] != '') {
                         /** @var ObjectModel $object */
-                        $url_resource = $this->resourceList[$this->urlSegment[0]];
-                        $object = new $url_resource['class']();
+                        $object = new $this->resourceList[$this->urlSegment[0]]['class']();
                         if (isset($this->resourceList[$this->urlSegment[0]]['parameters_attribute'])) {
                             $this->resourceConfiguration = $object->getWebserviceParameters($this->resourceList[$this->urlSegment[0]]['parameters_attribute']);
                         } else {
@@ -586,7 +593,7 @@ class WebserviceRequestCore
         if (isset($this->objOutput)) {
             $this->objOutput->setStatus($status);
         }
-        $this->errors[] = array($code, $label);
+        $this->errors[] = $display_errors ? array($code, $label) : 'Internal error. To see this error please display the PHP errors.';
     }
 
     /**
@@ -886,8 +893,7 @@ class WebserviceRequestCore
         }
         if (!empty($ids)) {
             foreach ($ids as $id) {
-                $retrieve_data = $this->resourceConfiguration['retrieveData'];
-                $object = new $retrieve_data['className']((int)$id);
+                $object = new $this->resourceConfiguration['retrieveData']['className']((int)$id);
                 if (!$object->id) {
                     $arr_avoid_id[] = $id;
                 } else {
@@ -1145,8 +1151,7 @@ class WebserviceRequestCore
                     $sql_sort .= 'main_i18n.`'.pSQL($this->resourceConfiguration['fields'][$fieldName]['sqlId']).'` '.$direction.', ';// ORDER BY main_i18n.`field` ASC|DESC
                 } else {
                     /** @var ObjectModel $object */
-                    $retrieve_data = $this->resourceConfiguration['retrieveData'];
-                    $object = new $retrieve_data['className']();
+                    $object = new $this->resourceConfiguration['retrieveData']['className']();
                     $assoc = Shop::getAssoTable($this->resourceConfiguration['retrieveData']['table']);
                     if ($assoc !== false && $assoc['type'] == 'shop' && ($object->isMultiShopField($this->resourceConfiguration['fields'][$fieldName]['sqlId']) || $fieldName == 'id')) {
                         $table_alias = 'multi_shop_'.$this->resourceConfiguration['retrieveData']['table'];
@@ -1194,17 +1199,16 @@ class WebserviceRequestCore
         $this->resourceConfiguration['retrieveData']['params'][] = $filters['sql_limit'];
         //list entities
 
-        $retrieve_data = $this->resourceConfiguration['retrieveData'];
-        $tmp = new $retrieve_data['className']();
+        $tmp = new $this->resourceConfiguration['retrieveData']['className']();
         $sqlObjects = call_user_func_array(array($tmp, $this->resourceConfiguration['retrieveData']['retrieveMethod']), $this->resourceConfiguration['retrieveData']['params']);
         if ($sqlObjects) {
             foreach ($sqlObjects as $sqlObject) {
                 if ($this->fieldsToDisplay == 'minimum') {
-                    $obj = new $retrieve_data['className']();
+                    $obj = new $this->resourceConfiguration['retrieveData']['className']();
                     $obj->id = (int)$sqlObject[$this->resourceConfiguration['fields']['id']['sqlId']];
                     $objects[] = $obj;
                 } else {
-                    $objects[] = new $retrieve_data['className']((int)$sqlObject[$this->resourceConfiguration['fields']['id']['sqlId']]);
+                    $objects[] = new $this->resourceConfiguration['retrieveData']['className']((int)$sqlObject[$this->resourceConfiguration['fields']['id']['sqlId']]);
                 }
             }
             return $objects;
@@ -1219,8 +1223,7 @@ class WebserviceRequestCore
         }
 
         //get entity details
-        $retrieve_data = $this->resourceConfiguration['retrieveData'];
-        $object = new $retrieve_data['className']((int)$this->urlSegment[1]);
+        $object = new $this->resourceConfiguration['retrieveData']['className']((int)$this->urlSegment[1]);
         if ($object->id) {
             $objects[] = $object;
             // Check if Object is accessible for this/those id_shop
@@ -1229,7 +1232,7 @@ class WebserviceRequestCore
                 $check_shop_group = false;
 
                 $sql = 'SELECT 1
-	 						FROM `'.bqSQL(_DB_PREFIX_.$retrieve_data['table']);
+	 						FROM `'.bqSQL(_DB_PREFIX_.$this->resourceConfiguration['retrieveData']['table']);
                 if ($assoc['type'] != 'fk_shop') {
                     $sql .= '_'.$assoc['type'];
                 } else {
@@ -1326,8 +1329,7 @@ class WebserviceRequestCore
         }
         if (!empty($ids)) {
             foreach ($ids as $id) {
-                $retrieve_data = $this->resourceConfiguration['retrieveData'];
-                $object = new $retrieve_data['className']((int)$id);
+                $object = new $this->resourceConfiguration['retrieveData']['className']((int)$id);
                 if (!$object->id) {
                     $arr_avoid_id[] = $id;
                 } else {
@@ -1343,8 +1345,7 @@ class WebserviceRequestCore
             foreach ($objects as $object) {
                 /** @var ObjectModel $object */
                 if (isset($this->resourceConfiguration['objectMethods']) && isset($this->resourceConfiguration['objectMethods']['delete'])) {
-                    $resource_config = $this->resourceConfiguration['objectMethods']['delete'];
-                    $result = $object->$resource_config();
+                    $result = $object->{$this->resourceConfiguration['objectMethods']['delete']}();
                 } else {
                     $result = $object->delete();
                 }
@@ -1409,11 +1410,10 @@ class WebserviceRequestCore
             $attributes = $xmlEntity->children();
 
             /** @var ObjectModel $object */
-            $retrieve_data = $this->resourceConfiguration['retrieveData'];
             if ($this->method == 'POST') {
-                $object = new $retrieve_data['className']();
+                $object = new $this->resourceConfiguration['retrieveData']['className']();
             } elseif ($this->method == 'PUT') {
-                $object = new $retrieve_data['className']((int)$attributes->id);
+                $object = new $this->resourceConfiguration['retrieveData']['className']((int)$attributes->id);
                 if (!$object->id) {
                     $this->setError(404, 'Invalid ID', 92);
                     return false;
@@ -1436,8 +1436,7 @@ class WebserviceRequestCore
                             $this->setError(400, 'parameter "'.$fieldName.'" not writable. Please remove this attribute of this XML', 93);
                             return false;
                         } else {
-                            $setter = $fieldProperties['setter'];
-                            $object->$setter((string)$attributes->$fieldName);
+                            $object->{$fieldProperties['setter']}((string)$attributes->$fieldName);
                         }
                     } elseif (property_exists($object, $sqlId)) {
                         $object->$sqlId = (string)$attributes->$fieldName;

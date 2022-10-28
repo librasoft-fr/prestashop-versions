@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @since 1.5.0
@@ -39,16 +39,18 @@ class AdminWarehousesControllerCore extends AdminController
         $this->lang = false;
         $this->multishop_context = Shop::CONTEXT_ALL;
 
+        parent::__construct();
+
         $this->fields_list = array(
             'id_warehouse'    => array(
-                'title' => $this->l('ID'),
+                'title' => $this->trans('ID', array(), 'Admin.Global'),
                 'width' => 50,
             ),
             'reference'    => array(
-                'title' => $this->l('Reference'),
+                'title' => $this->trans('Reference', array(), 'Admin.Global'),
             ),
             'name' => array(
-                'title' => $this->l('Name'),
+                'title' => $this->trans('Name', array(), 'Admin.Global'),
             ),
             'management_type' => array(
                 'title' => $this->l('Management type'),
@@ -79,8 +81,6 @@ class AdminWarehousesControllerCore extends AdminController
                 'confirm' => $this->l('Delete selected items?')
             )
         );
-
-        parent::__construct();
     }
 
     public function initPageHeaderToolbar()
@@ -181,7 +181,7 @@ class AdminWarehousesControllerCore extends AdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Reference'),
+                    'label' => $this->trans('Reference', array(), 'Admin.Global'),
                     'name' => 'reference',
                     'maxlength' => 32,
                     'required' => true,
@@ -189,7 +189,7 @@ class AdminWarehousesControllerCore extends AdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Name'),
+                    'label' => $this->trans('Name', array(), 'Admin.Global'),
                     'name' => 'name',
                     'maxlength' => 45,
                     'required' => true,
@@ -238,14 +238,14 @@ class AdminWarehousesControllerCore extends AdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->l('City'),
+                    'label' => $this->trans('City', array(), 'Admin.Global'),
                     'name' => 'city',
                     'maxlength' => 32,
                     'required' => true,
                 ),
                 array(
                     'type' => 'select',
-                    'label' => $this->l('Country'),
+                    'label' => $this->trans('Country', array(), 'Admin.Global'),
                     'name' => 'id_country',
                     'required' => true,
                     'default_value' => (int)$this->context->country->id,
@@ -367,7 +367,7 @@ class AdminWarehousesControllerCore extends AdminController
         }
 
         $this->fields_form['submit'] = array(
-            'title' => $this->l('Save'),
+            'title' => $this->trans('Save', array(), 'Admin.Actions'),
         );
 
         $address = null;
@@ -496,14 +496,7 @@ class AdminWarehousesControllerCore extends AdminController
      *
      * @throws PrestaShopException
      */
-    public function getList(
-        $id_lang,
-        $order_by = null,
-        $order_way = null,
-        $start = 0,
-        $limit = null,
-        $id_lang_shop = false
-    )
+    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
     {
         parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
 
@@ -529,42 +522,22 @@ class AdminWarehousesControllerCore extends AdminController
         }
     }
 
-    /**
-     * @return bool
-     */
     public function initContent()
     {
-        if ($this->isAdvancedStockManagementActive()) {
-            return parent::initContent();
+        if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+            $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate advanced stock management before using this feature.');
+            return false;
         }
-
-        return false;
+        parent::initContent();
     }
 
-    /**
-     * @return bool
-     */
     public function initProcess()
     {
-        if ($this->isAdvancedStockManagementActive()) {
-            return parent::initProcess();
+        if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+            $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate advanced stock management before using this feature.');
+            return false;
         }
-
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isAdvancedStockManagementActive()
-    {
-        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-            return true;
-        }
-
-        $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate advanced stock management before using this feature.');
-
-        return false;
+        parent::initProcess();
     }
 
     /**
@@ -588,16 +561,17 @@ class AdminWarehousesControllerCore extends AdminController
 
     protected function updateAddress()
     {
-        /** @var AddressCore $address */
-        $address = new Address();
-
+        // updates/creates address if it does not exist
         if (Tools::isSubmit('id_address') && (int)Tools::getValue('id_address') > 0) {
             $address = new Address((int)Tools::getValue('id_address'));
-        }
-
+        } // updates address
+        else {
+            $address = new Address();
+        } // creates address
+            // sets the address
         $address->alias = Tools::getValue('reference', null);
-        $address->lastname = 'warehouse';   // skip problem with numeric characters
-        $address->firstname = 'warehouse';  // in warehouse name
+        $address->lastname = 'warehouse'; // skip problem with numeric characters in warehouse name
+        $address->firstname = 'warehouse'; // skip problem with numeric characters in warehouse name
         $address->address1 = Tools::getValue('address', null);
         $address->address2 = Tools::getValue('address2', null);
         $address->postcode = Tools::getValue('postcode', null);
@@ -606,13 +580,9 @@ class AdminWarehousesControllerCore extends AdminController
         $address->id_state = Tools::getValue('id_state', null);
         $address->city = Tools::getValue('city', null);
 
-        if (
-            !($country = new Country($address->id_country, Configuration::get('PS_LANG_DEFAULT'))) ||
-            !Validate::isLoadedObject($country)
-        ) {
+        if (!($country = new Country($address->id_country, Configuration::get('PS_LANG_DEFAULT'))) || !Validate::isLoadedObject($country)) {
             $this->errors[] = Tools::displayError('Country is invalid');
         }
-
         $contains_state = isset($country) && is_object($country) ? (int)$country->contains_states: 0;
         $id_state = isset($address) && is_object($address) ? (int)$address->id_state: 0;
         if ($contains_state && !$id_state) {
@@ -629,10 +599,7 @@ class AdminWarehousesControllerCore extends AdminController
             foreach ($validation as $item) {
                 $this->errors[] = $item;
             }
-
-            $this->errors[] = Tools::displayError(
-                'The address is not correct. Please make sure all of the required fields are completed.'
-            );
+            $this->errors[] = Tools::displayError('The address is not correct. Please make sure all of the required fields are completed.');
         } else {
             // valid
 
@@ -646,80 +613,34 @@ class AdminWarehousesControllerCore extends AdminController
     }
 
     /**
-     * When submitting a warehouse deletion request,
-     * make an attempt to load a warehouse instance from an identifier,
-     * ensure the warehouse to be deleted,
-     *  - does not contain any products,
-     *  - nor it has some pending supply orders
-     * before actual deletion
-     *
-     * @return bool|mixed
+     * @see AdminController::processDelete();
      */
     public function processDelete()
     {
-        if (!Tools::isSubmit('delete'.$this->table)) {
-            return false;
+        if (Tools::isSubmit('delete'.$this->table)) {
+            /** @var Warehouse $obj */
+            // check if the warehouse exists and can be deleted
+            if (!($obj = $this->loadObject(true))) {
+                return;
+            } elseif ($obj->getQuantitiesOfProducts() > 0) { // not possible : products
+                $this->errors[] = $this->l('It is not possible to delete a warehouse when there are products in it.');
+            } elseif (SupplyOrder::warehouseHasPendingOrders($obj->id)) { // not possible : supply orders
+                $this->errors[] = $this->l('It is not possible to delete a Warehouse if it has pending supply orders.');
+            } else {
+                // else, it can be deleted
+
+                // sets the address of the warehouse as deleted
+                $address = new Address($obj->id_address);
+                $address->deleted = 1;
+                $address->save();
+
+                // removes associations with carriers/shops/products location
+                $obj->setCarriers(array());
+                $obj->resetProductsLocations();
+
+                return parent::processDelete();
+            }
         }
-
-        /** @var Warehouse $warehouse */
-        $warehouse = $this->loadObject(true);
-
-        if ($this->shouldForbidWarehouseDeletion($warehouse)) {
-            return false;
-        }
-
-        return $this->deleteWarehouse($warehouse);
-    }
-
-    /**
-     * @param $warehouse
-     * @return bool
-     */
-    protected function shouldForbidWarehouseDeletion($warehouse)
-    {
-        if (!$warehouse) {
-            return true;
-        }
-
-        if ($warehouse->getQuantitiesOfProducts() > 0) {
-            $this->errors[] = $this->l('It is not possible to delete a warehouse when there are products in it.');
-
-            return true;
-        }
-
-        if (SupplyOrder::warehouseHasPendingOrders($warehouse->id)) {
-            $this->errors[] = $this->l('It is not possible to delete a Warehouse if it has pending supply orders.');
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param Warehouse $warehouse
-     * @return mixed
-     */
-    protected function deleteWarehouse(Warehouse $warehouse)
-    {
-        $address = new Address($warehouse->id_address);
-        $this->markAddressAsDeleted($address);
-
-        /** @var WarehouseCore $warehouse  */
-        $warehouse->setCarriers(array());
-        $warehouse->resetProductsLocations();
-
-        return parent::processDelete();
-    }
-
-    /**
-     * @param Address $address
-     */
-    protected function markAddressAsDeleted(Address $address)
-    {
-        /** @var AddressCore $address */
-        $address->deleted = 1;
-        $address->save();
     }
 
     /**
@@ -727,18 +648,20 @@ class AdminWarehousesControllerCore extends AdminController
      */
     public function processUpdate()
     {
-        /** @var WarehouseCore $warehouse */
-        if (!($warehouse = $this->loadObject(true))) {
-            return false;
+        // loads object
+        if (!($object = $this->loadObject(true))) {
+            return;
         }
+
+        /** @var Warehouse $object */
 
         $this->updateAddress();
         // handles carriers associations
         $ids_carriers_selected = Tools::getValue('ids_carriers_selected');
         if (Tools::isSubmit('ids_carriers_selected') && !empty($ids_carriers_selected)) {
-            $warehouse->setCarriers($ids_carriers_selected);
+            $object->setCarriers($ids_carriers_selected);
         } else {
-            $warehouse->setCarriers(Tools::getValue('ids_carriers_available'));
+            $object->setCarriers(Tools::getValue('ids_carriers_available'));
         }
 
         return parent::processUpdate();

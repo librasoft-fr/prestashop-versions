@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,10 +18,10 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2007-2017 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 /**
@@ -58,7 +58,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         $this->date = Tools::displayDate($order_invoice->date_add);
 
         $id_lang = Context::getContext()->language->id;
-        $this->title = $order_invoice->getInvoiceNumberFormatted($id_lang,(int)$this->order->id_shop);
+        $this->title = $order_invoice->getInvoiceNumberFormatted($id_lang);
 
         $this->shop = new Shop((int)$this->order->id_shop);
     }
@@ -142,8 +142,8 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      */
     public function getContent()
     {
-        $invoiceAddressPatternRules = Tools::jsonDecode(Configuration::get('PS_INVCE_INVOICE_ADDR_RULES'), true);
-        $deliveryAddressPatternRules = Tools::jsonDecode(Configuration::get('PS_INVCE_DELIVERY_ADDR_RULES'), true);
+        $invoiceAddressPatternRules = json_decode(Configuration::get('PS_INVCE_INVOICE_ADDR_RULES'), true);
+        $deliveryAddressPatternRules = json_decode(Configuration::get('PS_INVCE_DELIVERY_ADDR_RULES'), true);
 
         $invoice_address = new Address((int)$this->order->id_address_invoice);
         $country = new Country((int)$invoice_address->id_country);
@@ -283,18 +283,18 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
          */
         $round_type = null;
         switch ($this->order->round_type) {
-        case Order::ROUND_TOTAL:
+            case Order::ROUND_TOTAL:
                 $round_type = 'total';
-            break;
-        case Order::ROUND_LINE:
+                break;
+            case Order::ROUND_LINE:
                 $round_type = 'line';
-            break;
-        case Order::ROUND_ITEM:
+                break;
+            case Order::ROUND_ITEM:
                 $round_type = 'item';
-            break;
-        default:
+                break;
+            default:
                 $round_type = 'line';
-            break;
+                break;
         }
 
         $display_product_images = Configuration::get('PS_PDF_IMG_INVOICE');

@@ -1,33 +1,33 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @property OrderInvoice $object
  */
-class AdminOutstandingControllerCore  extends AdminController
+class AdminOutstandingControllerCore extends AdminController
 {
     public function __construct()
     {
@@ -36,7 +36,7 @@ class AdminOutstandingControllerCore  extends AdminController
         $this->className = 'OrderInvoice';
         $this->addRowAction('view');
 
-        $this->context = Context::getContext();
+        parent::__construct();
 
         $this->_select = '`id_order_invoice` AS `id_invoice`,
 		`id_order_invoice` AS `outstanding`,
@@ -68,12 +68,12 @@ class AdminOutstandingControllerCore  extends AdminController
                 'filter_key' => 'a!date_add'
             ),
             'customer' => array(
-                'title' => $this->l('Customer'),
+                'title' => $this->trans('Customer', array(), 'Admin.Global'),
                 'filter_key' => 'customer',
                 'tmpTableFilter' => true
             ),
             'company' => array(
-                'title' => $this->l('Company'),
+                'title' => $this->trans('Company', array(), 'Admin.Global'),
                 'align' => 'center'
             ),
             'risk' => array(
@@ -108,8 +108,6 @@ class AdminOutstandingControllerCore  extends AdminController
                 'search' => false
             )
         );
-
-        parent::__construct();
     }
 
     /**

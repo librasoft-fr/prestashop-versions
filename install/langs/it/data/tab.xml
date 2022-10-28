@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity_tab>
+  <tab id="DEFAULT" name="Di Più" />
   <tab id="Addresses" name="Indirizzi"/>
   <tab id="Administration" name="Amministrazione"/>
+  <tab id="Module_Page" name="Moduli e Servizi" />
   <tab id="Advanced_Parameters" name="Parametri avanzati"/>
   <tab id="Attachments" name="Allegati"/>
   <tab id="Attributes_and_Values" name="Attributi"/>
@@ -43,12 +45,13 @@
   <tab id="Login" name="Accesso"/>
   <tab id="Logs" name="Log"/>
   <tab id="Maintenance" name="Manutenzione"/>
+  <tab id="Manufacturers_and_suppliers" name="Marchi e Fornitori" />
   <tab id="Manufacturers" name="Produttori"/>
   <tab id="Marketing" name="Marketing"/>
   <tab id="Menus" name="Menù"/>
   <tab id="Merchandise_Returns" name="Resi"/>
-  <tab id="Modules_1" name="Moduli e servizi"/>
-  <tab id="Modules" name="Moduli"/>
+  <tab id="Modules_1" name="Modules" />
+  <tab id="Modules" name="Modules" />
   <tab id="Modules_Themes_Catalog" name="Catalogo moduli e temi"/>
   <tab id="Monitoring" name="Monitoraggio"/>
   <tab id="Multistore" name="Multi-negozio"/>
@@ -63,7 +66,7 @@
   <tab id="Positions" name="Posizioni"/>
   <tab id="Preferences_1" name="Preferenze"/>
   <tab id="Preferences" name="Preferenze"/>
-  <tab id="Price_Rules" name="Regole prezzi"/>
+  <tab id="Price_Rules" name="Discounts"/>
   <tab id="Products_1" name="Prodotti"/>
   <tab id="Products" name="Prodotti"/>
   <tab id="Profiles" name="Profili"/>
@@ -100,4 +103,5 @@
   <tab id="Webservice" name="Webservice"/>
   <tab id="Zones" name="Zone"/>
   <tab id="CarrierWizard" name="Corriere"/>
+  <tab id="Marketing_tools" name="Strumenti di Compra-Vendita" />
 </entity_tab>

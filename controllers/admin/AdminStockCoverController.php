@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @since 1.5.0
@@ -36,7 +36,6 @@ class AdminStockCoverControllerCore extends AdminController
     public function __construct()
     {
         $this->bootstrap = true;
-        $this->context = Context::getContext();
         $this->table = 'product';
         $this->className = 'Product';
         $this->list_id = 'product';
@@ -45,9 +44,11 @@ class AdminStockCoverControllerCore extends AdminController
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->tpl_list_vars['show_filter'] = true;
 
+        parent::__construct();
+
         $this->fields_list = array(
             'reference' => array(
-                'title' => $this->l('Reference'),
+                'title' => $this->trans('Reference', array(), 'Admin.Global'),
                 'align' => 'center',
                 'filter_key' => 'a!reference'
             ),
@@ -62,7 +63,7 @@ class AdminStockCoverControllerCore extends AdminController
                 'filter_key' => 'a!upc'
             ),
             'name' => array(
-                'title' => $this->l('Name'),
+                'title' => $this->trans('Name', array(), 'Admin.Global'),
                 'filter_key' => 'b!name'
             ),
             'qty_sold' => array(
@@ -99,8 +100,6 @@ class AdminStockCoverControllerCore extends AdminController
         $this->stock_cover_warehouses = Warehouse::getWarehouses(true);
         // gets the final list of warehouses
         array_unshift($this->stock_cover_warehouses, array('id_warehouse' => -1, 'name' => $this->l('All Warehouses')));
-
-        parent::__construct();
     }
 
     public function initPageHeaderToolbar()
@@ -126,7 +125,6 @@ class AdminStockCoverControllerCore extends AdminController
         if (Tools::isSubmit('id_product')) {
             // if a product id is submit
 
-            $this->list_no_link = true;
             $this->lang = false;
             $this->list_id = 'details';
             $this->tpl_list_vars['show_filter'] = false;
@@ -144,8 +142,7 @@ class AdminStockCoverControllerCore extends AdminController
 
             $this->_select = 'a.id_product_attribute as id, a.id_product, stock_view.reference, stock_view.ean13,
 							stock_view.upc, stock_view.usable_quantity as stock';
-            $this->_join = 'INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = a.id_product AND p.advanced_stock_management = 1)';
-            $this->_join .= ' INNER JOIN
+            $this->_join = ' INNER JOIN
 						  (
 						  	SELECT SUM(s.usable_quantity) as usable_quantity, s.id_product_attribute, s.reference, s.ean13, s.upc
 						   	FROM '._DB_PREFIX_.'stock s
@@ -179,7 +176,6 @@ class AdminStockCoverControllerCore extends AdminController
 						'.Shop::addSqlAssociation('product_attribute', 'pa', false).'
 						INNER JOIN `'._DB_PREFIX_.'stock` s ON (s.id_product = a.id_product)';
         $this->_group = 'GROUP BY a.id_product';
-        $this->_where = 'AND a.advanced_stock_management = 1';
 
         self::$currentIndex .= '&coverage_period='.(int)$this->getCurrentCoveragePeriod().'&warn_days='.(int)$this->getCurrentWarning();
         if ($this->getCurrentCoverageWarehouse() != -1) {
@@ -365,14 +361,22 @@ class AdminStockCoverControllerCore extends AdminController
      */
     protected function getQuantitySold($id_product, $id_product_attribute, $coverage)
     {
-        return StockManagerFactory::getManager()->getProductOutForCoverage(
-                $id_product,
-                $id_product_attribute,
-                $coverage,
-                (($this->getCurrentCoverageWarehouse() == -1) ? null : Tools::getValue('id_warehouse', -1))
-        );
+        $query = new DbQuery();
+        $query->select('SUM(od.product_quantity)');
+        $query->from('order_detail', 'od');
+        $query->leftJoin('orders', 'o', 'od.id_order = o.id_order');
+        $query->leftJoin('order_history', 'oh', 'o.date_upd = oh.date_add');
+        $query->leftJoin('order_state', 'os', 'os.id_order_state = oh.id_order_state');
+        $query->where('od.product_id = '.(int)$id_product);
+        $query->where('od.product_attribute_id = '.(int)$id_product_attribute);
+        $query->where('TO_DAYS("'.date('Y-m-d').' 00:00:00") - TO_DAYS(oh.date_add) <= '.(int)$coverage);
+        $query->where('o.valid = 1');
+        $query->where('os.logable = 1 AND os.delivery = 1 AND os.shipped = 1');
+
+        $quantity = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        return $quantity;
     }
-    
+
     public function initContent()
     {
         if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
@@ -381,7 +385,7 @@ class AdminStockCoverControllerCore extends AdminController
         }
         parent::initContent();
     }
-    
+
     public function initProcess()
     {
         if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {

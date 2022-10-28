@@ -1,27 +1,27 @@
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 function addProductRuleGroup()
 {
@@ -144,6 +144,7 @@ function toggleApplyDiscount(percent, amount, apply_to)
 		$('*[for=apply_discount_to_cheapest]').show();
 		$('#apply_discount_to_selection').show();
 		$('*[for=apply_discount_to_selection]').show();
+		$('#apply_discount_to_product_special').show(400);
 	}
 	else
 	{
@@ -162,6 +163,7 @@ function toggleApplyDiscount(percent, amount, apply_to)
 		$('#apply_discount_to_selection').hide();
 		$('*[for=apply_discount_to_selection]').hide();
 		$('#apply_discount_to_selection').prop('checked', false);
+		$('#apply_discount_to_product_special').hide(200);
 	}
 	else
 	{
@@ -259,8 +261,7 @@ $('#free_gift_on').click(function(){
 	toggleGiftProduct();}
 );
 $('#free_gift_off').click(function(){
-	toggleGiftProduct();
-	$('#gift_products_found').hide();}
+	toggleGiftProduct();}
 );
 toggleGiftProduct();
 
@@ -331,7 +332,7 @@ $('#customerFilter')
 			parse: function(data) {
 				var mytab = new Array();
 				for (var i = 0; i < data.length; i++)
-					mytab[mytab.length] = { data: data[i], value: data[i].cname + ' (' + data[i].email + ')' + (data[i].from_shop_name ? ' - ' + data[i].from_shop_name : '' ) };
+					mytab[mytab.length] = { data: data[i], value: data[i].cname + ' (' + data[i].email + ')' };
 				return mytab;
 			},
 			extraParams: {

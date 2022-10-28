@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @TODO Move undeclared variables and methods to this (base) class: $errors, $layout, checkLiveEditAccess, etc.
@@ -77,6 +77,10 @@ abstract class ControllerCore
 
     /** @var string Controller name */
     public $php_self;
+
+    /** @var PrestaShopBundle\Translation\Translator */
+    protected $translator;
+
 
     /**
      * Check if the controller is available for the current user/visitor
@@ -150,9 +154,17 @@ abstract class ControllerCore
 
         $this->context = Context::getContext();
         $this->context->controller = $this;
+        $this->translator = Context::getContext()->getTranslator();
 
         // Usage of ajax parameter is deprecated
         $this->ajax = Tools::getValue('ajax') || Tools::isSubmit('ajax');
+
+        if (isset($_SERVER['HTTP_ACCEPT'])) {
+            $this->ajax = $this->ajax || preg_match(
+                '#\bapplication/json\b#',
+                $_SERVER['HTTP_ACCEPT']
+            );
+        }
 
         if (!headers_sent()
             && isset($_SERVER['HTTP_USER_AGENT'])
@@ -212,6 +224,12 @@ abstract class ControllerCore
             $this->initCursedPage();
             $this->smartyOutputContent($this->layout);
         }
+    }
+
+
+    protected function trans($id, array $parameters = array(), $domain = null, $locale = null)
+    {
+        return $this->translator->trans($id, $parameters, $domain, $locale);
     }
 
     /**
@@ -372,32 +390,19 @@ abstract class ControllerCore
      */
     public function addJS($js_uri, $check_path = true)
     {
-        if (is_array($js_uri)) {
-            foreach ($js_uri as $js_file) {
-                $js_file = explode('?', $js_file);
-                $version = '';
-                if (isset($js_file[1]) && $js_file[1]) {
-                    $version = $js_file[1];
-                }
-                $js_path = $js_file = $js_file[0];
-                if ($check_path) {
-                    $js_path = Media::getJSPath($js_file);
-                }
+        if (!is_array($js_uri)) {
+            $js_uri = [$js_uri];
+        }
 
-                // $key = is_array($js_path) ? key($js_path) : $js_path;
-                if ($js_path && !in_array($js_path, $this->js_files)) {
-                    $this->js_files[] = $js_path.($version ? '?'.$version : '');
-                }
-            }
-        } else {
-            $js_uri = explode('?', $js_uri);
+        foreach ($js_uri as $js_file) {
+            $js_file = explode('?', $js_file);
             $version = '';
-            if (isset($js_uri[1]) && $js_uri[1]) {
-                $version = $js_uri[1];
+            if (isset($js_file[1]) && $js_file[1]) {
+                $version = $js_file[1];
             }
-            $js_path = $js_uri = $js_uri[0];
+            $js_path = $js_file = $js_file[0];
             if ($check_path) {
-                $js_path = Media::getJSPath($js_uri);
+                $js_path = Media::getJSPath($js_file);
             }
 
             if ($js_path && !in_array($js_path, $this->js_files)) {
@@ -481,18 +486,18 @@ abstract class ControllerCore
         if (!is_array($name)) {
             $name = array($name);
         }
-        if (is_array($name)) {
-            foreach ($name as $plugin) {
-                $plugin_path = Media::getJqueryPluginPath($plugin, $folder);
 
-                if (!empty($plugin_path['js'])) {
-                    $this->addJS($plugin_path['js'], false);
-                }
-                if ($css && !empty($plugin_path['css'])) {
-                    $this->addCSS(key($plugin_path['css']), 'all', null, false);
-                }
+        foreach ($name as $plugin) {
+            $plugin_path = Media::getJqueryPluginPath($plugin, $folder);
+
+            if (!empty($plugin_path['js'])) {
+                $this->addJS($plugin_path['js'], false);
+            }
+            if ($css && !empty($plugin_path['css'])) {
+                $this->addCSS(key($plugin_path['css']), 'all', null, false);
             }
         }
+
     }
 
     /**
@@ -504,6 +509,13 @@ abstract class ControllerCore
     public function isXmlHttpRequest()
     {
         return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+    }
+
+    public function getLayout()
+    {
+        // This is implemented by some children classes (e.g. FrontController)
+        // but not required for all controllers.
+        return null;
     }
 
     /**
@@ -523,45 +535,13 @@ abstract class ControllerCore
 
         if (is_array($content)) {
             foreach ($content as $tpl) {
-                $html .= $this->context->smarty->fetch($tpl);
+                $html .= $this->context->smarty->fetch($tpl, null, $this->getLayout());
             }
         } else {
-            $html = $this->context->smarty->fetch($content);
+            $html = $this->context->smarty->fetch($content, null, $this->getLayout());
         }
 
-        $html = trim($html);
-
-        if (in_array($this->controller_type, array('front', 'modulefront')) && !empty($html) && $this->getLayout()) {
-            $live_edit_content = '';
-            if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
-                $live_edit_content = $this->getLiveEditFooter();
-            }
-
-            $dom_available = extension_loaded('dom') ? true : false;
-            $defer = (bool)Configuration::get('PS_JS_DEFER');
-
-            if ($defer && $dom_available) {
-                $html = Media::deferInlineScripts($html);
-            }
-            $html = trim(str_replace(array('</body>', '</html>'), '', $html))."\n";
-
-            $this->context->smarty->assign(array(
-                $js_tag => Media::getJsDef(),
-                'js_files' =>  $defer ? array_unique($this->js_files) : array(),
-                'js_inline' => ($defer && $dom_available) ? Media::getInlineScript() : array()
-            ));
-
-            $javascript = $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl');
-
-            if ($defer && (!isset($this->ajax) || ! $this->ajax)) {
-                echo $html.$javascript;
-            } else {
-                echo preg_replace('/(?<!\$)'.$js_tag.'/', $javascript, $html);
-            }
-            echo $live_edit_content.((!isset($this->ajax) || ! $this->ajax) ? '</body></html>' : '');
-        } else {
-            echo $html;
-        }
+        echo trim($html);
     }
 
     /**
@@ -600,18 +580,18 @@ abstract class ControllerCore
             case E_USER_ERROR:
             case E_ERROR:
                 die('Fatal error: '.$errstr.' in '.$errfile.' on line '.$errline);
-            break;
+                break;
             case E_USER_WARNING:
             case E_WARNING:
                 $type = 'Warning';
-            break;
+                break;
             case E_USER_NOTICE:
             case E_NOTICE:
                 $type = 'Notice';
-            break;
+                break;
             default:
                 $type = 'Unknown error';
-            break;
+                break;
         }
 
         Controller::$php_errors[] = array(
@@ -644,8 +624,16 @@ abstract class ControllerCore
             $method = $bt[1]['function'];
         }
 
-        Hook::exec('actionBeforeAjaxDie', array('controller' => $controller, 'method' => $method, 'value' => $value));
+        /* @deprecated deprecated since 1.6.1.1 */
+        // Hook::exec('actionBeforeAjaxDie', array('controller' => $controller, 'method' => $method, 'value' => $value));
+        Hook::exec('actionAjaxDieBefore', array('controller' => $controller, 'method' => $method, 'value' => $value));
+
+        /**
+         * @deprecated deprecated since 1.6.1.1
+         * use 'actionAjaxDie'.$controller.$method.'Before' instead
+         */
         Hook::exec('actionBeforeAjaxDie'.$controller.$method, array('value' => $value));
+        Hook::exec('actionAjaxDie'.$controller.$method.'Before', array('value' => $value));
 
         die($value);
     }

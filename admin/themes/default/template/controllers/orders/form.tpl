@@ -1,27 +1,27 @@
-{*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*}
+{**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ *}
 <script type="text/javascript">
 	var id_cart = {$cart->id|intval};
 	var id_customer = 0;
@@ -351,7 +351,7 @@
 				id_product: id_product,
 				id_product_attribute: id_product_attribute,
 				id_customer: id_customer,
-				price: new Number(new_price.replace(",",".")).toFixed(4).toString()
+				price: ps_round(new Number(new_price.replace(",",".")), 6).toString()
 				},
 			success : function(res)
 			{
@@ -591,28 +591,13 @@
 			$('#carrier_form').show();
 			$('#delivery_option').html(html);
 			$('#carriers_err').hide();
+			$("button[name=\"submitAddOrder\"]").removeAttr("disabled");
 		}
 		else
 		{
 			$('#carrier_form').hide();
 			$('#carriers_err').show().html('{l s='No carrier can be applied to this order'}');
-		}
-	}
-
-	function checkVirtualProduct(products, delivery_option_list) {
-		if (delivery_option_list.length == 0 && products.length > 0) {
-			var find = 1;
-			$.each(products, function () {
-				if (find == 1) {
-					this.is_virtual == 1 ? find = 1 : find = 0;
-				}
-			});
-			if (find == 1) {
-				$("button[name=\"submitAddOrder\"]").removeAttr("disabled");
-			}
-			else {
-				$("button[name=\"submitAddOrder\"]").attr("disabled", "disabled");
-			}
+			$("button[name=\"submitAddOrder\"]").attr("disabled", "disabled");
 		}
 	}
 
@@ -647,7 +632,7 @@
 					else
 						customization_errors = false;
 					$('#products_found').show();
-					products_found += '<label class="control-label col-lg-3">{l s='Product'}</label><div class="col-lg-6"><select id="id_product" onchange="display_product_attributes();display_product_customizations();"></div>';
+					products_found += '<label class="control-label col-lg-3">{l s='Product'}</label><div class="col-lg-6"><select id="id_product" onclick="display_product_attributes();display_product_customizations();"></div>';
 					attributes_html += '<label class="control-label col-lg-3">{l s='Combination'}</label><div class="col-lg-6">';
 					$.each(res.products, function() {
 						products_found += '<option '+(this.combinations.length > 0 ? 'rel="'+this.qty_in_stock+'"' : '')+' value="'+this.id_product+'">'+this.name+(this.combinations.length == 0 ? ' - '+this.formatted_price : '')+'</option>';
@@ -789,7 +774,7 @@
 				else
 					var value = this.value_real;
 
-				vouchers_html += '<tr><td>'+this.name+'</td><td>'+this.description+'</td><td>'+value+'</td><td class="text-right"><a href="#" class="btn btn-default delete_discount" rel="'+this.id_discount+'"><i class="icon-remove text-danger"></i>&nbsp;{l s='Delete'}</a></td></tr>';
+				vouchers_html += '<tr><td>'+this.name+'</td><td>'+this.description+'</td><td>'+value+'</td><td class="text-right"><a href="#" class="btn btn-default delete_discount" rel="'+this.id_discount+'"><i class="icon-remove text-danger"></i>&nbsp;{l s='Delete' d='Admin.Actions'}</a></td></tr>';
 			});
 		$('#voucher_list tbody').html($.trim(vouchers_html));
 		if ($('#voucher_list tbody').html().length == 0)
@@ -830,7 +815,6 @@
 			$('#carriers_part,#summary_part').show();
 
 		updateDeliveryOptionList(jsonSummary.delivery_option_list);
-		checkVirtualProduct(jsonSummary.summary.products,jsonSummary.delivery_option_list);
 
 		if (jsonSummary.cart.gift == 1)
 			$('#order_gift').attr('checked', true);
@@ -925,6 +909,7 @@
 		//refresh form customization
 		searchProducts();
 
+		addProductProcess();
 	}
 
 	function addProductProcess()
@@ -1108,7 +1093,7 @@
 	<div class="panel form-horizontal" id="customer_part">
 		<div class="panel-heading">
 			<i class="icon-user"></i>
-			{l s='Customer'}
+			{l s='Customer' d='Admin.Global'}
 		</div>
 		<div id="search-customer-form-group" class="form-group">
 			<label class="control-label col-lg-3">
@@ -1163,7 +1148,7 @@
 					<table class="table">
 						<thead>
 							<tr>
-								<th><span class="title_box">{l s='ID'}</span></th>
+								<th><span class="title_box">{l s='ID' d='Admin.Global'}</span></th>
 								<th><span class="title_box">{l s='Date'}</span></th>
 								<th><span class="title_box">{l s='Total'}</span></th>
 								<th></th>
@@ -1177,7 +1162,7 @@
 					<table class="table">
 						<thead>
 							<tr>
-								<th><span class="title_box">{l s='ID'}</span></th>
+								<th><span class="title_box">{l s='ID' d='Admin.Global'}</span></th>
 								<th><span class="title_box">{l s='Date'}</span></th>
 								<th><span class="title_box">{l s='Products'}</span></th>
 								<th><span class="title_box">{l s='Total paid'}</span></th>
@@ -1267,11 +1252,11 @@
 					<thead>
 						<tr>
 							<th><span class="title_box">{l s='Product'}</span></th>
-							<th><span class="title_box">{l s='Description'}</span></th>
-							<th><span class="title_box">{l s='Reference'}</span></th>
+							<th><span class="title_box">{l s='Description' d='Admin.Global'}</span></th>
+							<th><span class="title_box">{l s='Reference' d='Admin.Global'}</span></th>
 							<th><span class="title_box">{l s='Unit price'}</span></th>
 							<th><span class="title_box">{l s='Quantity'}</span></th>
-							<th><span class="title_box">{l s='Price'}</span></th>
+							<th><span class="title_box">{l s='Price' d='Admin.Global'}</span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -1350,8 +1335,8 @@
 			<table class="table" id="voucher_list">
 				<thead>
 					<tr>
-						<th><span class="title_box">{l s='Name'}</span></th>
-						<th><span class="title_box">{l s='Description'}</span></th>
+						<th><span class="title_box">{l s='Name' d='Admin.Global'}</span></th>
+						<th><span class="title_box">{l s='Description' d='Admin.Global'}</span></th>
 						<th><span class="title_box">{l s='Value'}</span></th>
 						<th></th>
 					</tr>
@@ -1380,7 +1365,7 @@
 					<select id="id_address_delivery" name="id_address_delivery"></select>
 				</div>
 				<div class="well">
-					<a href="" id="edit_delivery_address" class="btn btn-default pull-right fancybox"><i class="icon-pencil"></i> {l s='Edit'}</a>
+					<a href="" id="edit_delivery_address" class="btn btn-default pull-right fancybox"><i class="icon-pencil"></i> {l s='Edit' d='Admin.Actions'}</a>
 					<div id="address_delivery_detail"></div>
 				</div>
 			</div>
@@ -1393,7 +1378,7 @@
 					<select id="id_address_invoice" name="id_address_invoice"></select>
 				</div>
 				<div class="well">
-					<a href="" id="edit_invoice_address" class="btn btn-default pull-right fancybox"><i class="icon-pencil"></i> {l s='Edit'}</a>
+					<a href="" id="edit_invoice_address" class="btn btn-default pull-right fancybox"><i class="icon-pencil"></i> {l s='Edit' d='Admin.Actions'}</a>
 					<div id="address_invoice_detail"></div>
 				</div>
 			</div>
@@ -1439,11 +1424,11 @@
 					<span class="switch prestashop-switch">
 						<input type="radio" name="free_shipping" id="free_shipping" value="1">
 						<label for="free_shipping" class="radioCheck">
-							{l s='yes'}
+							{l s='yes' d='Admin.Global'}
 						</label>
 						<input type="radio" name="free_shipping" id="free_shipping_off" value="0" checked="checked">
 						<label for="free_shipping_off" class="radioCheck">
-							{l s='No'}
+							{l s='No' d='Admin.Global'}
 						</label>
 						<a class="slide-button btn"></a>
 					</span>

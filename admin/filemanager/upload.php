@@ -1,7 +1,7 @@
 <?php
 include('config/config.php');
 if ($_SESSION['verify'] != 'RESPONSIVEfilemanager') {
-    die('forbiden');
+    die('Forbidden');
 }
 include('include/utils.php');
 
@@ -38,11 +38,7 @@ while ($cycle && $i < $max_cycles) {
 
 if (!empty($_FILES)) {
     $info = pathinfo($_FILES['file']['name']);
-    if (isset($info['extension'])
-            && in_array(fix_strtolower($info['extension']), $ext)
-            // If fileinfo extension is installed, check the mime type too
-            && (!function_exists('mime_content_type') || in_array(mime_content_type($_FILES['file']['tmp_name']), $mime))
-    ) {
+    if (isset($info['extension']) && in_array(fix_strtolower($info['extension']), $ext)) {
         $tempFile = $_FILES['file']['tmp_name'];
 
         $targetPath = $storeFolder;

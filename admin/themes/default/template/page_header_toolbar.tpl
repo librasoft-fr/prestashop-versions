@@ -1,27 +1,27 @@
-{*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*}
+{**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ *}
 
 {* retro compatibility *}
 {if !isset($title) && isset($page_header_toolbar_title)}
@@ -32,7 +32,7 @@
 {/if}
 
 <div class="bootstrap">
-	<div class="page-head">
+	<div class="page-head {if isset($current_tab_level) && $current_tab_level == 3}with-tabs{/if}">
 		{block name=pageTitle}
 		<h2 class="page-title">
 			{*if isset($toolbar_btn['back'])}
@@ -48,9 +48,7 @@
 			{* Container *}
 			{if $breadcrumbs2.container.name != ''}
 				<li class="breadcrumb-container">
-					{if $breadcrumbs2.container.href != ''}<a href="{$breadcrumbs2.container.href|escape}">{/if}
 					{$breadcrumbs2.container.name|escape}
-					{if $breadcrumbs2.container.href != ''}</a>{/if}
 				</li>
 			{/if}
 
@@ -128,5 +126,20 @@
 			</div>
 		</div>
 		{/block}
+		{if isset($current_tab_level) && $current_tab_level == 3}
+			<div class="page-head-tabs">
+				{foreach $tabs as $level_1}
+					{foreach $level_1.sub_tabs as $level_2}
+						{foreach $level_2.sub_tabs as $level_3}
+							{if $level_3.current}
+								{foreach $level_3.sub_tabs as $level_4}
+									<a href="{$level_4.href}" {if $level_4.current}class="current"{/if}>{$level_4.name}</a>
+								{/foreach}
+							{/if}
+						{/foreach}
+					{/foreach}
+				{/foreach}
+			</div>
+		{/if}
 	</div>
 </div>

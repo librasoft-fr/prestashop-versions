@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @property OrderSlip $object
@@ -39,26 +39,28 @@ class AdminSlipControllerCore extends AdminController
         $this->_join .= ' LEFT JOIN '._DB_PREFIX_.'orders o ON (o.`id_order` = a.`id_order`)';
         $this->_group = ' GROUP BY a.`id_order_slip`';
 
+        parent::__construct();
+
         $this->fields_list = array(
             'id_order_slip' => array(
-                'title' => $this->l('ID'),
+                'title' => $this->trans('ID', array(), 'Admin.Global'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
             ),
             'id_order' => array(
-                'title' => $this->l('Order ID'),
+                'title' => $this->trans('Order ID', array(), 'Admin.OrdersCustomers.Feature'),
                 'align' => 'left',
-                'class' => 'fixed-width-md',
-                'havingFilter' => true
+                'class' => 'fixed-width-md'
             ),
             'date_add' => array(
-                'title' => $this->l('Date issued'),
+                'title' => $this->trans('Date issued', array(), 'Admin.OrdersCustomers.Feature'),
                 'type' => 'date',
                 'align' => 'right',
-                'filter_key' => 'a!date_add'
+                'filter_key' => 'a!date_add',
+                'havingFilter' => true
             ),
             'id_pdf' => array(
-                'title' => $this->l('PDF'),
+                'title' => $this->trans('PDF', array(), 'Admin.Global'),
                 'align' => 'center',
                 'callback' => 'printPDFIcons',
                 'orderby' => false,
@@ -67,24 +69,22 @@ class AdminSlipControllerCore extends AdminController
         );
 
         $this->_select = 'a.id_order_slip AS id_pdf';
-        $this->optionTitle = $this->l('Slip');
+        $this->optionTitle = $this->trans('Slip', array(), 'Admin.OrdersCustomers.Feature');
 
         $this->fields_options = array(
             'general' => array(
-                'title' =>    $this->l('Credit slip options'),
+                'title' =>    $this->trans('Credit slip options', array(), 'Admin.OrdersCustomers.Feature'),
                 'fields' =>    array(
                     'PS_CREDIT_SLIP_PREFIX' => array(
-                        'title' => $this->l('Credit slip prefix'),
-                        'desc' => $this->l('Prefix used for credit slips.'),
+                        'title' => $this->trans('Credit slip prefix', array(), 'Admin.OrdersCustomers.Feature'),
+                        'desc' => $this->trans('Prefix used for credit slips.', array(), 'Admin.OrdersCustomers.Help'),
                         'size' => 6,
                         'type' => 'textLang'
                     )
                 ),
-                'submit' => array('title' => $this->l('Save'))
+                'submit' => array('title' => $this->trans('Save', array(), 'Admin.Actions'))
             )
         );
-
-        parent::__construct();
 
         $this->_where = Shop::addSqlRestriction(false, 'o');
     }
@@ -93,7 +93,7 @@ class AdminSlipControllerCore extends AdminController
     {
         $this->page_header_toolbar_btn['generate_pdf'] = array(
             'href' => self::$currentIndex.'&token='.$this->token,
-            'desc' => $this->l('Generate PDF', null, null, false),
+            'desc' => $this->trans('Generate PDF', array(), 'Admin.OrdersCustomers.Feature'),
             'icon' => 'process-icon-save-date'
         );
 
@@ -104,29 +104,29 @@ class AdminSlipControllerCore extends AdminController
     {
         $this->fields_form = array(
             'legend' => array(
-                'title' => $this->l('Print a PDF'),
+                'title' => $this->trans('Print a PDF', array(), 'Admin.OrdersCustomers.Feature'),
                 'icon' => 'icon-print'
             ),
             'input' => array(
                 array(
                     'type' => 'date',
-                    'label' => $this->l('From'),
+                    'label' => $this->trans('From', array(), 'Admin.Global'),
                     'name' => 'date_from',
                     'maxlength' => 10,
                     'required' => true,
-                    'hint' => $this->l('Format: 2011-12-31 (inclusive).')
+                    'hint' => $this->trans('Format: 2011-12-31 (inclusive).', array(), 'Admin.OrdersCustomers.Help')
                 ),
                 array(
                     'type' => 'date',
-                    'label' => $this->l('To'),
+                    'label' => $this->trans('To', array(), 'Admin.Global'),
                     'name' => 'date_to',
                     'maxlength' => 10,
                     'required' => true,
-                    'hint' => $this->l('Format: 2012-12-31 (inclusive).')
+                    'hint' => $this->trans('Format: 2012-12-31 (inclusive).', array(), 'Admin.OrdersCustomers.Help')
                 )
             ),
             'submit' => array(
-                'title' => $this->l('Generate PDF file'),
+                'title' => $this->trans('Generate PDF', array(), 'Admin.OrdersCustomers.Feature'),
                 'id' => 'submitPrint',
                 'icon' => 'process-icon-download-alt'
             )
@@ -145,17 +145,17 @@ class AdminSlipControllerCore extends AdminController
     {
         if (Tools::getValue('submitAddorder_slip')) {
             if (!Validate::isDate(Tools::getValue('date_from'))) {
-                $this->errors[] = $this->l('Invalid "From" date');
+                $this->errors[] = $this->trans('Invalid "From" date', array(), 'Admin.OrdersCustomers.Notification');
             }
             if (!Validate::isDate(Tools::getValue('date_to'))) {
-                $this->errors[] = $this->l('Invalid "To" date');
+                $this->errors[] = $this->trans('Invalid "To" date', array(), 'Admin.OrdersCustomers.Notification');
             }
             if (!count($this->errors)) {
                 $order_slips = OrderSlip::getSlipsIdByDate(Tools::getValue('date_from'), Tools::getValue('date_to'));
                 if (count($order_slips)) {
                     Tools::redirectAdmin($this->context->link->getAdminLink('AdminPdf').'&submitAction=generateOrderSlipsPDF&date_from='.urlencode(Tools::getValue('date_from')).'&date_to='.urlencode(Tools::getValue('date_to')));
                 }
-                $this->errors[] = $this->l('No order slips were found for this period.');
+                $this->errors[] = $this->trans('No order slips were found for this period.', array(), 'Admin.OrdersCustomers.Notification');
             }
         } else {
             return parent::postProcess();
@@ -164,27 +164,22 @@ class AdminSlipControllerCore extends AdminController
 
     public function initContent()
     {
-        $this->initTabModuleList();
-        $this->initToolbar();
-        $this->initPageHeaderToolbar();
         $this->content .= $this->renderList();
         $this->content .= $this->renderForm();
         $this->content .= $this->renderOptions();
 
         $this->context->smarty->assign(array(
             'content' => $this->content,
-            'url_post' => self::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
         ));
     }
 
     public function initToolbar()
     {
+        parent::initToolbar();
+
         $this->toolbar_btn['save-date'] = array(
             'href' => '#',
-            'desc' => $this->l('Generate PDF file')
+            'desc' => $this->trans('Generate PDF', array(), 'Admin.OrdersCustomers.Feature')
         );
     }
 

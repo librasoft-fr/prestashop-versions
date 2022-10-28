@@ -1,34 +1,34 @@
-{*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*}
+{**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ *}
 {extends file="helpers/form/form.tpl"}
 
 {block name="input_row"}
 	{if $input.name == 'caching_system'}<div id="{$input.name}_wrapper"{if isset($_PS_CACHE_ENABLED_) && !$_PS_CACHE_ENABLED_} style="display:none"{/if}>{/if}
-	{if $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache'}<div id="{$input.name}_wrapper"{if isset($fields_value.smarty_cache) && !$fields_value.smarty_cache} style="display:none"{/if}>{/if}
+	{if $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache' || $input.name == 'smarty_local'}<div id="{$input.name}_wrapper"{if isset($fields_value.smarty_cache) && !$fields_value.smarty_cache} style="display:none"{/if}>{/if}
 	{$smarty.block.parent}
-	{if $input.name == 'caching_system' || $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache'}</div>{/if}
+	{if $input.name == 'caching_system' || $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache' || $input.name == 'smarty_local'}</div>{/if}
 {/block}
 
 {block name="input"}
@@ -98,7 +98,7 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<th class="fixed-width-xs"><span class="title_box">{l s='ID'}</span></th>
+							<th class="fixed-width-xs"><span class="title_box">{l s='ID' d='Admin.Global'}</span></th>
 							<th><span class="title_box">{l s='IP address'}</span></th>
 							<th class="fixed-width-xs"><span class="title_box">{l s='Port'}</span></th>
 							<th class="fixed-width-xs"><span class="title_box">{l s='Weight'}</span></th>
@@ -126,19 +126,14 @@
 {/block}
 
 {block name="script"}
-
 	function showMemcached() {
-		if ($('input[name="caching_system"]:radio:checked').val() == 'CacheMemcache' || $('input[name="caching_system"]:radio:checked').val() == 'CacheMemcached') {
+		if (
+      $('input[name="caching_system"]:radio:checked').val() == 'CacheMemcache'
+      || $('input[name="caching_system"]:radio:checked').val() == 'CacheMemcached'
+    ) {
 			$('#memcachedServers').css('display', $('#cache_active_on').is(':checked') ? 'block' : 'none');
-			$('#ps_cache_fs_directory_depth').closest('.form-group').hide();
-		}
-		else if ($('input[name="caching_system"]:radio:checked').val() == 'CacheFs') {
+		} else {
 			$('#memcachedServers').hide();
-			$('#ps_cache_fs_directory_depth').closest('.form-group').css('display', $('#cache_active_on').is(':checked') ? 'block' : 'none');
-		}
-		else {
-			$('#memcachedServers').hide();
-			$('#ps_cache_fs_directory_depth').closest('.form-group').hide();
 		}
 	}
 
@@ -149,22 +144,17 @@
 		$('input[name="cache_active"]').change(function() {
 			$('#caching_system_wrapper').css('display', ($(this).val() == 1) ? 'block' : 'none');
 			showMemcached();
-
-			if ($('input[name="caching_system"]:radio:checked').val() == 'CacheFs')
-				$('#ps_cache_fs_directory_depth').focus();
 		});
 
 		$('input[name="caching_system"]').change(function() {
 			$('#cache_up').val(1);
 			showMemcached();
-
-			if ($('input[name="caching_system"]:radio:checked').val() == 'CacheFs')
-				$('#ps_cache_fs_directory_depth').focus();
 		});
 
 		$('input[name="smarty_cache"]').change(function() {
 			$('#smarty_caching_type_wrapper').css('display', ($(this).val() == 1) ? 'block' : 'none');
 			$('#smarty_clear_cache_wrapper').css('display', ($(this).val() == 1) ? 'block' : 'none');
+			$('#smarty_local_wrapper').css('display', ($(this).val() == 1) ? 'block' : 'none');
 		});
 
 		$('#addMemcachedServer').click(function() {
@@ -209,7 +199,7 @@
 			return false;
 		});
 
-		$('input[name="smarty_force_compile"], input[name="smarty_cache"], input[name="smarty_clear_cache"], input[name="smarty_caching_type"], input[name="smarty_console"], input[name="smarty_console_key"]').change(function(){
+		$('input[name="smarty_force_compile"], input[name="smarty_cache"], input[name="smarty_local"], input[name="smarty_clear_cache"], input[name="smarty_caching_type"], input[name="smarty_console"], input[name="smarty_console_key"]').change(function(){
 			$('#smarty_up').val(1);
 		});
 
@@ -217,12 +207,8 @@
 			$('#features_detachables_up').val(1);
 		});
 
-		$('input[name="_MEDIA_SERVER_1_"], input[name="_MEDIA_SERVER_2_"], input[name="_MEDIA_SERVER_3_"]').change(function(){
+		$('input[name="_MEDIA_SERVER_1_"]').change(function(){
 			$('#media_server_up').val(1);
-		});
-
-		$('input[name="PS_CIPHER_ALGORITHM"]').change(function(){
-			$('#ciphering_up').val(1);
 		});
 
 		$('input[name="cache_active"]').change(function(){

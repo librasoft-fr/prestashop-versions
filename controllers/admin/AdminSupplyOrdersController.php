@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @since 1.5.0
@@ -38,7 +38,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
     public function __construct()
     {
         $this->bootstrap = true;
-        $this->context = Context::getContext();
         $this->table = 'supply_order';
 
         $this->className = 'SupplyOrder';
@@ -46,6 +45,8 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->lang = false;
         $this->is_template_list = false;
         $this->multishop_context = Shop::CONTEXT_ALL;
+
+        parent::__construct();
 
         $this->addRowAction('updatereceipt');
         $this->addRowAction('changestate');
@@ -56,7 +57,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
         $this->fields_list = array(
             'reference' => array(
-                'title' => $this->l('Reference'),
+                'title' => $this->trans('Reference', array(), 'Admin.Global'),
                 'havingFilter' => true
             ),
             'supplier' => array(
@@ -94,7 +95,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 'filter_key' => 'a!date_delivery_expected'
             ),
             'id_export' => array(
-                'title' => $this->l('Export'),
+                'title' => $this->trans('Export', array(), 'Admin.Actions'),
                 'callback' => 'printExportIcons',
                 'orderby' => false,
                 'search' => false
@@ -105,8 +106,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->warehouses = Warehouse::getWarehouses(true);
         // gets the final list of warehouses
         array_unshift($this->warehouses, array('id_warehouse' => -1, 'name' => $this->l('All Warehouses')));
-
-        parent::__construct();
     }
 
     /**
@@ -136,7 +135,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             $this->display = 'add';
 
             if (Tools::isSubmit('updatesupply_order')) {
-                if ($this->tabAccess['edit'] === '1') {
+                if ($this->access('edit')) {
                     $this->display = 'edit';
                 } else {
                     $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -228,7 +227,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 'input' => array(
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Reference'),
+                        'label' => $this->trans('Reference', array(), 'Admin.Global'),
                         'name' => 'reference',
                         'required' => true,
                         'hint' => $this->l('The reference number for your order.'),
@@ -403,7 +402,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             );
 
             unset($this->toolbar_btn['new']);
-            if ($this->tabAccess['add'] === '1') {
+            if ($this->access('add')) {
                 $this->toolbar_btn['new'] = array(
                     'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
                     'desc' => $this->l('Add New')
@@ -636,7 +635,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             ),
             'input' => array(),
             'submit' => array(
-                'title' => $this->l('Save')
+                'title' => $this->trans('Save', array(), 'Admin.Actions')
             )
         );
 
@@ -668,10 +667,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
         $this->context->smarty->assign(array(
             'content' => $content,
-            'url_post' => self::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
         ));
     }
 
@@ -766,7 +761,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 'search' => false,
             ),
             'reference' => array(
-                'title' => $this->l('Reference'),
+                'title' => $this->trans('Reference', array(), 'Admin.Global'),
                 'orderby' => false,
                 'filter' => false,
                 'search' => false,
@@ -784,7 +779,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 'search' => false,
             ),
             'name' => array(
-                'title' => $this->l('Name'),
+                'title' => $this->trans('Name', array(), 'Admin.Global'),
                 'orderby' => false,
                 'filter' => false,
                 'search' => false,
@@ -1017,6 +1012,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                         $entry->reference = Tools::getValue('input_reference_'.$id, '');
                         $entry->supplier_reference = Tools::getValue('input_supplier_reference_'.$id, '');
                         $entry->ean13 = Tools::getValue('input_ean13_'.$id, '');
+                        $entry->isbn = Tools::getValue('input_isbn_'.$id, '');
                         $entry->upc = Tools::getValue('input_upc_'.$id, '');
 
                         //get the product name in the order language
@@ -1054,6 +1050,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                                 'reference' => $entry->reference,
                                 'supplier_reference' => $entry->supplier_reference,
                                 'ean13' => $entry->ean13,
+                                'isbn' => $entry->isbn,
                                 'upc' => $entry->upc,
                             );
 
@@ -1083,10 +1080,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->is_editing_order = false;
 
         // Checks access
-        if (Tools::isSubmit('submitAddsupply_order') && !($this->tabAccess['add'] === '1')) {
+        if (Tools::isSubmit('submitAddsupply_order') && !($this->access('add'))) {
             $this->errors[] = Tools::displayError('You do not have permission to add a supply order.');
         }
-        if (Tools::isSubmit('submitBulkUpdatesupply_order_detail') && !($this->tabAccess['edit'] === '1')) {
+        if (Tools::isSubmit('submitBulkUpdatesupply_order_detail') && !($this->access('edit'))) {
             $this->errors[] = Tools::displayError('You do not have permission to edit an order.');
         }
 
@@ -1182,7 +1179,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         if (Tools::isSubmit('submitChangestate')
             && Tools::isSubmit('id_supply_order')
             && Tools::isSubmit('id_supply_order_state')) {
-            if ($this->tabAccess['edit'] != '1') {
+            if ($this->access('edit') != '1') {
                 $this->errors[] = Tools::displayError('You do not have permission to change the order status.');
             }
 
@@ -1220,7 +1217,6 @@ class AdminSupplyOrdersControllerCore extends AdminController
                             if (!count($this->errors)) {
                                 $supply_order->id_supply_order_state = $state['id_supply_order_state'];
                                 if ($supply_order->save()) {
-                                    // create stock entry if not exist when order is in pending_receipt
                                     if ($new_state->pending_receipt) {
                                         $supply_order_details = $supply_order->getEntries();
                                         foreach ($supply_order_details as $supply_order_detail) {
@@ -1244,59 +1240,13 @@ class AdminSupplyOrdersControllerCore extends AdminController
                                         }
                                     }
 
-                                    // add stock when is received completely
-                                    if ($new_state->receipt_state && $new_state->enclosed) {
-                                        $supply_order_details = $supply_order->getEntries();
-
-                                        $warehouse = new Warehouse($supply_order->id_warehouse);
-                                        $id_warehouse = $warehouse->id;
-
-                                        $stock_manager = StockManagerFactory::getManager();
-
-                                        foreach ($supply_order_details as $detail) {
-                                            $id_product = $detail['id_product'];
-                                            $id_product_attribute = $detail['id_product_attribute'];
-
-                                            if ($stock_manager->addProduct(
-                                                $detail['id_product'],
-                                                $detail['id_product_attribute'],
-                                                $warehouse,
-                                                (int)($detail['quantity_expected'] - $detail['quantity_received']),
-                                                Configuration::get('PS_STOCK_MVT_SUPPLY_ORDER'),
-                                                $detail['unit_price_te'],
-                                                true,
-                                                $supply_order->id
-                                            )) {
-                                                // Create warehouse_product_location entry if we add stock to a new warehouse
-                                                $id_wpl = (int)WarehouseProductLocation::getIdByProductAndWarehouse($id_product, $id_product_attribute, $id_warehouse);
-                                                if (!$id_wpl) {
-                                                    $wpl = new WarehouseProductLocation();
-                                                    $wpl->id_product = (int)$id_product;
-                                                    $wpl->id_product_attribute = (int)$id_product_attribute;
-                                                    $wpl->id_warehouse = (int)$id_warehouse;
-                                                    $wpl->save();
-                                                }
-
-                                                $supply_order_detail_mvt = new SupplyOrderDetail($detail['id_supply_order_detail']);
-                                                $supply_order_detail_mvt_params = array(
-                                                    'quantity_received' => (int)$detail['quantity_expected'],
-                                                );
-                                                // saves supply order detail
-                                                $supply_order_detail_mvt->hydrate($supply_order_detail_mvt_params);
-                                                $supply_order_detail_mvt->update();
-
-                                            } else {
-                                                $this->errors[] = $this->l('An error occurred. No stock was added.');
-                                            }
-                                        }
-                                    }
-
-                                    // if the order is being canceled,
+                                    // if pending_receipt,
+                                    // or if the order is being canceled,
                                     // or if the order is received completely
                                     // synchronizes StockAvailable
-                                    if ((($old_state->receipt_state || $old_state->pending_receipt) && $new_state->enclosed && !$new_state->receipt_state) ||
-                                        ($new_state->receipt_state && $new_state->enclosed)
-                                    ) {
+                                    if (($new_state->pending_receipt && !$new_state->receipt_state) ||
+                                        (($old_state->receipt_state || $old_state->pending_receipt) && $new_state->enclosed && !$new_state->receipt_state) ||
+                                        ($new_state->receipt_state && $new_state->enclosed)) {
                                         $supply_order_details = $supply_order->getEntries();
                                         $products_done = array();
                                         foreach ($supply_order_details as $supply_order_detail) {
@@ -1519,10 +1469,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     if ($res) {
                         $supplier_receipt_history->add();
                         $supply_order_detail->save();
-                        $shops = $warehouse->getShops();
-                        foreach ($shops as $shop) {
-                            StockAvailable::updateQuantity($supply_order_detail->id_product, $supply_order_detail->id_product_attribute, (int)$quantity, (int)$shop['id_shop']);
-                        }
+                        StockAvailable::synchronize($supply_order_detail->id_product);
                     } else {
                         $this->errors[] = Tools::displayError('Something went wrong when setting warehouse on product record');
                     }
@@ -1771,7 +1718,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             }
         }
         if ($items) {
-            die(Tools::jsonEncode($items));
+            die(json_encode($items));
         }
 
         die(1);
@@ -1838,7 +1785,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'search' => false,
                 ),
                 'reference' => array(
-                    'title' => $this->l('Reference'),
+                    'title' => $this->trans('Reference', array(), 'Admin.Global'),
                     'align' => 'center',
                     'orderby' => false,
                     'filter' => false,
@@ -1859,7 +1806,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                     'search' => false,
                 ),
                 'name' => array(
-                    'title' => $this->l('Name'),
+                    'title' => $this->trans('Name', array(), 'Admin.Global'),
                     'orderby' => false,
                     'filter' => false,
                     'search' => false,
@@ -2033,7 +1980,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             case 'update_order_state':
                 $this->toolbar_btn['save'] = array(
                     'href' => '#',
-                    'desc' => $this->l('Save')
+                    'desc' => $this->trans('Save', array(), 'Admin.Actions')
                 );
 
             case 'update_receipt':
@@ -2046,7 +1993,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
                     $this->toolbar_btn['cancel'] = array(
                         'href' => $back,
-                        'desc' => $this->l('Cancel')
+                        'desc' => $this->trans('Cancel', array(), 'Admin.Actions')
                     );
                 }
             break;
@@ -2155,6 +2102,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 $supply_order_detail->supplier_reference = $item['supplier_reference'];
                 $supply_order_detail->name = Product::getProductName($item['id_product'], $item['id_product_attribute'], $supply_order->id_lang);
                 $supply_order_detail->ean13 = $item['ean13'];
+                $supply_order_detail->isbn = $item['isbn'];
                 $supply_order_detail->upc = $item['upc'];
                 $supply_order_detail->quantity_expected = ((int)$diff == 0) ? 1 : (int)$diff;
                 $supply_order_detail->exchange_rate = $order_currency->conversion_rate;

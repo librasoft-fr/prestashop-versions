@@ -1,30 +1,28 @@
-{*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*}
-<script>
-    var callFunction = false;
-</script>
+{**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ *}
+
 <{if isset($href) && $href}a style="display:block" href="{$href|escape:'html':'UTF-8'}"{else}div{/if} id="{$id|escape:'html':'UTF-8'}" data-toggle="tooltip" class="box-stats label-tooltip {$color|escape}" data-original-title="{$tooltip|escape}">
 	<div class="kpi-content">
 	{if isset($icon) && $icon}
@@ -40,41 +38,42 @@
 		<span cLass="subtitle">{$subtitle|escape}</span>
 		<span class="value">{$value|escape|replace:'&amp;':'&'}</span>
 	</div>
-	
+
 </{if isset($href) && $href}a{else}div{/if}>
 
-{if isset($source) && $source != '' && isset($refresh) && $refresh != ''}
 <script>
-    callFunction = true;
+	function refresh_{$id|replace:'-':'_'|addslashes}()
+	{
+		{if !isset($source) || $source == '' || !isset($refresh) || $refresh == ''}
+			if (arguments.length < 1 || arguments[0] != true) {
+				// refresh kpis only if force mode is true (pass true as first argument of this function).
+				return;
+			}
+		{/if}
+		$.ajax({
+			url: '{$source|addslashes}' + '&rand=' + new Date().getTime(),
+			dataType: 'json',
+			type: 'GET',
+			cache: false,
+			headers: { 'cache-control': 'no-cache' },
+			success: function(jsonData){
+				if (!jsonData.has_errors)
+				{
+					if (jsonData.value != undefined)
+					{
+						$('#{$id|addslashes} .value').html(jsonData.value);
+						$('#{$id|addslashes}').attr('data-original-title', jsonData.tooltip);
+					}
+					if (jsonData.data != undefined)
+					{
+						$("#{$id|addslashes} .boxchart svg").remove();
+						set_d3_{$id|replace:'-':'_'|addslashes}(jsonData.data);
+					}
+				}
+			}
+		});
+	}
 </script>
-{/if}
-<script>
-    function refresh_{$id|replace:'-':'_'|addslashes}(callFunction)
-    {
-        if(callFunction){
-            $.ajax({
-                url: '{$source|addslashes}' + '&rand=' + new Date().getTime(),
-                dataType: 'json',
-                type: 'GET',
-                cache: false,
-                headers: { 'cache-control': 'no-cache' },
-                success: function(jsonData){
-                    if (!jsonData.has_errors)
-                    {
-                        if (jsonData.value != undefined)
-                            $('#{$id|addslashes} .value').html(jsonData.value);
-                        if (jsonData.data != undefined)
-                        {
-                            $("#{$id|addslashes} .boxchart svg").remove();
-                            set_d3_{$id|replace:'-':'_'|addslashes}(jsonData.data);
-                        }
-                    }
-                }
-            });
-        }
-    }
-</script>
-
 
 {if $chart}
 <script>

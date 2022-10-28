@@ -1,32 +1,36 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @property Currency $object
  */
+
+use PrestaShop\PrestaShop\Core\Cldr\Repository;
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
+
 class AdminCurrenciesControllerCore extends AdminController
 {
     public function __construct()
@@ -35,44 +39,17 @@ class AdminCurrenciesControllerCore extends AdminController
         $this->table = 'currency';
         $this->className = 'Currency';
         $this->lang = false;
-
-        $this->fields_list = array(
-            'id_currency' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'name' => array('title' => $this->l('Currency')),
-            'iso_code' => array('title' => $this->l('ISO code'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'iso_code_num' => array('title' => $this->l('ISO code number'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'sign' => array('title' => $this->l('Symbol'), 'width' => 20, 'align' => 'center', 'orderby' => false, 'search' => false, 'class' => 'fixed-width-xs'),
-            'conversion_rate' => array('title' => $this->l('Exchange rate'), 'type' => 'float', 'align' => 'center', 'width' => 130, 'search' => false, 'filter_key' => 'currency_shop!conversion_rate'),
-            'active' => array('title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm'),
-        );
-
-        $this->bulk_actions = array(
-            'delete' => array(
-                'text' => $this->l('Delete selected'),
-                'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            )
-        );
-
-        $this->fields_options = array(
-            'change' => array(
-                'title' =>    $this->l('Currency rates'),
-                'image' => '../img/admin/exchangesrate.gif',
-                'description' => $this->l('Use PrestaShop\'s webservice to update your currency\'s exchange rates. However, please use caution: rates are provided as-is.'),
-                'submit' => array(
-                    'title' => $this->l('Update currency rates'),
-                    'name' => 'SubmitExchangesRates'
-                )
-            ),
-            'cron' => array(
-                'title' =>    $this->l('Automatically update currency rates'),
-                'image' => '../img/admin/tab-tools.gif',
-                'info' => '<div class="alert alert-block"><p>'.$this->l('Use PrestaShop\'s webservice to update your currency exchange rates. However, please use caution: rates are provided as-is.').'<br/>'.$this->l('You can place the following URL in your crontab file, or you can click it yourself regularly:').'</p>
-					<p><strong><a href="'.Tools::getShopDomain(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/cron_currency_rates.php?secure_key='.md5(_COOKIE_KEY_.Configuration::get('PS_SHOP_NAME')).'" onclick="return !window.open($(this).attr(\'href\'));">'.Tools::getShopDomain(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/cron_currency_rates.php?secure_key='.md5(_COOKIE_KEY_.Configuration::get('PS_SHOP_NAME')).'</a></strong></p></div>',
-            )
-        );
+        $this->cldr = Tools::getCldr(Context::getContext());
 
         parent::__construct();
+
+        $this->fields_list = array(
+            'name' => array('title' => $this->trans('Currency', array(), 'Admin.Global'), 'orderby' => false, 'search' => false),
+            'sign' => array('title' => $this->trans('Symbol', array(), 'Admin.International.Feature'), 'width' => 20, 'align' => 'center', 'orderby' => false, 'search' => false, 'class' => 'fixed-width-xs'),
+            'iso_code' => array('title' => $this->trans('ISO code', array(), 'Admin.International.Feature'), 'align' => 'center', 'class' => 'fixed-width-xs'),
+            'conversion_rate' => array('title' => $this->trans('Exchange rate', array(), 'Admin.International.Feature'), 'type' => 'float', 'align' => 'center', 'width' => 130, 'search' => false, 'filter_key' => 'currency_shop!conversion_rate'),
+            'active' => array('title' => $this->trans('Enabled', array(), 'Admin.Global'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm'),
+        );
 
         $this->_select .= 'currency_shop.conversion_rate conversion_rate';
         $this->_join .= Shop::addSqlAssociation('currency', 'a');
@@ -86,120 +63,64 @@ class AdminCurrenciesControllerCore extends AdminController
 
         $this->_where = 'AND a.`deleted` = 0';
 
-        return parent::renderList();
+        //retrieve datas list
+        $this->getList($this->context->language->id);
+
+        foreach ($this->_list as $k => $v) {
+            $currency = $this->cldr->getCurrency($this->_list[$k]['iso_code']);
+
+            $this->_list[$k]['name'] = ucfirst($currency['name']);
+            $this->_list[$k]['sign'] = $currency['symbol'];
+            $this->_list[$k]['iso_code'].= ' / '.$currency['iso_code'];
+        }
+
+        $helper = new HelperList();
+        $this->setHelperDisplay($helper);
+
+        return $helper->generateList($this->_list, $this->fields_list);
+    }
+
+    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
+    {
+        parent::getList($id_lang, $order_by, $order_way, $start, $limit, Context::getContext()->shop->id);
     }
 
     public function renderForm()
     {
+        $currency = null;
+
         $this->fields_form = array(
             'legend' => array(
-                'title' => $this->l('Currencies'),
+                'title' => $this->trans('Currencies', array(), 'Admin.Global'),
                 'icon' => 'icon-money'
             ),
             'input' => array(
                 array(
-                    'type' => 'text',
-                    'label' => $this->l('Currency name'),
-                    'name' => 'name',
-                    'size' => 30,
-                    'maxlength' => 32,
-                    'required' => true,
-                    'hint' => $this->l('Only letters and the minus character are allowed.')
-                ),
-                array(
-                    'type' => 'text',
-                    'label' => $this->l('ISO code'),
-                    'name' => 'iso_code',
-                    'maxlength' => 32,
-                    'required' => true,
-                    'hint' => $this->l('ISO code (e.g. USD for Dollars, EUR for Euros, etc.).')
-                ),
-                array(
-                    'type' => 'text',
-                    'label' => $this->l('Numeric ISO code'),
-                    'name' => 'iso_code_num',
-                    'maxlength' => 32,
-                    'required' => true,
-                    'hint' => $this->l('Numeric ISO code (e.g. 840 for Dollars, 978 for Euros, etc.).')
-                ),
-                array(
-                    'type' => 'text',
-                    'label' => $this->l('Symbol'),
-                    'name' => 'sign',
-                    'maxlength' => 8,
-                    'required' => true,
-                    'hint' => $this->l('Will appear in front office (e.g. $, &euro;, etc.)')
-                ),
-                array(
-                    'type' => 'text',
-                    'label' => $this->l('Exchange rate'),
-                    'name' => 'conversion_rate',
-                    'maxlength' => 11,
-                    'required' => true,
-                    'hint' => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).')
-                ),
-                array(
                     'type' => 'select',
-                    'label' => $this->l('Currency format'),
-                    'name' => 'format',
-                    'maxlength' => 11,
+                    'col' => '4',
+                    'label' => $this->trans('Currency', array(), 'Admin.Global'),
+                    'name' => 'iso_code',
                     'required' => true,
-                    'hint' =>$this->l('Applies to all prices (e.g. $1,240.15).'),
+                    'hint' => $this->trans('ISO code (e.g. USD for Dollars, EUR for Euros, etc.).', array(), 'Admin.International.Help'),
                     'options' => array(
-                        'query' => array(
-                            array('key' => 1, 'name' => 'X0,000.00 ('.$this->l('Such as with Dollars').')'),
-                            array('key' => 2, 'name' => '0 000,00X ('.$this->l('Such as with Euros').')'),
-                            array('key' => 3, 'name' => 'X0.000,00'),
-                            array('key' => 4, 'name' => '0,000.00X'),
-                            array('key' => 5, 'name' => '0\'000.00X') // Added for the switzerland currency
-                        ),
+                        'query' => $this->cldr->getAllCurrencies(),
                         'name' => 'name',
-                        'id' => 'key'
+                        'id' => 'code'
                     )
                 ),
                 array(
-                    'type' => 'switch',
-                    'label' => $this->l('Decimals'),
-                    'name' => 'decimals',
-                    'required' => false,
-                    'is_bool' => true,
-                    'hint' => $this->l('Display decimals in prices.'),
-                    'values' => array(
-                        array(
-                            'id' => 'decimals_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled')
-                        ),
-                        array(
-                            'id' => 'decimals_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled')
-                        )
-                    ),
+                    'type' => 'text',
+                    'col' => '6',
+                    'label' => $this->trans('Exchange rate', array(), 'Admin.International.Feature'),
+                    'name' => 'conversion_rate',
+                    'maxlength' => 11,
+                    'required' => true,
+                    'col' => '2',
+                    'hint' => $this->trans('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).', array(), 'Admin.International.Help')
                 ),
                 array(
-                    'type' => 'switch',
-                    'label' => $this->l('Spacing'),
-                    'name' => 'blank',
-                    'required' => false,
-                    'is_bool' => true,
-                    'hint' => $this->l('Include a space between symbol and price (e.g. $1,240.15 -> $ 1,240.15).'),
-                    'values' => array(
-                        array(
-                            'id' => 'blank_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled')
-                        ),
-                        array(
-                            'id' => 'blank_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled')
-                        )
-                    ),
-                ),
-                array(
-                    'type' => 'switch',
-                    'label' => $this->l('Enable'),
+                    'type' => 'hidden',
+                    'label' => $this->trans('Enable', array(), 'Admin.Actions'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
@@ -207,12 +128,12 @@ class AdminCurrenciesControllerCore extends AdminController
                         array(
                             'id' => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->trans('Enabled', array(), 'Admin.Global')
                         ),
                         array(
                             'id' => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
+                            'label' => $this->trans('Disabled', array(), 'Admin.Global')
                         )
                     )
                 )
@@ -222,14 +143,31 @@ class AdminCurrenciesControllerCore extends AdminController
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = array(
                 'type' => 'shop',
-                'label' => $this->l('Shop association'),
+                'label' => $this->trans('Shop association', array(), 'Admin.Global'),
                 'name' => 'checkBoxShopAsso',
             );
         }
 
         $this->fields_form['submit'] = array(
-            'title' => $this->l('Save'),
+            'title' => $this->trans('Save', array(), 'Admin.Actions')
         );
+
+        //form preselect : define the default currency or object value
+        if (Tools::getValue('id_currency')) {
+            $currency = new Currency((int)Tools::getValue('id_currency'));
+            if ($currency) {
+                $this->fields_value = array(
+                    'iso_code' => $currency->iso_code
+                );
+            }
+        } else {
+            $this->fields_value = array(
+                'iso_code' => $this->cldr->getCurrency()['code']
+            );
+        }
+
+        $this->context->smarty->assign('status', $currency ? $currency->active : 0);
+        $this->context->smarty->assign('isForm', true);
 
         return parent::renderForm();
     }
@@ -238,13 +176,13 @@ class AdminCurrenciesControllerCore extends AdminController
     {
         if (Validate::isLoadedObject($object)) {
             if ($object->id == Configuration::get('PS_CURRENCY_DEFAULT')) {
-                $this->errors[] = $this->l('You cannot delete the default currency');
+                $this->errors[] = $this->trans('You cannot delete the default currency', array(), 'Admin.International.Notification');
             } else {
                 return true;
             }
         } else {
-            $this->errors[] = Tools::displayError('An error occurred while deleting the object.').'
-				<b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+            $this->errors[] = $this->trans('An error occurred while deleting the object.', array(), 'Admin.Notifications.Error').'
+                <b>'.$this->table.'</b> '.$this->trans('(cannot load object)', array(), 'Admin.Notifications.Error');
         }
 
         return false;
@@ -254,13 +192,13 @@ class AdminCurrenciesControllerCore extends AdminController
     {
         if (Validate::isLoadedObject($object)) {
             if ($object->active && $object->id == Configuration::get('PS_CURRENCY_DEFAULT')) {
-                $this->errors[] = $this->l('You cannot disable the default currency');
+                $this->errors[] = $this->trans('You cannot disable the default currency', array(), 'Admin.International.Notification');
             } else {
                 return true;
             }
         } else {
-            $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').'
-				<b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+            $this->errors[] = $this->trans('An error occurred while updating the status for an object.', array(), 'Admin.Notifications.Error').'
+				<b>'.$this->table.'</b> '.$this->trans('(cannot load object)', array(), 'Admin.Notifications.Error');
         }
 
         return false;
@@ -334,17 +272,17 @@ class AdminCurrenciesControllerCore extends AdminController
     public function initProcess()
     {
         if (Tools::isSubmit('SubmitExchangesRates')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->access('edit')) {
                 $this->action = 'exchangeRates';
             } else {
-                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+                $this->errors[] = $this->trans('You do not have permission to edit this.', array(), 'Admin.Notifications.Error');
             }
         }
-        if (Tools::isSubmit('submitAddcurrency') && !Tools::getValue('id_currency') && Currency::exists(Tools::getValue('iso_code'), Tools::getValue('iso_code_num'))) {
-            $this->errors[] = Tools::displayError('This currency already exists.');
+        if (Tools::isSubmit('submitAddcurrency') && !Tools::getValue('id_currency') && Currency::exists(Tools::getValue('iso_code'))) {
+            $this->errors[] = $this->trans('This currency already exists.', array(), 'Admin.International.Notification');
         }
         if (Tools::isSubmit('submitAddcurrency') && (float)Tools::getValue('conversion_rate') <= 0) {
-            $this->errors[] = Tools::displayError('The currency conversion rate can not be equal to 0.');
+            $this->errors[] = $this->trans('The currency conversion rate cannot be equal to 0.', array(), 'Admin.International.Notification');
         }
         parent::initProcess();
     }
@@ -354,11 +292,50 @@ class AdminCurrenciesControllerCore extends AdminController
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_currency'] = array(
                 'href' => self::$currentIndex.'&addcurrency&token='.$this->token,
-                'desc' => $this->l('Add new currency', null, null, false),
+                'desc' => $this->trans('Add new currency', array(), 'Admin.International.Feature'),
                 'icon' => 'process-icon-new'
             );
         }
 
         parent::initPageHeaderToolbar();
+    }
+
+    public function ajaxProcessCronjobLiveExchangeRate()
+    {
+        $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
+        $moduleManager = $moduleManagerBuilder->build();
+
+        if (!$moduleManager->isInstalled('cronjobs')) {
+            die(json_encode(array()));
+        }
+
+        $enable = (int)Tools::getValue('enable');
+        $config = Configuration::get('PS_ACTIVE_CRONJOB_EXCHANGE_RATE', null, null, $this->context->shop->id);
+        $cronJobUrl = 'http://'.ShopUrl::getMainShopDomain($this->context->shop->id).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/cron_currency_rates.php?secure_key='.md5(_COOKIE_KEY_.Configuration::get('PS_SHOP_NAME'));
+
+        if ($config && $enable == 0) {
+            Configuration::updateValue('PS_ACTIVE_CRONJOB_EXCHANGE_RATE', 0, false, null, $this->context->shop->id);
+            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cronjobs WHERE `id_cronjob` = \''.(int)$config.'\'');
+        }
+
+        //The cronjob is not defined, create it
+        if ($enable == 1 && (!$config || $config == 0)) {
+            $cronJobs = new CronJobs();
+            $cronJobs->addOneShotTask(
+                $cronJobUrl,
+                sprintf($this->trans('Live exchange Rate for %s', array(), 'Admin.International.Feature'), Configuration::get('PS_SHOP_NAME'))
+            );
+
+            Configuration::updateValue('PS_ACTIVE_CRONJOB_EXCHANGE_RATE', Db::getInstance()->Insert_ID(), false, null, $this->context->shop->id);
+        } else {
+            $cronJob = Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'cronjobs WHERE `id_cronjob` = \''.(int)$config.'\'');
+
+            //if cronjob do not exsit anymore OR cronjob dis disabled => disable conf
+            if (!$cronJob || $cronJob[0]['active'] == 0) {
+                Configuration::updateValue('PS_ACTIVE_CRONJOB_EXCHANGE_RATE', 0, false, null, $this->context->shop->id);
+            }
+        }
+
+        die(json_encode(array()));
     }
 }

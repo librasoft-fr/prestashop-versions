@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 class GroupCore extends ObjectModel
 {
@@ -67,6 +67,10 @@ class GroupCore extends ObjectModel
 
     protected static $cache_reduction = array();
     protected static $group_price_display_method = array();
+    protected static $ps_group_feature_active = null;
+    protected static $groups = array();
+    protected static $ps_unidentified_group = null;
+    protected static $ps_customer_group = null;
 
     protected $webserviceParameters = array();
 
@@ -78,6 +82,19 @@ class GroupCore extends ObjectModel
         }
     }
 
+    /**
+     * WARNING: For testing only. Do NOT rely on this method, it may be removed at any time.
+     */
+    public static function clearCachedValues()
+    {
+        self::$cache_reduction = array();
+        self::$group_price_display_method = array();
+        self::$ps_group_feature_active = null;
+        self::$groups = array();
+        self::$ps_unidentified_group = null;
+        self::$ps_customer_group = null;
+    }
+
     public static function getGroups($id_lang, $id_shop = false)
     {
         $shop_criteria = '';
@@ -86,7 +103,7 @@ class GroupCore extends ObjectModel
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-		SELECT DISTINCT g.`id_group`, g.`reduction`, g.`price_display_method`, gl.`name`
+		SELECT DISTINCT g.`id_group`, g.`reduction`, g.`price_display_method`, g.`show_prices`, gl.`name`
 		FROM `'._DB_PREFIX_.'group` g
 		LEFT JOIN `'._DB_PREFIX_.'group_lang` AS gl ON (g.`id_group` = gl.`id_group` AND gl.`id_lang` = '.(int)$id_lang.')
 		'.$shop_criteria.'
@@ -135,7 +152,7 @@ class GroupCore extends ObjectModel
         return self::$cache_reduction['group'][$id_group];
     }
 
-    public static function getPriceDisplayMethodByGroup($id_group)
+    public static function getPriceDisplayMethod($id_group)
     {
         if (!isset(Group::$group_price_display_method[$id_group])) {
             self::$group_price_display_method[$id_group] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
@@ -148,15 +165,7 @@ class GroupCore extends ObjectModel
 
     public static function getDefaultPriceDisplayMethod()
     {
-        return Group::getPriceDisplayMethodByGroup((int)Configuration::get('PS_CUSTOMER_GROUP'));
-    }
-
-    public static function getPriceDisplayMethod($id_group)
-    {
-        if (Group::isFeatureActive()) {
-            return Group::getPriceDisplayMethodByGroup($id_group);
-        }
-        return Group::getDefaultPriceDisplayMethod();
+        return Group::getPriceDisplayMethod((int)Configuration::get('PS_CUSTOMER_GROUP'));
     }
 
     public function add($autodate = true, $null_values = false)
@@ -208,7 +217,10 @@ class GroupCore extends ObjectModel
 						'.(int)Configuration::get('PS_CUSTOMER_GROUP').')
 				WHERE `id_default_group` = '.(int)$this->id);
 
-            return true;
+            // Remove group restrictions
+            $res = Db::getInstance()->delete('module_group', 'id_group = '.(int)$this->id);
+
+            return $res;
         }
         return false;
     }
@@ -220,11 +232,10 @@ class GroupCore extends ObjectModel
      */
     public static function isFeatureActive()
     {
-        static $ps_group_feature_active = null;
-        if ($ps_group_feature_active === null) {
-            $ps_group_feature_active = Configuration::get('PS_GROUP_FEATURE_ACTIVE');
+        if (self::$ps_group_feature_active === null) {
+            self::$ps_group_feature_active = Configuration::get('PS_GROUP_FEATURE_ACTIVE');
         }
-        return $ps_group_feature_active;
+        return self::$ps_group_feature_active;
     }
 
     /**
@@ -323,37 +334,33 @@ class GroupCore extends ObjectModel
      */
     public static function getCurrent()
     {
-        static $groups = array();
-        static $ps_unidentified_group = null;
-        static $ps_customer_group = null;
-
-        if ($ps_unidentified_group === null) {
-            $ps_unidentified_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
+        if (self::$ps_unidentified_group === null) {
+            self::$ps_unidentified_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
         }
 
-        if ($ps_customer_group === null) {
-            $ps_customer_group = Configuration::get('PS_CUSTOMER_GROUP');
+        if (self::$ps_customer_group === null) {
+            self::$ps_customer_group = Configuration::get('PS_CUSTOMER_GROUP');
         }
 
         $customer = Context::getContext()->customer;
         if (Validate::isLoadedObject($customer)) {
             $id_group = (int)$customer->id_default_group;
         } else {
-            $id_group = (int)$ps_unidentified_group;
+            $id_group = (int)self::$ps_unidentified_group;
         }
 
-        if (!isset($groups[$id_group])) {
-            $groups[$id_group] = new Group($id_group);
+        if (!isset(self::$groups[$id_group])) {
+            self::$groups[$id_group] = new Group($id_group);
         }
 
-        if (!$groups[$id_group]->isAssociatedToShop(Context::getContext()->shop->id)) {
-            $id_group = (int)$ps_customer_group;
-            if (!isset($groups[$id_group])) {
-                $groups[$id_group] = new Group($id_group);
+        if (!self::$groups[$id_group]->isAssociatedToShop(Context::getContext()->shop->id)) {
+            $id_group = (int)self::$ps_customer_group;
+            if (!isset(self::$groups[$id_group])) {
+                self::$groups[$id_group] = new Group($id_group);
             }
         }
 
-        return $groups[$id_group];
+        return self::$groups[$id_group];
     }
 
     /**

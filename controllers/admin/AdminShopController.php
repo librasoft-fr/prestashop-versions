@@ -1,42 +1,44 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
-
 /**
- * @property Shop $object
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
+
+use PrestaShop\PrestaShop\Adapter\Configuration as Configurator;
+use PrestaShop\PrestaShop\Core\Addon\Theme\Theme;
+use PrestaShop\PrestaShop\Core\Addon\Theme\ThemeManagerBuilder;
+
 class AdminShopControllerCore extends AdminController
 {
     public function __construct()
     {
         $this->bootstrap = true;
-        $this->context = Context::getContext();
         $this->table = 'shop';
         $this->className = 'Shop';
         $this->multishop_context = Shop::CONTEXT_ALL;
-        
+
+        parent::__construct();
+
         $this->id_shop_group = (int)Tools::getValue('id_shop_group');
 
         /* if $_GET['id_shop'] is transmitted, virtual url can be loaded in config.php, so we wether transmit shop_id in herfs */
@@ -70,18 +72,12 @@ class AdminShopControllerCore extends AdminController
                 'title' => $this->l('Main URL for this shop'),
                 'havingFilter' => 'url',
             ),
-            /*'active' => array(
-                'title' => $this->l('Enabled'),
-                'align' => 'center',
-                'active' => 'status',
-                'type' => 'bool',
-                'orderby' => false,
-                'filter_key' => 'active',
-                'width' => 50,
-            )*/
         );
+    }
 
-        parent::__construct();
+    public function getTabSlug()
+    {
+        return 'ROLE_MOD_TAB_ADMINSHOPGROUP_';
     }
 
     public function viewAccess($disable = false)
@@ -240,21 +236,11 @@ class AdminShopControllerCore extends AdminController
         if (Tools::isSubmit('id_category_default')) {
             $_POST['id_category'] = Tools::getValue('id_category_default');
         }
-        /*if ((Tools::isSubmit('status') ||
-            Tools::isSubmit('status'.$this->table) ||
-            (Tools::isSubmit('submitAdd'.$this->table) && Tools::getValue($this->identifier) && !Tools::getValue('active'))) &&
-            $this->loadObject() && $this->loadObject()->active)
-        {
-            if (Tools::getValue('id_shop') == Configuration::get('PS_SHOP_DEFAULT'))
-                $this->errors[] = Tools::displayError('You cannot disable the default shop.');
-            elseif (Shop::getTotalShops() == 1)
-                $this->errors[] = Tools::displayError('You cannot disable the last shop.');
-        }*/
-        
+
         if (Tools::isSubmit('submitAddshopAndStay') || Tools::isSubmit('submitAddshop')) {
             $shop_group = new ShopGroup((int)Tools::getValue('id_shop_group'));
             if ($shop_group->shopNameExists(Tools::getValue('name'), (int)Tools::getValue('id_shop'))) {
-                $this->errors[] = Tools::displayError('You cannot have two shops with the same name in the same group.');
+                $this->errors[] = $this->trans('You cannot have two shops with the same name in the same group.', array(), 'Admin.AdvParameters.Notification');
             }
         }
 
@@ -279,7 +265,7 @@ class AdminShopControllerCore extends AdminController
     public function processDelete()
     {
         if (!Validate::isLoadedObject($object = $this->loadObject())) {
-            $this->errors[] = Tools::displayError('Unable to load this shop.');
+            $this->errors[] = $this->trans('Unable to load this shop.', array(), 'Admin.AdvParameters.Notification');
         } elseif (!Shop::hasDependency($object->id)) {
             $result = Category::deleteCategoriesFromShop($object->id) && parent::processDelete();
             Tools::generateHtaccess();
@@ -372,7 +358,7 @@ class AdminShopControllerCore extends AdminController
 
         $this->fields_form = array(
             'legend' => array(
-                'title' => $this->l('Shop'),
+                'title' => $this->trans('Shop', array(), 'Admin.Global'),
                 'icon' => 'icon-shopping-cart'
             ),
             'identifier' => 'shop_id',
@@ -475,7 +461,7 @@ class AdminShopControllerCore extends AdminController
             $root_category = new Category($root_categories[0]['id_category']);
             $children = $root_category->getAllChildren($this->context->language->id);
             $selected_cat[] = $root_categories[0]['id_category'];
-            
+
             foreach ($children as $child) {
                 $selected_cat[] = $child->id;
             }
@@ -502,7 +488,7 @@ class AdminShopControllerCore extends AdminController
         );
         /*$this->fields_form['input'][] = array(
             'type' => 'switch',
-            'label' => $this->l('Enabled'),
+            'label' => $this->trans('Enabled', array(), 'Admin.Global'),
             'name' => 'active',
             'required' => true,
             'is_bool' => true,
@@ -519,15 +505,9 @@ class AdminShopControllerCore extends AdminController
             'desc' => $this->l('Enable or disable your store?')
         );*/
 
-        $themes = Theme::getThemes();
-        if (!isset($obj->id_theme)) {
-            foreach ($themes as $theme) {
-                if (isset($theme->id)) {
-                    $id_theme = $theme->id;
-                    break;
-                }
-            }
-        }
+        $themes = (new ThemeManagerBuilder($this->context, Db::getInstance()))
+                        ->buildRepository()
+                        ->getList();
 
         $this->fields_form['input'][] = array(
             'type' => 'theme',
@@ -537,7 +517,7 @@ class AdminShopControllerCore extends AdminController
         );
 
         $this->fields_form['submit'] = array(
-            'title' => $this->l('Save'),
+            'title' => $this->trans('Save', array(), 'Admin.Actions'),
         );
 
         if (Shop::getTotalShops() > 1 && $obj->id) {
@@ -548,7 +528,7 @@ class AdminShopControllerCore extends AdminController
 
         $import_data = array(
             'carrier' => $this->l('Carriers'),
-            'cms' => $this->l('CMS pages'),
+            'cms' => $this->l('Pages'),
             'contact' => $this->l('Contact information'),
             'country' => $this->l('Countries'),
             'currency' => $this->l('Currencies'),
@@ -556,13 +536,12 @@ class AdminShopControllerCore extends AdminController
             'employee' => $this->l('Employees'),
             'image' => $this->l('Images'),
             'lang' => $this->l('Languages'),
-            'manufacturer' => $this->l('Manufacturers'),
+            'manufacturer' => $this->l('Brands'),
             'module' => $this->l('Modules'),
             'hook_module' => $this->l('Module hooks'),
             'meta_lang' => $this->l('Meta information'),
             'product' => $this->l('Products'),
             'product_attribute' => $this->l('Product combinations'),
-            'scene' => $this->l('Scenes'),
             'stock_available' => $this->l('Available quantities for sale'),
             'store' => $this->l('Stores'),
             'warehouse' => $this->l('Warehouses'),
@@ -576,7 +555,7 @@ class AdminShopControllerCore extends AdminController
             'zone' => $this->l('Zones'),
             'cart_rule' => $this->l('Cart rules'),
         );
-        
+
         // Hook for duplication of shop data
         $modules_list = Hook::getHookModuleExecList('actionShopDataDuplication');
         if (is_array($modules_list) && count($modules_list) > 0) {
@@ -586,7 +565,7 @@ class AdminShopControllerCore extends AdminController
         }
 
         asort($import_data);
-                
+
         if (!$this->object->id) {
             $this->fields_import_form = array(
                 'radio' => array(
@@ -613,12 +592,22 @@ class AdminShopControllerCore extends AdminController
             );
         }
 
+        if (!$obj->theme_name) {
+            $themes = (new ThemeManagerBuilder($this->context, Db::getInstance()))
+                            ->buildRepository()
+                            ->getList();
+            $theme = array_pop($themes);
+            $theme_name = $theme->getName();
+        } else {
+            $theme_name = $obj->theme_name;
+        }
+
         $this->fields_value = array(
             'id_shop_group' => (Tools::getValue('id_shop_group') ? Tools::getValue('id_shop_group') :
                 (isset($obj->id_shop_group)) ? $obj->id_shop_group : Shop::getContextShopGroupID()),
             'id_category' => (Tools::getValue('id_category') ? Tools::getValue('id_category') :
                 (isset($obj->id_category)) ? $obj->id_category : (int)Configuration::get('PS_HOME_CATEGORY')),
-            'id_theme_checked' => (isset($obj->id_theme) ? $obj->id_theme : $id_theme)
+            'theme_name' => $theme_name,
         );
 
         $ids_category = array();
@@ -653,7 +642,7 @@ class AdminShopControllerCore extends AdminController
         if (Tools::isSubmit('id_category_default')) {
             $_POST['id_category'] = (int)Tools::getValue('id_category_default');
         }
-    
+
         /* Checking fields validity */
         $this->validateRules();
 
@@ -663,7 +652,7 @@ class AdminShopControllerCore extends AdminController
             $this->copyFromPost($object, $this->table);
             $this->beforeAdd($object);
             if (!$object->add()) {
-                $this->errors[] = Tools::displayError('An error occurred while creating an object.').
+                $this->errors[] = $this->trans('An error occurred while creating an object.', array(), 'Admin.Notifications.Error').
                     ' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
             }
             /* voluntary do affectation here */
@@ -706,18 +695,18 @@ class AdminShopControllerCore extends AdminController
 
     public function displayEditLink($token = null, $id, $name = null)
     {
-        if ($this->tabAccess['edit'] == 1) {
+        if ($this->access('edit')) {
             $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
             if (!array_key_exists('Edit', self::$cache_lang)) {
                 self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
-    
+
             $tpl->assign(array(
                 'href' => $this->context->link->getAdminLink('AdminShop').'&shop_id='.(int)$id.'&update'.$this->table,
                 'action' => self::$cache_lang['Edit'],
                 'id' => $id
             ));
-    
+
             return $tpl->fetch();
         } else {
             return;
@@ -738,7 +727,7 @@ class AdminShopControllerCore extends AdminController
             $root_category = new Category($root_categories[0]['id_category']);
             $children = $root_category->getAllChildren($this->context->language->id);
             $selected_cat[] = $root_categories[0]['id_category'];
-            
+
             foreach ($children as $child) {
                 $selected_cat[] = $child->id;
             }
@@ -772,7 +761,7 @@ class AdminShopControllerCore extends AdminController
             if (!isset($tree[$id_shop_group])) {
                 $tree[$id_shop_group] = array(
                     'data' => array(
-                        'title' => '<b>'.$this->l('Group').'</b> '.$row['group_name'],
+                        'title' => '<b>'.$this->trans('Group', array(), 'Admin.Global').'</b> '.$row['group_name'],
                         'icon' => 'themes/'.$this->context->employee->bo_theme.'/img/tree-multishop-groups.png',
                         'attr' => array(
                             'href' => $this->context->link->getAdminLink('AdminShop').'&id_shop_group='.$id_shop_group,
@@ -860,6 +849,6 @@ class AdminShopControllerCore extends AdminController
             'children' => $tree,
         ));
 
-        die(Tools::jsonEncode($tree));
+        die(json_encode($tree));
     }
 }

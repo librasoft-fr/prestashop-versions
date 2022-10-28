@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 @ini_set('max_execution_time', 3600);
 
@@ -73,7 +73,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         return array();
     }
 
-    protected static function createCombinations($list)
+    public static function createCombinations($list)
     {
         if (count($list) <= 1) {
             return count($list) ? array_map(create_function('$v', 'return (array($v));'), $list[0]) : $list;
@@ -96,10 +96,10 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('generate')) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->access('edit')) {
                 $this->action = 'generate';
             } else {
-                $this->errors[] = Tools::displayError('You do not have permission to add this.');
+                $this->errors[] = $this->trans('You do not have permission to add this.', array(), 'Admin.Notifications.Error');
             }
         }
         parent::initProcess();
@@ -115,7 +115,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     public function processGenerate()
     {
         if (!is_array(Tools::getValue('options'))) {
-            $this->errors[] = Tools::displayError('Please select at least one attribute.');
+            $this->errors[] = $this->trans('Please select at least one attribute.', array(), 'Admin.Catalog.Notification');
         } else {
             $tab = array_values(Tools::getValue('options'));
             if (count($tab) && Validate::isLoadedObject($this->product)) {
@@ -167,7 +167,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
 
                 Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts').'&id_product='.(int)Tools::getValue('id_product').'&updateproduct&key_tab=Combinations&conf=4');
             } else {
-                $this->errors[] = Tools::displayError('Unable to initialize these parameters. A combination is missing or an object cannot be loaded.');
+                $this->errors[] = $this->trans('Unable to initialize these parameters. A combination is missing or an object cannot be loaded.');
             }
         }
     }
@@ -213,10 +213,10 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     {
         parent::initPageHeaderToolbar();
 
-        $this->page_header_toolbar_title = $this->l('Attributes generator', null, null, false);
+        $this->page_header_toolbar_title = $this->trans('Attributes generator', array(), 'Admin.Catalog.Feature');
         $this->page_header_toolbar_btn['back'] = array(
             'href' => $this->context->link->getAdminLink('AdminProducts').'&id_product='.(int)Tools::getValue('id_product').'&updateproduct&key_tab=Combinations',
-            'desc' => $this->l('Back to the product', null, null, false)
+            'desc' => $this->trans('Back to the product', array(), 'Admin.Catalog.Feature')
         );
     }
 
@@ -230,8 +230,8 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     {
         if (!Combination::isFeatureActive()) {
             $url = '<a href="index.php?tab=AdminPerformance&token='.Tools::getAdminTokenLite('AdminPerformance').'#featuresDetachables">'.
-                    $this->l('Performance').'</a>';
-            $this->displayWarning(sprintf($this->l('This feature has been disabled. You can activate it here: %s.'), $url));
+                    $this->trans('Performance', array(), 'Admin.Global').'</a>';
+            $this->displayWarning(sprintf($this->trans('This feature has been disabled. You can activate it here: %s.', array('%s' => $url), 'Admin.Catalog.Notification')));
             return;
         }
 

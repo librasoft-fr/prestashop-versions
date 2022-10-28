@@ -1,52 +1,50 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
+
+use Symfony\Component\Yaml\Yaml;
+use PrestaShopBundle\Install\Database;
 
 /**
- * Step 3 : configure database and email connection
+ * Step 3 : configure database
  */
-class InstallControllerHttpDatabase extends InstallControllerHttp
+class InstallControllerHttpDatabase extends InstallControllerHttp implements HttpConfigureInterface
 {
     /**
-     * @var InstallModelDatabase
+     * @var Database
      */
     public $model_database;
 
-    /**
-     * @var InstallModelMail
-     */
-    public $model_mail;
-
     public function init()
     {
-        require_once _PS_INSTALL_MODELS_PATH_.'database.php';
-        $this->model_database = new InstallModelDatabase();
+        $this->model_database = new Database();
+        $this->model_database->setTranslator($this->translator);
     }
 
     /**
-     * @see InstallAbstractModel::processNextStep()
+     * @see HttpConfigureInterface::processNextStep()
      */
     public function processNextStep()
     {
@@ -57,14 +55,14 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
         $this->session->database_password = trim(Tools::getValue('dbPassword'));
         $this->session->database_prefix = trim(Tools::getValue('db_prefix'));
         $this->session->database_clear = Tools::getValue('database_clear');
-        
+
         $this->session->rewrite_engine = Tools::getValue('rewrite_engine');
     }
 
     /**
      * Database configuration must be valid to validate this step
      *
-     * @see InstallAbstractModel::validate()
+     * @see HttpConfigureInterface::validate()
      */
     public function validate()
     {
@@ -80,7 +78,7 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
         if (count($this->errors)) {
             return false;
         }
-        
+
         if (!isset($this->session->database_engine)) {
             $this->session->database_engine = $this->model_database->getBestEngine($this->session->database_server, $this->session->database_name, $this->session->database_login, $this->session->database_password);
         }
@@ -112,7 +110,7 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
 
         $this->ajaxJsonAnswer(
             (count($errors)) ? false : true,
-            (count($errors)) ? implode('<br />', $errors) : $this->l('Database is connected')
+            (count($errors)) ? implode('<br />', $errors) : $this->translator->trans('Database is connected', array(), 'Install')
         );
     }
 
@@ -130,32 +128,28 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
 
         $this->ajaxJsonAnswer(
             $success,
-            $success ? $this->l('Database is created') : $this->l('Cannot create the database automatically')
+            $success ?  $this->translator->trans('Database is created', array(), 'Install') : $this->translator->trans('Cannot create the database automatically', array(), 'Install')
         );
     }
 
     /**
-     * @see InstallAbstractModel::display()
+     * @see HttpConfigureInterface::display()
      */
     public function display()
     {
         if (!$this->session->database_server) {
-            if (file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
-                @include_once _PS_ROOT_DIR_.'/config/settings.inc.php';
-                $this->database_server = _DB_SERVER_;
-                $this->database_name = _DB_NAME_;
-                $this->database_login = _DB_USER_;
-                $this->database_password = _DB_PASSWD_;
-                $this->database_engine = _MYSQL_ENGINE_;
-                $this->database_prefix = _DB_PREFIX_;
+            if (file_exists(_PS_ROOT_DIR_.'/app/config/parameters.php')) {
+                $parameters = require(_PS_ROOT_DIR_.'/app/config/parameters.php');
             } else {
-                $this->database_server = 'localhost';
-                $this->database_name = 'prestashop';
-                $this->database_login = 'root';
-                $this->database_password = '';
-                $this->database_engine = 'InnoDB';
-                $this->database_prefix = 'ps_';
+                $parameters = Yaml::parse(file_get_contents(_PS_ROOT_DIR_.'/app/config/parameters.yml.dist'));
             }
+
+            $this->database_server = $parameters['parameters']['database_host'];
+            $this->database_name = $parameters['parameters']['database_name'];
+            $this->database_login = $parameters['parameters']['database_user'];
+            $this->database_password = $parameters['parameters']['database_password'];
+            $this->database_engine = $parameters['parameters']['database_engine'];
+            $this->database_prefix = $parameters['parameters']['database_prefix'];
 
             $this->database_clear = true;
             $this->use_smtp = false;

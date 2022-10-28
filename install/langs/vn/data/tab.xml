@@ -1,6 +1,8 @@
 <entity_tab encoding="UTF-8">
+  <tab id="DEFAULT" name="More" />
   <tab id="Addresses" name="&#x110;&#x1ECB;a ch&#x1EC9;"/>
   <tab id="Administration" name="Administration"/>
+  <tab id="Module_Page" name="Modules &amp; Services" />
   <tab id="Advanced_Parameters" name="Th&#xF4;ng s&#x1ED1; chi ti&#x1EBF;t"/>
   <tab id="Attachments" name="&#x110;&#xED;nh k&#xE8;m"/>
   <tab id="Attributes_and_Values" name="Thu&#x1ED9;c t&#xED;nh s&#x1EA3;n ph&#x1EA9;m"/>
@@ -43,12 +45,12 @@
   <tab id="Login" name="&#x110;&#x103;ng nh&#x1EAD;p"/>
   <tab id="Logs" name="Logs"/>
   <tab id="Maintenance" name="B&#x1EA3;o tr&#xEC;"/>
-  <tab id="Manufacturers" name="Nh&#xE0; s&#x1EA3;n xu&#x1EA5;t"/>
+  <tab id="Manufacturers" name="Brands &amp; Suppliers"/>
   <tab id="Marketing" name="Marketing"/>
   <tab id="Menus" name="Menu"/>
   <tab id="Merchandise_Returns" name="H&#xE0;ng h&#xF3;a tr&#x1EA3; l&#x1EA1;i"/>
-  <tab id="Modules" name="Modules v&#xE0; d&#x1ECB;ch v&#x1EE5;"/>
-  <tab id="Modules_1" name="Modules v&#xE0; d&#x1ECB;ch v&#x1EE5;"/>
+  <tab id="Modules" name="Modules" />
+  <tab id="Modules_1" name="Modules" />
   <tab id="Modules_Themes_Catalog" name="Danh m&#x1EE5;c Module &amp; Giao di&#x1EC7;n"/>
   <tab id="Monitoring" name="Gi&#xE1;m s&#xE1;t"/>
   <tab id="Multistore" name="Multistore"/>
@@ -63,7 +65,7 @@
   <tab id="Positions" name="V&#x1ECB; tr&#xED;"/>
   <tab id="Preferences" name="T&#xF9;y ch&#x1ECD;n"/>
   <tab id="Preferences_1" name="T&#xF9;y ch&#x1ECD;n"/>
-  <tab id="Price_Rules" name="Khuy&#x1EBF;n m&#x1EA1;i"/>
+  <tab id="Price_Rules" name="Discounts"/>
   <tab id="Products" name="S&#x1EA3;n ph&#x1EA9;m"/>
   <tab id="Products_1" name="S&#x1EA3;n ph&#x1EA9;m"/>
   <tab id="Profiles" name="H&#x1ED3; s&#x1A1; c&#xE1; nh&#xE2;n"/>
@@ -99,4 +101,5 @@
   <tab id="Warehouses" name="Nh&#xE0; kho"/>
   <tab id="Webservice" name="Webservice"/>
   <tab id="Zones" name="C&#xE1;c khu v&#x1EF1;c"/>
+  <tab id="Marketing_tools" name="Modules Catalog" />
 </entity_tab>

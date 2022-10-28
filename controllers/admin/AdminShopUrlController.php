@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @property ShopUrl $object
@@ -39,14 +39,14 @@ class AdminShopUrlControllerCore extends AdminController
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->bulk_actions = array();
 
+        parent::__construct();
+
         /* if $_GET['id_shop'] is transmitted, virtual url can be loaded in config.php, so we wether transmit shop_id in herfs */
         if ($this->id_shop = (int)Tools::getValue('shop_id')) {
             $_GET['id_shop'] = $this->id_shop;
         } else {
             $this->id_shop = (int)Tools::getValue('id_shop');
         }
-
-        $this->context = Context::getContext();
 
         if (!Tools::getValue('realedit')) {
             $this->deleted = false;
@@ -78,7 +78,7 @@ class AdminShopUrlControllerCore extends AdminController
                 'class' => 'fixed-width-md'
             ),
             'active' => array(
-                'title' => $this->l('Enabled'),
+                'title' => $this->trans('Enabled', array(), 'Admin.Global'),
                 'align' => 'center',
                 'active' => 'status',
                 'type' => 'bool',
@@ -87,8 +87,6 @@ class AdminShopUrlControllerCore extends AdminController
                 'class' => 'fixed-width-md'
             ),
         );
-
-        parent::__construct();
     }
 
     public function viewAccess($disable = false)
@@ -139,7 +137,7 @@ class AdminShopUrlControllerCore extends AdminController
                     'input' => array(
                         array(
                             'type' => 'select',
-                            'label' => $this->l('Shop'),
+                            'label' => $this->trans('Shop', array(), 'Admin.Global'),
                             'name' => 'id_shop',
                             'onchange' => 'checkMainUrlInfo(this.value);',
                             'options' => array(
@@ -184,7 +182,7 @@ class AdminShopUrlControllerCore extends AdminController
                         ),
                         array(
                             'type' => 'switch',
-                            'label' => $this->l('Enabled'),
+                            'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                             'name' => 'active',
                             'required' => false,
                             'is_bool' => true,
@@ -202,7 +200,7 @@ class AdminShopUrlControllerCore extends AdminController
                         )
                     ),
                     'submit' => array(
-                        'title' => $this->l('Save'),
+                        'title' => $this->trans('Save', array(), 'Admin.Actions'),
                     ),
                 ),
             ),
@@ -227,7 +225,7 @@ class AdminShopUrlControllerCore extends AdminController
                         ),
                     ),
                     'submit' => array(
-                        'title' => $this->l('Save'),
+                        'title' => $this->trans('Save', array(), 'Admin.Actions'),
                     ),
                 ),
             ),
@@ -281,7 +279,7 @@ class AdminShopUrlControllerCore extends AdminController
         }
 
         $this->tpl_form_vars = array(
-            'js_shop_url' => Tools::jsonEncode($list_shop_with_url)
+            'js_shop_url' => json_encode($list_shop_with_url)
         );
 
         $this->fields_value = array(
@@ -403,37 +401,37 @@ class AdminShopUrlControllerCore extends AdminController
         $result = true;
 
         if ((Tools::isSubmit('status'.$this->table) || Tools::isSubmit('status')) && Tools::getValue($this->identifier)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->access('edit')) {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var ShopUrl $object */
                     if ($object->main) {
-                        $this->errors[] = Tools::displayError('You cannot disable the Main URL.');
+                        $this->errors[] = $this->trans('You cannot disable the Main URL.', array(), 'Admin.Notifications.Error');
                     } elseif ($object->toggleStatus()) {
                         Tools::redirectAdmin(self::$currentIndex.'&conf=5&token='.$token);
                     } else {
-                        $this->errors[] = Tools::displayError('An error occurred while updating the status.');
+                        $this->errors[] = $this->trans('An error occurred while updating the status.', array(), 'Admin.Notifications.Error');
                     }
                 } else {
-                    $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+                    $this->errors[] = $this->trans('An error occurred while updating the status for an object.', array(), 'Admin.Notifications.Error').' <b>'.$this->table.'</b> '.$this->trans('(cannot load object)', array(), 'Admin.Notifications.Error');
                 }
             } else {
-                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+                $this->errors[] = $this->trans('You do not have permission to edit this.', array(), 'Admin.Notifications.Error');
             }
         } elseif (Tools::isSubmit('main'.$this->table) && Tools::getValue($this->identifier)) {
-            if ($this->tabAccess['edit'] === '1') {
+            if ($this->access('edit')) {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var ShopUrl $object */
                     if (!$object->main) {
                         $result = $object->setMain();
                         Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$token);
                     } else {
-                        $this->errors[] = Tools::displayError('You cannot change a main URL to a non-main URL. You have to set another URL as your Main URL for the selected shop.');
+                        $this->errors[] = $this->trans('You cannot change a main URL to a non-main URL. You have to set another URL as your Main URL for the selected shop.', array(), 'Admin.Notifications.Error');
                     }
                 } else {
-                    $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+                    $this->errors[] = $this->trans('An error occurred while updating the status for an object.', array(), 'Admin.Notifications.Error').' <b>'.$this->table.'</b> '.$this->trans('(cannot load object)', array(), 'Admin.Notifications.Error');
                 }
             } else {
-                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+                $this->errors[] = $this->trans('You do not have permission to edit this.', array(), 'Admin.Notifications.Error');
             }
         } else {
             $result = parent::postProcess();
@@ -451,12 +449,18 @@ class AdminShopUrlControllerCore extends AdminController
         /** @var ShopUrl $object */
         $object = $this->loadObject(true);
         if ($object->canAddThisUrl(Tools::getValue('domain'), Tools::getValue('domain_ssl'), Tools::getValue('physical_uri'), Tools::getValue('virtual_uri'))) {
-            $this->errors[] = Tools::displayError('A shop URL that uses this domain already exists.');
+            $this->errors[] = $this->trans('A shop URL that uses this domain already exists.', array(), 'Admin.Notifications.Error');
         }
 
         $unallowed = str_replace('/', '', Tools::getValue('virtual_uri'));
         if ($unallowed == 'c' || $unallowed == 'img' || is_numeric($unallowed)) {
-            $this->errors[] = sprintf(Tools::displayError('A shop virtual URL can not be "%s"'), $unallowed);
+            $this->errors[] = $this->trans(
+                'A shop virtual URL cannot be "%URL%"',
+                array(
+                    '%URL%' => $unallowed,
+                ),
+                'Admin.Notifications.Error'
+            );
         }
         $return = parent::processSave();
         if (!$this->errors) {
@@ -474,11 +478,11 @@ class AdminShopUrlControllerCore extends AdminController
         $object = $this->loadObject(true);
 
         if ($object->canAddThisUrl(Tools::getValue('domain'), Tools::getValue('domain_ssl'), Tools::getValue('physical_uri'), Tools::getValue('virtual_uri'))) {
-            $this->errors[] = Tools::displayError('A shop URL that uses this domain already exists.');
+            $this->errors[] = $this->trans('A shop URL that uses this domain already exists.', array(), 'Admin.Notifications.Error');
         }
 
         if (Tools::getValue('main') && !Tools::getValue('active')) {
-            $this->errors[] = Tools::displayError('You cannot disable the Main URL.');
+            $this->errors[] = $this->trans('You cannot disable the Main URL.', array(), 'Admin.Notifications.Error');
         }
 
         return parent::processAdd();
@@ -496,11 +500,11 @@ class AdminShopUrlControllerCore extends AdminController
         $object = $this->loadObject(true);
 
         if ($object->main && !Tools::getValue('main')) {
-            $this->errors[] = Tools::displayError('You cannot change a main URL to a non-main URL. You have to set another URL as your Main URL for the selected shop.');
+            $this->errors[] = $this->trans('You cannot change a main URL to a non-main URL. You have to set another URL as your Main URL for the selected shop.', array(), 'Admin.Notifications.Error');
         }
 
         if (($object->main || Tools::getValue('main')) && !Tools::getValue('active')) {
-            $this->errors[] = Tools::displayError('You cannot disable the Main URL.');
+            $this->errors[] = $this->trans('You cannot disable the Main URL.', array(), 'Admin.Notifications.Error');
         }
 
         return parent::processUpdate();

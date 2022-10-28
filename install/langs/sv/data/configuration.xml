@@ -4,7 +4,7 @@
     <value>#IN</value>
   </configuration>
   <configuration id="PS_DELIVERY_PREFIX">
-    <value>#FO</value>
+    <value>#DE</value>
   </configuration>
   <configuration id="PS_RETURN_PREFIX">
     <value>#RE</value>
@@ -16,9 +16,12 @@
     <value>0</value>
   </configuration>
   <configuration id="PS_CUSTOMER_SERVICE_SIGNATURE">
-    <value>Bästa kund,&#xD;
+    <value>Dear Customer,&#xD;
 &#xD;
-Hälsningar,&#xD;
-Kundservice</value>
+Regards,&#xD;
+Customer service</value>
+  </configuration>
+  <configuration id="PS_MAINTENANCE_TEXT">
+    <value>We are currently updating our shop and will be back really soon.&lt;br&gt;Thanks for your patience.</value>
   </configuration>
 </entity_configuration>

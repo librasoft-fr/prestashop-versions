@@ -1,31 +1,119 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* /ersions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
+
+
+use PrestaShopBundle\Install\Upgrade;
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
+use PrestaShop\PrestaShop\Core\Addon\AddonListFilter;
+use PrestaShop\PrestaShop\Core\Addon\AddonListFilterStatus;
+
+/**
+ * 2007-2015 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2015 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 $filePrefix = 'PREFIX_';
 $engineType = 'ENGINE_TYPE';
+define('PS_IN_UPGRADE', 1);
+
+$incompatibleModules = [
+    'bankwire',
+    'blockbanner',
+    'blockcart',
+    'blockcategories',
+    'blockcms',
+    'blockcmsinfo',
+    'blockcontact',
+    'blockcurrencies',
+    'blocklanguages',
+    'blocklayered',
+    'blockmyaccount',
+    'blocknewsletter',
+    'blocksearch',
+    'blocksocial',
+    'blocktopmenu',
+    'blockuserinfo',
+    'cheque',
+    'homefeatured',
+    'homeslider',
+    'onboarding',
+    'socialsharing',
+    'vatnumber',
+    'blockadvertising',
+    'blockbestsellers',
+    'blockcustomerprivacy',
+    'blocklink',
+    'blockmanufacturer',
+    'blocknewproducts',
+    'blockpermanentlinks',
+    'blockrss',
+    'blocksharefb',
+    'blockspecials',
+    'blocksupplier',
+    'blockviewed',
+    'crossselling',
+    'followup',
+    'productscategory',
+    'producttooltip',
+    'mailalert',
+    'blockcontactinfos',
+    'blockfacebook',
+    'blockmyaccountfooter',
+    'blockpaymentlogo',
+    'blockstore',
+    'blocktags',
+    'blockwishlist',
+    'productcomments',
+    'productpaymentlogos',
+    'sendtoafriend',
+    'themeconfigurator'
+];
+
+// remove old unsupported classes
+@unlink(__DIR__.'/../../classes/db/MySQL.php');
 
 // Set execution time and time_limit to infinite if available
 @set_time_limit(0);
@@ -59,14 +147,6 @@ define('INSTALL_PATH', dirname(dirname(__FILE__)).'/');
 
 require_once(INSTALL_PATH . 'install_version.php');
 
-define('SETTINGS_FILE', INSTALL_PATH . '/../config/settings.inc.php');
-
-if (file_exists(SETTINGS_FILE)) {
-    include_once(SETTINGS_FILE);
-} else {
-    die('settings.inc.php is missing (error code 30).');
-}
-
 // need for upgrade before 1.5
 if (!defined('__PS_BASE_URI__')) {
     define('__PS_BASE_URI__', str_replace('//', '/', '/'.trim(preg_replace('#/(install(-dev)?/upgrade)$#', '/', str_replace('\\', '/', dirname($_SERVER['REQUEST_URI']))), '/').'/'));
@@ -78,15 +158,13 @@ if (!defined('_THEME_NAME_')) {
 }
 
 require_once(dirname(__FILE__).'/../init.php');
+Upgrade::migrateSettingsFile();
+require_once(_PS_CONFIG_DIR_.'bootstrap.php');
 
-// set logger
-require_once(_PS_INSTALL_PATH_.'upgrade/classes/AbstractLogger.php');
-eval('abstract class AbstractLogger extends AbstractLoggerCore{}');
-require_once(_PS_INSTALL_PATH_.'upgrade/classes/FileLogger.php');
-eval('class FileLogger extends FileLoggerCore{}');
-
+$cacheDir = _PS_ROOT_DIR_.'/'.(_PS_MODE_DEV_ ? 'dev' : 'prod').'/log/';
+@mkdir($cacheDir, 0777, true);
 $logger = new FileLogger();
-$logger->setFilename(_PS_ROOT_DIR_.'/log/'.@date('Ymd').'_upgrade.log');
+$logger->setFilename($cacheDir.@date('Ymd').'_upgrade.log');
 
 if (function_exists('date_default_timezone_set')) {
     date_default_timezone_set('Europe/Paris');
@@ -118,7 +196,6 @@ $requests = '';
 $fail_result = '';
 $warningExist = false;
 
-
 if (!defined('_THEMES_DIR_')) {
     define('_THEMES_DIR_', __PS_BASE_URI__.'themes/');
 }
@@ -132,7 +209,10 @@ if (!defined('_PS_CSS_DIR_')) {
     define('_PS_CSS_DIR_', __PS_BASE_URI__.'css/');
 }
 
-$oldversion = _PS_VERSION_;
+$oldversion = Configuration::get('PS_VERSION_DB');
+if (empty($oldversion)) {
+    $oldversion = Configuration::get('PS_INSTALL_VERSION');
+}
 
 $versionCompare =  version_compare(_PS_INSTALL_VERSION_, $oldversion);
 
@@ -143,7 +223,7 @@ if ($versionCompare == '-1') {
     $logger->logError(sprintf('You already have the %s version.', _PS_INSTALL_VERSION_));
     $fail_result .= '<action result="fail" error="28" />'."\n";
 } elseif ($versionCompare === false) {
-    $logger->logError('There is no older version. Did you delete or rename the config/settings.inc.php file?');
+    $logger->logError('There is no older version. Did you delete or rename the app/config/parameters.php file?');
     $fail_result .= '<action result="fail" error="29" />'."\n";
 }
 
@@ -196,7 +276,6 @@ if ($versionNumbers != 4) {
 
 $oldversion = implode('.', $arrayVersion);
 // end of fix
-
 $neededUpgradeFiles = array();
 foreach ($upgradeFiles as $version) {
     if (version_compare($version, $oldversion) == 1 and version_compare(_PS_INSTALL_VERSION_, $version) != -1) {
@@ -245,8 +324,6 @@ $datas = array(
 
 if (version_compare(_PS_INSTALL_VERSION_, '1.6.0.11', '<')) {
     $datas[] = array('_MEDIA_SERVER_1_', defined('_MEDIA_SERVER_1_') ? _MEDIA_SERVER_1_ : '');
-    $datas[] = array('_MEDIA_SERVER_2_', defined('_MEDIA_SERVER_2_') ? _MEDIA_SERVER_2_ : '');
-    $datas[] = array('_MEDIA_SERVER_3_', defined('_MEDIA_SERVER_3_') ? _MEDIA_SERVER_3_ : '');
 }
 
 if (defined('_RIJNDAEL_KEY_')) {
@@ -289,10 +366,6 @@ require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
 
 Context::getContext()->smarty = $smarty;
 
-if (isset($_GET['customModule']) and $_GET['customModule'] == 'desactivate') {
-    require_once(_PS_INSTALLER_PHP_UPGRADE_DIR_.'deactivate_custom_modules.php');
-    deactivate_custom_modules();
-}
 $sqlContentVersion = array();
 if (empty($fail_result)) {
     foreach ($neededUpgradeFiles as $version) {
@@ -313,25 +386,52 @@ if (empty($fail_result)) {
     }
 }
 
+$install = new PrestaShopBundle\Install\Install();
+$install->generateSf2ProductionEnv();
 
 if (empty($fail_result)) {
-    error_reporting($oldLevel);
-    $confFile = new AddConfToFile(SETTINGS_FILE, 'w');
-    if ($confFile->error) {
-        $logger->logError($confFile->error);
-        $fail_result .= '<action result="fail" error="'.$confFile->error.'" />'."\n";
-    } else {
-        foreach ($datas as $data) {
-            $confFile->writeInFile($data[0], $data[1]);
+    Language::loadLanguages();
+
+    if (isset($_GET['customModule']) and $_GET['customModule'] == 'desactivate') {
+        require_once(_PS_INSTALLER_PHP_UPGRADE_DIR_.'deactivate_custom_modules.php');
+        deactivate_custom_modules();
+    }
+
+    // Disable the old incompatible modules
+    $disableModules = function() use ($incompatibleModules)
+    {
+        $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
+        $moduleManagerRepository = $moduleManagerBuilder->buildRepository();
+        $moduleManagerRepository->clearCache();
+
+        $filter = new AddonListFilter();
+        $filter->setStatus(AddonListFilterStatus::ON_DISK|AddonListFilterStatus::INSTALLED);
+
+        $list = $moduleManagerRepository->getFilteredList($filter, true);
+        /**
+         * @var $module \PrestaShop\PrestaShop\Adapter\Module\Module
+         */
+        foreach ($list as $moduleName => $module) {
+            if (in_array($moduleName, $incompatibleModules)) {
+                echo "Uninstalling module $moduleName, not supported in this prestashop version.\n";
+                $module->onUninstall();
+            } else {
+                $moduleInfo = $moduleManagerRepository->getModule($moduleName, true);
+                /** @var \Symfony\Component\HttpFoundation\ParameterBag $attributes */
+                $attributes = $module->attributes;
+                if ($attributes->get('compatibility')) {
+                    $maxVersion = $attributes->get('compatibility')->to;
+                    if (version_compare($maxVersion, _PS_INSTALL_VERSION_) == -1 && Module::isEnabled($moduleName)) {
+                        echo "Disabling module $moduleName. Max supported version : ".$maxVersion."\n";
+                        Module::disableAllByName($moduleName);
+                    }
+                }
+            }
         }
-    }
-    if ($confFile->error != false) {
-        $logger->logError($confFile->error);
-        $fail_result .= '<action result="fail" error="'.$confFile->error.'" />'."\n";
-    }
-}
+        ////
+    };
+    $disableModules();
 
-if (empty($fail_result)) {
     foreach ($sqlContentVersion as $version => $sqlContent) {
         foreach ($sqlContent as $query) {
             $query = trim($query);
@@ -403,6 +503,27 @@ if (empty($fail_result)) {
     }
     Configuration::loadConfiguration();
 
+    $enableNativeModules = function() {
+        $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
+        $moduleManagerRepository = $moduleManagerBuilder->buildRepository();
+        $moduleManagerRepository->clearCache();
+
+        $catalog = $moduleManagerBuilder::$adminModuleDataProvider->getCatalogModules();
+        foreach ($catalog as $moduleName => $module) {
+            if ($module->categoryName == 'Natif') {
+                if (!$moduleManagerBuilder->build()->isInstalled($moduleName)) {
+                    echo "Installing native module ".$moduleName."\n";
+                    $module = $moduleManagerRepository->getModule($moduleName);
+                    $module->onInstall();
+                } else {
+                    echo "Native module ".$moduleName." already installed\n";
+                }
+            }
+        }
+    };
+
+    $enableNativeModules();
+
 
     // Settings updated, compile and cache directories must be emptied
     $tools_dir = rtrim(_PS_INSTALL_PATH_, '\\/').DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'tools'.DIRECTORY_SEPARATOR;
@@ -420,13 +541,6 @@ if (empty($fail_result)) {
                 }
             }
         }
-    }
-
-    // delete cache filesystem if activated
-    $depth = getConfValue('PS_CACHEFS_DIRECTORY_DEPTH');
-    if (defined('_PS_CACHE_ENABLED_') && _PS_CACHE_ENABLED_  && $depth) {
-        CacheFs::deleteCacheDirectory();
-        CacheFs::createCacheDirectories((int)$depth);
     }
 }
 $result = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -470,14 +584,7 @@ if (empty($return_type) || $return_type == 'xml') {
         switch ($return_type) {
             case 'json':
                 header('Content-Type: application/json');
-                if (function_exists('json_encode')) {
-                    $result = json_encode($result);
-                } else {
-                    include_once(INSTALL_PATH.'/../tools/json/json.php');
-                    $pearJson = new Services_JSON();
-                    $result = $pearJson->encode($result);
-                }
-                echo $result;
+                echo json_encode($result);
                 break;
             case 'eval':
                 return $result;

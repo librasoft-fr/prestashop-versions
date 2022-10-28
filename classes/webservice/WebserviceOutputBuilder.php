@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 /**
  * @todo : Create typed exception for more finer errors check
@@ -368,8 +368,7 @@ class WebserviceOutputBuilderCore
 
         foreach ($this->wsParamOverrides as $p) {
             $object = $p['object'];
-            $method = $p['method'];
-            $ws_params = $object->$method($ws_params);
+            $ws_params = $object->{$p['method']}($ws_params);
         }
 
         // If a list is asked, need to wrap with a plural node
@@ -463,8 +462,7 @@ class WebserviceOutputBuilderCore
 
         foreach ($this->wsParamOverrides as $p) {
             $o = $p['object'];
-            $method = $p['method'];
-            $ws_params = $o->$method($ws_params);
+            $ws_params = $o->{$p['method']}($ws_params);
         }
         $output .= $this->setIndent($depth).$this->objectRender->renderNodeHeader($ws_params['objectNodeName'], $ws_params);
 
@@ -541,8 +539,7 @@ class WebserviceOutputBuilderCore
                 unset($field['xlink_resource']);
             }
         } elseif (isset($field['getter']) && $object != null && method_exists($object, $field['getter'])) {
-            $field_getter = $field['getter'];
-            $field['value'] = $object->$field_getter();
+            $field['value'] = $object->{$field['getter']}();
         } elseif (!isset($field['value'])) {
             $field['value'] = $object->$field_name;
         }
@@ -709,7 +706,7 @@ class WebserviceOutputBuilderCore
 
     public function getSynopsisDetails($field)
     {
-        $arr_details = array();
+        $arr_details = '';
         if (array_key_exists('required', $field) && $field['required']) {
             $arr_details['required'] = 'true';
         }
@@ -759,29 +756,19 @@ class WebserviceOutputBuilderCore
     {
         return $this->specificFields;
     }
-
     protected function overrideSpecificField($entity_name, $field_name, $field, $entity_object, $ws_params)
     {
-        if (array_key_exists($field_name, $this->specificFields)) {
-            $specific_fields_field_name = $this->specificFields[$field_name];
-            if ($specific_fields_field_name['entity'] == $entity_name) {
-
-                if ($specific_fields_field_name['type'] == 'string') {
-                    $object = new $specific_fields_field_name['object']();
-                } elseif ($specific_fields_field_name['type'] == 'object') {
-                    $object = $specific_fields_field_name['object'];
-                }
-
-                if (isset($object)) {
-                    $method = $specific_fields_field_name['method'];
-                    $field = $object->$method($field, $entity_object, $ws_params);
-                }
+        if (array_key_exists($field_name, $this->specificFields) && $this->specificFields[$field_name]['entity'] == $entity_name) {
+            if ($this->specificFields[$field_name]['type'] == 'string') {
+                $object = new $this->specificFields[$field_name]['object']();
+            } elseif ($this->specificFields[$field_name]['type'] == 'object') {
+                $object = $this->specificFields[$field_name]['object'];
             }
-        }
 
+            $field = $object->{$this->specificFields[$field_name]['method']}($field, $entity_object, $ws_params);
+        }
         return $field;
     }
-
     public function setVirtualField($object, $method, $entity_name, $parameters)
     {
         try {
@@ -810,8 +797,7 @@ class WebserviceOutputBuilderCore
                     $object = $function_infos['object'];
                 }
 
-                $method = $function_infos['method'];
-                $return_fields = $object->$method($entity_object, $function_infos['parameters']);
+                $return_fields = $object->{$function_infos['method']}($entity_object, $function_infos['parameters']);
                 foreach ($return_fields as $field_name => $value) {
                     if (Validate::isConfigName($field_name)) {
                         $arr_return[$field_name] = $value;

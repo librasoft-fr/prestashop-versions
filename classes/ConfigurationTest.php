@@ -1,42 +1,36 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
-
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 class ConfigurationTestCore
 {
     public static $test_files = array(
-        '/cache/smarty/compile/index.php',
         '/classes/log/index.php',
         '/classes/cache/index.php',
         '/config/index.php',
-        '/tools/tar/Archive_Tar.php',
-        '/tools/pear/PEAR.php',
         '/controllers/admin/AdminLoginController.php',
-        '/css/index.php',
         '/download/index.php',
-        '/img/404.gif',
         '/js/tools.js',
         '/js/jquery/plugins/fancybox/jquery.fancybox.js',
         '/localization/fr.xml',
@@ -44,16 +38,16 @@ class ConfigurationTestCore
         '/modules/index.php',
         '/override/controllers/front/index.php',
         '/pdf/order-return.tpl',
-        '/themes/default-bootstrap/css/global.css',
         '/translations/export/index.php',
         '/webservice/dispatcher.php',
-        '/index.php'
+        '/index.php',
+        '/vendor/autoload.php',
     );
 
     /**
      * getDefaultTests return an array of tests to executes.
      * key are method name, value are parameters (false for no parameter)
-     * all path are _PS_ROOT_DIR_ related
+     * all path are _PS_ROOT_DIR_ related.
      *
      * @return array
      */
@@ -61,8 +55,8 @@ class ConfigurationTestCore
     {
         $tests = array(
             'upload' => false,
-            'cache_dir' => 'cache',
-            'log_dir' => 'log',
+            'cache_dir' => 'app/cache',
+            'log_dir' => 'app/logs',
             'img_dir' => 'img',
             'module_dir' => 'modules',
             'theme_lang_dir' => 'themes/'._THEME_NAME_.'/lang/',
@@ -70,7 +64,8 @@ class ConfigurationTestCore
             'theme_cache_dir' => 'themes/'._THEME_NAME_.'/cache/',
             'translations_dir' => 'translations',
             'customizable_products_dir' => 'upload',
-            'virtual_products_dir' => 'download'
+            'virtual_products_dir' => 'download',
+            'config_sf2_dir' => 'app/config',
         );
 
         if (!defined('_PS_HOST_MODE_')) {
@@ -78,14 +73,18 @@ class ConfigurationTestCore
                 'system' => array(
                     'fopen', 'fclose', 'fread', 'fwrite',
                     'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
-                    'getcwd', 'chdir', 'chmod'
+                    'getcwd', 'chdir', 'chmod',
                 ),
                 'phpversion' => false,
+                'apache_mod_rewrite' => false,
+                'curl' => false,
                 'gd' => false,
-                'mysql_support' => false,
+                'pdo_mysql' => false,
                 'config_dir' => 'config',
                 'files' => false,
                 'mails_dir' => 'mails',
+                'openssl' => 'false',
+                'zip' => false,
             ));
         }
 
@@ -94,7 +93,7 @@ class ConfigurationTestCore
 
     /**
      * getDefaultTestsOp return an array of tests to executes.
-     * key are method name, value are parameters (false for no parameter)
+     * key are method name, value are parameters (false for no parameter).
      *
      * @return array
      */
@@ -103,20 +102,18 @@ class ConfigurationTestCore
         return array(
             'new_phpversion' => false,
             'fopen' => false,
-            'register_globals' => false,
             'gz' => false,
-            'mcrypt' => false,
             'mbstring' => false,
-            'magicquotes' => false,
             'dom' => false,
             'pdo_mysql' => false,
         );
     }
 
     /**
-     * run all test defined in $tests
+     * run all test defined in $tests.
      *
      * @param array $tests
+     *
      * @return array results of tests
      */
     public static function check($tests)
@@ -125,6 +122,7 @@ class ConfigurationTestCore
         foreach ($tests as $key => $test) {
             $res[$key] = ConfigurationTest::run($key, $test);
         }
+
         return $res;
     }
 
@@ -133,12 +131,22 @@ class ConfigurationTestCore
         if (call_user_func(array('ConfigurationTest', 'test_'.$ptr), $arg)) {
             return 'ok';
         }
+
         return 'fail';
     }
 
     public static function test_phpversion()
     {
-        return version_compare(substr(phpversion(), 0, 5), '5.2.0', '>=');
+        return version_compare(substr(phpversion(), 0, 5), '5.4.0', '>=');
+    }
+
+    public static function test_apache_mod_rewrite()
+    {
+        if (strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'apache') === false || !function_exists('apache_get_modules')) {
+            return true;
+        }
+
+        return in_array('mod_rewrite', apache_get_modules());
     }
 
     public static function test_new_phpversion()
@@ -154,11 +162,6 @@ class ConfigurationTestCore
     public static function test_pdo_mysql()
     {
         return extension_loaded('pdo_mysql');
-    }
-
-    public static function test_magicquotes()
-    {
-        return !get_magic_quotes_gpc();
     }
 
     public static function test_upload()
@@ -178,7 +181,13 @@ class ConfigurationTestCore
                 return false;
             }
         }
+
         return true;
+    }
+    
+    public static function test_curl()
+    {
+        return extension_loaded('curl');
     }
 
     public static function test_gd()
@@ -186,17 +195,18 @@ class ConfigurationTestCore
         return function_exists('imagecreatetruecolor');
     }
 
-    public static function test_register_globals()
-    {
-        return !ini_get('register_globals');
-    }
-
     public static function test_gz()
     {
         if (function_exists('gzencode')) {
             return @gzencode('dd') !== false;
         }
+
         return false;
+    }
+
+    public static function test_zip()
+    {
+        return extension_loaded('zip');
     }
 
     public static function test_dir($relative_dir, $recursive = false, &$full_report = null)
@@ -211,6 +221,7 @@ class ConfigurationTestCore
             @unlink($dummy);
             if (!$recursive) {
                 closedir($dh);
+
                 return true;
             }
         } elseif (!is_writable($dir)) {
@@ -229,13 +240,15 @@ class ConfigurationTestCore
         }
 
         closedir($dh);
+
         return true;
     }
 
     public static function test_file($file_relative)
     {
         $file = _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$file_relative;
-        return (file_exists($file) && is_writable($file));
+
+        return file_exists($file) && is_writable($file);
     }
 
     public static function test_config_dir($dir)
@@ -303,12 +316,18 @@ class ConfigurationTestCore
         return ConfigurationTest::test_dir($dir, true);
     }
 
+    public static function test_config_sf2_dir($dir)
+    {
+        return ConfigurationTest::test_dir($dir, true);
+    }
+
     public static function test_theme_lang_dir($dir)
     {
         $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
         if (!file_exists($absoluteDir)) {
             return true;
         }
+
         return ConfigurationTest::test_dir($dir, true);
     }
 
@@ -318,6 +337,7 @@ class ConfigurationTestCore
         if (!file_exists($absoluteDir)) {
             return true;
         }
+
         return ConfigurationTest::test_dir($dir, true);
     }
 
@@ -327,6 +347,7 @@ class ConfigurationTestCore
         if (!file_exists($absoluteDir)) {
             return true;
         }
+
         return ConfigurationTest::test_dir($dir, true);
     }
 
@@ -345,9 +366,9 @@ class ConfigurationTestCore
         return function_exists('mb_strtolower');
     }
 
-    public static function test_mcrypt()
+    public static function test_openssl()
     {
-        return function_exists('mcrypt_encrypt');
+        return function_exists('openssl_encrypt');
     }
 
     public static function test_sessions()
@@ -379,6 +400,7 @@ class ConfigurationTestCore
         if ($full) {
             return $return;
         }
+
         return true;
     }
 }

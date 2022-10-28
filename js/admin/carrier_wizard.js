@@ -1,27 +1,27 @@
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 var fees_is_hide = false;
 
@@ -185,33 +185,30 @@ function displaySummary()
 	$('#summary_name').text($('#name').val());
 
 	// Delay and pricing
-	$('#summary_meta_informations').html(summary_translation_meta_informations
-		.replace('@s1', '<strong></strong>')
-		.replace('@s2', '<strong></strong>')
-	);
+	tmp = summary_translation_meta_informations.replace('%2$s', '<strong>' + delay_text + '</strong>');
 	if ($('#is_free_on').attr('checked'))
-		$('#summary_meta_informations').find('strong:eq(0)').text(summary_translation_free);
+		tmp = tmp.replace('%1$s', summary_translation_free);
 	else
-		$('#summary_meta_informations').find('strong:eq(0)').text(summary_translation_paid);
-	$('#summary_meta_informations').find('strong:eq(1)').text(delay_text);
+		tmp = tmp.replace('%1$s', summary_translation_paid);
+	$('#summary_meta_informations').html(tmp);
 
 	// Tax and calculation mode for the shipping cost
-	$('#summary_shipping_cost').html(summary_translation_shipping_cost
-		.replace('@s1', '<strong></strong>')
-		.replace('@s2', '<strong></strong>')
-	);
+	tmp = summary_translation_shipping_cost.replace('%2$s', '<strong>' + $('#id_tax_rules_group option:selected').text() + '</strong>');
 
-	if ($('#billing_price').attr('checked'))
-		$('#summary_shipping_cost').find('strong:eq(0)').text(summary_translation_price);
-	else if ($('#billing_weight').attr('checked'))
-		$('#summary_shipping_cost').find('strong:eq(0)').text(summary_translation_weight);
-	else
-		$('#summary_shipping_cost').find('strong:eq(0)').text(summary_translation_undefined);
+		if ($('#billing_price').attr('checked'))
+			tmp = tmp.replace('%1$s', summary_translation_price);
+		else if ($('#billing_weight').attr('checked'))
+			tmp = tmp.replace('%1$s', summary_translation_weight);
+		else
+			tmp = tmp.replace('%1$s', '<strong>' + summary_translation_undefined + '</strong>');
 
-	$('#summary_shipping_cost').find('strong:eq(1)').text($('#id_tax_rules_group option:selected').text());
-	
+
+
+	$('#summary_shipping_cost').text(tmp);
 
 	// Weight or price ranges
+	$('#summary_range').text(summary_translation_range+' '+summary_translation_range_limit);
+
 
 	if ($('input[name="shipping_method"]:checked').val() == 1)
 		unit = PS_WEIGHT_UNIT;
@@ -232,21 +229,15 @@ function displaySummary()
 		if (!isNaN(parseFloat($(this).val())) && (range_sup == summary_translation_undefined || parseFloat(range_sup) < parseFloat($(this).val())))
 			range_sup = $(this).val();
 	});
-	
-	tmp = summary_translation_range+' '+summary_translation_range_limit;
-	$('#summary_range').html(tmp
-		.replace('@s1', '<strong></strong>')
-		.replace('@s2', '<strong></strong>')
-		.replace('@s3', '<strong></strong>')
+
+	$('#summary_range').html(
+		$('#summary_range').html()
+		.replace('%1$s', '<strong>' + range_inf +' '+ unit + '</strong>')
+		.replace('%2$s', '<strong>' + range_sup +' '+ unit + '</strong>')
+		.replace('%3$s', '<strong>' + $('#range_behavior option:selected').text().toLowerCase() + '</strong>')
 	);
-
-	$('#summary_range').find('strong:eq(0)').text(range_inf +' '+ unit);
-	$('#summary_range').find('strong:eq(1)').text(range_sup +' '+ unit);
-	$('#summary_range').find('strong:eq(2)').text($('#range_behavior option:selected').text().toLowerCase());
-
 	if ($('#is_free_on').attr('checked'))
 		$('span.is_free').hide();
-
 	// Delivery zones
 	$('#summary_zones').html('');
 	$('.input_zone').each(function(){

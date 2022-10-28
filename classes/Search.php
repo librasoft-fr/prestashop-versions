@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2017 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2017 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 define('PS_SEARCH_MAX_WORD_LENGTH', 15);
 
@@ -199,7 +199,7 @@ class SearchCore
                 $start_search = Configuration::get('PS_SEARCH_START') ? '%': '';
                 $end_search = Configuration::get('PS_SEARCH_END') ? '': '%';
 
-                $intersect_array[] = 'SELECT DISTINCT si.id_product
+                $intersect_array[] = 'SELECT si.id_product
 					FROM '._DB_PREFIX_.'search_word sw
 					LEFT JOIN '._DB_PREFIX_.'search_index si ON sw.id_word = si.id_word
 					WHERE sw.id_lang = '.(int)$id_lang.'
@@ -242,7 +242,7 @@ class SearchCore
         }
 
         $results = $db->executeS('
-		SELECT DISTINCT cp.`id_product`
+		SELECT cp.`id_product`
 		FROM `'._DB_PREFIX_.'category_product` cp
 		'.(Group::isFeatureActive() ? 'INNER JOIN `'._DB_PREFIX_.'category_group` cg ON cp.`id_category` = cg.`id_category`' : '').'
 		INNER JOIN `'._DB_PREFIX_.'category` c ON cp.`id_category` = c.`id_category`
@@ -258,17 +258,19 @@ class SearchCore
         foreach ($results as $row) {
             $eligible_products[] = $row['id_product'];
         }
-
-        $eligible_products2 = array();
         foreach ($intersect_array as $query) {
+            $eligible_products2 = array();
             foreach ($db->executeS($query, true, false) as $row) {
                 $eligible_products2[] = $row['id_product'];
             }
+
+            $eligible_products = array_intersect($eligible_products, $eligible_products2);
+            if (!count($eligible_products)) {
+                return ($ajax ? array() : array('total' => 0, 'result' => array()));
+            }
         }
-        $eligible_products = array_unique(array_intersect($eligible_products, array_unique($eligible_products2)));
-        if (!count($eligible_products)) {
-            return ($ajax ? array() : array('total' => 0, 'result' => array()));
-        }
+
+        $eligible_products = array_unique($eligible_products);
 
         $product_pool = '';
         foreach ($eligible_products as $id_product) {
@@ -601,7 +603,6 @@ class SearchCore
             $db->execute('DELETE si FROM `'._DB_PREFIX_.'search_index` si
 				INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = si.id_product)
 				'.Shop::addSqlAssociation('product', 'p').'
-				INNER JOIN `'._DB_PREFIX_.'search_word` sw ON (sw.id_word = si.id_word AND product_shop.id_shop = sw.id_shop)
 				WHERE product_shop.`visibility` IN ("both", "search")
 				AND product_shop.`active` = 1
 				AND '.($id_product ? 'p.`id_product` = '.(int)$id_product : 'product_shop.`indexed` = 0'));
@@ -741,7 +742,7 @@ class SearchCore
     public static function removeProductsSearchIndex($products)
     {
         if (is_array($products) && !empty($products)) {
-            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'search_index WHERE id_product IN ('.implode(',', array_map('intval', $products)).')');
+            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'search_index WHERE id_product IN ('.implode(',', array_unique(array_map('intval', $products))).')');
             ObjectModel::updateMultishopTable('Product', array('indexed' => 0), 'a.id_product IN ('.implode(',', array_map('intval', $products)).')');
         }
     }
@@ -749,7 +750,7 @@ class SearchCore
     protected static function setProductsAsIndexed(&$products)
     {
         if (is_array($products) && !empty($products)) {
-            ObjectModel::updateMultishopTable('Product', array('indexed' => 1), 'a.id_product IN ('.implode(',', $products).')');
+            ObjectModel::updateMultishopTable('Product', array('indexed' => 1), 'a.id_product IN ('.implode(',', array_map('intval', $products)).')');
         }
     }
 

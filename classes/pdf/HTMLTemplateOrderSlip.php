@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,10 +18,10 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- *  @author 	PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2017 PrestaShop SA
- *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 /**
@@ -41,10 +41,14 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
     {
         $this->order_slip = $order_slip;
         $this->order = new Order((int)$order_slip->id_order);
+        $this->id_cart = $this->order->id_cart;
 
         $products = OrderSlip::getOrdersSlipProducts($this->order_slip->id, $this->order);
-        $customized_datas = Product::getAllCustomizedDatas((int)$this->order->id_cart);
-        Product::addCustomizationPrice($products, $customized_datas);
+
+        foreach ($products as $product) {
+            $customized_datas = Product::getAllCustomizedDatas($this->id_cart, null, true, null, (int)$product['id_customization']);
+            Product::addProductCustomizationPrice($product, $customized_datas);
+        }
 
         $this->order->products = $products;
         $this->smarty = $smarty;
@@ -98,9 +102,9 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
 
                 if ($this->order_slip->partial == 1) {
                     $order_slip_detail = Db::getInstance()->getRow('
-						SELECT * FROM `'._DB_PREFIX_.'order_slip_detail`
-						WHERE `id_order_slip` = '.(int)$this->order_slip->id.'
-						AND `id_order_detail` = '.(int)$product['id_order_detail']);
+                        SELECT * FROM `'._DB_PREFIX_.'order_slip_detail`
+                        WHERE `id_order_slip` = '.(int)$this->order_slip->id.'
+                        AND `id_order_detail` = '.(int)$product['id_order_detail']);
 
                     $product['total_price_tax_excl'] = $order_slip_detail['amount_tax_excl'];
                     $product['total_price_tax_incl'] = $order_slip_detail['amount_tax_incl'];
