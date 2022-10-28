@@ -139,6 +139,13 @@ class AdminPsThemeCustoConfigurationController extends ModuleAdminController
     {
         parent::initContent();
 
+        if (Module::isInstalled('ps_mbo')) {
+            $selectionModulePage = $this->context->link->getAdminLink('AdminPsMboModule');
+        } else {
+            $selectionModulePage = $this->context->link->getAdminLink('AdminModulesCatalog');
+        }
+        $installedModulePage = $this->context->link->getAdminLink('AdminModulesManage');
+
         $aListToConfigure = $this->getListToConfigure();
         $this->context->smarty->assign(array(
             'enable'                => $this->module->active,
@@ -148,7 +155,8 @@ class AdminPsThemeCustoConfigurationController extends ModuleAdminController
             'iconConfiguration'     => $this->module->img_path.'/controllers/configuration/icon_configurator.png',
             'listCategories'        => $this->categoryList,
             'elementsList'          => $this->setFinalList($aListToConfigure),
-            'modulesPage'           => $this->context->link->getAdminLink('AdminModulesSf', true, array('route' => 'admin_module_manage')),
+            'selectionModulePage'   => $selectionModulePage,
+            'installedModulePage'   => $installedModulePage,
             'moduleImgUri'          => $this->module->img_path.'/controllers/configuration/',
             'moduleActions'         => $this->aModuleActions,
             'moduleActionsNames'    => $this->moduleActionsNames,
@@ -261,6 +269,7 @@ class AdminPsThemeCustoConfigurationController extends ModuleAdminController
     */
     public function setFinalList($aList)
     {
+        $modulesOnDisk = Module::getModulesDirOnDisk();
         $aModuleFinalList = array();
 
         foreach ($aList as $sSegmentName => $aElementListByType) {
@@ -274,30 +283,20 @@ class AdminPsThemeCustoConfigurationController extends ModuleAdminController
                     }
                 } else {
                     foreach ($aElementsList as $sModuleName => $iModuleId) {
-                        if (Module::isInstalled($sModuleName)) {
-                            $oModuleInstance = Module::getInstanceByName($sModuleName);
-                            $aModuleFinalList[$sSegmentName][$sType][$sModuleName] = $this->setModuleFinalList($oModuleInstance, true);
-                            unset($oModuleInstance);
-                        } else {
-                            if ($this->module->ready === false) {
-                                try {
-                                    include_once(_PS_MODULE_DIR_.basename($sModuleName).'/'.basename($sModuleName).'.php');
-                                    $oModuleInstance = new $sModuleName();
-                                    $aModuleFinalList[$sSegmentName][$sType][$sModuleName] = $this->setModuleFinalList($oModuleInstance, false);
-                                    unset($oModuleInstance);
-                                } catch (Exception $e) {
-                                    /* For a module coming from outside. It will be downloaded and installed */
-                                    file_put_contents(_PS_MODULE_DIR_.basename($sModuleName).'.zip', Tools::addonsRequest('module', array('id_module' => $iModuleId)));
-                                    if (Tools::ZipExtract(_PS_MODULE_DIR_.basename($sModuleName).'.zip', _PS_MODULE_DIR_)) {
-                                        @unlink(_PS_MODULE_DIR_.basename($sModuleName).'.zip');
-                                        include_once(_PS_MODULE_DIR_.basename($sModuleName).'/'.basename($sModuleName).'.php');
-                                        $oModuleInstance = new $sModuleName();
-                                        $aModuleFinalList[$sSegmentName][$sType][$sModuleName] = $this->setModuleFinalList($oModuleInstance, false);
-                                        unset($oModuleInstance);
-                                    }
-                                }
+                        if (!in_array($sModuleName, $modulesOnDisk)) {
+                            if ($this->module->ready !== false) {
+                                continue;
+                            }
+                            /* For a module coming from outside. It will be downloaded and installed */
+                            $length = file_put_contents(_PS_MODULE_DIR_.basename($sModuleName).'.zip', Tools::addonsRequest('module', array('id_module' => $iModuleId)));
+                            if (!empty($length) && Tools::ZipExtract(_PS_MODULE_DIR_.basename($sModuleName).'.zip', _PS_MODULE_DIR_)) {
+                                @unlink(_PS_MODULE_DIR_.basename($sModuleName).'.zip');
+                            } else {
+                                continue;
                             }
                         }
+
+                        $aModuleFinalList[$sSegmentName][$sType][$sModuleName] = $this->setModuleFinalList(Module::getInstanceByName($sModuleName), Module::isInstalled($sModuleName));
                     }
                 }
             }
@@ -326,7 +325,7 @@ class AdminPsThemeCustoConfigurationController extends ModuleAdminController
         $aModule['id_module'] = $oModuleInstance->id;
         $aModule['active'] = $oModuleInstance->active;
 
-        
+
 
         if ($bIsInstalled === true) {
             $aModule['can_configure'] = (method_exists($oModuleInstance, 'getContent'))? true : false;
