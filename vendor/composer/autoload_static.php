@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
+class ComposerStaticInit0f6758652661ac64d3253e5610948151
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -79,8 +79,8 @@ class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
         'f190e3308e6ca23234a2875edc985c03' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/divideby.php',
         'ac9e33ce6841aa5bf5d16d465a2f03a7' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/divideinto.php',
         'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
-        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
+        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '877d5940585e94b79d9d1f31ecaeb5fe' => __DIR__ . '/..' . '/martinlindhe/php-mb-helpers/src/mb_helpers.php',
     );
 
@@ -542,8 +542,8 @@ class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
         array (
             0 => __DIR__ . '/..' . '/doctrine/reflection/lib/Doctrine/Common',
             1 => __DIR__ . '/..' . '/doctrine/event-manager/lib/Doctrine/Common',
-            2 => __DIR__ . '/..' . '/doctrine/persistence/lib/Doctrine/Common',
-            3 => __DIR__ . '/..' . '/doctrine/common/lib/Doctrine/Common',
+            2 => __DIR__ . '/..' . '/doctrine/common/lib/Doctrine/Common',
+            3 => __DIR__ . '/..' . '/doctrine/persistence/lib/Doctrine/Common',
         ),
         'Doctrine\\Bundle\\DoctrineCacheBundle\\' => 
         array (
@@ -3434,6 +3434,7 @@ class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\TrafficSeo\\Meta\\ShopUrlType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/TrafficSeo/Meta/ShopUrlType.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\TrafficSeo\\Meta\\UrlSchemaType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/TrafficSeo/Meta/UrlSchemaType.php',
         'PrestaShopBundle\\Form\\Admin\\CustomerService\\CustomerThread\\ForwardCustomerThreadType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/CustomerService/CustomerThread/ForwardCustomerThreadType.php',
+        'PrestaShopBundle\\Form\\Admin\\Extension\\CommaTransformerExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Extension/CommaTransformerExtension.php',
         'PrestaShopBundle\\Form\\Admin\\Extension\\HelpTextExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Extension/HelpTextExtension.php',
         'PrestaShopBundle\\Form\\Admin\\Extension\\RowAttributesExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Extension/RowAttributesExtension.php',
         'PrestaShopBundle\\Form\\Admin\\Feature\\ProductFeature' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Feature/ProductFeature.php',
@@ -3809,9 +3810,11 @@ class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
         'PrestaShop\\Module\\LinkList\\Core\\Grid\\LinkBlockGridFactory' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Core/Grid/LinkBlockGridFactory.php',
         'PrestaShop\\Module\\LinkList\\Core\\Grid\\Query\\LinkBlockQueryBuilder' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Core/Grid/Query/LinkBlockQueryBuilder.php',
         'PrestaShop\\Module\\LinkList\\Core\\Search\\Filters\\LinkBlockFilters' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Core/Search/Filters/LinkBlockFilters.php',
+        'PrestaShop\\Module\\LinkList\\DataMigration' => __DIR__ . '/../..' . '/modules/ps_linklist/src/DataMigration.php',
         'PrestaShop\\Module\\LinkList\\Form\\ChoiceProvider\\AbstractDatabaseChoiceProvider' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Form/ChoiceProvider/AbstractDatabaseChoiceProvider.php',
         'PrestaShop\\Module\\LinkList\\Form\\ChoiceProvider\\CMSCategoryChoiceProvider' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Form/ChoiceProvider/CMSCategoryChoiceProvider.php',
         'PrestaShop\\Module\\LinkList\\Form\\ChoiceProvider\\CMSPageChoiceProvider' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Form/ChoiceProvider/CMSPageChoiceProvider.php',
+        'PrestaShop\\Module\\LinkList\\Form\\ChoiceProvider\\CategoryChoiceProvider' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Form/ChoiceProvider/CategoryChoiceProvider.php',
         'PrestaShop\\Module\\LinkList\\Form\\ChoiceProvider\\HookChoiceProvider' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Form/ChoiceProvider/HookChoiceProvider.php',
         'PrestaShop\\Module\\LinkList\\Form\\ChoiceProvider\\PageChoiceProvider' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Form/ChoiceProvider/PageChoiceProvider.php',
         'PrestaShop\\Module\\LinkList\\Form\\LinkBlockFormDataProvider' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Form/LinkBlockFormDataProvider.php',
@@ -5253,11 +5256,13 @@ class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Customization\\ValueObject\\CustomizationId' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Customization/ValueObject/CustomizationId.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\CannotAssignProductToCategoryException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/CannotAssignProductToCategoryException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\CannotUpdateProductException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/CannotUpdateProductException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\PackOutOfStockException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/PackOutOfStockException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\ProductConstraintException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/ProductConstraintException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\ProductCustomizationNotFoundException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/ProductCustomizationNotFoundException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\ProductException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/ProductException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\ProductNotFoundException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/ProductNotFoundException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\ProductOutOfStockException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/ProductOutOfStockException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\Exception\\ProductSearchEmptyPhraseException' => __DIR__ . '/../..' . '/src/Core/Domain/Product/Exception/ProductSearchEmptyPhraseException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\QueryHandler\\GetProductIsEnabledHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/Product/QueryHandler/GetProductIsEnabledHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\QueryHandler\\SearchProductsHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/Product/QueryHandler/SearchProductsHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Product\\QueryResult\\FoundProduct' => __DIR__ . '/../..' . '/src/Core/Domain/Product/QueryResult/FoundProduct.php',
@@ -6274,8 +6279,10 @@ class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
         'Ps_CustomerSignIn' => __DIR__ . '/../..' . '/modules/ps_customersignin/ps_customersignin.php',
         'Ps_Customeraccountlinks' => __DIR__ . '/../..' . '/modules/ps_customeraccountlinks/ps_customeraccountlinks.php',
         'Ps_Customtext' => __DIR__ . '/../..' . '/modules/ps_customtext/ps_customtext.php',
+        'Ps_Emailsubscription' => __DIR__ . '/../..' . '/modules/ps_emailsubscription/ps_emailsubscription.php',
         'Ps_Facetedsearch' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/ps_facetedsearch.php',
         'Ps_Linklist' => __DIR__ . '/../..' . '/modules/ps_linklist/ps_linklist.php',
+        'Ps_MainMenu' => __DIR__ . '/../..' . '/modules/ps_mainmenu/ps_mainmenu.php',
         'Ps_Shoppingcart' => __DIR__ . '/../..' . '/modules/ps_shoppingcart/ps_shoppingcart.php',
         'Ps_ShoppingcartAjaxModuleFrontController' => __DIR__ . '/../..' . '/modules/ps_shoppingcart/controllers/front/ajax.php',
         'Ps_faviconnotificationbo' => __DIR__ . '/../..' . '/modules/ps_faviconnotificationbo/ps_faviconnotificationbo.php',
@@ -9216,11 +9223,11 @@ class ComposerStaticInitc4da22d335991d9a249589bd55adfd18
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc4da22d335991d9a249589bd55adfd18::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc4da22d335991d9a249589bd55adfd18::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitc4da22d335991d9a249589bd55adfd18::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitc4da22d335991d9a249589bd55adfd18::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitc4da22d335991d9a249589bd55adfd18::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit0f6758652661ac64d3253e5610948151::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit0f6758652661ac64d3253e5610948151::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit0f6758652661ac64d3253e5610948151::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit0f6758652661ac64d3253e5610948151::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit0f6758652661ac64d3253e5610948151::$classMap;
 
         }, null, ClassLoader::class);
     }
