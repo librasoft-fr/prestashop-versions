@@ -67,7 +67,7 @@ return array(
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib/Doctrine/Common/Annotations'),
     'Doctrine\\Bundle\\DoctrineCacheBundle\\' => array($vendorDir . '/doctrine/doctrine-cache-bundle'),
     'Doctrine\\Bundle\\DoctrineBundle\\' => array($vendorDir . '/doctrine/doctrine-bundle'),
-    'DoctrineExtensions\\' => array($vendorDir . '/beberlei/DoctrineExtensions/src'),
+    'DoctrineExtensions\\' => array($vendorDir . '/beberlei/doctrineextensions/src'),
     'Csa\\Bundle\\GuzzleBundle\\' => array($vendorDir . '/csa/guzzle-bundle/src'),
     'Composer\\Installers\\' => array($vendorDir . '/composer/installers/src/Composer/Installers'),
     'Composer\\CaBundle\\' => array($vendorDir . '/composer/ca-bundle/src'),
