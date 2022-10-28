@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2015 PrestaShop
+* 2007-2016 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
+*  @copyright  2007-2016 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -33,7 +33,7 @@ class BlockCart extends Module
 	{
 		$this->name = 'blockcart';
 		$this->tab = 'front_office_features';
-		$this->version = '1.6.0';
+		$this->version = '1.6.1';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 
@@ -42,7 +42,7 @@ class BlockCart extends Module
 
 		$this->displayName = $this->l('Cart block');
 		$this->description = $this->l('Adds a block containing the customer\'s shopping cart.');
-		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 	}
 
 	public function assignContentVars($params)

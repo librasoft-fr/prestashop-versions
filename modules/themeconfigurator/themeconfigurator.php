@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2015 PrestaShop
+* 2007-2016 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 * @author	PrestaShop SA <contact@prestashop.com>
-* @copyright	2007-2015 PrestaShop SA
+* @copyright	2007-2016 PrestaShop SA
 * @license	http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 * International Registered Trademark & Property of PrestaShop SA
 */
@@ -37,7 +37,7 @@ class ThemeConfigurator extends Module
 	{
 		$this->name = 'themeconfigurator';
 		$this->tab = 'front_office_features';
-		$this->version = '2.1.1';
+		$this->version = '2.1.2';
 		$this->bootstrap = true;
 		$this->secure_key = Tools::encrypt($this->name);
 		$this->default_language = Language::getLanguage(Configuration::get('PS_LANG_DEFAULT'));
@@ -46,7 +46,7 @@ class ThemeConfigurator extends Module
 		parent::__construct();
 		$this->displayName = $this->l('Theme configurator');
 		$this->description = $this->l('Configure the main elements of your theme.');
-		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 		$this->module_path = _PS_MODULE_DIR_.$this->name.'/';
 		$this->uploads_path = _PS_MODULE_DIR_.$this->name.'/img/';
 		$this->admin_tpl_path = _PS_MODULE_DIR_.$this->name.'/views/templates/admin/';

@@ -1,6 +1,6 @@
 <?php
 /**
-* 2007-2015 PrestaShop
+* 2007-2016 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author    PrestaShop SA <contact@prestashop.com>
-*  @copyright 2007-2015 PrestaShop SA
+*  @copyright 2007-2016 PrestaShop SA
 *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -38,7 +38,7 @@ class SocialSharing extends Module
 		$this->author = 'PrestaShop';
 		$this->tab = 'advertising_marketing';
 		$this->need_instance = 0;
-		$this->version = '1.4.1';
+		$this->version = '1.4.3';
 		$this->bootstrap = true;
 		$this->_directory = dirname(__FILE__);
 
@@ -46,6 +46,7 @@ class SocialSharing extends Module
 
 		$this->displayName = $this->l('Social sharing');
 		$this->description = $this->l('Displays social sharing buttons (Twitter, Facebook, Google+ and Pinterest) on every product page.');
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 	}
 
 	public function install()
@@ -166,9 +167,14 @@ class SocialSharing extends Module
 			}
 			if (!$this->isCached('socialsharing_header.tpl', $this->getCacheId('socialsharing_header|'.(isset($product->id) && $product->id ? (int)$product->id : ''))))
 			{
+				if (!defined('_PS_PRICE_COMPUTE_PRECISION_')) {
+					$compute_precision = 0;
+				} else {
+					$compute_precision = (float)constant('_PS_PRICE_COMPUTE_PRECISION_');
+				}
 				$this->context->smarty->assign(array(
-					'price' => Tools::ps_round($product->getPrice(!Product::getTaxCalculationMethod((int)$this->context->cookie->id_customer), null), _PS_PRICE_COMPUTE_PRECISION_),
-					'pretax_price' => Tools::ps_round($product->getPrice(false, null), _PS_PRICE_COMPUTE_PRECISION_),
+					'price' => Tools::ps_round($product->getPrice(!Product::getTaxCalculationMethod((int)$this->context->cookie->id_customer), null), $compute_precision),
+					'pretax_price' => Tools::ps_round($product->getPrice(false, null), $compute_precision),
 					'weight' => $product->weight,
 					'weight_unit' => Configuration::get('PS_WEIGHT_UNIT'),
 					'cover' => isset($product->id) ? Product::getCover((int)$product->id) : '',

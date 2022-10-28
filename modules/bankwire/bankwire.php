@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2015 PrestaShop
+* 2007-2016 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
+*  @copyright  2007-2016 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -40,7 +40,7 @@ class BankWire extends PaymentModule
 	{
 		$this->name = 'bankwire';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.1.1';
+		$this->version = '1.1.2';
 		$this->author = 'PrestaShop';
 		$this->controllers = array('payment', 'validation');
 		$this->is_eu_compatible = 1;
@@ -62,6 +62,8 @@ class BankWire extends PaymentModule
 		$this->displayName = $this->l('Bank wire');
 		$this->description = $this->l('Accept payments for your products via bank wire transfer.');
 		$this->confirmUninstall = $this->l('Are you sure about removing these details?');
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
+
 		if (!isset($this->owner) || !isset($this->details) || !isset($this->address))
 			$this->warning = $this->l('Account owner and account details must be configured before using this module.');
 		if (!count(Currency::checkPaymentCurrencies($this->id)))

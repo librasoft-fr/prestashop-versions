@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2015 PrestaShop
+* 2007-2016 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
+*  @copyright  2007-2016 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registred Trademark & Property of PrestaShop SA
 */
@@ -37,7 +37,7 @@ class BlockLayered extends Module
 	{
 		$this->name = 'blocklayered';
 		$this->tab = 'front_office_features';
-		$this->version = '2.1.3';
+		$this->version = '2.2.0';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 		$this->bootstrap = true;
@@ -46,6 +46,7 @@ class BlockLayered extends Module
 
 		$this->displayName = $this->l('Layered navigation block');
 		$this->description = $this->l('Displays a block with layered navigation filters.');
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 
 		if ((int)Tools::getValue('p'))
 			$this->page = (int)Tools::getValue('p');
@@ -1929,12 +1930,12 @@ class BlockLayered extends Module
 		{
 			/* Create the table which contains all the id_product in a cat or a tree */
 			Db::getInstance()->execute('CREATE TEMPORARY TABLE '._DB_PREFIX_.'cat_filter_restriction ENGINE=MEMORY
-														SELECT cp.id_product, MIN(cp.position) position FROM '._DB_PREFIX_.'category_product cp
-														INNER JOIN '._DB_PREFIX_.'category c ON (c.id_category = cp.id_category AND
+														SELECT cp.id_product, MIN(cp.position) position FROM '._DB_PREFIX_.'category c
+														STRAIGHT_JOIN '._DB_PREFIX_.'category_product cp ON (c.id_category = cp.id_category AND
 														'.(Configuration::get('PS_LAYERED_FULL_TREE') ? 'c.nleft >= '.(int)$parent->nleft.'
 														AND c.nright <= '.(int)$parent->nright : 'c.id_category = '.(int)$id_parent).'
 														AND c.active = 1)
-														JOIN `'._DB_PREFIX_.'product` p USING (id_product)
+														STRAIGHT_JOIN `'._DB_PREFIX_.'product` p ON (p.id_product=cp.id_product)
 														'.$price_filter_query_in.'
 														'.$query_filters_from.'
 														WHERE 1 '.$query_filters_where.'
@@ -1944,7 +1945,7 @@ class BlockLayered extends Module
 
 			Db::getInstance()->execute('CREATE TEMPORARY TABLE '._DB_PREFIX_.'cat_filter_restriction ENGINE=MEMORY
 														SELECT cp.id_product, MIN(cp.position) position FROM '._DB_PREFIX_.'category_product cp
-														JOIN `'._DB_PREFIX_.'product` p USING (id_product)
+														STRAIGHT_JOIN `'._DB_PREFIX_.'product` p ON (p.id_product=cp.id_product)
 														'.$price_filter_query_in.'
 														'.$query_filters_from.'
 														WHERE cp.`id_category` IN ('.implode(',', $categories).') '.$query_filters_where.'
@@ -1996,10 +1997,10 @@ class BlockLayered extends Module
 				}
 			}
 			if (!empty($product_id_delete_list)) {
-				Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cat_filter_restriction WHERE id_product IN ('.implode(',', $product_id_delete_list).')');
+				Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cat_filter_restriction WHERE id_product IN ('.implode(',', $product_id_delete_list).')', false);
 			}
 		}
-		$this->nbr_products = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cat_filter_restriction');
+		$this->nbr_products = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cat_filter_restriction', false);
 
 		if ($this->nbr_products == 0)
 			$this->products = array();
@@ -2044,7 +2045,7 @@ class BlockLayered extends Module
 				'.Product::sqlStock('p', 0).'
 				WHERE '.$alias_where.'.`active` = 1 AND '.$alias_where.'.`visibility` IN ("both", "catalog")
 				ORDER BY '.Tools::getProductsOrder('by', Tools::getValue('orderby'), true).' '.Tools::getProductsOrder('way', Tools::getValue('orderway')).' , cp.id_product'.
-				' LIMIT '.(((int)$this->page - 1) * $n.','.$n));
+				' LIMIT '.(((int)$this->page - 1) * $n.','.$n), true, false);
 			}
 			else
 			{
@@ -2075,7 +2076,7 @@ class BlockLayered extends Module
 				WHERE '.$alias_where.'.`active` = 1 AND '.$alias_where.'.`visibility` IN ("both", "catalog")
 				GROUP BY product_shop.id_product
 				ORDER BY '.Tools::getProductsOrder('by', Tools::getValue('orderby'), true).' '.Tools::getProductsOrder('way', Tools::getValue('orderway')).' , cp.id_product'.
-				' LIMIT '.(((int)$this->page - 1) * $n.','.$n));
+				' LIMIT '.(((int)$this->page - 1) * $n.','.$n), true, false);
 			}
 		}
 
@@ -2124,14 +2125,14 @@ class BlockLayered extends Module
 
 		Db::getInstance()->execute('DROP TEMPORARY TABLE IF EXISTS '._DB_PREFIX_.'cat_restriction', false);
 		Db::getInstance()->execute('CREATE TEMPORARY TABLE '._DB_PREFIX_.'cat_restriction ENGINE=MEMORY
-													SELECT DISTINCT cp.id_product, p.id_manufacturer, product_shop.condition, p.weight FROM '._DB_PREFIX_.'category_product cp
-													INNER JOIN '._DB_PREFIX_.'category c ON (c.id_category = cp.id_category AND
+													SELECT DISTINCT cp.id_product, p.id_manufacturer, product_shop.condition, p.weight FROM '._DB_PREFIX_.'category c
+													STRAIGHT_JOIN '._DB_PREFIX_.'category_product cp ON (c.id_category = cp.id_category AND
 													'.(Configuration::get('PS_LAYERED_FULL_TREE') ? 'c.nleft >= '.(int)$parent->nleft.'
 													AND c.nright <= '.(int)$parent->nright : 'c.id_category = '.(int)$id_parent).'
 													AND c.active = 1)
-													INNER JOIN '._DB_PREFIX_.'product_shop product_shop ON (product_shop.id_product = cp.id_product
+													STRAIGHT_JOIN '._DB_PREFIX_.'product_shop product_shop ON (product_shop.id_product = cp.id_product
 													AND product_shop.id_shop = '.(int)$context->shop->id.')
-													INNER JOIN '._DB_PREFIX_.'product p ON (p.id_product=cp.id_product)
+													STRAIGHT_JOIN '._DB_PREFIX_.'product p ON (p.id_product=cp.id_product)
 													WHERE product_shop.`active` = 1 AND product_shop.`visibility` IN ("both", "catalog")', false);
 
 
@@ -2372,7 +2373,7 @@ class BlockLayered extends Module
 			$products = false;
 			if (!empty($sql_query['from']))
 			{
-				$products = Db::getInstance()->executeS($sql_query['select']."\n".$sql_query['from']."\n".$sql_query['join']."\n".$sql_query['where']."\n".$sql_query['group']);
+				$products = Db::getInstance()->executeS($sql_query['select']."\n".$sql_query['from']."\n".$sql_query['join']."\n".$sql_query['where']."\n".$sql_query['group'], true, false);
 			}
 
 			// price & weight have slidebar, so it's ok to not complete recompute the product list

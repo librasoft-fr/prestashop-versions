@@ -24,6 +24,22 @@ International Registred Trademark & Property of PrestaShop SA
 Release Notes for PrestaShop 1.6
 --------------------------------
 ####################################
+#   v1.6.1.7 - (2016-09-06)
+####################################
+
+	Fixed bugs:
+
+	[-] BO : (f19ae86) Solved problem with non-unserialized filters datas
+
+	[-] FO : (2636a31) Fix rouding error in ProductController (PSCSX-7566)
+
+
+	Improved/changed features:
+
+	[*] CORE : (e12c209) Fix a case where $context->smarty could be undefined
+
+
+####################################
 #   v1.6.1.6 - (2016-06-15)
 ####################################
 

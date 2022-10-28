@@ -33,7 +33,7 @@ class BlockCategories extends Module
 	{
 		$this->name = 'blockcategories';
 		$this->tab = 'front_office_features';
-		$this->version = '2.9.3';
+		$this->version = '2.9.4';
 		$this->author = 'PrestaShop';
 
 		$this->bootstrap = true;
@@ -41,7 +41,7 @@ class BlockCategories extends Module
 
 		$this->displayName = $this->l('Categories block');
 		$this->description = $this->l('Adds a block featuring product categories.');
-		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 	}
 
 	public function install()
@@ -131,7 +131,7 @@ class BlockCategories extends Module
 		if (isset($resultParents[$id_category]) && count($resultParents[$id_category]) && ($maxDepth == 0 || $currentDepth < $maxDepth))
 			foreach ($resultParents[$id_category] as $subcat)
 				$children[] = $this->getTree($resultParents, $resultIds, $maxDepth, $subcat['id_category'], $currentDepth + 1);
-		if (isset($resultIds[$id_category])) 
+		if (isset($resultIds[$id_category]))
 		{
 			$link = $this->context->link->getCategoryLink($id_category, $resultIds[$id_category]['link_rewrite']);
 			$name = $resultIds[$id_category]['name'];
@@ -139,7 +139,7 @@ class BlockCategories extends Module
 		}
 		else
 			$link = $name = $desc = '';
-			
+
 		$return = array(
 			'id' => $id_category,
 			'link' => $link,

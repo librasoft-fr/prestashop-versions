@@ -2,7 +2,7 @@
 <module>
 	<name>crossselling</name>
 	<displayName><![CDATA[Cross-selling]]></displayName>
-	<version><![CDATA[1.1.1]]></version>
+	<version><![CDATA[1.1.2]]></version>
 	<description><![CDATA[Adds a &quot;Customers who bought this product also bought...&quot; section to every product page.]]></description>
 	<author><![CDATA[PrestaShop]]></author>
 	<tab><![CDATA[front_office_features]]></tab>
