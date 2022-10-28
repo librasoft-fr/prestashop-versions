@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb
+class ComposerStaticInit9893ee90013fa73be4d0bea0273fc07b
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -2617,6 +2617,18 @@ class ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb
         'PrestaShop\\PrestaShop\\Core\\Crypto\\Hashing' => __DIR__ . '/../..' . '/src/Core/Crypto/Hashing.php',
         'PrestaShop\\PrestaShop\\Core\\Email\\EmailLister' => __DIR__ . '/../..' . '/src/Core/Email/EmailLister.php',
         'PrestaShop\\PrestaShop\\Core\\Feature\\FeatureInterface' => __DIR__ . '/../..' . '/src/Core/Feature/FeatureInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\CollectionFilter' => __DIR__ . '/../..' . '/src/Core/Filter/CollectionFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FilterException' => __DIR__ . '/../..' . '/src/Core/Filter/FilterException.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FilterInterface' => __DIR__ . '/../..' . '/src/Core/Filter/FilterInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\CartFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/CartFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\ConfigurationFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/ConfigurationFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\CustomerFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/CustomerFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\EmbeddedAttributesFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/EmbeddedAttributesFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\MainFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/MainFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\ProductFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/ProductFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\SearchResultProductFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/SearchResultProductFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\FrontEndObject\\ShopFilter' => __DIR__ . '/../..' . '/src/Core/Filter/FrontEndObject/ShopFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Filter\\HashMapWhitelistFilter' => __DIR__ . '/../..' . '/src/Core/Filter/HashMapWhitelistFilter.php',
         'PrestaShop\\PrestaShop\\Core\\Form\\FormHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Form/FormHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Foundation\\Database\\DatabaseInterface' => __DIR__ . '/../..' . '/src/Core/Foundation/Database/DatabaseInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Foundation\\Database\\EntityInterface' => __DIR__ . '/../..' . '/src/Core/Foundation/Database/EntityInterface.php',
@@ -5145,11 +5157,11 @@ class ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit0d243a0c105dafd87cbd8496cb43d0cb::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9893ee90013fa73be4d0bea0273fc07b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9893ee90013fa73be4d0bea0273fc07b::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit9893ee90013fa73be4d0bea0273fc07b::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit9893ee90013fa73be4d0bea0273fc07b::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit9893ee90013fa73be4d0bea0273fc07b::$classMap;
 
         }, null, ClassLoader::class);
     }

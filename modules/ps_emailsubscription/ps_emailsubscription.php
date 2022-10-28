@@ -45,7 +45,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $this->name = 'ps_emailsubscription';
         $this->need_instance = 0;
 
-        $this->controllers = array('verification');
+        $this->controllers = array('verification', 'subscription');
 
         $this->bootstrap = true;
         parent::__construct();
@@ -57,7 +57,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
 
         $this->entity_manager = $entity_manager;
 
-        $this->version = '2.1.0';
+        $this->version = '2.2.0';
         $this->author = 'PrestaShop';
         $this->error = false;
         $this->valid = false;
@@ -330,7 +330,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
     /**
      * Register in email subscription.
      */
-    protected function newsletterRegistration()
+    public function newsletterRegistration()
     {
         if (empty($_POST['email']) || !Validate::isEmail($_POST['email'])) {
             return $this->error = $this->trans('Invalid email address.', array(), 'Shop.Notifications.Error');

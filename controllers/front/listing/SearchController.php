@@ -58,15 +58,24 @@ class SearchControllerCore extends ProductListingFrontController
                 'search_tag'    => $this->search_tag,
             )
         );
+    }
+
+    /**
+     * Performs the search
+     */
+    public function initContent()
+    {
+        parent::initContent();
 
         $this->doProductSearch('catalog/listing/search', array('entity' => 'search'));
     }
+
 
     protected function getProductSearchQuery()
     {
         $query = new ProductSearchQuery();
         $query
-            ->setSortOrder(new SortOrder('product', Tools::getProductsOrder('by'), Tools::getProductsOrder('way')))
+            ->setSortOrder(new SortOrder('product', 'position', 'desc'))
             ->setSearchString($this->search_string)
             ->setSearchTag($this->search_tag);
 
