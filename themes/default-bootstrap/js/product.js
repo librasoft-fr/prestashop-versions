@@ -1,5 +1,5 @@
 /*
-* 2007-2015 PrestaShop
+* 2007-2016 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -18,7 +18,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
+*  @copyright  2007-2016 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -801,7 +801,12 @@ function updatePrice()
 
 	if (priceWithDiscountsDisplay > 0)
 	{
-		$('#our_price_display').text(formatCurrency(priceWithDiscountsDisplay, currencyFormat, currencySign, currencyBlank)).trigger('change');
+    if(findSpecificPrice()){
+      $('#our_price_display').text(findSpecificPrice()).trigger('change');
+    }
+    else{
+      $('#our_price_display').text(formatCurrency(priceWithDiscountsDisplay, currencyFormat, currencySign, currencyBlank)).trigger('change');
+    }
 	}
 	else
 	{
@@ -906,6 +911,7 @@ function displayDiscounts(combination)
 	// If there is some combinations specific quantity discount, show them, else, if there are some
 	// products quantity discount: show them. In case of result, show the category.
 	if (combinationsSpecificQuantityDiscount.length != 0) {
+		$('tbody tr', quantityDiscountTable).hide();
 		combinationsSpecificQuantityDiscount.show();
 		quantityDiscountTable.show();
 	} else if(allQuantityDiscount.length != 0) {
