@@ -33,7 +33,7 @@ class BlockCart extends Module
 	{
 		$this->name = 'blockcart';
 		$this->tab = 'front_office_features';
-		$this->version = '1.6.1';
+		$this->version = '1.6.2';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 
@@ -155,7 +155,7 @@ class BlockCart extends Module
 			'static_token' => Tools::getToken(false),
 			'free_shipping' => $total_free_shipping
 		));
-		if (count($errors))
+		if (is_array($errors) && count($errors))
 			$this->smarty->assign('errors', $errors);
 		if (isset($this->context->cookie->ajax_blockcart_display))
 			$this->smarty->assign('colapseExpandStatus', $this->context->cookie->ajax_blockcart_display);

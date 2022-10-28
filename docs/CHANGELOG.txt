@@ -24,13 +24,41 @@ International Registred Trademark & Property of PrestaShop SA
 Release Notes for PrestaShop 1.6
 --------------------------------
 ####################################
-#   v1.6.1.19 - (2018-05-25)
+#   v1.6.1.20 - (2018-06-27)
 ####################################
 
+
+####################################
+#   v1.6.1.20 - (2018-06-27)
+####################################
+
+    Fixed bugs:
+
+    BO: Improve cookie encryption
+    BO: PHP 7.2 compat - Fix fatal error
+    BO: Fix undefined property key on Rijndael
+
+    FO: Control if customer is the owner of the selected order in contact form
+
+    CO: Use https no http employee class
+
+    WS: FIX PHP 7.1 compat in WebserviceOutputBuilder
+
+####################################
+#   v1.6.1.19 - (2018-05-28)
+####################################
+
+    Fixed bugs:
+
+    BO: Fix directory listing
+
+    FO: Add compliance to GDPR law for blocknewsletter, contact form and mail alerts
 
 ####################################
 #   v1.6.1.18 - (2018-02-05)
 ####################################
+
+    Fixed bugs:
 
     BO: Move to HTTPS
     BO: Update marketplace URL to http(S)
