@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7159f9622c476d2833a650e128d8e03f
+class ComposerStaticInitd995ecf38020be1a0a6ddec78ecfa3ca
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -5704,6 +5704,7 @@ class ComposerStaticInit7159f9622c476d2833a650e128d8e03f
         'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Common\\LinkColumn' => __DIR__ . '/../..' . '/src/Core/Grid/Column/Type/Common/LinkColumn.php',
         'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Common\\PositionColumn' => __DIR__ . '/../..' . '/src/Core/Grid/Column/Type/Common/PositionColumn.php',
         'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Common\\ToggleColumn' => __DIR__ . '/../..' . '/src/Core/Grid/Column/Type/Common/ToggleColumn.php',
+        'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Currency\\NameColumn' => __DIR__ . '/../..' . '/src/Core/Grid/Column/Type/Currency/NameColumn.php',
         'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\DataColumn' => __DIR__ . '/../..' . '/src/Core/Grid/Column/Type/DataColumn.php',
         'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\DisableableLinkColumn' => __DIR__ . '/../..' . '/src/Core/Grid/Column/Type/DisableableLinkColumn.php',
         'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Employee\\EmployeeNameWithAvatarColumn' => __DIR__ . '/../..' . '/src/Core/Grid/Column/Type/Employee/EmployeeNameWithAvatarColumn.php',
@@ -9210,11 +9211,11 @@ class ComposerStaticInit7159f9622c476d2833a650e128d8e03f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7159f9622c476d2833a650e128d8e03f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7159f9622c476d2833a650e128d8e03f::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7159f9622c476d2833a650e128d8e03f::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit7159f9622c476d2833a650e128d8e03f::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit7159f9622c476d2833a650e128d8e03f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd995ecf38020be1a0a6ddec78ecfa3ca::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd995ecf38020be1a0a6ddec78ecfa3ca::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitd995ecf38020be1a0a6ddec78ecfa3ca::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInitd995ecf38020be1a0a6ddec78ecfa3ca::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInitd995ecf38020be1a0a6ddec78ecfa3ca::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -24,20 +24,40 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace PrestaShop\PrestaShop\Core\Domain\Order\Exception;
+namespace PrestaShop\PrestaShop\Core\Grid\Column\Type\Currency;
+
+use PrestaShop\PrestaShop\Core\Grid\Column\AbstractColumn;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Exception thrown when constraint is violated in Order subdomain.
+ * Class NameColumn displays currency name with unofficial icon if needed.
  */
-class OrderConstraintException extends OrderException
+final class NameColumn extends AbstractColumn
 {
     /**
-     * Used in create order from BO when the customer message is invalid.
+     * {@inheritdoc}
      */
-    public const INVALID_CUSTOMER_MESSAGE = 1;
+    public function getType()
+    {
+        return 'currency_name';
+    }
 
     /**
-     * Used in add payment from BO when the payment method is invalid.
+     * {@inheritdoc}
      */
-    public const INVALID_PAYMENT_METHOD = 2;
+    protected function configureOptions(OptionsResolver $resolver)
+    {
+        parent::configureOptions($resolver);
+
+        $resolver
+            ->setRequired([
+                'field',
+            ])
+            ->setDefaults([
+                'clickable' => true,
+            ])
+            ->setAllowedTypes('field', 'string')
+            ->setAllowedTypes('clickable', 'bool')
+        ;
+    }
 }

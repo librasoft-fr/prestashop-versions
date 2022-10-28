@@ -5059,6 +5059,7 @@ return array(
     'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Common\\LinkColumn' => $baseDir . '/src/Core/Grid/Column/Type/Common/LinkColumn.php',
     'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Common\\PositionColumn' => $baseDir . '/src/Core/Grid/Column/Type/Common/PositionColumn.php',
     'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Common\\ToggleColumn' => $baseDir . '/src/Core/Grid/Column/Type/Common/ToggleColumn.php',
+    'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Currency\\NameColumn' => $baseDir . '/src/Core/Grid/Column/Type/Currency/NameColumn.php',
     'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\DataColumn' => $baseDir . '/src/Core/Grid/Column/Type/DataColumn.php',
     'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\DisableableLinkColumn' => $baseDir . '/src/Core/Grid/Column/Type/DisableableLinkColumn.php',
     'PrestaShop\\PrestaShop\\Core\\Grid\\Column\\Type\\Employee\\EmployeeNameWithAvatarColumn' => $baseDir . '/src/Core/Grid/Column/Type/Employee/EmployeeNameWithAvatarColumn.php',
