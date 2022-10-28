@@ -64,7 +64,7 @@ class Ps_LegalCompliance extends Module
     {
         $this->name = 'ps_legalcompliance';
         $this->tab = 'administration';
-        $this->version = '1.1.8';
+        $this->version = '1.1.9';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -527,7 +527,7 @@ class Ps_LegalCompliance extends Module
 
     public function hookDisplayOverrideTemplate($param)
     {
-        if (isset($this->context->controller->php_self) && ($this->context->controller->php_self == 'order')) {
+        if (isset($this->context->controller->php_self) && !$this->context->controller->ajax && ($this->context->controller->php_self == 'order')) {
             return $this->getTemplatePath('hookDisplayOverrideTemplateFooter.tpl');
         }
     }

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104
+class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -2276,7 +2276,7 @@ class ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104
         'PrestaShopBundle\\Security\\Admin\\Employee' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/Employee.php',
         'PrestaShopBundle\\Security\\Admin\\EmployeeProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/EmployeeProvider.php',
         'PrestaShopBundle\\Security\\Role\\DynamicRoleHierarchy' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Role/DynamicRoleHierarchy.php',
-        'PrestaShopBundle\\Security\\Voter\\ProductVoter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Voter/ProductVoter.php',
+        'PrestaShopBundle\\Security\\Voter\\PageVoter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Voter/PageVoter.php',
         'PrestaShopBundle\\Service\\Cache\\Refresh' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Cache/Refresh.php',
         'PrestaShopBundle\\Service\\Csv' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/Csv.php',
         'PrestaShopBundle\\Service\\DataProvider\\Admin\\AddonsInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/DataProvider/Admin/AddonsInterface.php',
@@ -2301,7 +2301,7 @@ class ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104
         'PrestaShopBundle\\Service\\TransitionalBehavior\\AdminUrlGeneratorFactory' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/TransitionalBehavior/AdminUrlGeneratorFactory.php',
         'PrestaShopBundle\\Tests\\Command\\ExportThemeCommandTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Command/ExportThemeCommandTest.php',
         'PrestaShopBundle\\Tests\\Mock\\AdapterSecurityAdminMock' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Mock/AdapterSecurityAdminMock.php',
-        'PrestaShopBundle\\Tests\\Mock\\ProductVoter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Mock/ProductVoter.php',
+        'PrestaShopBundle\\Tests\\Mock\\PageVoter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Mock/PageVoter.php',
         'PrestaShopBundle\\Tests\\Model\\Product\\AdminModelAdapterTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Model/Product/AdminModelAdapterTest.php',
         'PrestaShopBundle\\Tests\\Service\\Hook\\HookDispatcherTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Service/Hook/HookDispatcherTest.php',
         'PrestaShopBundle\\Tests\\Translation\\Exporter\\ThemeExporterTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Translation/Exporter/ThemeExporterTest.php',
@@ -4770,11 +4770,11 @@ class ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit3a4dbdc9475d8eb8d89f18d80c348104::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$classMap;
 
         }, null, ClassLoader::class);
     }
