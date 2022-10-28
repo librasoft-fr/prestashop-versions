@@ -37,7 +37,7 @@ class Ps_Banner extends Module implements WidgetInterface
 	public function __construct()
 	{
 		$this->name = 'ps_banner';
-		$this->version = '2.0.1';
+		$this->version = '2.0.2';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 
@@ -249,8 +249,17 @@ class Ps_Banner extends Module implements WidgetInterface
         }
 
         return array(
-            'banner_link' => $banner_link,
+            'banner_link' => $this->updateUrl($banner_link),
             'banner_desc' => Configuration::get('BANNER_DESC', $this->context->language->id)
         );
+    }
+
+    private function updateUrl($link)
+    {
+        if (substr($link, 0, 7) !== "http://" && substr($link, 0, 8) !== "https://") {
+            $link = "http://" . $link;
+        }
+
+        return $link;
     }
 }

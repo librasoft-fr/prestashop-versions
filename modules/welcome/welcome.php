@@ -36,6 +36,7 @@ use \OnBoarding\OnBoarding;
  */
 class Welcome extends Module
 {
+    const CLASS_NAME = 'AdminWelcome';
     /**
      * @var OnBoarding
      */
@@ -47,7 +48,7 @@ class Welcome extends Module
     public function __construct()
     {
         $this->name = 'welcome';
-        $this->version = '2.0.1';
+        $this->version = '3.0.0';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -55,7 +56,7 @@ class Welcome extends Module
         $this->displayName = $this->trans('Welcome', array(), 'Modules.Welcome.Admin');
         $this->description = $this->trans('Help the user to create his first product.', array(), 'Modules.Welcome.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.1.0',
+            'min' => '1.7.2.0',
             'max' => _PS_VERSION_,
         ];
 
@@ -77,9 +78,35 @@ class Welcome extends Module
     public function install()
     {
         return parent::install()
+            && $this->installTab()
             && $this->registerHook('displayAdminNavBarBeforeEnd')
             && $this->registerHook('displayAdminAfterHeader')
             && $this->registerHook('displayBackOfficeHeader');
+    }
+
+
+    public function installTab()
+    {
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = static::CLASS_NAME;
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = "Welcome";
+        }
+        $tab->module = $this->name;
+        return $tab->add();
+    }
+
+    public function uninstallTab()
+    {
+        $id_tab = (int)Tab::getIdFromClassName(static::CLASS_NAME);
+        if ($id_tab) {
+            $tab = new Tab($id_tab);
+            return $tab->delete();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -90,6 +117,7 @@ class Welcome extends Module
     public function uninstall()
     {
         $this->onBoarding->setCurrentStep(0);
+        $this->uninstallTab();
 
         return parent::uninstall();
     }
@@ -121,7 +149,7 @@ class Welcome extends Module
     public function hookDisplayAdminNavBarBeforeEnd()
     {
         if (!$this->onBoarding->isFinished()) {
-            $this->onBoarding->showModuleContentForNavBar();
+            $this->onBoarding->showModuleContentForNavBar($this->context->link);
         }
     }
 

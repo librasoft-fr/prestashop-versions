@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2015 PrestaShop
+* 2007-2017 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -40,14 +40,14 @@ class Contactform extends Module implements WidgetInterface
         $this->name = 'contactform';
         $this->author = 'PrestaShop';
         $this->tab = 'front_office_features';
-        $this->version = '2.0.2';
+        $this->version = '3.0.0';
 
         $this->bootstrap = true;
         parent::__construct();
 
         $this->displayName = $this->trans('Contact form', array(), 'Modules.Contactform.Admin');
-        $this->description = $this->trans('Description for contact form module', array(), 'Modules.Contactform.Admin');
-        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
+        $this->description = $this->trans('Adds a contact form to the "Contact us" page.', array(), 'Modules.Contactform.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.2.0', 'max' => _PS_VERSION_);
     }
 
     public function install()

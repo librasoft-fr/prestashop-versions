@@ -69,7 +69,7 @@ $currentKey .= $char;
 }
 }
 if (null !== $currentKey) {
-throw new \InvalidArgumentException(sprintf('Malformed path. Path must end with "]".'));
+throw new \InvalidArgumentException('Malformed path. Path must end with "]".');
 }
 return $value;
 }
@@ -1048,7 +1048,7 @@ return in_array($this->getMethod(), array('GET','HEAD'));
 public function getContent($asResource = false)
 {
 $currentContentIsResource = is_resource($this->content);
-if (PHP_VERSION_ID < 50600 && false === $this->content) {
+if (\PHP_VERSION_ID < 50600 && false === $this->content) {
 throw new \LogicException('getContent() can only be called once when using the resource return type and PHP below 5.6.');
 }
 if (true === $asResource) {
@@ -1459,7 +1459,7 @@ public static $statusTexts = array(
 503 =>'Service Unavailable',
 504 =>'Gateway Timeout',
 505 =>'HTTP Version Not Supported',
-506 =>'Variant Also Negotiates (Experimental)', 507 =>'Insufficient Storage', 508 =>'Loop Detected', 510 =>'Not Extended', 511 =>'Network Authentication Required', );
+506 =>'Variant Also Negotiates', 507 =>'Insufficient Storage', 508 =>'Loop Detected', 510 =>'Not Extended', 511 =>'Network Authentication Required', );
 public function __construct($content ='', $status = 200, $headers = array())
 {
 $this->headers = new ResponseHeaderBag($headers);
@@ -1467,7 +1467,7 @@ $this->setContent($content);
 $this->setStatusCode($status);
 $this->setProtocolVersion('1.0');
 if (!$this->headers->has('Date')) {
-$this->setDate(new \DateTime(null, new \DateTimeZone('UTC')));
+$this->setDate(\DateTime::createFromFormat('U', time()));
 }
 }
 public static function create($content ='', $status = 200, $headers = array())
@@ -2481,11 +2481,11 @@ protected $booted = false;
 protected $name;
 protected $startTime;
 protected $loadClassCache;
-const VERSION ='2.8.19';
-const VERSION_ID = 20819;
+const VERSION ='2.8.24';
+const VERSION_ID = 20824;
 const MAJOR_VERSION = 2;
 const MINOR_VERSION = 8;
-const RELEASE_VERSION = 19;
+const RELEASE_VERSION = 24;
 const EXTRA_VERSION ='';
 const END_OF_MAINTENANCE ='11/2018';
 const END_OF_LIFE ='11/2019';
@@ -2891,7 +2891,7 @@ $ignoreSpace = true;
 }
 }
 $output .= $rawChunk;
-if (PHP_VERSION_ID >= 70000) {
+if (\PHP_VERSION_ID >= 70000) {
 unset($tokens, $rawChunk);
 gc_mem_caches();
 }

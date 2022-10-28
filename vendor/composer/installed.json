@@ -98,17 +98,17 @@
     },
     {
         "name": "beberlei/DoctrineExtensions",
-        "version": "v1.0.15",
-        "version_normalized": "1.0.15.0",
+        "version": "v1.0.17",
+        "version_normalized": "1.0.17.0",
         "source": {
             "type": "git",
             "url": "https://github.com/beberlei/DoctrineExtensions.git",
-            "reference": "47f6683377740ce69546726cfb55cadc1dfb69a0"
+            "reference": "608854d5979e21cd8290ddf03a92f55017f62c80"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/47f6683377740ce69546726cfb55cadc1dfb69a0",
-            "reference": "47f6683377740ce69546726cfb55cadc1dfb69a0",
+            "url": "https://api.github.com/repos/beberlei/DoctrineExtensions/zipball/608854d5979e21cd8290ddf03a92f55017f62c80",
+            "reference": "608854d5979e21cd8290ddf03a92f55017f62c80",
             "shasum": ""
         },
         "require": {
@@ -126,7 +126,7 @@
             "nesbot/carbon": "Alternative to DateTime",
             "zf1/zend-date": "Alternative to DateTime"
         },
-        "time": "2017-03-27T05:57:42+00:00",
+        "time": "2017-06-16T07:29:39+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -162,38 +162,41 @@
     },
     {
         "name": "twig/twig",
-        "version": "v1.33.0",
-        "version_normalized": "1.33.0.0",
+        "version": "v1.34.4",
+        "version_normalized": "1.34.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/twigphp/Twig.git",
-            "reference": "05cf49921b13f6f01d3cfdf9018cfa7a8086fd5a"
+            "reference": "f878bab48edb66ad9c6ed626bf817f60c6c096ee"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/twigphp/Twig/zipball/05cf49921b13f6f01d3cfdf9018cfa7a8086fd5a",
-            "reference": "05cf49921b13f6f01d3cfdf9018cfa7a8086fd5a",
+            "url": "https://api.github.com/repos/twigphp/Twig/zipball/f878bab48edb66ad9c6ed626bf817f60c6c096ee",
+            "reference": "f878bab48edb66ad9c6ed626bf817f60c6c096ee",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.2.7"
+            "php": ">=5.3.3"
         },
         "require-dev": {
             "psr/container": "^1.0",
             "symfony/debug": "~2.7",
             "symfony/phpunit-bridge": "~3.3@dev"
         },
-        "time": "2017-03-22T15:40:09+00:00",
+        "time": "2017-07-04T13:19:31+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.33-dev"
+                "dev-master": "1.34-dev"
             }
         },
         "installation-source": "dist",
         "autoload": {
             "psr-0": {
                 "Twig_": "lib/"
+            },
+            "psr-4": {
+                "Twig\\": "src/"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -226,17 +229,17 @@
     },
     {
         "name": "symfony/symfony",
-        "version": "v2.8.19",
-        "version_normalized": "2.8.19.0",
+        "version": "v2.8.24",
+        "version_normalized": "2.8.24.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/symfony.git",
-            "reference": "da35163ddb6e876bfb6054f84e02947a6e0274e3"
+            "reference": "0ab3693b1154b1b166e98981ab3755636a5ae0e3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/symfony/zipball/da35163ddb6e876bfb6054f84e02947a6e0274e3",
-            "reference": "da35163ddb6e876bfb6054f84e02947a6e0274e3",
+            "url": "https://api.github.com/repos/symfony/symfony/zipball/0ab3693b1154b1b166e98981ab3755636a5ae0e3",
+            "reference": "0ab3693b1154b1b166e98981ab3755636a5ae0e3",
             "shasum": ""
         },
         "require": {
@@ -252,7 +255,7 @@
             "symfony/polyfill-php70": "~1.0",
             "symfony/polyfill-util": "~1.0",
             "symfony/security-acl": "~2.7|~3.0.0",
-            "twig/twig": "~1.28|~2.0"
+            "twig/twig": "~1.34|~2.4"
         },
         "conflict": {
             "phpdocumentor/reflection": "<1.0.7",
@@ -318,7 +321,7 @@
             "sensio/framework-extra-bundle": "^3.0.2",
             "symfony/phpunit-bridge": "~3.2"
         },
-        "time": "2017-04-05T04:05:19+00:00",
+        "time": "2017-07-05T08:53:15+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -428,27 +431,27 @@
     },
     {
         "name": "symfony/polyfill-util",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-util.git",
-            "reference": "746bce0fca664ac0a575e465f65c6643faddf7fb"
+            "reference": "ebccbde4aad410f6438d86d7d261c6b4d2b9a51d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/746bce0fca664ac0a575e465f65c6643faddf7fb",
-            "reference": "746bce0fca664ac0a575e465f65c6643faddf7fb",
+            "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/ebccbde4aad410f6438d86d7d261c6b4d2b9a51d",
+            "reference": "ebccbde4aad410f6438d86d7d261c6b4d2b9a51d",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T08:25:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -532,28 +535,28 @@
     },
     {
         "name": "symfony/polyfill-php70",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-php70.git",
-            "reference": "13ce343935f0f91ca89605a2f6ca6f5c2f3faac2"
+            "reference": "032fd647d5c11a9ceab8ee8747e13b5448e93874"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-php70/zipball/13ce343935f0f91ca89605a2f6ca6f5c2f3faac2",
-            "reference": "13ce343935f0f91ca89605a2f6ca6f5c2f3faac2",
+            "url": "https://api.github.com/repos/symfony/polyfill-php70/zipball/032fd647d5c11a9ceab8ee8747e13b5448e93874",
+            "reference": "032fd647d5c11a9ceab8ee8747e13b5448e93874",
             "shasum": ""
         },
         "require": {
             "paragonie/random_compat": "~1.0|~2.0",
             "php": ">=5.3.3"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T14:24:12+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -593,28 +596,28 @@
     },
     {
         "name": "symfony/polyfill-php56",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-php56.git",
-            "reference": "1dd42b9b89556f18092f3d1ada22cb05ac85383c"
+            "reference": "bc0b7d6cb36b10cfabb170a3e359944a95174929"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/1dd42b9b89556f18092f3d1ada22cb05ac85383c",
-            "reference": "1dd42b9b89556f18092f3d1ada22cb05ac85383c",
+            "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/bc0b7d6cb36b10cfabb170a3e359944a95174929",
+            "reference": "bc0b7d6cb36b10cfabb170a3e359944a95174929",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3",
             "symfony/polyfill-util": "~1.0"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T08:25:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -695,28 +698,28 @@
     },
     {
         "name": "symfony/polyfill-php55",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-php55.git",
-            "reference": "03e3f0350bca2220e3623a0e340eef194405fc67"
+            "reference": "94566239a7720cde0820f15f0cc348ddb51ba51d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-php55/zipball/03e3f0350bca2220e3623a0e340eef194405fc67",
-            "reference": "03e3f0350bca2220e3623a0e340eef194405fc67",
+            "url": "https://api.github.com/repos/symfony/polyfill-php55/zipball/94566239a7720cde0820f15f0cc348ddb51ba51d",
+            "reference": "94566239a7720cde0820f15f0cc348ddb51ba51d",
             "shasum": ""
         },
         "require": {
             "ircmaxell/password-compat": "~1.0",
             "php": ">=5.3.3"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T08:25:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -753,27 +756,27 @@
     },
     {
         "name": "symfony/polyfill-php54",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-php54.git",
-            "reference": "90e085822963fdcc9d1c5b73deb3d2e5783b16a0"
+            "reference": "7dd1a8b9f0442273fdfeb1c4f5eaff6890a82789"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-php54/zipball/90e085822963fdcc9d1c5b73deb3d2e5783b16a0",
-            "reference": "90e085822963fdcc9d1c5b73deb3d2e5783b16a0",
+            "url": "https://api.github.com/repos/symfony/polyfill-php54/zipball/7dd1a8b9f0442273fdfeb1c4f5eaff6890a82789",
+            "reference": "7dd1a8b9f0442273fdfeb1c4f5eaff6890a82789",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T08:25:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -813,17 +816,17 @@
     },
     {
         "name": "symfony/polyfill-mbstring",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-mbstring.git",
-            "reference": "e79d363049d1c2128f133a2667e4f4190904f7f4"
+            "reference": "f29dca382a6485c3cbe6379f0c61230167681937"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/e79d363049d1c2128f133a2667e4f4190904f7f4",
-            "reference": "e79d363049d1c2128f133a2667e4f4190904f7f4",
+            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/f29dca382a6485c3cbe6379f0c61230167681937",
+            "reference": "f29dca382a6485c3cbe6379f0c61230167681937",
             "shasum": ""
         },
         "require": {
@@ -832,11 +835,11 @@
         "suggest": {
             "ext-mbstring": "For best performance"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T14:24:12+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -874,31 +877,31 @@
     },
     {
         "name": "symfony/polyfill-intl-icu",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-intl-icu.git",
-            "reference": "2d6e2b20d457603eefb6e614286c22efca30fdb4"
+            "reference": "3191cbe0ce64987bd382daf6724af31c53daae01"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-intl-icu/zipball/2d6e2b20d457603eefb6e614286c22efca30fdb4",
-            "reference": "2d6e2b20d457603eefb6e614286c22efca30fdb4",
+            "url": "https://api.github.com/repos/symfony/polyfill-intl-icu/zipball/3191cbe0ce64987bd382daf6724af31c53daae01",
+            "reference": "3191cbe0ce64987bd382daf6724af31c53daae01",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3",
-            "symfony/intl": "~2.3|~3.0"
+            "symfony/intl": "~2.3|~3.0|~4.0"
         },
         "suggest": {
             "ext-intl": "For best performance"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T08:25:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -934,27 +937,27 @@
     },
     {
         "name": "symfony/polyfill-apcu",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-apcu.git",
-            "reference": "5d4474f447403c3348e37b70acc2b95475b7befa"
+            "reference": "2e7965b8cdfbba50d0092d3f6dca97dddec409e2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-apcu/zipball/5d4474f447403c3348e37b70acc2b95475b7befa",
-            "reference": "5d4474f447403c3348e37b70acc2b95475b7befa",
+            "url": "https://api.github.com/repos/symfony/polyfill-apcu/zipball/2e7965b8cdfbba50d0092d3f6dca97dddec409e2",
+            "reference": "2e7965b8cdfbba50d0092d3f6dca97dddec409e2",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2016-11-14T01:06:16+00:00",
+        "time": "2017-06-09T08:25:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.3-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
@@ -2377,35 +2380,37 @@
     },
     {
         "name": "maxmind/web-service-common",
-        "version": "v0.3.1",
-        "version_normalized": "0.3.1.0",
+        "version": "v0.4.0",
+        "version_normalized": "0.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/maxmind/web-service-common-php.git",
-            "reference": "1fe780bcd6a9038b7e36b13fa0aeeeeca4cdb0a4"
+            "reference": "622f7c732a7f9c4c62497fc103939e042b6bdb88"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/maxmind/web-service-common-php/zipball/1fe780bcd6a9038b7e36b13fa0aeeeeca4cdb0a4",
-            "reference": "1fe780bcd6a9038b7e36b13fa0aeeeeca4cdb0a4",
+            "url": "https://api.github.com/repos/maxmind/web-service-common-php/zipball/622f7c732a7f9c4c62497fc103939e042b6bdb88",
+            "reference": "622f7c732a7f9c4c62497fc103939e042b6bdb88",
             "shasum": ""
         },
         "require": {
             "composer/ca-bundle": "^1.0.3",
             "ext-curl": "*",
             "ext-json": "*",
-            "php": ">=5.3"
+            "php": ">=5.4"
         },
         "require-dev": {
+            "friendsofphp/php-cs-fixer": "2.*",
             "phpunit/phpunit": "4.*",
-            "squizlabs/php_codesniffer": "2.*"
+            "squizlabs/php_codesniffer": "3.*"
         },
-        "time": "2016-08-18T16:36:52+00:00",
+        "time": "2017-07-06T17:48:21+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "MaxMind\\": "src"
+                "MaxMind\\Exception\\": "src/Exception",
+                "MaxMind\\WebService\\": "src/WebService"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -2419,7 +2424,7 @@
             }
         ],
         "description": "Internal MaxMind Web Service API",
-        "homepage": "https://github.com/maxmind/mm-web-service-api-php"
+        "homepage": "https://github.com/maxmind/web-service-common-php"
     },
     {
         "name": "maxmind-db/reader",
@@ -2843,23 +2848,20 @@
     },
     {
         "name": "jakeasmith/http_build_url",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/jakeasmith/http_build_url.git",
-            "reference": "15bdd686e5178ddfa3e88de60fa585adffb292bb"
+            "reference": "93c273e77cb1edead0cf8bcf8cd2003428e74e37"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/jakeasmith/http_build_url/zipball/15bdd686e5178ddfa3e88de60fa585adffb292bb",
-            "reference": "15bdd686e5178ddfa3e88de60fa585adffb292bb",
+            "url": "https://api.github.com/repos/jakeasmith/http_build_url/zipball/93c273e77cb1edead0cf8bcf8cd2003428e74e37",
+            "reference": "93c273e77cb1edead0cf8bcf8cd2003428e74e37",
             "shasum": ""
         },
-        "require-dev": {
-            "phpunit/phpunit": "~3.7"
-        },
-        "time": "2015-05-06T12:27:20+00:00",
+        "time": "2017-05-01T15:36:40+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -2932,17 +2934,17 @@
     },
     {
         "name": "matthiasmullie/minify",
-        "version": "1.3.44",
-        "version_normalized": "1.3.44.0",
+        "version": "1.3.46",
+        "version_normalized": "1.3.46.0",
         "source": {
             "type": "git",
             "url": "https://github.com/matthiasmullie/minify.git",
-            "reference": "a7fc4a98ef8f2cf38bba701b51f1a84a1d67bc5c"
+            "reference": "1443646268465b8930c9a7f2f8ff1a51453796d1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/a7fc4a98ef8f2cf38bba701b51f1a84a1d67bc5c",
-            "reference": "a7fc4a98ef8f2cf38bba701b51f1a84a1d67bc5c",
+            "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/1443646268465b8930c9a7f2f8ff1a51453796d1",
+            "reference": "1443646268465b8930c9a7f2f8ff1a51453796d1",
             "shasum": ""
         },
         "require": {
@@ -2955,7 +2957,10 @@
             "matthiasmullie/scrapbook": "~1.0",
             "phpunit/phpunit": "~4.8"
         },
-        "time": "2017-03-16T16:42:50+00:00",
+        "suggest": {
+            "psr/cache-implementation": "Cache implementation to use with Minify::cache"
+        },
+        "time": "2017-07-06T12:26:44+00:00",
         "bin": [
             "bin/minifycss",
             "bin/minifyjs"
@@ -3045,17 +3050,17 @@
     },
     {
         "name": "mrclay/minify",
-        "version": "2.3.1",
-        "version_normalized": "2.3.1.0",
+        "version": "2.3.2",
+        "version_normalized": "2.3.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mrclay/minify.git",
-            "reference": "fefc85d48190c97a1c692b29b3acbdc07d7fd73f"
+            "reference": "2c83b82bfa894180335f19141794a4de1ccd06e6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mrclay/minify/zipball/fefc85d48190c97a1c692b29b3acbdc07d7fd73f",
-            "reference": "fefc85d48190c97a1c692b29b3acbdc07d7fd73f",
+            "url": "https://api.github.com/repos/mrclay/minify/zipball/2c83b82bfa894180335f19141794a4de1ccd06e6",
+            "reference": "2c83b82bfa894180335f19141794a4de1ccd06e6",
             "shasum": ""
         },
         "require": {
@@ -3068,7 +3073,7 @@
         "suggest": {
             "tubalmartin/cssmin": "Support minify with CSSMin (YUI PHP port)"
         },
-        "time": "2017-04-03T19:58:28+00:00",
+        "time": "2017-06-08T17:49:34+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -3244,17 +3249,17 @@
     },
     {
         "name": "pear/archive_tar",
-        "version": "1.4.2",
-        "version_normalized": "1.4.2.0",
+        "version": "1.4.3",
+        "version_normalized": "1.4.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/pear/Archive_Tar.git",
-            "reference": "bdd47347df76dbaa89227c5e1afd6f6809985b4c"
+            "reference": "43455c960da70e655c6bdf8ea2bc8cc1a6034afb"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/bdd47347df76dbaa89227c5e1afd6f6809985b4c",
-            "reference": "bdd47347df76dbaa89227c5e1afd6f6809985b4c",
+            "url": "https://api.github.com/repos/pear/Archive_Tar/zipball/43455c960da70e655c6bdf8ea2bc8cc1a6034afb",
+            "reference": "43455c960da70e655c6bdf8ea2bc8cc1a6034afb",
             "shasum": ""
         },
         "require": {
@@ -3269,7 +3274,7 @@
             "ext-xz": "lzma2 compression support.",
             "ext-zlib": "Gzip compression support."
         },
-        "time": "2016-02-25T10:30:39+00:00",
+        "time": "2017-06-11T17:28:11+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -3376,18 +3381,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/blockreassurance.git",
-            "reference": "9a3d6fb4d151d421af41f80afcde37ffcabb8b73"
+            "reference": "a9aaa86d0ed984796f4afe42c1abae827d1e4189"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/blockreassurance/zipball/9a3d6fb4d151d421af41f80afcde37ffcabb8b73",
-            "reference": "9a3d6fb4d151d421af41f80afcde37ffcabb8b73",
+            "url": "https://api.github.com/repos/PrestaShop/blockreassurance/zipball/a9aaa86d0ed984796f4afe42c1abae827d1e4189",
+            "reference": "a9aaa86d0ed984796f4afe42c1abae827d1e4189",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.2"
         },
-        "time": "2017-03-22T14:36:04+00:00",
+        "time": "2017-06-29T07:28:29+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3410,18 +3415,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/contactform.git",
-            "reference": "5ba81c6084151bc2dea2e7e24c5bdd298eeba1e4"
+            "reference": "fabe592df4dac4f1a06d1c52377c4ec98275935e"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/contactform/zipball/5ba81c6084151bc2dea2e7e24c5bdd298eeba1e4",
-            "reference": "5ba81c6084151bc2dea2e7e24c5bdd298eeba1e4",
+            "url": "https://api.github.com/repos/PrestaShop/contactform/zipball/fabe592df4dac4f1a06d1c52377c4ec98275935e",
+            "reference": "fabe592df4dac4f1a06d1c52377c4ec98275935e",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.2"
         },
-        "time": "2017-02-22T07:59:51+00:00",
+        "time": "2017-06-23T09:48:19+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3682,18 +3687,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_banner.git",
-            "reference": "304c9207adb37bdfe4ce31c9928af118fe9ecf2c"
+            "reference": "078ffe994b38dc9685d0feb8a0f6a705830b2cb2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_banner/zipball/304c9207adb37bdfe4ce31c9928af118fe9ecf2c",
-            "reference": "304c9207adb37bdfe4ce31c9928af118fe9ecf2c",
+            "url": "https://api.github.com/repos/PrestaShop/ps_banner/zipball/078ffe994b38dc9685d0feb8a0f6a705830b2cb2",
+            "reference": "078ffe994b38dc9685d0feb8a0f6a705830b2cb2",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2017-02-22T13:03:16+00:00",
+        "time": "2017-05-09T09:57:07+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3784,18 +3789,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_contactinfo.git",
-            "reference": "9b5f2d0df27e5a23ee6e7d6d2468546e18e6dd49"
+            "reference": "91588d6e19e2d796bd38df9656c16a27944260cd"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_contactinfo/zipball/9b5f2d0df27e5a23ee6e7d6d2468546e18e6dd49",
-            "reference": "9b5f2d0df27e5a23ee6e7d6d2468546e18e6dd49",
+            "url": "https://api.github.com/repos/PrestaShop/ps_contactinfo/zipball/91588d6e19e2d796bd38df9656c16a27944260cd",
+            "reference": "91588d6e19e2d796bd38df9656c16a27944260cd",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2017-02-01T16:39:55+00:00",
+        "time": "2017-07-06T13:55:59+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3852,18 +3857,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_customeraccountlinks.git",
-            "reference": "e8dce4347e0608786173a06734412902b050d39c"
+            "reference": "d832c3010ce992c42f3230b1a4d9cf0de513d0b3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_customeraccountlinks/zipball/e8dce4347e0608786173a06734412902b050d39c",
-            "reference": "e8dce4347e0608786173a06734412902b050d39c",
+            "url": "https://api.github.com/repos/PrestaShop/ps_customeraccountlinks/zipball/d832c3010ce992c42f3230b1a4d9cf0de513d0b3",
+            "reference": "d832c3010ce992c42f3230b1a4d9cf0de513d0b3",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2017-02-01T16:40:01+00:00",
+        "time": "2017-07-06T13:53:20+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -4059,18 +4064,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_imageslider.git",
-            "reference": "ccdd6bc1df71dbd3e625c83d6828a8da87fbdc88"
+            "reference": "c2272a288a46a9eb7e4b66f08ce135af37d1c6bf"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_imageslider/zipball/ccdd6bc1df71dbd3e625c83d6828a8da87fbdc88",
-            "reference": "ccdd6bc1df71dbd3e625c83d6828a8da87fbdc88",
+            "url": "https://api.github.com/repos/PrestaShop/ps_imageslider/zipball/c2272a288a46a9eb7e4b66f08ce135af37d1c6bf",
+            "reference": "c2272a288a46a9eb7e4b66f08ce135af37d1c6bf",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2017-02-01T13:21:35+00:00",
+        "time": "2017-05-09T09:57:15+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -4161,18 +4166,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_linklist.git",
-            "reference": "973a8666ef1b9b52f29965c11335a78786bbfa8d"
+            "reference": "961b2a414a4e0915a0b006cff649156500e83761"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_linklist/zipball/973a8666ef1b9b52f29965c11335a78786bbfa8d",
-            "reference": "973a8666ef1b9b52f29965c11335a78786bbfa8d",
+            "url": "https://api.github.com/repos/PrestaShop/ps_linklist/zipball/961b2a414a4e0915a0b006cff649156500e83761",
+            "reference": "961b2a414a4e0915a0b006cff649156500e83761",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2017-02-08T16:15:15+00:00",
+        "time": "2017-07-06T14:06:11+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -5181,18 +5186,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/smarty.git",
-            "reference": "4e7ab66cd9bb2953e4f6c565c8079ea43b9135e2"
+            "reference": "c141c2a15d5bffae23a45a791374fd0753749793"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/smarty/zipball/4e7ab66cd9bb2953e4f6c565c8079ea43b9135e2",
-            "reference": "4e7ab66cd9bb2953e4f6c565c8079ea43b9135e2",
+            "url": "https://api.github.com/repos/PrestaShop/smarty/zipball/c141c2a15d5bffae23a45a791374fd0753749793",
+            "reference": "c141c2a15d5bffae23a45a791374fd0753749793",
             "shasum": ""
         },
         "require": {
             "php": ">=5.2"
         },
-        "time": "2016-06-20T14:50:17+00:00",
+        "time": "2017-05-11T08:29:53+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -5345,18 +5350,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/welcome.git",
-            "reference": "8d6191663e4de94f022b05b40de31e3865825d30"
+            "reference": "e3c1dbd6f02dc6f6c1516003dc43a23af522a5b5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/welcome/zipball/8d6191663e4de94f022b05b40de31e3865825d30",
-            "reference": "8d6191663e4de94f022b05b40de31e3865825d30",
+            "url": "https://api.github.com/repos/PrestaShop/welcome/zipball/e3c1dbd6f02dc6f6c1516003dc43a23af522a5b5",
+            "reference": "e3c1dbd6f02dc6f6c1516003dc43a23af522a5b5",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2017-03-16T10:28:45+00:00",
+        "time": "2017-07-11T08:16:29+00:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "autoload": {
@@ -5587,17 +5592,17 @@
     },
     {
         "name": "monolog/monolog",
-        "version": "1.22.1",
-        "version_normalized": "1.22.1.0",
+        "version": "1.23.0",
+        "version_normalized": "1.23.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Seldaek/monolog.git",
-            "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0"
+            "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1e044bc4b34e91743943479f1be7a1d5eb93add0",
-            "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0",
+            "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
+            "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
             "shasum": ""
         },
         "require": {
@@ -5618,7 +5623,7 @@
             "phpunit/phpunit-mock-objects": "2.3.0",
             "ruflin/elastica": ">=0.90 <3.0",
             "sentry/sentry": "^0.13",
-            "swiftmailer/swiftmailer": "~5.3"
+            "swiftmailer/swiftmailer": "^5.3|^6.0"
         },
         "suggest": {
             "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
@@ -5633,7 +5638,7 @@
             "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
             "sentry/sentry": "Allow sending log messages to a Sentry server"
         },
-        "time": "2017-03-13T07:08:03+00:00",
+        "time": "2017-06-19T01:22:40+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -5728,17 +5733,17 @@
     },
     {
         "name": "swiftmailer/swiftmailer",
-        "version": "v5.4.6",
-        "version_normalized": "5.4.6.0",
+        "version": "v5.4.8",
+        "version_normalized": "5.4.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "81fdccfaf8bdc5d5d7a1ef6bb3a61bbb1a6c4a3e"
+            "reference": "9a06dc570a0367850280eefd3f1dc2da45aef517"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/81fdccfaf8bdc5d5d7a1ef6bb3a61bbb1a6c4a3e",
-            "reference": "81fdccfaf8bdc5d5d7a1ef6bb3a61bbb1a6c4a3e",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/9a06dc570a0367850280eefd3f1dc2da45aef517",
+            "reference": "9a06dc570a0367850280eefd3f1dc2da45aef517",
             "shasum": ""
         },
         "require": {
@@ -5748,7 +5753,7 @@
             "mockery/mockery": "~0.9.1",
             "symfony/phpunit-bridge": "~3.2"
         },
-        "time": "2017-02-13T07:52:53+00:00",
+        "time": "2017-05-01T15:54:03+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

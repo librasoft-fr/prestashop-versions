@@ -42,14 +42,14 @@ class Ps_Contactinfo extends Module implements WidgetInterface
     {
         $this->name = 'ps_contactinfo';
         $this->author = 'PrestaShop';
-        $this->version = '2.0.1';
+        $this->version = '3.0.0';
 
         $this->bootstrap = true;
         parent::__construct();
 
         $this->displayName = $this->getTranslator()->trans('Contact information', array(), 'Modules.Contactinfo.Admin');
         $this->description = $this->getTranslator()->trans('Allows you to display additional information about your store\'s customer service.', array(), 'Modules.Contactinfo.Admin');
-        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.2.0', 'max' => _PS_VERSION_);
     }
 
     public function install()

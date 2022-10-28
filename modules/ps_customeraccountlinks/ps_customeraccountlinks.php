@@ -38,7 +38,7 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
     {
         $this->name = 'ps_customeraccountlinks';
         $this->author = 'PrestaShop';
-        $this->version = '2.0.1';
+        $this->version = '3.0.0';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -46,7 +46,7 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
         $this->displayName = $this->trans('My Account block', array(), 'Modules.Customeraccountlinks.Admin');
         $this->description = $this->trans('Displays a block with links relative to a user\'s account.', array(), 'Modules.Customeraccountlinks.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.2.0', 'max' => _PS_VERSION_);
 
         $this->templateFile = 'module:ps_customeraccountlinks/ps_customeraccountlinks.tpl';
     }
@@ -108,7 +108,7 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
                 'url' => $link->getPageLink('order-slip', true),
             ),
             3 => array(
-                'title' => $this->trans('Addresses', array(), 'Shop.Theme'),
+                'title' => $this->trans('Addresses', array(), 'Shop.Theme.Global'),
                 'url' => $link->getPageLink('addresses', true),
             ),
             4 => array(

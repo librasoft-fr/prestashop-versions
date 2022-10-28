@@ -166,7 +166,7 @@ class PropertyAccessor implements PropertyAccessorInterface
         $overwrite = true;
 
         try {
-            if (PHP_VERSION_ID < 70000 && false === self::$previousErrorHandler) {
+            if (\PHP_VERSION_ID < 70000 && false === self::$previousErrorHandler) {
                 self::$previousErrorHandler = set_error_handler(self::$errorHandler);
             }
 
@@ -222,7 +222,7 @@ class PropertyAccessor implements PropertyAccessorInterface
         } catch (\Throwable $e) {
         }
 
-        if (PHP_VERSION_ID < 70000 && false !== self::$previousErrorHandler) {
+        if (\PHP_VERSION_ID < 70000 && false !== self::$previousErrorHandler) {
             restore_error_handler();
             self::$previousErrorHandler = false;
         }
@@ -245,7 +245,7 @@ class PropertyAccessor implements PropertyAccessorInterface
 
     private static function throwInvalidArgumentException($message, $trace, $i)
     {
-        if (isset($trace[$i]['file']) && __FILE__ === $trace[$i]['file']) {
+        if (isset($trace[$i]['file']) && __FILE__ === $trace[$i]['file'] && isset($trace[$i]['args'][0])) {
             $pos = strpos($message, $delim = 'must be of the type ') ?: (strpos($message, $delim = 'must be an instance of ') ?: strpos($message, $delim = 'must implement interface '));
             $pos += strlen($delim);
             $type = $trace[$i]['args'][0];

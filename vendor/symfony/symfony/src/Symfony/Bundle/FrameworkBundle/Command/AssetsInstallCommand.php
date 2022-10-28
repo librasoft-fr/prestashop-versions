@@ -11,7 +11,6 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -111,13 +110,16 @@ EOT
         $rows = array();
         $copyUsed = false;
         $exitCode = 0;
+        $validAssetDirs = array();
         /** @var BundleInterface $bundle */
         foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
             if (!is_dir($originDir = $bundle->getPath().'/Resources/public')) {
                 continue;
             }
 
-            $targetDir = $bundlesDir.preg_replace('/bundle$/', '', strtolower($bundle->getName()));
+            $assetDir = preg_replace('/bundle$/', '', strtolower($bundle->getName()));
+            $targetDir = $bundlesDir.$assetDir;
+            $validAssetDirs[] = $assetDir;
 
             if (OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity()) {
                 $message = sprintf("%s\n-> %s", $bundle->getName(), $targetDir);
@@ -150,6 +152,9 @@ EOT
                 $rows[] = array(sprintf('<fg=red;options=bold>%s</>', '\\' === DIRECTORY_SEPARATOR ? 'ERROR' : "\xE2\x9C\x98" /* HEAVY BALLOT X (U+2718) */), $message, $e->getMessage());
             }
         }
+        // remove the assets of the bundles that no longer exist
+        $dirsToRemove = Finder::create()->depth(0)->directories()->exclude($validAssetDirs)->in($bundlesDir);
+        $this->filesystem->remove($dirsToRemove);
 
         $io->table(array('', 'Bundle', 'Method / Error'), $rows);
 
