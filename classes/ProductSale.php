@@ -78,13 +78,14 @@ class ProductSaleCore
 		//Subquery: get product ids in a separate query to (greatly!) improve performances and RAM usage
 		$sql = 'SELECT cp.`id_product`
 				FROM `'._DB_PREFIX_.'category_group` cg
-				LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_category` = cg.`id_category`)
-				WHERE cg.`id_group` '.$sql_groups;
+				INNER JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_category` = cg.`id_category`)
+				WHERE cp.`id_product` IS NOT NULL AND cg.`id_group` '.$sql_groups;
 		$products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 		$ids = array();
 		foreach ($products as $product)
 			$ids[$product['id_product']] = 1;
 		$ids = array_keys($ids);
+		$ids = array_filter($ids);
 		sort($ids);
 		$ids = count($ids) > 0 ? implode(',', $ids) : 'NULL';
 		
@@ -149,14 +150,15 @@ class ProductSaleCore
 		//Subquery: get product ids in a separate query to (greatly!) improve performances and RAM usage
 		$sql = 'SELECT cp.`id_product`
 		FROM `'._DB_PREFIX_.'category_group` cg
-		LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_category` = cg.`id_category`)
-		WHERE cg.`id_group` '.$sql_groups.' AND cp.`id_product` IS NOT NULL';
+		INNER JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_category` = cg.`id_category`)
+		WHERE cp.`id_product` IS NOT NULL AND cg.`id_group` '.$sql_groups.' AND cp.`id_product` IS NOT NULL';
 		$products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 		$ids = array();
 		foreach ($products as $product)
 			$ids[$product['id_product']] = 1;
 		$ids = array_keys($ids);
 		sort($ids);
+		$ids = array_filter($ids);
 		$ids = count($ids) > 0 ? implode(',', $ids) : 'NULL';
 
 		//Main query

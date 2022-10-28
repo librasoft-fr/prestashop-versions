@@ -68,7 +68,7 @@ class MediaCore
 		{
 			//set an alphabetical order for args
 			$html_content = preg_replace_callback(
-				'/(<[a-zA-Z0-9]+)((\s?[a-zA-Z0-9]+=[\"\\\'][^\"\\\']*[\"\\\']\s?)*)>/',
+				'/(<[a-zA-Z0-9]+)((\s*[a-zA-Z0-9]+=[\"\\\'][^\"\\\']*[\"\\\']\s*)*)>/',
 				array('Media', 'minifyHTMLpregCallback'),
 				$html_content,
 				Media::getBackTrackLimit());
@@ -561,6 +561,15 @@ class MediaCore
 		$url = str_replace(_PS_ROOT_DIR_.'/', __PS_BASE_URI__, $compressed_js_path);
 
 		return array_merge(array($protocol_link.Tools::getMediaServer($url).$url), $js_external_files);
+	}
+	
+	public static function clearCache()
+	{
+		foreach (array(_PS_THEME_DIR_.'cache') as $dir)
+			if (file_exists($dir))
+				foreach (scandir($dir) as $file)
+					if ($file[0] != '.' && $file != 'index.php')
+						Tools::deleteFile($dir.DIRECTORY_SEPARATOR.$file, array('index.php'));
 	}
 
 }

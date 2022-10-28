@@ -132,7 +132,12 @@ class CartRuleCore extends ObjectModel
 	public function update($null_values = false)
 	{
 		Cache::clean('getContextualValue_'.$this->id.'_*');
-		return parent::update($null_values);	
+		if (!parent::update($null_values))
+			return false;
+
+		Configuration::updateGlobalValue('PS_CART_RULE_FEATURE_ACTIVE', CartRule::isCurrentlyUsed($this->def['table'], true));
+
+		return true;
 	}
 
 	/**
@@ -494,13 +499,15 @@ class CartRuleCore extends ObjectModel
 		{
 			// Minimum amount is converted to the default currency
 			$minimum_amount = $this->minimum_amount;
-			if ($this->minimum_amount_currency != Configuration::get('PS_CURRENCY_DEFAULT'))
+			if ($this->minimum_amount_currency != $context->currency->id)
 			{
 				$minimum_amount_currency = new Currency($this->minimum_amount_currency);
 				if ($this->minimum_amount == 0 || $minimum_amount_currency->conversion_rate == 0)
 					$minimum_amount = 0;
 				else
-					$minimum_amount = $this->minimum_amount / $minimum_amount_currency->conversion_rate;
+					$minimum_amount /= $minimum_amount_currency->conversion_rate;
+
+				$minimum_amount *= $context->currency->conversion_rate;
 			}
 
 			$cartTotal = $context->cart->getOrderTotal($this->minimum_amount_tax, Cart::ONLY_PRODUCTS);
@@ -1195,14 +1202,14 @@ class CartRuleCore extends ObjectModel
 	 * @param $id_lang
 	 * @return array
 	 */
-	public static function getCartsRuleByCode($name, $id_lang)
+	public static function getCartsRuleByCode($name, $id_lang, $extended = false)
 	{
 		return Db::getInstance()->executeS('
 			SELECT cr.*, crl.*
 			FROM '._DB_PREFIX_.'cart_rule cr
 			LEFT JOIN '._DB_PREFIX_.'cart_rule_lang crl ON (cr.id_cart_rule = crl.id_cart_rule AND crl.id_lang = '.(int)$id_lang.')
-			WHERE code LIKE \'%'.pSQL($name).'%\' OR name LIKE \'%'.pSQL($name).'%\'
-		');
+			WHERE code LIKE \'%'.pSQL($name).'%\''
+			.($extended ? ' OR name LIKE \'%'.pSQL($name).'%\'' : ''));
 	}
 }
 

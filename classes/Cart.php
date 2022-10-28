@@ -786,10 +786,10 @@ class CartCore extends ObjectModel
 		)))
 			return false;
 
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_ALL);
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING);
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION);
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_ALL);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT);
 	
 		if ((int)$cartRule->gift_product)
 			$this->updateQty(1, $cartRule->gift_product, $cartRule->gift_product_attribute, false, 'up', 0, null, false);
@@ -1123,10 +1123,10 @@ class CartCore extends ObjectModel
 
 	public function removeCartRule($id_cart_rule)
 	{
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_ALL);
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING);
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION);
-		Cache::clean('Cart::getCartRules'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_ALL);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_SHIPPING);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_REDUCTION);
+		Cache::clean('Cart::getCartRules_'.$this->id.'-'.CartRule::FILTER_ACTION_GIFT);
 
 		$result = Db::getInstance()->execute('
 		DELETE FROM `'._DB_PREFIX_.'cart_cart_rule`
@@ -1615,8 +1615,8 @@ class CartCore extends ObjectModel
 	public function getPackageList($flush = false)
 	{
 		static $cache = array();
-		if (isset($cache[(int)$this->id]) && $cache[(int)$this->id] !== false && !$flush)
-			return $cache[(int)$this->id];
+		if (isset($cache[(int)$this->id.'_'.(int)$this->id_address_delivery]) && $cache[(int)$this->id.'_'.(int)$this->id_address_delivery] !== false && !$flush)
+			return $cache[(int)$this->id.'_'.(int)$this->id_address_delivery];
 
 		$product_list = $this->getProducts();
 		// Step 1 : Get product informations (warehouse_list and carrier_list), count warehouse
@@ -3058,10 +3058,6 @@ class CartCore extends ObjectModel
 	 */
 	public function addTextFieldToProduct($id_product, $index, $type, $text_value)
 	{
-		if (!_PS_MAGIC_QUOTES_GPC_){
-			$text_value = str_replace('\\', '\\\\', $text_value);
-			$text_value = str_replace('\'', '\\\'', $text_value);
-		}
 		return $this->_addCustomization($id_product, 0, $index, $type, $text_value, 0);
 	}
 

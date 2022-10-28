@@ -122,6 +122,7 @@ abstract class ModuleCore
 	/** @var currentSmartySubTemplate */	
 	protected $current_subtemplate = null;
 	
+	protected static $update_translations_after_install = true;
 	
 	const CACHE_FILE_MODULES_LIST = '/config/xml/modules_list.xml';
 	
@@ -274,7 +275,21 @@ abstract class ModuleCore
 		// Adding Restrictions for client groups
 		Group::addRestrictionsForModule($this->id, Shop::getShops(true, null, true));
 		Hook::exec('actionModuleInstallAfter', array('object' => $this));
+
+		if (Module::$update_translations_after_install)
+			$this->updateModuleTranslations();
+
 		return true;
+	}
+	
+	public static function updateTranslationsAfterInstall($update = true)
+	{
+		Module::$update_translations_after_install = (bool)$update;
+	}
+
+	public function updateModuleTranslations()
+	{
+		return Language::updateModulesTranslations(array($this->name));
 	}
 
 	/**
@@ -993,9 +1008,10 @@ abstract class ModuleCore
 		
 		$modules_installed = array();
 		$result = Db::getInstance()->executeS('
-		SELECT name, version, interest
-		FROM `'._DB_PREFIX_.'module`
-		LEFT JOIN `'._DB_PREFIX_.'module_preference` ON (`module` = `name` AND `id_employee` = '.(int)$id_employee.')');
+		SELECT m.name, m.version, mp.interest
+		FROM `'._DB_PREFIX_.'module` m
+		'.Shop::addSqlAssociation('module', 'm').'
+		LEFT JOIN `'._DB_PREFIX_.'module_preference` mp ON (mp.`module` = m.`name` AND mp.`id_employee` = '.(int)$id_employee.')');
 		foreach ($result as $row)
 			$modules_installed[$row['name']] = $row;
 
@@ -1258,7 +1274,9 @@ abstract class ModuleCore
 		$modules = scandir(_PS_MODULE_DIR_);
 		foreach ($modules as $name)
 		{
-			if (is_dir(_PS_MODULE_DIR_.$name.DIRECTORY_SEPARATOR) && Tools::file_exists_cache(_PS_MODULE_DIR_.$name.'/'.$name.'.php'))
+			if (is_file(_PS_MODULE_DIR_.$name))
+				continue;
+			elseif (is_dir(_PS_MODULE_DIR_.$name.DIRECTORY_SEPARATOR) && Tools::file_exists_cache(_PS_MODULE_DIR_.$name.'/'.$name.'.php'))
 			{
 				if (!Validate::isModuleName($name))
 					throw new PrestaShopException(sprintf('Module %s is not a valid module name', $name));

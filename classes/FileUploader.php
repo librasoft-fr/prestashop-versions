@@ -105,14 +105,17 @@ class QqUploadedFileForm
 			$legends = Tools::getValue('legend');
 			if (is_array($legends))
 				foreach ($legends as $key => $legend)
-					if (!empty($legend) && Validate::isGenericName($legend))
+					if (Validate::isGenericName($legend))
 						$image->legend[(int)$key] = $legend;
 					else
-						return array('error' => sprintf(Tools::displayError('Error on image legend "%1s." is not a valid legend.'), Tools::safeOutput($legend)));
+						return array('error' => sprintf(Tools::displayError('Error on image legend "%1s" is not a valid legend.'), Tools::safeOutput($legend)));
 			if (!Image::getCover($image->id_product))
 				$image->cover = 1;
 			else
 				$image->cover = 0;
+
+			if (($validate = $image->validateFieldsLang(false, true)) !== true)
+				return array('error' => Tools::displayError($validate));
 			if (!$image->add())
 				return array('error' => Tools::displayError('Error while creating additional image'));
 			else
@@ -194,14 +197,17 @@ class QqUploadedFileXhr
 			$legends = Tools::getValue('legend');
 			if (is_array($legends))
 				foreach ($legends as $key => $legend)
-					if (!empty($legend) && Validate::isGenericName($legend))
+					if (Validate::isGenericName($legend))
 						$image->legend[(int)$key] = $legend;
 					else
-						return array('error' => sprintf(Tools::displayError('Error on image legend "%1s." is not a valid legend.'), Tools::safeOutput($legend)));
+						return array('error' => sprintf(Tools::displayError('Error on image legend "%1s" is not a valid legend.'), Tools::safeOutput($legend)));
 			if (!Image::getCover($image->id_product))
 				$image->cover = 1;
 			else
 				$image->cover = 0;
+			
+			if (($validate = $image->validateFieldsLang(false, true)) !== true)
+				return array('error' => Tools::displayError($validate));
 			if (!$image->add())
 				return array('error' => Tools::displayError('Error while creating additional image'));
 			else
@@ -248,9 +254,13 @@ class QqUploadedFileXhr
 
 	public function getSize()
 	{
-		if (isset($_SERVER['CONTENT_LENGTH']))
-			return (int)$_SERVER['CONTENT_LENGTH'];
-		else
-			throw new Exception('Getting content length is not supported.');
+		if (isset($_SERVER['CONTENT_LENGTH']) || isset($_SERVER['HTTP_CONTENT_LENGTH']))
+		{
+			if (isset($_SERVER['HTTP_CONTENT_LENGTH']))
+				return (int)$_SERVER['HTTP_CONTENT_LENGTH'];
+			else
+				return (int)$_SERVER['CONTENT_LENGTH'];
+		}
+		return false;
 	}
 }

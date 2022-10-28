@@ -344,7 +344,7 @@ class ToolsCore
 		}
 
 		/* Automatically detect language if not already defined, detect_language is set in Cookie::update */
-		if ((!$cookie->id_lang || isset($cookie->detect_language)) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+		if ((!$cookie->id_lang && (isset($cookie->detect_language)) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])))
 		{
 			$array  = explode(',', Tools::strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 			$string = $array[0];
@@ -397,6 +397,7 @@ class ToolsCore
 			|| (($id_lang == $configuration_id_lang) && Validate::isUnsignedId($id_lang) && $id_lang != $cookie_id_lang))
 		{
 			$context->cookie->id_lang = $id_lang;
+
 			$language = new Language($id_lang);
 			if (Validate::isLoadedObject($language) && $language->active)
 				$context->language = $language;
@@ -421,28 +422,27 @@ class ToolsCore
 				if (is_object($currency) && $currency->id && !$currency->deleted && $currency->isAssociatedToShop())
 					$cookie->id_currency = (int)$currency->id;
 			}
-
-		if ((int)$cookie->id_currency)
-		{
-			$currency = Currency::getCurrencyInstance((int)$cookie->id_currency);
-			if (is_object($currency) && (int)$currency->id && (int)$currency->deleted != 1 && $currency->active)
-				if ($currency->isAssociatedToShop())
-					return $currency;
-				else
-				{
-					// get currency from context
-					$currency = Shop::getEntityIds('currency', Context::getContext()->shop->id);
-					if (isset($currency[0]) && $currency[0]['id_currency'])
-					{
-						$cookie->id_currency = $currency[0]['id_currency'];
-						return Currency::getCurrencyInstance((int)$cookie->id_currency);
-					}
-				}
-		}
+		
 		$currency = Currency::getCurrencyInstance(Configuration::get('PS_CURRENCY_DEFAULT'));
-		if (is_object($currency) && $currency->id)
-			$cookie->id_currency = (int)$currency->id;
+		if ((int)$cookie->id_currency)
+			$currency = Currency::getCurrencyInstance((int)$cookie->id_currency);
 
+		if (is_object($currency) && (int)$currency->id && (int)$currency->deleted != 1 && $currency->active)
+		{
+			$cookie->id_currency = (int)$currency->id;
+			if ($currency->isAssociatedToShop())
+				return $currency;
+			else
+			{
+				// get currency from context
+				$currency = Shop::getEntityIds('currency', Context::getContext()->shop->id, true, true);
+				if (isset($currency[0]) && $currency[0]['id_currency'])
+				{
+					$cookie->id_currency = $currency[0]['id_currency'];
+					return Currency::getCurrencyInstance((int)$cookie->id_currency);
+				}
+			}
+		}
 		return $currency;
 	}
 
@@ -675,10 +675,8 @@ class ToolsCore
 	public static function htmlentitiesDecodeUTF8($string)
 	{
 		if (is_array($string))
-		{
-			$string = array_map(array('Tools', 'htmlentitiesDecodeUTF8'), $string);
-			return (string)array_shift($string);
-		}
+			return array_map(array('Tools', 'htmlentitiesDecodeUTF8'), $string);
+
 		return html_entity_decode((string)$string, ENT_QUOTES, 'utf-8');
 	}
 
@@ -1553,6 +1551,18 @@ class ToolsCore
 		if (!isset(self::$file_exists_cache[$filename]))
 			self::$file_exists_cache[$filename] = file_exists($filename);
 		return self::$file_exists_cache[$filename];
+	}
+
+	/**
+	 * file_exists() wrapper with a call to clearstatcache prior
+	 *
+	 * @param string $filename File name
+	 * @return boolean Cached result of file_exists($filename)
+	 */
+	public static function file_exists_no_cache($filename)
+	{
+		clearstatcache();
+		return file_exists($filename);
 	}
 
 	public static function file_get_contents($url, $use_include_path = false, $stream_context = null, $curl_timeout = 5)
@@ -2738,6 +2748,20 @@ exit;
 			$fileAttachment['error'] = $_FILES[$input]['error'];
 		}
 		return $fileAttachment;
+	}
+
+	/**
+	 * Delete a substring from another one starting from the right
+	 * @param string $str
+	 * @param string $str_search
+	 * @return string
+	 */
+	public static function rtrimString($str, $str_search)
+	{
+		$length_str = strlen($str_search);
+		if (strlen($str) >= $length_str && substr($str, -$length_str) == $str_search)
+			$str = substr($str, 0, -$length_str);
+		return $str;
 	}
 }
 

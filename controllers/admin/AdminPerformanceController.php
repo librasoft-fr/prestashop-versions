@@ -563,6 +563,7 @@ class AdminPerformanceControllerCore extends AdminController
 
 	public function initContent()
 	{
+		$this->initTabModuleList();
 		$php_dot_net_supported_langs = array('en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr');
 		$php_lang = in_array($this->context->language->iso_code, $php_dot_net_supported_langs) ?
 			$this->context->language->iso_code : 'en';
@@ -728,6 +729,8 @@ class AdminPerformanceControllerCore extends AdminController
 					else
 						Configuration::updateValue('PS_MEDIA_SERVERS', 0);
 					rewriteSettingsFile($base_urls, null, null);
+					Tools::clearSmartyCache();
+					Media::clearCache();
 					Tools::generateHtaccess(null, null, null, '', null, array($base_urls['_MEDIA_SERVER_1_'], $base_urls['_MEDIA_SERVER_2_'], $base_urls['_MEDIA_SERVER_3_']));
 					unset($this->_fieldsGeneral['_MEDIA_SERVER_1_']);
 					unset($this->_fieldsGeneral['_MEDIA_SERVER_2_']);
@@ -865,6 +868,7 @@ class AdminPerformanceControllerCore extends AdminController
 		{
 			$redirectAdmin = true;
 			Tools::clearSmartyCache();
+			Media::clearCache();
 			Autoload::getInstance()->generateIndex();
 		}
 
