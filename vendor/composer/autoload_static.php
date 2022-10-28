@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09
+class ComposerStaticInita467d85d6835c4912cf0774f6ee8b0f8
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -2814,6 +2814,7 @@ class ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09
         'PrestaShopBundle\\Controller\\Admin\\Configure\\ShopParameters\\OrderPreferencesController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/Configure/ShopParameters/OrderPreferencesController.php',
         'PrestaShopBundle\\Controller\\Admin\\Configure\\ShopParameters\\PreferencesController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/Configure/ShopParameters/PreferencesController.php',
         'PrestaShopBundle\\Controller\\Admin\\Configure\\ShopParameters\\ProductPreferencesController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/Configure/ShopParameters/ProductPreferencesController.php',
+        'PrestaShopBundle\\Controller\\Admin\\Configure\\ShowcaseCardController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/Configure/ShowcaseCardController.php',
         'PrestaShopBundle\\Controller\\Admin\\FeatureController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/FeatureController.php',
         'PrestaShopBundle\\Controller\\Admin\\FrameworkBundleAdminController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/FrameworkBundleAdminController.php',
         'PrestaShopBundle\\Controller\\Admin\\Improve\\Design\\PositionsController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/Improve/Design/PositionsController.php',
@@ -2968,6 +2969,7 @@ class ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\ProductPreferences\\ProductPreferencesFormHandler' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/ProductPreferences/ProductPreferencesFormHandler.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\ProductPreferences\\StockType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/ProductPreferences/StockType.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\TrafficSeo\\Meta\\MetaSettingsFormDataProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/TrafficSeo/Meta/MetaSettingsFormDataProvider.php',
+        'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\TrafficSeo\\Meta\\SEOOptionsType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/TrafficSeo/Meta/SEOOptionsType.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\TrafficSeo\\Meta\\SetUpUrlType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/TrafficSeo/Meta/SetUpUrlType.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\TrafficSeo\\Meta\\ShopUrlType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/TrafficSeo/Meta/ShopUrlType.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\ShopParameters\\TrafficSeo\\Meta\\UrlSchemaType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/ShopParameters/TrafficSeo/Meta/UrlSchemaType.php',
@@ -3239,6 +3241,7 @@ class ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09
         'PrestaShop\\PrestaShop\\Adapter\\Media\\MediaServerConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Media/MediaServerConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Meta\\MetaDataProvider' => __DIR__ . '/../..' . '/src/Adapter/Meta/MetaDataProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\Meta\\MetaEraser' => __DIR__ . '/../..' . '/src/Adapter/Meta/MetaEraser.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Meta\\SEOOptionsDataConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Meta/SEOOptionsDataConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Meta\\SetUpUrlsDataConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Meta/SetUpUrlsDataConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Meta\\ShopUrlDataConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Meta/ShopUrlDataConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Meta\\UrlSchemaDataConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Meta/UrlSchemaDataConfiguration.php',
@@ -3406,6 +3409,16 @@ class ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09
         'PrestaShop\\PrestaShop\\Core\\Data\\Layer\\AbstractDataLayer' => __DIR__ . '/../..' . '/src/Core/Data/Layer/AbstractDataLayer.php',
         'PrestaShop\\PrestaShop\\Core\\Data\\Layer\\DataLayerException' => __DIR__ . '/../..' . '/src/Core/Data/Layer/DataLayerException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Exception\\DomainException' => __DIR__ . '/../..' . '/src/Core/Domain/Exception/DomainException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\CommandHandler\\CloseShowcaseCardHandler' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/CommandHandler/CloseShowcaseCardHandler.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\CommandHandler\\CloseShowcaseCardHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/CommandHandler/CloseShowcaseCardHandlerInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\Command\\CloseShowcaseCardCommand' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/Command/CloseShowcaseCardCommand.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\ConfigurationMap' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/ConfigurationMap.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\Exception\\InvalidShowcaseCardNameException' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/Exception/InvalidShowcaseCardNameException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\Exception\\ShowcaseCardException' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/Exception/ShowcaseCardException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\QueryHandler\\GetShowcaseCardIsClosedHandler' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/QueryHandler/GetShowcaseCardIsClosedHandler.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\QueryHandler\\GetShowcaseCardIsClosedHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/QueryHandler/GetShowcaseCardIsClosedHandlerInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\Query\\GetShowcaseCardIsClosed' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/Query/GetShowcaseCardIsClosed.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\ShowcaseCard\\ValueObject\\ShowcaseCard' => __DIR__ . '/../..' . '/src/Core/Domain/ShowcaseCard/ValueObject/ShowcaseCard.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\SqlManagement\\CommandHandler\\AddSqlRequestHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/SqlManagement/CommandHandler/AddSqlRequestHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\SqlManagement\\CommandHandler\\BulkDeleteSqlRequestHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/SqlManagement/CommandHandler/BulkDeleteSqlRequestHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\SqlManagement\\CommandHandler\\DeleteSqlRequestHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/SqlManagement/CommandHandler/DeleteSqlRequestHandlerInterface.php',
@@ -6436,11 +6449,11 @@ class ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit5334f10d9de330ef0a7ad5afc13f9d09::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita467d85d6835c4912cf0774f6ee8b0f8::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita467d85d6835c4912cf0774f6ee8b0f8::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInita467d85d6835c4912cf0774f6ee8b0f8::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInita467d85d6835c4912cf0774f6ee8b0f8::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInita467d85d6835c4912cf0774f6ee8b0f8::$classMap;
 
         }, null, ClassLoader::class);
     }
