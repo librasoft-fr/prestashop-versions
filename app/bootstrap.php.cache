@@ -2209,14 +2209,14 @@ return method_exists($this,'get'.strtr($id, $this->underscoreMap).'Service');
 public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
 {
 for ($i = 2;;) {
-if ('service_container'=== $id) {
-return $this;
-}
 if (isset($this->aliases[$id])) {
 $id = $this->aliases[$id];
 }
 if (isset($this->services[$id]) || array_key_exists($id, $this->services)) {
 return $this->services[$id];
+}
+if ('service_container'=== $id) {
+return $this;
 }
 if (isset($this->loading[$id])) {
 throw new ServiceCircularReferenceException($id, array_keys($this->loading));
@@ -2265,11 +2265,11 @@ return $service;
 public function initialized($id)
 {
 $id = strtolower($id);
-if ('service_container'=== $id) {
-return true;
-}
 if (isset($this->aliases[$id])) {
 $id = $this->aliases[$id];
+}
+if ('service_container'=== $id) {
+return true;
 }
 return isset($this->services[$id]) || array_key_exists($id, $this->services);
 }
@@ -2481,11 +2481,11 @@ protected $booted = false;
 protected $name;
 protected $startTime;
 protected $loadClassCache;
-const VERSION ='2.8.24';
-const VERSION_ID = 20824;
+const VERSION ='2.8.27';
+const VERSION_ID = 20827;
 const MAJOR_VERSION = 2;
 const MINOR_VERSION = 8;
-const RELEASE_VERSION = 24;
+const RELEASE_VERSION = 27;
 const EXTRA_VERSION ='';
 const END_OF_MAINTENANCE ='11/2018';
 const END_OF_LIFE ='11/2019';
@@ -2908,7 +2908,6 @@ $this->__construct($environment, $debug);
 }
 }
 }
-namespace {require __DIR__.'/../vendor/symfony/symfony/src/Symfony/Component/ClassLoader/ApcClassLoader.php';}
 namespace Symfony\Component\HttpKernel\Bundle
 {
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;

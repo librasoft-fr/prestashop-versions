@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb232c2c9610795548296bc4ced624124
+class ComposerStaticInit2d40a75700b1ccdbde2aeca7813186ef
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -2807,7 +2807,10 @@ class ComposerStaticInitb232c2c9610795548296bc4ced624124
         'Symfony\\Bridge\\Monolog\\Handler\\SwiftMailerHandler' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/Monolog/Handler/SwiftMailerHandler.php',
         'Symfony\\Bridge\\Monolog\\Logger' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/Monolog/Logger.php',
         'Symfony\\Bridge\\Monolog\\Processor\\WebProcessor' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/Monolog/Processor/WebProcessor.php',
+        'Symfony\\Bridge\\ProxyManager\\LazyProxy\\Instantiator\\LazyLoadingValueHolderFactoryV1' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/ProxyManager/LazyProxy/Instantiator/LazyLoadingValueHolderFactoryV1.php',
+        'Symfony\\Bridge\\ProxyManager\\LazyProxy\\Instantiator\\LazyLoadingValueHolderFactoryV2' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/ProxyManager/LazyProxy/Instantiator/LazyLoadingValueHolderFactoryV2.php',
         'Symfony\\Bridge\\ProxyManager\\LazyProxy\\Instantiator\\RuntimeInstantiator' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/ProxyManager/LazyProxy/Instantiator/RuntimeInstantiator.php',
+        'Symfony\\Bridge\\ProxyManager\\LazyProxy\\PhpDumper\\LazyLoadingValueHolderGenerator' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/ProxyManager/LazyProxy/PhpDumper/LazyLoadingValueHolderGenerator.php',
         'Symfony\\Bridge\\ProxyManager\\LazyProxy\\PhpDumper\\ProxyDumper' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/ProxyManager/LazyProxy/PhpDumper/ProxyDumper.php',
         'Symfony\\Bridge\\Swiftmailer\\DataCollector\\MessageDataCollector' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/Swiftmailer/DataCollector/MessageDataCollector.php',
         'Symfony\\Bridge\\Twig\\AppVariable' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bridge/Twig/AppVariable.php',
@@ -5052,11 +5055,11 @@ class ComposerStaticInitb232c2c9610795548296bc4ced624124
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb232c2c9610795548296bc4ced624124::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb232c2c9610795548296bc4ced624124::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitb232c2c9610795548296bc4ced624124::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitb232c2c9610795548296bc4ced624124::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitb232c2c9610795548296bc4ced624124::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit2d40a75700b1ccdbde2aeca7813186ef::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit2d40a75700b1ccdbde2aeca7813186ef::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit2d40a75700b1ccdbde2aeca7813186ef::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit2d40a75700b1ccdbde2aeca7813186ef::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit2d40a75700b1ccdbde2aeca7813186ef::$classMap;
 
         }, null, ClassLoader::class);
     }

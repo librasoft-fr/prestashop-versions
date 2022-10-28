@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "51c54d611a5f9329baf5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "37f2a99af65d7de347b7"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -43608,9 +43608,10 @@ let setNotificationsNumber = function (id, number) {
       url: __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#form_step3_attributes').attr('data-action'),
       data: __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#attributes-generator input.attribute-generator, #form_id_product').serialize(),
       beforeSend: function() {
-        __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#create-combinations').attr('disabled', 'disabled');
+        __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#create-combinations, #submit, .btn-submit').attr('disabled', 'disabled');
       },
       success: function(response) {
+        refreshTotalCombinations(1, __WEBPACK_IMPORTED_MODULE_0_jquery___default()(response.form).filter('.combination.loaded').length);
         __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#accordion_combinations').append(response.form);
         displayFieldsManager.refresh();
         let url = __WEBPACK_IMPORTED_MODULE_0_jquery___default()('.js-combinations-list').attr('data-action-refresh-images').replace(/product-form-images\/\d+/, 'product-form-images/' + __WEBPACK_IMPORTED_MODULE_0_jquery___default()('.js-combinations-list').data('id-product'));
@@ -43629,7 +43630,7 @@ let setNotificationsNumber = function (id, number) {
         __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#combinations_thead').fadeIn();
       },
       complete: function() {
-        __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#create-combinations').removeAttr('disabled');
+        __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#create-combinations, #submit, .btn-submit').removeAttr('disabled');
         supplierCombinations.refresh();
         warehouseCombinations.refresh();
       }
@@ -43908,8 +43909,13 @@ __WEBPACK_IMPORTED_MODULE_0_jquery___default()(() => {
               'attribute-ids': combinationsIds
             },
             url: deletionURL,
+            beforeSend: function () {
+              __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#create-combinations, #apply-on-combinations, #submit, .btn-submit').attr('disabled', 'disabled');
+            },
             success: function(response) {
               showSuccessMessage(response.message);
+              refreshTotalCombinations(-1, combinationsIds.length);
+              __WEBPACK_IMPORTED_MODULE_0_jquery___default()('span.js-bulk-combinations').text('0');
               combinationsIds.forEach((combinationId) => {
                 var combination = new Combination(combinationId);
                 combination.removeFromDOM();
@@ -43918,6 +43924,9 @@ __WEBPACK_IMPORTED_MODULE_0_jquery___default()(() => {
             },
             error: function(response) {
               showErrorMessage(jQuery.parseJSON(response.responseText).message);
+            },
+            complete: function () {
+              __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#create-combinations, #apply-on-combinations, #submit, .btn-submit').removeAttr('disabled');
             },
           });
         }

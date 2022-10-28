@@ -270,13 +270,10 @@ class LinkBlockRepository
                 (2, '.$id_hook.', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
         ];
 
-        $product = $this->translator->trans('Products', array(), 'Modules.Linklist.Shop');
-        $ourCompany = $this->translator->trans('Our company', array(), 'Modules.Linklist.Shop');
-
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `'.$this->db_prefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1, '.(int)$lang['id_lang'].', "'.pSQL($product).'"),
-                (2, '.(int)$lang['id_lang'].', "'.pSQL($ourCompany).'")'
+                (1, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])).'"),
+                (2, '.(int)$lang['id_lang'].', "'.pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])).'")'
             ;
         }
 

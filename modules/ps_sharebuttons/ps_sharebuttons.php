@@ -40,7 +40,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
     {
         $this->name = 'ps_sharebuttons';
         $this->author = 'PrestaShop';
-        $this->version = '2.0.0';
+        $this->version = '2.0.1';
         $this->need_instance = 0;
 
         $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
@@ -151,7 +151,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
 
     public function getWidgetVariables($hookName, array $params)
     {
-        if (!isset($this->context->controller->php_self) || $this->context->controller->php_self != 'product') {
+        if (!method_exists($this->context->controller, 'getProduct')) {
             return;
         }
 

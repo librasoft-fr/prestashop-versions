@@ -119,6 +119,7 @@ class LinkBlockPresenter
                     'title' => $el['title'],
                     'description' => '',
                     'url' => $el['url'],
+                    'target' => $this->isExternalLink($el['url']) ? '_blank' : '',
                 );
             },
             array_filter($customLinks));
@@ -126,4 +127,22 @@ class LinkBlockPresenter
 
         return $customLinks;
     }
+
+    /**
+     * Check the url if is an external link
+     * @param $url
+     * @return bool
+     */
+    private function isExternalLink($url)
+    {
+        $baseLink = preg_replace('#^(http)s?://#', '', $this->link->getBaseLink());
+        $url = strtolower($url);
+
+        if (preg_match('#^(http)s?://#', $url) && !preg_match('#^(http)s?://' . preg_quote(rtrim($baseLink, '/'), '/') . '#', $url)) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
