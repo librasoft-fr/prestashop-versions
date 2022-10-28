@@ -32,7 +32,7 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      *
      * @var NativeRequestHandler
      */
-    private static $nativeRequestProcessor;
+    private static $nativeRequestHandler;
 
     /**
      * The accepted request methods.
@@ -185,8 +185,8 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      * @param EventDispatcherInterface $dispatcher The event dispatcher
      * @param array                    $options    The form options
      *
-     * @throws InvalidArgumentException If the data class is not a valid class or if
-     *                                  the name contains invalid characters.
+     * @throws InvalidArgumentException if the data class is not a valid class or if
+     *                                  the name contains invalid characters
      */
     public function __construct($name, $dataClass, EventDispatcherInterface $dispatcher, array $options = array())
     {
@@ -511,10 +511,10 @@ class FormConfigBuilder implements FormConfigBuilderInterface
     public function getRequestHandler()
     {
         if (null === $this->requestHandler) {
-            if (null === self::$nativeRequestProcessor) {
-                self::$nativeRequestProcessor = new NativeRequestHandler();
+            if (null === self::$nativeRequestHandler) {
+                self::$nativeRequestHandler = new NativeRequestHandler();
             }
-            $this->requestHandler = self::$nativeRequestProcessor;
+            $this->requestHandler = self::$nativeRequestHandler;
         }
 
         return $this->requestHandler;
@@ -882,8 +882,8 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      *
      * @param string|int $name The tested form name
      *
-     * @throws UnexpectedTypeException  If the name is not a string or an integer.
-     * @throws InvalidArgumentException If the name contains invalid characters.
+     * @throws UnexpectedTypeException  if the name is not a string or an integer
+     * @throws InvalidArgumentException if the name contains invalid characters
      */
     public static function validateName($name)
     {

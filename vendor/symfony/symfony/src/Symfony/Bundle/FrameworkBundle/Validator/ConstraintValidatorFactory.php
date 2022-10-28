@@ -44,8 +44,6 @@ class ConstraintValidatorFactory implements ConstraintValidatorFactoryInterface
     protected $validators;
 
     /**
-     * Constructor.
-     *
      * @param ContainerInterface $container  The service container
      * @param array              $validators An array of validators
      */
@@ -57,8 +55,6 @@ class ConstraintValidatorFactory implements ConstraintValidatorFactoryInterface
 
     /**
      * Returns the validator for the supplied constraint.
-     *
-     * @param Constraint $constraint A constraint
      *
      * @return ConstraintValidatorInterface A validator for the supplied constraint
      *

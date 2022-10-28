@@ -43,31 +43,23 @@ class ChoiceList implements ChoiceListInterface
 {
     /**
      * The choices with their indices as keys.
-     *
-     * @var array
      */
     protected $choices = array();
 
     /**
      * The choice values with the indices of the matching choices as keys.
-     *
-     * @var array
      */
     protected $values = array();
 
     /**
      * The preferred view objects as hierarchy containing also the choice groups
      * with the indices of the matching choices as bottom-level keys.
-     *
-     * @var array
      */
     private $preferredViews = array();
 
     /**
      * The non-preferred view objects as hierarchy containing also the choice
      * groups with the indices of the matching choices as bottom-level keys.
-     *
-     * @var array
      */
     private $remainingViews = array();
 
@@ -83,9 +75,9 @@ class ChoiceList implements ChoiceListInterface
      * @param array              $labels           The array of labels. The structure of this array
      *                                             should match the structure of $choices.
      * @param array              $preferredChoices A flat array of choices that should be
-     *                                             presented to the user with priority.
+     *                                             presented to the user with priority
      *
-     * @throws UnexpectedTypeException If the choices are not an array or \Traversable.
+     * @throws UnexpectedTypeException if the choices are not an array or \Traversable
      */
     public function __construct($choices, array $labels, array $preferredChoices = array())
     {
@@ -260,16 +252,14 @@ class ChoiceList implements ChoiceListInterface
     /**
      * Recursively adds the given choices to the list.
      *
-     * @param array              $bucketForPreferred The bucket where to store the preferred
-     *                                               view objects.
-     * @param array              $bucketForRemaining The bucket where to store the
-     *                                               non-preferred view objects.
+     * @param array              $bucketForPreferred The bucket where to store the preferred view objects
+     * @param array              $bucketForRemaining The bucket where to store the non-preferred view objects
      * @param array|\Traversable $choices            The list of choices
      * @param array              $labels             The labels corresponding to the choices
      * @param array              $preferredChoices   The preferred choices
      *
-     * @throws InvalidArgumentException      If the structures of the choices and labels array do not match.
-     * @throws InvalidConfigurationException If no valid value or index could be created for a choice.
+     * @throws InvalidArgumentException      if the structures of the choices and labels array do not match
+     * @throws InvalidConfigurationException if no valid value or index could be created for a choice
      */
     protected function addChoices(array &$bucketForPreferred, array &$bucketForRemaining, $choices, array $labels, array $preferredChoices)
     {
@@ -307,15 +297,13 @@ class ChoiceList implements ChoiceListInterface
      * Recursively adds a choice group.
      *
      * @param string $group              The name of the group
-     * @param array  $bucketForPreferred The bucket where to store the preferred
-     *                                   view objects.
-     * @param array  $bucketForRemaining The bucket where to store the
-     *                                   non-preferred view objects.
+     * @param array  $bucketForPreferred The bucket where to store the preferred view objects
+     * @param array  $bucketForRemaining The bucket where to store the non-preferred view objects
      * @param array  $choices            The list of choices in the group
      * @param array  $labels             The labels corresponding to the choices in the group
      * @param array  $preferredChoices   The preferred choices
      *
-     * @throws InvalidConfigurationException If no valid value or index could be created for a choice.
+     * @throws InvalidConfigurationException if no valid value or index could be created for a choice
      */
     protected function addChoiceGroup($group, array &$bucketForPreferred, array &$bucketForRemaining, array $choices, array $labels, array $preferredChoices)
     {
@@ -344,15 +332,13 @@ class ChoiceList implements ChoiceListInterface
     /**
      * Adds a new choice.
      *
-     * @param array  $bucketForPreferred The bucket where to store the preferred
-     *                                   view objects.
-     * @param array  $bucketForRemaining The bucket where to store the
-     *                                   non-preferred view objects.
+     * @param array  $bucketForPreferred The bucket where to store the preferred view objects
+     * @param array  $bucketForRemaining The bucket where to store the non-preferred view objects
      * @param mixed  $choice             The choice to add
      * @param string $label              The label for the choice
      * @param array  $preferredChoices   The preferred choices
      *
-     * @throws InvalidConfigurationException If no valid value or index could be created.
+     * @throws InvalidConfigurationException if no valid value or index could be created
      */
     protected function addChoice(array &$bucketForPreferred, array &$bucketForRemaining, $choice, $label, array $preferredChoices)
     {
@@ -404,8 +390,8 @@ class ChoiceList implements ChoiceListInterface
      *
      * @param mixed $choice The choice to create an index for
      *
-     * @return int|string A unique index containing only ASCII letters,
-     *                    digits and underscores.
+     * @return int|string a unique index containing only ASCII letters,
+     *                    digits and underscores
      */
     protected function createIndex($choice)
     {

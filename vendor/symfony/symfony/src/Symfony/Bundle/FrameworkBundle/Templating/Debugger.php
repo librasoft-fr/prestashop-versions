@@ -28,11 +28,6 @@ class Debugger implements DebuggerInterface
 {
     protected $logger;
 
-    /**
-     * Constructor.
-     *
-     * @param LoggerInterface $logger A LoggerInterface instance
-     */
     public function __construct(LoggerInterface $logger = null)
     {
         $this->logger = $logger;

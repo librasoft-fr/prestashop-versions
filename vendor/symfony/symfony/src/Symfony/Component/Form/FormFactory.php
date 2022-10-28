@@ -16,14 +16,7 @@ use Symfony\Component\Form\Util\StringUtil;
 
 class FormFactory implements FormFactoryInterface
 {
-    /**
-     * @var FormRegistryInterface
-     */
     private $registry;
-
-    /**
-     * @var ResolvedFormTypeFactoryInterface
-     */
     private $resolvedTypeFactory;
 
     public function __construct(FormRegistryInterface $registry, ResolvedFormTypeFactoryInterface $resolvedTypeFactory)
@@ -168,8 +161,6 @@ class FormFactory implements FormFactoryInterface
     /**
      * Wraps a type into a ResolvedFormTypeInterface implementation and connects
      * it with its parent type.
-     *
-     * @param FormTypeInterface $type The type to resolve
      *
      * @return ResolvedFormTypeInterface The resolved type
      */

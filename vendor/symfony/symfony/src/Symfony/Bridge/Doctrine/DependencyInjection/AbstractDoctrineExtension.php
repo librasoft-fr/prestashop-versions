@@ -27,15 +27,11 @@ abstract class AbstractDoctrineExtension extends Extension
 {
     /**
      * Used inside metadata driver method to simplify aggregation of data.
-     *
-     * @var array
      */
     protected $aliasMap = array();
 
     /**
      * Used inside metadata driver method to simplify aggregation of data.
-     *
-     * @var array
      */
     protected $drivers = array();
 
@@ -142,10 +138,6 @@ abstract class AbstractDoctrineExtension extends Extension
      *
      * Returns false when autodetection failed, an array of the completed information otherwise.
      *
-     * @param array            $bundleConfig
-     * @param \ReflectionClass $bundle
-     * @param ContainerBuilder $container    A ContainerBuilder instance
-     *
      * @return array|false
      */
     protected function getMappingDriverBundleConfigDefaults(array $bundleConfig, \ReflectionClass $bundle, ContainerBuilder $container)
@@ -199,13 +191,13 @@ abstract class AbstractDoctrineExtension extends Extension
             if ($container->hasDefinition($mappingService)) {
                 $mappingDriverDef = $container->getDefinition($mappingService);
                 $args = $mappingDriverDef->getArguments();
-                if ($driverType == 'annotation') {
+                if ('annotation' == $driverType) {
                     $args[1] = array_merge(array_values($driverPaths), $args[1]);
                 } else {
                     $args[0] = array_merge(array_values($driverPaths), $args[0]);
                 }
                 $mappingDriverDef->setArguments($args);
-            } elseif ($driverType == 'annotation') {
+            } elseif ('annotation' == $driverType) {
                 $mappingDriverDef = new Definition('%'.$this->getObjectManagerElementName('metadata.'.$driverType.'.class%'), array(
                     new Reference($this->getObjectManagerElementName('metadata.annotation_reader')),
                     array_values($driverPaths),
@@ -301,7 +293,7 @@ abstract class AbstractDoctrineExtension extends Extension
      * @param ContainerBuilder $container     A ContainerBuilder instance
      * @param string           $cacheName
      *
-     * @throws \InvalidArgumentException In case of unknown driver type.
+     * @throws \InvalidArgumentException in case of unknown driver type
      */
     protected function loadObjectManagerCacheDriver(array $objectManager, ContainerBuilder $container, $cacheName)
     {
@@ -333,7 +325,7 @@ abstract class AbstractDoctrineExtension extends Extension
                 $memcacheClass = !empty($cacheDriver['class']) ? $cacheDriver['class'] : '%'.$this->getObjectManagerElementName('cache.memcache.class').'%';
                 $memcacheInstanceClass = !empty($cacheDriver['instance_class']) ? $cacheDriver['instance_class'] : '%'.$this->getObjectManagerElementName('cache.memcache_instance.class').'%';
                 $memcacheHost = !empty($cacheDriver['host']) ? $cacheDriver['host'] : '%'.$this->getObjectManagerElementName('cache.memcache_host').'%';
-                $memcachePort = !empty($cacheDriver['port']) || (isset($cacheDriver['port']) && $cacheDriver['port'] === 0) ? $cacheDriver['port'] : '%'.$this->getObjectManagerElementName('cache.memcache_port').'%';
+                $memcachePort = !empty($cacheDriver['port']) || (isset($cacheDriver['port']) && 0 === $cacheDriver['port']) ? $cacheDriver['port'] : '%'.$this->getObjectManagerElementName('cache.memcache_port').'%';
                 $cacheDef = new Definition($memcacheClass);
                 $memcacheInstance = new Definition($memcacheInstanceClass);
                 $memcacheInstance->addMethodCall('connect', array(
@@ -402,9 +394,6 @@ abstract class AbstractDoctrineExtension extends Extension
      *
      * The manager called $autoMappedManager will map all bundles that are not mapped by other managers.
      *
-     * @param array $managerConfigs
-     * @param array $bundles
-     *
      * @return array The modified version of $managerConfigs
      */
     protected function fixManagersAutoMappings(array $managerConfigs, array $bundles)
@@ -463,8 +452,6 @@ abstract class AbstractDoctrineExtension extends Extension
 
     /**
      * Search for a manager that is declared as 'auto_mapping' = true.
-     *
-     * @param array $managerConfigs
      *
      * @return null|string The name of the manager. If no one manager is found, returns null
      *

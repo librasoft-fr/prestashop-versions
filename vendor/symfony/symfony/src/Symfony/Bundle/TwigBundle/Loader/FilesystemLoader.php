@@ -28,12 +28,6 @@ class FilesystemLoader extends BaseFilesystemLoader
     protected $locator;
     protected $parser;
 
-    /**
-     * Constructor.
-     *
-     * @param FileLocatorInterface        $locator A FileLocatorInterface instance
-     * @param TemplateNameParserInterface $parser  A TemplateNameParserInterface instance
-     */
     public function __construct(FileLocatorInterface $locator, TemplateNameParserInterface $parser)
     {
         parent::__construct(array());

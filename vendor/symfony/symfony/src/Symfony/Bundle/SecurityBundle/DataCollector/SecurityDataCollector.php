@@ -20,8 +20,6 @@ use Symfony\Component\Security\Core\Role\RoleInterface;
 use Symfony\Component\Security\Http\Logout\LogoutUrlGenerator;
 
 /**
- * SecurityDataCollector.
- *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 class SecurityDataCollector extends DataCollector
@@ -30,13 +28,6 @@ class SecurityDataCollector extends DataCollector
     private $roleHierarchy;
     private $logoutUrlGenerator;
 
-    /**
-     * Constructor.
-     *
-     * @param TokenStorageInterface|null  $tokenStorage
-     * @param RoleHierarchyInterface|null $roleHierarchy
-     * @param LogoutUrlGenerator|null     $logoutUrlGenerator
-     */
     public function __construct(TokenStorageInterface $tokenStorage = null, RoleHierarchyInterface $roleHierarchy = null, LogoutUrlGenerator $logoutUrlGenerator = null)
     {
         $this->tokenStorage = $tokenStorage;
@@ -178,9 +169,9 @@ class SecurityDataCollector extends DataCollector
     }
 
     /**
-     * Get the provider key (i.e. the name of the active firewall).
+     * Get the logout URL.
      *
-     * @return string The provider key
+     * @return string The logout URL
      */
     public function getLogoutUrl()
     {

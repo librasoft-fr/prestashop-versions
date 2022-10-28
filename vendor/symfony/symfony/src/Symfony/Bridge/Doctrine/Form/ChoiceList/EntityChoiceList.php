@@ -214,8 +214,6 @@ class EntityChoiceList extends ObjectChoiceList
     /**
      * Returns the entities corresponding to the given values.
      *
-     * @param array $values
-     *
      * @return array
      *
      * @see ChoiceListInterface
@@ -266,8 +264,6 @@ class EntityChoiceList extends ObjectChoiceList
 
     /**
      * Returns the values corresponding to the given entities.
-     *
-     * @param array $entities
      *
      * @return array
      *
@@ -389,8 +385,8 @@ class EntityChoiceList extends ObjectChoiceList
      *
      * @param mixed $entity The choice to create an index for
      *
-     * @return int|string A unique index containing only ASCII letters,
-     *                    digits and underscores.
+     * @return int|string a unique index containing only ASCII letters,
+     *                    digits and underscores
      */
     protected function createIndex($entity)
     {

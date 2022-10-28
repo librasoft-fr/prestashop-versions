@@ -78,7 +78,7 @@ abstract class KernelTestCase extends TestCase
         $dir = null;
         $reversedArgs = array_reverse($_SERVER['argv']);
         foreach ($reversedArgs as $argIndex => $testArg) {
-            if (preg_match('/^-[^ \-]*c$/', $testArg) || $testArg === '--configuration') {
+            if (preg_match('/^-[^ \-]*c$/', $testArg) || '--configuration' === $testArg) {
                 $dir = realpath($reversedArgs[$argIndex - 1]);
                 break;
             } elseif (0 === strpos($testArg, '--configuration=')) {
@@ -106,8 +106,8 @@ abstract class KernelTestCase extends TestCase
      */
     protected static function getKernelClass()
     {
-        if (isset($_SERVER['KERNEL_DIR'])) {
-            $dir = $_SERVER['KERNEL_DIR'];
+        if (isset($_SERVER['KERNEL_DIR']) || isset($_ENV['KERNEL_DIR'])) {
+            $dir = isset($_SERVER['KERNEL_DIR']) ? $_SERVER['KERNEL_DIR'] : $_ENV['KERNEL_DIR'];
 
             if (!is_dir($dir)) {
                 $phpUnitDir = static::getPhpUnitXmlDir();
@@ -136,8 +136,6 @@ abstract class KernelTestCase extends TestCase
 
     /**
      * Boots the Kernel for this test.
-     *
-     * @param array $options
      */
     protected static function bootKernel(array $options = array())
     {
@@ -154,8 +152,6 @@ abstract class KernelTestCase extends TestCase
      *
      *  * environment
      *  * debug
-     *
-     * @param array $options An array of options
      *
      * @return KernelInterface A KernelInterface instance
      */

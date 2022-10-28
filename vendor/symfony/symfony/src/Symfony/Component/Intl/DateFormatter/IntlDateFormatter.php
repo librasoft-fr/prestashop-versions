@@ -75,8 +75,6 @@ class IntlDateFormatter
 
     /**
      * Patterns used to format the date when no pattern is provided.
-     *
-     * @var array
      */
     private $defaultDateFormats = array(
         self::NONE => '',
@@ -88,8 +86,6 @@ class IntlDateFormatter
 
     /**
      * Patterns used to format the time when no pattern is provided.
-     *
-     * @var array
      */
     private $defaultTimeFormats = array(
         self::FULL => 'h:mm:ss a zzzz',
@@ -98,14 +94,7 @@ class IntlDateFormatter
         self::SHORT => 'h:mm a',
     );
 
-    /**
-     * @var int
-     */
     private $datetype;
-
-    /**
-     * @var int
-     */
     private $timetype;
 
     /**
@@ -129,8 +118,6 @@ class IntlDateFormatter
     private $timeZoneId;
 
     /**
-     * Constructor.
-     *
      * @param string $locale   The locale code. The only currently supported locale is "en" (or null using the default locale, i.e. "en")
      * @param int    $datetype Type of date formatting, one of the format type constants
      * @param int    $timetype Type of time formatting, one of the format type constants
@@ -170,7 +157,7 @@ class IntlDateFormatter
      * @param int    $timetype Type of time formatting, one of the format type constants
      * @param string $timezone Timezone identifier
      * @param int    $calendar Calendar to use for formatting or parsing; default is Gregorian
-     *                         One of the calendar constants.
+     *                         One of the calendar constants
      * @param string $pattern  Optional pattern to use when formatting
      *
      * @return self
@@ -526,7 +513,7 @@ class IntlDateFormatter
     /**
      * Set the formatter's timezone identifier.
      *
-     * @param string $timeZoneId The time zone ID string of the time zone to use
+     * @param string $timeZoneId The time zone ID string of the time zone to use.
      *                           If NULL or the empty string, the default time zone for the
      *                           runtime is used.
      *

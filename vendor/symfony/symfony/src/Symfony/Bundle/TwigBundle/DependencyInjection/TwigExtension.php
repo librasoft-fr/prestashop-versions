@@ -26,12 +26,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class TwigExtension extends Extension
 {
-    /**
-     * Responds to the twig configuration parameter.
-     *
-     * @param array            $configs
-     * @param ContainerBuilder $container
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
@@ -89,6 +83,7 @@ class TwigExtension extends Extension
             }
         }
 
+        // paths are modified in ExtensionPass if forms are enabled
         $container->getDefinition('twig.cache_warmer')->replaceArgument(2, $config['paths']);
         $container->getDefinition('twig.template_iterator')->replaceArgument(2, $config['paths']);
 

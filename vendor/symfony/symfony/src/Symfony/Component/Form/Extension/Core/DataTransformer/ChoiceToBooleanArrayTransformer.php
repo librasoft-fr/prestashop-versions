@@ -30,8 +30,6 @@ class ChoiceToBooleanArrayTransformer implements DataTransformerInterface
     private $placeholderPresent;
 
     /**
-     * Constructor.
-     *
      * @param ChoiceListInterface $choiceList
      * @param bool                $placeholderPresent
      */
@@ -49,13 +47,12 @@ class ChoiceToBooleanArrayTransformer implements DataTransformerInterface
      * depending on whether a given option is selected. If this field is rendered
      * as select tag, the value is not modified.
      *
-     * @param mixed $choice An array if "multiple" is set to true, a scalar
-     *                      value otherwise.
+     * @param mixed $choice An array if "multiple" is set to true, a scalar value otherwise
      *
      * @return mixed An array
      *
-     * @throws TransformationFailedException If the given value is not scalar or
-     *                                       if the choices can not be retrieved.
+     * @throws TransformationFailedException if the given value is not scalar or
+     *                                       if the choices can not be retrieved
      */
     public function transform($choice)
     {
@@ -89,10 +86,8 @@ class ChoiceToBooleanArrayTransformer implements DataTransformerInterface
      *
      * @return mixed A scalar value
      *
-     * @throws TransformationFailedException If the given value is not an array,
-     *                                       if the recuperation of the choices
-     *                                       fails or if some choice can't be
-     *                                       found.
+     * @throws TransformationFailedException if the given value is not an array, if the recuperation
+     *                                       of the choices fails, or if some choice can't be found
      */
     public function reverseTransform($values)
     {
@@ -109,7 +104,7 @@ class ChoiceToBooleanArrayTransformer implements DataTransformerInterface
         foreach ($values as $i => $selected) {
             if ($selected) {
                 if (isset($choices[$i])) {
-                    return $choices[$i] === '' ? null : $choices[$i];
+                    return '' === $choices[$i] ? null : $choices[$i];
                 } elseif ($this->placeholderPresent && 'placeholder' === $i) {
                     return;
                 } else {

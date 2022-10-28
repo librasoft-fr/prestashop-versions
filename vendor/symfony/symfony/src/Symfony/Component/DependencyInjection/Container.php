@@ -51,11 +51,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag;
  */
 class Container implements IntrospectableContainerInterface, ResettableContainerInterface
 {
-    /**
-     * @var ParameterBagInterface
-     */
     protected $parameterBag;
-
     protected $services = array();
     protected $methodMap = array();
     protected $aliases = array();
@@ -67,9 +63,6 @@ class Container implements IntrospectableContainerInterface, ResettableContainer
 
     private $underscoreMap = array('_' => '', '.' => '_', '\\' => '_');
 
-    /**
-     * @param ParameterBagInterface $parameterBag A ParameterBagInterface instance
-     */
     public function __construct(ParameterBagInterface $parameterBag = null)
     {
         $this->parameterBag = $parameterBag ?: new ParameterBag();
@@ -485,8 +478,6 @@ class Container implements IntrospectableContainerInterface, ResettableContainer
     /**
      * Adds a scope to the container.
      *
-     * @param ScopeInterface $scope
-     *
      * @throws InvalidArgumentException
      *
      * @deprecated since version 2.8, to be removed in 3.0.
@@ -513,7 +504,7 @@ class Container implements IntrospectableContainerInterface, ResettableContainer
         $this->scopeChildren[$name] = array();
 
         // normalize the child relations
-        while ($parentScope !== self::SCOPE_CONTAINER) {
+        while (self::SCOPE_CONTAINER !== $parentScope) {
             $this->scopeChildren[$parentScope][] = $name;
             $parentScope = $this->scopes[$parentScope];
         }

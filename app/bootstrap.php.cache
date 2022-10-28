@@ -210,7 +210,7 @@ $this->headers[$key] = $values;
 $this->headers[$key] = array_merge($this->headers[$key], $values);
 }
 if ('cache-control'=== $key) {
-$this->cacheControl = $this->parseCacheControl($values[0]);
+$this->cacheControl = $this->parseCacheControl(implode(', ', $this->headers[$key]));
 }
 }
 public function has($key)
@@ -337,6 +337,9 @@ $file = new UploadedFile($file['tmp_name'], $file['name'], $file['type'], $file[
 }
 } else {
 $file = array_map(array($this,'convertFileInformation'), $file);
+if (array_keys($keys) === $keys) {
+$file = array_filter($file);
+}
 }
 }
 return $file;
@@ -392,7 +395,7 @@ $authorizationHeader = $this->parameters['REDIRECT_HTTP_AUTHORIZATION'];
 if (null !== $authorizationHeader) {
 if (0 === stripos($authorizationHeader,'basic ')) {
 $exploded = explode(':', base64_decode(substr($authorizationHeader, 6)), 2);
-if (count($exploded) == 2) {
+if (2 == count($exploded)) {
 list($headers['PHP_AUTH_USER'], $headers['PHP_AUTH_PW']) = $exploded;
 }
 } elseif (empty($this->parameters['PHP_AUTH_DIGEST']) && (0 === stripos($authorizationHeader,'digest '))) {
@@ -595,22 +598,22 @@ self::$requestFactory = $callable;
 public function duplicate(array $query = null, array $request = null, array $attributes = null, array $cookies = null, array $files = null, array $server = null)
 {
 $dup = clone $this;
-if ($query !== null) {
+if (null !== $query) {
 $dup->query = new ParameterBag($query);
 }
-if ($request !== null) {
+if (null !== $request) {
 $dup->request = new ParameterBag($request);
 }
-if ($attributes !== null) {
+if (null !== $attributes) {
 $dup->attributes = new ParameterBag($attributes);
 }
-if ($cookies !== null) {
+if (null !== $cookies) {
 $dup->cookies = new ParameterBag($cookies);
 }
-if ($files !== null) {
+if (null !== $files) {
 $dup->files = new FileBag($files);
 }
-if ($server !== null) {
+if (null !== $server) {
 $dup->server = new ServerBag($server);
 $dup->headers = new HeaderBag($dup->server->getHeaders());
 }
@@ -821,7 +824,7 @@ $host = $host[0];
 } elseif (!$host = $this->headers->get('HOST')) {
 return $this->server->get('SERVER_PORT');
 }
-if ($host[0] ==='[') {
+if ('['=== $host[0]) {
 $pos = strpos($host,':', strrpos($host,']'));
 } else {
 $pos = strrpos($host,':');
@@ -852,7 +855,7 @@ public function getHttpHost()
 {
 $scheme = $this->getScheme();
 $port = $this->getPort();
-if (('http'== $scheme && $port == 80) || ('https'== $scheme && $port == 443)) {
+if (('http'== $scheme && 80 == $port) || ('https'== $scheme && 443 == $port)) {
 return $this->getHost();
 }
 return $this->getHost().':'.$port;
@@ -1120,7 +1123,7 @@ $lang = $codes[1];
 }
 } else {
 for ($i = 0, $max = count($codes); $i < $max; ++$i) {
-if ($i === 0) {
+if (0 === $i) {
 $lang = strtolower($codes[0]);
 } else {
 $lang .='_'.strtoupper($codes[$i]);
@@ -1169,14 +1172,14 @@ $this->server->remove('IIS_WasUrlRewritten');
 } elseif ($this->headers->has('X_REWRITE_URL')) {
 $requestUri = $this->headers->get('X_REWRITE_URL');
 $this->headers->remove('X_REWRITE_URL');
-} elseif ($this->server->get('IIS_WasUrlRewritten') =='1'&& $this->server->get('UNENCODED_URL') !='') {
+} elseif ('1'== $this->server->get('IIS_WasUrlRewritten') &&''!= $this->server->get('UNENCODED_URL')) {
 $requestUri = $this->server->get('UNENCODED_URL');
 $this->server->remove('UNENCODED_URL');
 $this->server->remove('IIS_WasUrlRewritten');
 } elseif ($this->server->has('REQUEST_URI')) {
 $requestUri = $this->server->get('REQUEST_URI');
 $schemeAndHttpHost = $this->getSchemeAndHttpHost();
-if (strpos($requestUri, $schemeAndHttpHost) === 0) {
+if (0 === strpos($requestUri, $schemeAndHttpHost)) {
 $requestUri = substr($requestUri, strlen($schemeAndHttpHost));
 }
 } elseif ($this->server->has('ORIG_PATH_INFO')) {
@@ -1212,7 +1215,7 @@ $baseUrl ='/'.$seg.$baseUrl;
 } while ($last > $index && (false !== $pos = strpos($path, $baseUrl)) && 0 != $pos);
 }
 $requestUri = $this->getRequestUri();
-if ($requestUri !==''&& $requestUri[0] !=='/') {
+if (''!== $requestUri &&'/'!== $requestUri[0]) {
 $requestUri ='/'.$requestUri;
 }
 if ($baseUrl && false !== $prefix = $this->getUrlencodedPrefix($requestUri, $baseUrl)) {
@@ -1229,7 +1232,7 @@ $basename = basename($baseUrl);
 if (empty($basename) || !strpos(rawurldecode($truncatedRequestUri), $basename)) {
 return'';
 }
-if (strlen($requestUri) >= strlen($baseUrl) && (false !== $pos = strpos($requestUri, $baseUrl)) && $pos !== 0) {
+if (strlen($requestUri) >= strlen($baseUrl) && (false !== $pos = strpos($requestUri, $baseUrl)) && 0 !== $pos) {
 $baseUrl = substr($requestUri, 0, $pos + strlen($baseUrl));
 }
 return rtrim($baseUrl,'/'.DIRECTORY_SEPARATOR);
@@ -1260,7 +1263,7 @@ return'/';
 if (false !== $pos = strpos($requestUri,'?')) {
 $requestUri = substr($requestUri, 0, $pos);
 }
-if ($requestUri !==''&& $requestUri[0] !=='/') {
+if (''!== $requestUri &&'/'!== $requestUri[0]) {
 $requestUri ='/'.$requestUri;
 }
 $pathInfo = substr($requestUri, strlen($baseUrl));
@@ -1421,7 +1424,8 @@ protected $charset;
 public static $statusTexts = array(
 100 =>'Continue',
 101 =>'Switching Protocols',
-102 =>'Processing', 200 =>'OK',
+102 =>'Processing', 103 =>'Early Hints',
+200 =>'OK',
 201 =>'Created',
 202 =>'Accepted',
 203 =>'Non-Authoritative Information',
@@ -1892,7 +1896,7 @@ public static function closeOutputBuffers($targetLevel, $flush)
 $status = ob_get_status(true);
 $level = count($status);
 $flags = defined('PHP_OUTPUT_HANDLER_REMOVABLE') ? PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? PHP_OUTPUT_HANDLER_FLUSHABLE : PHP_OUTPUT_HANDLER_CLEANABLE) : -1;
-while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? !isset($s['flags']) || $flags === ($s['flags'] & $flags) : $s['del'])) {
+while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? !isset($s['flags']) || ($s['flags'] & $flags) === $flags : $s['del'])) {
 if ($flush) {
 ob_end_flush();
 } else {
@@ -1902,7 +1906,7 @@ ob_end_clean();
 }
 protected function ensureIEOverSSLCompatibility(Request $request)
 {
-if (false !== stripos($this->headers->get('Content-Disposition'),'attachment') && preg_match('/MSIE (.*?);/i', $request->server->get('HTTP_USER_AGENT'), $match) == 1 && true === $request->isSecure()) {
+if (false !== stripos($this->headers->get('Content-Disposition'),'attachment') && 1 == preg_match('/MSIE (.*?);/i', $request->server->get('HTTP_USER_AGENT'), $match) && true === $request->isSecure()) {
 if ((int) preg_replace('/(MSIE )(.*?);/','$2', $match[0]) < 9) {
 $this->headers->remove('Cache-Control');
 }
@@ -2368,7 +2372,7 @@ throw new InvalidArgumentException(sprintf('The parent scope "%s" does not exist
 }
 $this->scopes[$name] = $parentScope;
 $this->scopeChildren[$name] = array();
-while ($parentScope !== self::SCOPE_CONTAINER) {
+while (self::SCOPE_CONTAINER !== $parentScope) {
 $this->scopeChildren[$parentScope][] = $name;
 $parentScope = $this->scopes[$parentScope];
 }
@@ -2481,11 +2485,11 @@ protected $booted = false;
 protected $name;
 protected $startTime;
 protected $loadClassCache;
-const VERSION ='2.8.27';
-const VERSION_ID = 20827;
+const VERSION ='2.8.32';
+const VERSION_ID = 20832;
 const MAJOR_VERSION = 2;
 const MINOR_VERSION = 8;
-const RELEASE_VERSION = 27;
+const RELEASE_VERSION = 32;
 const EXTRA_VERSION ='';
 const END_OF_MAINTENANCE ='11/2018';
 const END_OF_LIFE ='11/2019';
@@ -2873,7 +2877,7 @@ $output .= $rawChunk.$token[1];
 do {
 $token = $tokens[++$i];
 $output .= isset($token[1]) &&'b"'!== $token ? $token[1] : $token;
-} while ($token[0] !== T_END_HEREDOC);
+} while (T_END_HEREDOC !== $token[0]);
 $rawChunk ='';
 } elseif (T_WHITESPACE === $token[0]) {
 if ($ignoreSpace) {
@@ -3132,6 +3136,9 @@ try {
 $filesystem->chmod($this->getMetaFile(), $mode, $umask);
 } catch (IOException $e) {
 }
+}
+if (\function_exists('opcache_invalidate') && ini_get('opcache.enable')) {
+@opcache_invalidate($this->file, true);
 }
 }
 private function getMetaFile()

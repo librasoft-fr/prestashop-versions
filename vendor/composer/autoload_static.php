@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
+class ComposerStaticInitb16d60eefe045e7c50e934a9cebfa057
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -36,6 +36,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
             'Symfony\\Polyfill\\Php55\\' => 23,
             'Symfony\\Polyfill\\Php54\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Polyfill\\Apcu\\' => 22,
             'Symfony\\Component\\Security\\Acl\\' => 31,
             'Symfony\\Component\\' => 18,
             'Symfony\\Bundle\\SwiftmailerBundle\\' => 33,
@@ -131,6 +132,10 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
+        'Symfony\\Polyfill\\Apcu\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-apcu',
         ),
         'Symfony\\Component\\Security\\Acl\\' => 
         array (
@@ -540,6 +545,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'DoctrineExtensions\\Query\\Mysql\\DayOfYear' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/DayOfYear.php',
         'DoctrineExtensions\\Query\\Mysql\\Degrees' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Degrees.php',
         'DoctrineExtensions\\Query\\Mysql\\Div' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Div.php',
+        'DoctrineExtensions\\Query\\Mysql\\Exp' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Exp.php',
         'DoctrineExtensions\\Query\\Mysql\\Extract' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Extract.php',
         'DoctrineExtensions\\Query\\Mysql\\Field' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Field.php',
         'DoctrineExtensions\\Query\\Mysql\\FindInSet' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/FindInSet.php',
@@ -553,7 +559,9 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'DoctrineExtensions\\Query\\Mysql\\IfNull' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/IfNull.php',
         'DoctrineExtensions\\Query\\Mysql\\LastDay' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/LastDay.php',
         'DoctrineExtensions\\Query\\Mysql\\Least' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Least.php',
+        'DoctrineExtensions\\Query\\Mysql\\Log' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Log.php',
         'DoctrineExtensions\\Query\\Mysql\\Log10' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Log10.php',
+        'DoctrineExtensions\\Query\\Mysql\\Log2' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Log2.php',
         'DoctrineExtensions\\Query\\Mysql\\Lpad' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Lpad.php',
         'DoctrineExtensions\\Query\\Mysql\\MatchAgainst' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/MatchAgainst.php',
         'DoctrineExtensions\\Query\\Mysql\\Md5' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Md5.php',
@@ -571,6 +579,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'DoctrineExtensions\\Query\\Mysql\\Replace' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Replace.php',
         'DoctrineExtensions\\Query\\Mysql\\Round' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Round.php',
         'DoctrineExtensions\\Query\\Mysql\\Rpad' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Rpad.php',
+        'DoctrineExtensions\\Query\\Mysql\\SecToTime' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/SecToTime.php',
         'DoctrineExtensions\\Query\\Mysql\\Second' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Second.php',
         'DoctrineExtensions\\Query\\Mysql\\Sha1' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Sha1.php',
         'DoctrineExtensions\\Query\\Mysql\\Sha2' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Sha2.php',
@@ -594,6 +603,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'DoctrineExtensions\\Query\\Mysql\\Week' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Week.php',
         'DoctrineExtensions\\Query\\Mysql\\WeekDay' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/WeekDay.php',
         'DoctrineExtensions\\Query\\Mysql\\Year' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Year.php',
+        'DoctrineExtensions\\Query\\Mysql\\YearMonth' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/YearMonth.php',
         'DoctrineExtensions\\Query\\Mysql\\YearWeek' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/YearWeek.php',
         'DoctrineExtensions\\Query\\Oracle\\Day' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Oracle/Day.php',
         'DoctrineExtensions\\Query\\Oracle\\Listagg' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Oracle/Listagg.php',
@@ -730,6 +740,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'Doctrine\\Bundle\\DoctrineCacheBundle\\Tests\\Functional\\MongoDBCacheTest' => __DIR__ . '/..' . '/doctrine/doctrine-cache-bundle/Tests/Functional/MongoDBCacheTest.php',
         'Doctrine\\Bundle\\DoctrineCacheBundle\\Tests\\Functional\\PhpFileCacheTest' => __DIR__ . '/..' . '/doctrine/doctrine-cache-bundle/Tests/Functional/PhpFileCacheTest.php',
         'Doctrine\\Bundle\\DoctrineCacheBundle\\Tests\\Functional\\PredisCacheTest' => __DIR__ . '/..' . '/doctrine/doctrine-cache-bundle/Tests/Functional/PredisCacheTest.php',
+        'Doctrine\\Bundle\\DoctrineCacheBundle\\Tests\\Functional\\RedisCacheTest' => __DIR__ . '/..' . '/doctrine/doctrine-cache-bundle/Tests/Functional/RedisCacheTest.php',
         'Doctrine\\Bundle\\DoctrineCacheBundle\\Tests\\Functional\\RiakCacheTest' => __DIR__ . '/..' . '/doctrine/doctrine-cache-bundle/Tests/Functional/RiakCacheTest.php',
         'Doctrine\\Bundle\\DoctrineCacheBundle\\Tests\\Functional\\Sqlite3CacheTest' => __DIR__ . '/..' . '/doctrine/doctrine-cache-bundle/Tests/Functional/Sqlite3CacheTest.php',
         'Doctrine\\Bundle\\DoctrineCacheBundle\\Tests\\Functional\\VoidCacheTest' => __DIR__ . '/..' . '/doctrine/doctrine-cache-bundle/Tests/Functional/VoidCacheTest.php',
@@ -2757,6 +2768,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'Sensio\\Bundle\\FrameworkExtraBundle\\Tests\\Templating\\Fixture\\FooBundle\\Controller\\FooController' => __DIR__ . '/..' . '/sensio/framework-extra-bundle/Tests/Templating/Fixture/FooBundle/Controller/FooController.php',
         'Sensio\\Bundle\\FrameworkExtraBundle\\Tests\\Templating\\TemplateGuesserTest' => __DIR__ . '/..' . '/sensio/framework-extra-bundle/Tests/Templating/TemplateGuesserTest.php',
         'SessionHandlerInterface' => __DIR__ . '/..' . '/symfony/polyfill-php54/Resources/stubs/SessionHandlerInterface.php',
+        'SessionUpdateTimestampHandlerInterface' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/SessionUpdateTimestampHandlerInterface.php',
         'Shudrum\\Component\\ArrayFinder\\ArrayFinder' => __DIR__ . '/..' . '/shudrum/array-finder/ArrayFinder.php',
         'Smarty' => __DIR__ . '/..' . '/prestashop/smarty/Smarty.class.php',
         'SmartyBC' => __DIR__ . '/..' . '/prestashop/smarty/SmartyBC.class.php',
@@ -2987,6 +2999,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'Symfony\\Bundle\\SecurityBundle\\Command\\UserPasswordEncoderCommand' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/SecurityBundle/Command/UserPasswordEncoderCommand.php',
         'Symfony\\Bundle\\SecurityBundle\\DataCollector\\SecurityDataCollector' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DataCollector/SecurityDataCollector.php',
         'Symfony\\Bundle\\SecurityBundle\\DependencyInjection\\Compiler\\AddSecurityVotersPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DependencyInjection/Compiler/AddSecurityVotersPass.php',
+        'Symfony\\Bundle\\SecurityBundle\\DependencyInjection\\Compiler\\AddSessionDomainConstraintPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DependencyInjection/Compiler/AddSessionDomainConstraintPass.php',
         'Symfony\\Bundle\\SecurityBundle\\DependencyInjection\\MainConfiguration' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DependencyInjection/MainConfiguration.php',
         'Symfony\\Bundle\\SecurityBundle\\DependencyInjection\\SecurityExtension' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DependencyInjection/SecurityExtension.php',
         'Symfony\\Bundle\\SecurityBundle\\DependencyInjection\\Security\\Factory\\AbstractFactory' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DependencyInjection/Security/Factory/AbstractFactory.php',
@@ -4659,6 +4672,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'Symfony\\Component\\Yaml\\Parser' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Yaml/Parser.php',
         'Symfony\\Component\\Yaml\\Unescaper' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Yaml/Unescaper.php',
         'Symfony\\Component\\Yaml\\Yaml' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Yaml/Yaml.php',
+        'Symfony\\Polyfill\\Apcu\\Apcu' => __DIR__ . '/..' . '/symfony/polyfill-apcu/Apcu.php',
         'Symfony\\Polyfill\\Mbstring\\Mbstring' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/Mbstring.php',
         'Symfony\\Polyfill\\Php54\\Php54' => __DIR__ . '/..' . '/symfony/polyfill-php54/Php54.php',
         'Symfony\\Polyfill\\Php55\\Php55' => __DIR__ . '/..' . '/symfony/polyfill-php55/Php55.php',
@@ -4700,6 +4714,7 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
         'Twig\\Extension\\InitRuntimeInterface' => __DIR__ . '/..' . '/twig/twig/src/Extension/InitRuntimeInterface.php',
         'Twig\\Extension\\OptimizerExtension' => __DIR__ . '/..' . '/twig/twig/src/Extension/OptimizerExtension.php',
         'Twig\\Extension\\ProfilerExtension' => __DIR__ . '/..' . '/twig/twig/src/Extension/ProfilerExtension.php',
+        'Twig\\Extension\\RuntimeExtensionInterface' => __DIR__ . '/..' . '/twig/twig/src/Extension/RuntimeExtensionInterface.php',
         'Twig\\Extension\\SandboxExtension' => __DIR__ . '/..' . '/twig/twig/src/Extension/SandboxExtension.php',
         'Twig\\Extension\\StagingExtension' => __DIR__ . '/..' . '/twig/twig/src/Extension/StagingExtension.php',
         'Twig\\Extension\\StringLoaderExtension' => __DIR__ . '/..' . '/twig/twig/src/Extension/StringLoaderExtension.php',
@@ -5055,11 +5070,11 @@ class ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit78804b281eac8f8c1147d81e6d0ed574::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb16d60eefe045e7c50e934a9cebfa057::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb16d60eefe045e7c50e934a9cebfa057::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitb16d60eefe045e7c50e934a9cebfa057::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInitb16d60eefe045e7c50e934a9cebfa057::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInitb16d60eefe045e7c50e934a9cebfa057::$classMap;
 
         }, null, ClassLoader::class);
     }

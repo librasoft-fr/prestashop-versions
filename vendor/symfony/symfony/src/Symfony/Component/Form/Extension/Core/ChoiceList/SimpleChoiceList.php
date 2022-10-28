@@ -45,7 +45,7 @@ class SimpleChoiceList extends ChoiceList
      *                                arrays. The title of the sub-hierarchy is stored
      *                                in the array key pointing to the nested array.
      * @param array $preferredChoices A flat array of choices that should be
-     *                                presented to the user with priority.
+     *                                presented to the user with priority
      */
     public function __construct(array $choices, array $preferredChoices = array())
     {
@@ -83,10 +83,8 @@ class SimpleChoiceList extends ChoiceList
      * Takes care of splitting the single $choices array passed in the
      * constructor into choices and labels.
      *
-     * @param array              $bucketForPreferred The bucket where to store the preferred
-     *                                               view objects.
-     * @param array              $bucketForRemaining The bucket where to store the
-     *                                               non-preferred view objects.
+     * @param array              $bucketForPreferred The bucket where to store the preferred view objects
+     * @param array              $bucketForRemaining The bucket where to store the non-preferred view objects
      * @param array|\Traversable $choices            The list of choices
      * @param array              $labels             Ignored
      * @param array              $preferredChoices   The preferred choices

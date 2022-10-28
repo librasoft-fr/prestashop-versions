@@ -37,8 +37,6 @@ class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandle
     );
 
     /**
-     * Constructor.
-     *
      * @param HttpUtils $httpUtils
      * @param array     $options   Options for processing a successful authentication attempt
      */
@@ -66,11 +64,6 @@ class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandle
         return $this->options;
     }
 
-    /**
-     * Sets the options.
-     *
-     * @param array $options An array of options
-     */
     public function setOptions(array $options)
     {
         $this->options = array_merge($this->defaultOptions, $options);
@@ -99,8 +92,6 @@ class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandle
     /**
      * Builds the target URL according to the defined options.
      *
-     * @param Request $request
-     *
      * @return string
      */
     protected function determineTargetUrl(Request $request)
@@ -119,12 +110,11 @@ class DefaultAuthenticationSuccessHandler implements AuthenticationSuccessHandle
             return $targetUrl;
         }
 
-        if ($this->options['use_referer']) {
-            $targetUrl = $request->headers->get('Referer');
+        if ($this->options['use_referer'] && $targetUrl = $request->headers->get('Referer')) {
             if (false !== $pos = strpos($targetUrl, '?')) {
                 $targetUrl = substr($targetUrl, 0, $pos);
             }
-            if ($targetUrl !== $this->httpUtils->generateUri($request, $this->options['login_path'])) {
+            if ($targetUrl && $targetUrl !== $this->httpUtils->generateUri($request, $this->options['login_path'])) {
                 return $targetUrl;
             }
         }
