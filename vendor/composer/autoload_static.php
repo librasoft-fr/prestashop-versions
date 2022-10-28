@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
+class ComposerStaticInit671d9e05cdea1232992576c1052e743a
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -3009,6 +3009,7 @@ class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
         'PrestaShopBundle\\EventListener\\FilterCmsPageCategorySearchCriteriaListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/FilterCmsPageCategorySearchCriteriaListener.php',
         'PrestaShopBundle\\EventListener\\LegacyUrlListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/LegacyUrlListener.php',
         'PrestaShopBundle\\EventListener\\ModuleActivatedListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/ModuleActivatedListener.php',
+        'PrestaShopBundle\\EventListener\\ModuleGuardListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/ModuleGuardListener.php',
         'PrestaShopBundle\\EventListener\\MultishopCommandListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/MultishopCommandListener.php',
         'PrestaShopBundle\\EventListener\\TokenizedUrlsListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/TokenizedUrlsListener.php',
         'PrestaShopBundle\\EventListener\\UserLocaleListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/UserLocaleListener.php',
@@ -3313,6 +3314,8 @@ class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
         'PrestaShopBundle\\Translation\\Translator' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Translator.php',
         'PrestaShopBundle\\Translation\\TranslatorAwareTrait' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/TranslatorAwareTrait.php',
         'PrestaShopBundle\\Translation\\TranslatorComponent' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/TranslatorComponent.php',
+        'PrestaShopBundle\\Translation\\TranslatorLanguageLoader' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/TranslatorLanguageLoader.php',
+        'PrestaShopBundle\\Translation\\TranslatorLanguageTrait' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/TranslatorLanguageTrait.php',
         'PrestaShopBundle\\Translation\\View\\TreeBuilder' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/View/TreeBuilder.php',
         'PrestaShopBundle\\Twig\\AdminExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/AdminExtension.php',
         'PrestaShopBundle\\Twig\\ContextIsoCodeProviderExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/ContextIsoCodeProviderExtension.php',
@@ -4199,14 +4202,17 @@ class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\CommandHandler\\BulkDeleteProfileHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/CommandHandler/BulkDeleteProfileHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\CommandHandler\\DeleteProfileHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/CommandHandler/DeleteProfileHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\CommandHandler\\EditProfileHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/CommandHandler/EditProfileHandlerInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Command\\AbstractProfileCommand' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Command/AbstractProfileCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Command\\AddProfileCommand' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Command/AddProfileCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Command\\BulkDeleteProfileCommand' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Command/BulkDeleteProfileCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Command\\DeleteProfileCommand' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Command/DeleteProfileCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Command\\EditProfileCommand' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Command/EditProfileCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Exception\\CannotDeleteSuperAdminProfileException' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Exception/CannotDeleteSuperAdminProfileException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Exception\\FailedToDeleteProfileException' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Exception/FailedToDeleteProfileException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Exception\\ProfileConstraintException' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Exception/ProfileConstraintException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Exception\\ProfileException' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Exception/ProfileException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Exception\\ProfileNotFoundException' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Exception/ProfileNotFoundException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\ProfileSettings' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/ProfileSettings.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\QueryHandler\\GetProfileForEditingHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/QueryHandler/GetProfileForEditingHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\QueryResult\\EditableProfile' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/QueryResult/EditableProfile.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Profile\\Query\\GetProfileForEditing' => __DIR__ . '/../..' . '/src/Core/Domain/Profile/Query/GetProfileForEditing.php',
@@ -4370,6 +4376,7 @@ class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
         'PrestaShop\\PrestaShop\\Core\\Exception\\CoreException' => __DIR__ . '/../..' . '/src/Core/Exception/CoreException.php',
         'PrestaShop\\PrestaShop\\Core\\Exception\\DatabaseException' => __DIR__ . '/../..' . '/src/Core/Exception/DatabaseException.php',
         'PrestaShop\\PrestaShop\\Core\\Exception\\FileNotFoundException' => __DIR__ . '/../..' . '/src/Core/Exception/FileNotFoundException.php',
+        'PrestaShop\\PrestaShop\\Core\\Exception\\IOException' => __DIR__ . '/../..' . '/src/Core/Exception/IOException.php',
         'PrestaShop\\PrestaShop\\Core\\Exception\\InvalidArgumentException' => __DIR__ . '/../..' . '/src/Core/Exception/InvalidArgumentException.php',
         'PrestaShop\\PrestaShop\\Core\\Exception\\ProductException' => __DIR__ . '/../..' . '/src/Core/Exception/ProductException.php',
         'PrestaShop\\PrestaShop\\Core\\Exception\\TranslatableCoreException' => __DIR__ . '/../..' . '/src/Core/Exception/TranslatableCoreException.php',
@@ -4925,6 +4932,8 @@ class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
         'PrestaShop\\PrestaShop\\Core\\Search\\Filters\\WebserviceKeyFilters' => __DIR__ . '/../..' . '/src/Core/Search/Filters/WebserviceKeyFilters.php',
         'PrestaShop\\PrestaShop\\Core\\Search\\SearchParameters' => __DIR__ . '/../..' . '/src/Core/Search/SearchParameters.php',
         'PrestaShop\\PrestaShop\\Core\\Search\\SearchParametersInterface' => __DIR__ . '/../..' . '/src/Core/Search/SearchParametersInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Security\\FolderGuardInterface' => __DIR__ . '/../..' . '/src/Core/Security/FolderGuardInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Security\\HtaccessFolderGuard' => __DIR__ . '/../..' . '/src/Core/Security/HtaccessFolderGuard.php',
         'PrestaShop\\PrestaShop\\Core\\Shop\\LogoUploader' => __DIR__ . '/../..' . '/src/Core/Shop/LogoUploader.php',
         'PrestaShop\\PrestaShop\\Core\\Shop\\ShopContextInterface' => __DIR__ . '/../..' . '/src/Core/Shop/ShopContextInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Shop\\Url\\UrlProviderInterface' => __DIR__ . '/../..' . '/src/Core/Shop/Url/UrlProviderInterface.php',
@@ -7660,11 +7669,11 @@ class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit671d9e05cdea1232992576c1052e743a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit671d9e05cdea1232992576c1052e743a::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit671d9e05cdea1232992576c1052e743a::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit671d9e05cdea1232992576c1052e743a::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit671d9e05cdea1232992576c1052e743a::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -473,6 +473,8 @@ class CustomerController extends AbstractAdminController
             $editableCustomer = $this->getQueryBus()->handle(new GetCustomerForEditing((int) $customerId));
 
             $editCustomerCommand = new EditCustomerCommand((int) $customerId);
+
+            // toggle newsletter subscription
             $editCustomerCommand->setNewsletterSubscribed(!$editableCustomer->isNewsletterSubscribed());
 
             $this->getCommandBus()->handle($editCustomerCommand);
@@ -683,6 +685,7 @@ class CustomerController extends AbstractAdminController
      */
     public function exportAction(CustomerFilters $filters)
     {
+        $filters = new CustomerFilters(['limit' => null] + $filters->all());
         $gridFactory = $this->get('prestashop.core.grid.factory.customer');
         $grid = $gridFactory->getGrid($filters);
 
