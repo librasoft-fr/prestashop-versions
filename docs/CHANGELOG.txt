@@ -24,6 +24,20 @@ International Registred Trademark & Property of PrestaShop SA
 Release Notes for PrestaShop 1.6
 --------------------------------
 ####################################
+#   v1.6.1.11 - (2016-12-19)
+####################################
+
+	Fixed bugs:
+
+	[-] FO : (b7cc5b8) Re-instate default id
+
+
+	Improved/changed features:
+
+	[*] CORE : (0c5d4d6) performance opt on scandir() usage
+
+
+####################################
 #   v1.6.1.10 - (2016-11-25)
 ####################################
 
