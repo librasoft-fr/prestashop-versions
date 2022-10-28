@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04
+class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -3019,6 +3019,7 @@ class ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04
         'PrestaShopBundle\\Event\\ModuleZipManagementEvent' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Event/ModuleZipManagementEvent.php',
         'PrestaShopBundle\\Exception\\FileUploadException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/FileUploadException.php',
         'PrestaShopBundle\\Exception\\HookModuleNotFoundException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/HookModuleNotFoundException.php',
+        'PrestaShopBundle\\Exception\\InvalidLanguageException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/InvalidLanguageException.php',
         'PrestaShopBundle\\Exception\\InvalidModuleException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/InvalidModuleException.php',
         'PrestaShopBundle\\Exception\\InvalidPaginationParamsException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/InvalidPaginationParamsException.php',
         'PrestaShopBundle\\Exception\\NotImplementedException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/NotImplementedException.php',
@@ -3343,9 +3344,13 @@ class ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04
         'PrestaShop\\Module\\FacetedSearch\\Adapter\\AbstractAdapter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Adapter/AbstractAdapter.php',
         'PrestaShop\\Module\\FacetedSearch\\Adapter\\InterfaceAdapter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Adapter/InterfaceAdapter.php',
         'PrestaShop\\Module\\FacetedSearch\\Adapter\\MySQL' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Adapter/MySQL.php',
+        'PrestaShop\\Module\\FacetedSearch\\Constraint\\UrlSegment' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Constraint/UrlSegment.php',
+        'PrestaShop\\Module\\FacetedSearch\\Constraint\\UrlSegmentValidator' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Constraint/UrlSegmentValidator.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Block' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Block.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Converter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Converter.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Products' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Products.php',
+        'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormDataProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormDataProvider.php',
+        'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormModifier' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormModifier.php',
         'PrestaShop\\Module\\FacetedSearch\\HookDispatcher' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/HookDispatcher.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\AbstractHook' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/AbstractHook.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\Attribute' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/Attribute.php',
@@ -3356,10 +3361,12 @@ class ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04
         'PrestaShop\\Module\\FacetedSearch\\Hook\\FeatureValue' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/FeatureValue.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\Product' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/Product.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\ProductSearch' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/ProductSearch.php',
+        'PrestaShop\\Module\\FacetedSearch\\Hook\\SpecificPrice' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/SpecificPrice.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\Search' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/Search.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\SearchProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/SearchProvider.php',
         'PrestaShop\\Module\\FacetedSearch\\Tests\\Adapter\\MySQLTest' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/tests/php/FacetedSearch/Adapter/MySQLTest.php',
         'PrestaShop\\Module\\FacetedSearch\\Tests\\Filters\\BlockTest' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/tests/php/FacetedSearch/Filters/BlockTest.php',
+        'PrestaShop\\Module\\FacetedSearch\\Tests\\Filters\\ConverterTest' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/tests/php/FacetedSearch/Filters/ConverterTest.php',
         'PrestaShop\\Module\\FacetedSearch\\Tests\\HookDispatcherTest' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/tests/php/FacetedSearch/HookDispatcherTest.php',
         'PrestaShop\\Module\\FacetedSearch\\Tests\\Product\\SearchProviderTest' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/tests/php/FacetedSearch/Product/SearchProviderTest.php',
         'PrestaShop\\Module\\FacetedSearch\\Tests\\Product\\SearchTest' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/tests/php/FacetedSearch/Product/SearchTest.php',
@@ -7669,11 +7676,11 @@ class ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit7e4c8d815deacac957dedd0cbe4e0a04::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$classMap;
 
         }, null, ClassLoader::class);
     }

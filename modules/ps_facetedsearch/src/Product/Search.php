@@ -35,6 +35,8 @@ use Context;
 
 class Search
 {
+    const STOCK_MANAGEMENT_FILTER = 'with_stock_management';
+
     /**
      * @var bool
      */
@@ -106,6 +108,11 @@ class Search
 
         $psLayeredFullTree = Configuration::get('PS_LAYERED_FULL_TREE');
         if (!$psLayeredFullTree) {
+            $this->addFilter('id_category', [$parent->id]);
+        }
+
+        $psLayeredFilterByDefaultCategory = Configuration::get('PS_LAYERED_FILTER_BY_DEFAULT_CATEGORY');
+        if ($psLayeredFilterByDefaultCategory) {
             $this->addFilter('id_category_default', [$parent->id]);
         }
 
@@ -135,26 +142,22 @@ class Search
             switch ($key) {
                 case 'id_feature':
                     $operationsFilter = [];
-                    foreach ($filterValues as $filterValue) {
-                        $operationsFilter[] = ['id_feature_value', $filterValue];
+                    foreach ($filterValues as $featureId => $filterValue) {
+                        $this->getSearchAdapter()->addOperationsFilter(
+                            'with_features_' . $featureId,
+                            [[['id_feature_value', $filterValue]]]
+                        );
                     }
-
-                    $this->getSearchAdapter()->addOperationsFilter(
-                        'with_features',
-                        [$operationsFilter]
-                    );
                     break;
 
                 case 'id_attribute_group':
                     $operationsFilter = [];
-                    foreach ($filterValues as $filterValue) {
-                        $operationsFilter[] = ['id_attribute', $filterValue];
+                    foreach ($filterValues as $attributeId => $filterValue) {
+                        $this->getSearchAdapter()->addOperationsFilter(
+                            'with_attributes_' . $attributeId,
+                            [[['id_attribute', $filterValue]]]
+                        );
                     }
-
-                    $this->getSearchAdapter()->addOperationsFilter(
-                        'with_attributes',
-                        [$operationsFilter]
-                    );
                     break;
 
                 case 'category':
@@ -193,7 +196,7 @@ class Search
                     }
 
                     $this->getSearchAdapter()->addOperationsFilter(
-                        'with_stock_management',
+                        self::STOCK_MANAGEMENT_FILTER,
                         $operationsFilter
                     );
                     break;

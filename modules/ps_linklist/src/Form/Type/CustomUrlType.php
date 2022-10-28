@@ -29,6 +29,7 @@ namespace PrestaShop\Module\LinkList\Form\Type;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class CustomUrlType extends TranslatorAwareType
 {
@@ -45,6 +46,7 @@ class CustomUrlType extends TranslatorAwareType
             ->add('url', TextType::class, [
                 'label' => $this->trans('URL', 'Modules.Linklist.Admin'),
                 'required' => true,
+                'constraints' => [new Assert\Url()],
             ])
         ;
     }
