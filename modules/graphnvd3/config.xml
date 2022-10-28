@@ -2,7 +2,7 @@
 <module>
 	<name>graphnvd3</name>
 	<displayName><![CDATA[NVD3 Charts]]></displayName>
-	<version><![CDATA[1.5.0]]></version>
+	<version><![CDATA[1.5.1]]></version>
 	<description><![CDATA[]]></description>
 	<author><![CDATA[PrestaShop]]></author>
 	<tab><![CDATA[administration]]></tab>

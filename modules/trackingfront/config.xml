@@ -2,7 +2,7 @@
 <module>
 	<name>trackingfront</name>
 	<displayName><![CDATA[Tracking - Front office]]></displayName>
-	<version><![CDATA[1.8.3]]></version>
+	<version><![CDATA[1.8.4]]></version>
 	<description><![CDATA[Enables your affiliates to access their own statistics. See Stats/Referrers.]]></description>
 	<author><![CDATA[PrestaShop]]></author>
 	<tab><![CDATA[shipping_logistics]]></tab>
