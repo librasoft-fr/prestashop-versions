@@ -1,5 +1,5 @@
 {*
-* 2007-2016 PrestaShop
+* 2007-2017 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -18,17 +18,17 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
+*  @copyright  2007-2017 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 <table id="total-tab" width="100%">
 
 	<tr>
-		<td class="grey" width="70%">
+		<td class="grey" width="50%">
 			{l s='Total Products' pdf='true'}
 		</td>
-		<td class="white" width="30%">
+		<td class="white" width="50%">
 			{displayPrice currency=$order->id_currency price=$footer.products_before_discounts_tax_excl}
 		</td>
 	</tr>
@@ -36,10 +36,10 @@
 	{if $footer.product_discounts_tax_excl > 0}
 
 		<tr>
-			<td class="grey" width="70%">
+			<td class="grey" width="50%">
 				{l s='Total Discounts' pdf='true'}
 			</td>
-			<td class="white" width="30%">
+			<td class="white" width="50%">
 				- {displayPrice currency=$order->id_currency price=$footer.product_discounts_tax_excl}
 			</td>
 		</tr>
@@ -47,10 +47,10 @@
 	{/if}
 	{if !$order->isVirtual()}
 	<tr>
-		<td class="grey" width="70%">
+		<td class="grey" width="50%">
 			{l s='Shipping Cost' pdf='true'}
 		</td>
-		<td class="white" width="30%">
+		<td class="white" width="50%">
 			{if $footer.shipping_tax_excl > 0}
 				{displayPrice currency=$order->id_currency price=$footer.shipping_tax_excl}
 			{else}

@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2016 PrestaShop
+* 2007-2017 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
+*  @copyright  2007-2017 PrestaShop SA
 *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -5148,7 +5148,7 @@ class ProductCore extends ObjectModel
         }
         if ($this->deleteCategories()) {
             if ($ids) {
-                $sql_values = '';
+                $sql_values = array();
                 $ids = array_map('intval', $ids);
                 foreach ($ids as $position => $id) {
                     $sql_values[] = '('.(int)$id.', '.(int)$this->id.', '.(int)$position.')';
@@ -5425,7 +5425,7 @@ class ProductCore extends ObjectModel
         }
         if ($this->deleteWsTags()) {
             if ($ids) {
-                $sql_values = '';
+                $sql_values = array();
                 $ids = array_map('intval', $ids);
                 foreach ($ids as $position => $id) {
                     $id_lang = Db::getInstance()->getValue('SELECT `id_lang` FROM `'._DB_PREFIX_.'tag` WHERE `id_tag`='.(int)$id);

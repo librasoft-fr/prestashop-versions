@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2016 PrestaShop
+* 2007-2017 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
+*  @copyright  2007-2017 PrestaShop SA
 *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -40,11 +40,10 @@ class DiscountControllerCore extends FrontController
         parent::initContent();
 
         $cart_rules = CartRule::getCustomerCartRules($this->context->language->id, $this->context->customer->id, true, false, true);
-        $nb_cart_rules = count($cart_rules);
 
         foreach ($cart_rules as $key => &$discount ) {
 
-            if ($discount['quantity_for_user'] === 0) {
+            if ((int)$discount['quantity_for_user'] === 0) {
                 unset($cart_rules[$key]);
             }
 
@@ -54,12 +53,12 @@ class DiscountControllerCore extends FrontController
                 new Currency((int)$this->context->cart->id_currency)
             );
             
-            if ($discount['gift_product'] !== 0) {
+            if ((int)$discount['gift_product'] !== 0) {
                 $product = new Product((int) $discount['gift_product'], false, (int)$this->context->language->id);
                 if (!Validate::isLoadedObject($product) || !$product->isAssociatedToShop() || !$product->active) {
                     unset($cart_rules[$key]);
                 }
-                if (Combination::isFeatureActive() && $discount['gift_product_attribute'] !== 0) {
+                if (Combination::isFeatureActive() && (int)$discount['gift_product_attribute'] !== 0) {
                     $attributes = $product->getAttributeCombinationsById((int)$discount['gift_product_attribute'], (int)$this->context->language->id);
                     $giftAttributes = array();
                     foreach ($attributes as $attribute) {
@@ -82,6 +81,8 @@ class DiscountControllerCore extends FrontController
                 );
             }
         }
+
+        $nb_cart_rules = count($cart_rules);
 
         $this->context->smarty->assign(array(
             'nb_cart_rules' => (int)$nb_cart_rules,

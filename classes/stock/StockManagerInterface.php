@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2016 PrestaShop
+* 2007-2017 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
+*  @copyright  2007-2017 PrestaShop SA
 *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -135,4 +135,16 @@ interface StockManagerInterface
      * @return int time
      */
     public function getProductCoverage($id_product, $id_product_attribute, $coverage, $id_warehouse = null);
+
+    /**
+     * For a given product, returns the number of products sold for the the given coverage period.
+     * By default, for the given product, it will use sum(quantities removed in all warehouses)
+     *
+     * @param int $id_product
+     * @param int $id_product_attribute
+     * @param int $coverage
+     * @param int|null $id_warehouse Optional
+     * @return int Number of products sold over the coverage period
+     */
+    public function getProductOutForCoverage($id_product, $id_product_attribute, $coverage, $id_warehouse = null);
 }

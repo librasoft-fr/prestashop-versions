@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  *  @author  PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2016 PrestaShop SA
+ *  @copyright  2007-2017 PrestaShop SA
  *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  International Registered Trademark & Property of PrestaShop SA
  */
@@ -620,9 +620,9 @@ class ToolsCore
             return $currency;
         } else {
             // get currency from context
-            $currency = Shop::getEntityIds('currency', Context::getContext()->shop->id, true, true);
-            if (isset($currency[0]) && $currency[0]['id_currency']) {
-                $cookie->id_currency = $currency[0]['id_currency'];
+            $currentCurrency = Shop::getEntityIds('currency', Context::getContext()->shop->id, true, true);
+            if (isset($currentCurrency[0]) && $currentCurrency[0]['id_currency']) {
+                $cookie->id_currency = $currentCurrency[0]['id_currency'];
                 return Currency::getCurrencyInstance((int)$cookie->id_currency);
             }
         }
