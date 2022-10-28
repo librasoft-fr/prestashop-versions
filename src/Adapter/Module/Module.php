@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 PrestaShop and Contributors
+ * 2007-2020 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA and Contributors
+ * @copyright 2007-2020 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -39,6 +39,15 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  */
 class Module implements ModuleInterface
 {
+    const ACTION_INSTALL = 'install';
+    const ACTION_UNINSTALL = 'uninstall';
+    const ACTION_ENABLE = 'enable';
+    const ACTION_DISABLE = 'disable';
+    const ACTION_ENABLE_MOBILE = 'enable_mobile';
+    const ACTION_DISABLE_MOBILE = 'disable_mobile';
+    const ACTION_RESET = 'reset';
+    const ACTION_UPGRADE = 'upgrade';
+
     /** @var LegacyModule Module The instance of the legacy module */
     public $instance = null;
 

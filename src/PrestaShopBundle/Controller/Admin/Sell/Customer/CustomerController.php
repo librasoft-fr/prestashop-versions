@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 PrestaShop and Contributors
+ * 2007-2020 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA and Contributors
+ * @copyright 2007-2020 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -265,6 +265,10 @@ class CustomerController extends AbstractAdminController
         $privateNoteForm = $this->createForm(PrivateNoteType::class, [
             'note' => $customerInformation->getGeneralInformation()->getPrivateNote(),
         ]);
+
+        if ($request->query->has('conf')) {
+            $this->manageLegacyFlashes($request->query->get('conf'));
+        }
 
         return $this->render('@PrestaShop/Admin/Sell/Customer/view.html.twig', [
             'enableSidebar' => true,
@@ -839,5 +843,25 @@ class CustomerController extends AbstractAdminController
                 ]
             ),
         ];
+    }
+
+    /**
+     * Manage legacy flashes
+     * @todo Remove this code when legacy edit will be migrated.
+     *
+     * @param int $messageId The message id from legacy context
+     */
+    private function manageLegacyFlashes($messageId)
+    {
+        $messages = [
+            4 => $this->trans('Update successful.', 'Admin.Notifications.Success'),
+        ];
+
+        if (isset($messages[$messageId])) {
+            $this->addFlash(
+                'success',
+                $messages[$messageId]
+            );
+        }
     }
 }

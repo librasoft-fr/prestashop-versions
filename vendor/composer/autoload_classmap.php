@@ -6,6 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'AdminConfigureFaviconBoController' => $baseDir . '/modules/ps_faviconnotificationbo/controllers/admin/AdminConfigureFaviconBoController.php',
+    'AdminPsThemeCustoAdvancedController' => $baseDir . '/modules/ps_themecusto/controllers/admin/AdminPsThemeCustoAdvanced.php',
+    'AdminPsThemeCustoConfigurationController' => $baseDir . '/modules/ps_themecusto/controllers/admin/AdminPsThemeCustoConfiguration.php',
     'Analog\\Analog' => $vendorDir . '/analog/analog/lib/Analog/Analog.php',
     'Analog\\Handler\\Amon' => $vendorDir . '/analog/analog/lib/Analog/Handler/Amon.php',
     'Analog\\Handler\\Apprise' => $vendorDir . '/analog/analog/lib/Analog/Handler/Apprise.php',
@@ -4390,6 +4393,7 @@ return array(
     'PrestaShop\\PrestaShop\\Core\\Search\\SearchParametersInterface' => $baseDir . '/src/Core/Search/SearchParametersInterface.php',
     'PrestaShop\\PrestaShop\\Core\\Security\\FolderGuardInterface' => $baseDir . '/src/Core/Security/FolderGuardInterface.php',
     'PrestaShop\\PrestaShop\\Core\\Security\\HtaccessFolderGuard' => $baseDir . '/src/Core/Security/HtaccessFolderGuard.php',
+    'PrestaShop\\PrestaShop\\Core\\Session\\SessionInterface' => $baseDir . '/src/Core/Session/SessionInterface.php',
     'PrestaShop\\PrestaShop\\Core\\Shop\\LogoUploader' => $baseDir . '/src/Core/Shop/LogoUploader.php',
     'PrestaShop\\PrestaShop\\Core\\Shop\\ShopContextInterface' => $baseDir . '/src/Core/Shop/ShopContextInterface.php',
     'PrestaShop\\PrestaShop\\Core\\Shop\\Url\\UrlProviderInterface' => $baseDir . '/src/Core/Shop/Url/UrlProviderInterface.php',
@@ -4472,6 +4476,7 @@ return array(
     'PrestaShop\\TranslationToolsBundle\\Twig\\NodeVisitor\\TranslationNodeVisitor' => $vendorDir . '/prestashop/translationtools-bundle/Twig/NodeVisitor/TranslationNodeVisitor.php',
     'Ps_Facetedsearch' => $baseDir . '/modules/ps_facetedsearch/ps_facetedsearch.php',
     'Ps_Linklist' => $baseDir . '/modules/ps_linklist/ps_linklist.php',
+    'Ps_faviconnotificationbo' => $baseDir . '/modules/ps_faviconnotificationbo/ps_faviconnotificationbo.php',
     'Psr\\Cache\\CacheException' => $vendorDir . '/psr/cache/src/CacheException.php',
     'Psr\\Cache\\CacheItemInterface' => $vendorDir . '/psr/cache/src/CacheItemInterface.php',
     'Psr\\Cache\\CacheItemPoolInterface' => $vendorDir . '/psr/cache/src/CacheItemPoolInterface.php',
@@ -6739,6 +6744,7 @@ return array(
     'TCPDF_IMPORT' => $vendorDir . '/tecnickcom/tcpdf/tcpdf_import.php',
     'TCPDF_PARSER' => $vendorDir . '/tecnickcom/tcpdf/tcpdf_parser.php',
     'TCPDF_STATIC' => $vendorDir . '/tecnickcom/tcpdf/include/tcpdf_static.php',
+    'ThemeCustoRequests' => $baseDir . '/modules/ps_themecusto/classes/ThemeCustoRequests.php',
     'TijsVerkoyen\\CssToInlineStyles\\CssToInlineStyles' => $vendorDir . '/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php',
     'TijsVerkoyen\\CssToInlineStyles\\Css\\Processor' => $vendorDir . '/tijsverkoyen/css-to-inline-styles/src/Css/Processor.php',
     'TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\Processor' => $vendorDir . '/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php',
@@ -7120,4 +7126,5 @@ return array(
     'Twig_Util_DeprecationCollector' => $vendorDir . '/twig/twig/lib/Twig/Util/DeprecationCollector.php',
     'Twig_Util_TemplateDirIterator' => $vendorDir . '/twig/twig/lib/Twig/Util/TemplateDirIterator.php',
     'TypeError' => $vendorDir . '/symfony/polyfill-php70/Resources/stubs/TypeError.php',
+    'ps_themecusto' => $baseDir . '/modules/ps_themecusto/ps_themecusto.php',
 );

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 PrestaShop and Contributors
+ * 2007-2020 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA and Contributors
+ * @copyright 2007-2020 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -213,6 +213,7 @@ class AdminLoginControllerCore extends AdminController
                 $cookie->profile = $this->context->employee->id_profile;
                 $cookie->passwd = $this->context->employee->passwd;
                 $cookie->remote_addr = $this->context->employee->remote_addr;
+                $cookie->registerSession(new EmployeeSession());
 
                 if (!Tools::getValue('stay_logged_in')) {
                     $cookie->last_activity = time();

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 PrestaShop and Contributors
+ * 2007-2020 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to https://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA and Contributors
+ * @copyright 2007-2020 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -519,21 +519,11 @@ class AdminDashboardControllerCore extends AdminController
         );
 
         if (Validate::isModuleName($module) && $module_obj = Module::getInstanceByName($module)) {
-            if (Validate::isLoadedObject($module_obj) && method_exists($module_obj, 'validateDashConfig')) {
-                $return['errors'] = $module_obj->validateDashConfig($configs);
-            }
-            if (!count($return['errors'])) {
-                if (Validate::isLoadedObject($module_obj) && method_exists($module_obj, 'saveDashConfig')) {
-                    $return['has_errors'] = $module_obj->saveDashConfig($configs);
-                } elseif (is_array($configs) && count($configs)) {
-                    foreach ($configs as $name => $value) {
-                        if (Validate::isConfigName($name)) {
-                            Configuration::updateValue($name, $value);
-                        }
-                    }
-                }
-            } else {
+            $return['errors'] = $module_obj->validateDashConfig($configs);
+            if (count($return['errors'])) {
                 $return['has_errors'] = true;
+            } else {
+                $return['has_errors'] = $module_obj->saveDashConfig($configs);
             }
         }
 

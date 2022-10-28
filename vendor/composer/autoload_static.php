@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
+class ComposerStaticInita1d06cce85cb4291eee541057ba85f17
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -74,10 +74,10 @@ class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
         '883af48563631547925fa4c3b48ead07' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/multiply.php',
         'f190e3308e6ca23234a2875edc985c03' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/divideby.php',
         'ac9e33ce6841aa5bf5d16d465a2f03a7' => __DIR__ . '/..' . '/markbaker/complex/classes/src/operations/divideinto.php',
+        'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
         'f084d01b0a599f67676cffef638aa95b' => __DIR__ . '/..' . '/smarty/smarty/libs/bootstrap.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
-        'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
         '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
     );
 
@@ -557,6 +557,9 @@ class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
     );
 
     public static $classMap = array (
+        'AdminConfigureFaviconBoController' => __DIR__ . '/../..' . '/modules/ps_faviconnotificationbo/controllers/admin/AdminConfigureFaviconBoController.php',
+        'AdminPsThemeCustoAdvancedController' => __DIR__ . '/../..' . '/modules/ps_themecusto/controllers/admin/AdminPsThemeCustoAdvanced.php',
+        'AdminPsThemeCustoConfigurationController' => __DIR__ . '/../..' . '/modules/ps_themecusto/controllers/admin/AdminPsThemeCustoConfiguration.php',
         'Analog\\Analog' => __DIR__ . '/..' . '/analog/analog/lib/Analog/Analog.php',
         'Analog\\Handler\\Amon' => __DIR__ . '/..' . '/analog/analog/lib/Analog/Handler/Amon.php',
         'Analog\\Handler\\Apprise' => __DIR__ . '/..' . '/analog/analog/lib/Analog/Handler/Apprise.php',
@@ -4941,6 +4944,7 @@ class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
         'PrestaShop\\PrestaShop\\Core\\Search\\SearchParametersInterface' => __DIR__ . '/../..' . '/src/Core/Search/SearchParametersInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Security\\FolderGuardInterface' => __DIR__ . '/../..' . '/src/Core/Security/FolderGuardInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Security\\HtaccessFolderGuard' => __DIR__ . '/../..' . '/src/Core/Security/HtaccessFolderGuard.php',
+        'PrestaShop\\PrestaShop\\Core\\Session\\SessionInterface' => __DIR__ . '/../..' . '/src/Core/Session/SessionInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Shop\\LogoUploader' => __DIR__ . '/../..' . '/src/Core/Shop/LogoUploader.php',
         'PrestaShop\\PrestaShop\\Core\\Shop\\ShopContextInterface' => __DIR__ . '/../..' . '/src/Core/Shop/ShopContextInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Shop\\Url\\UrlProviderInterface' => __DIR__ . '/../..' . '/src/Core/Shop/Url/UrlProviderInterface.php',
@@ -5023,6 +5027,7 @@ class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
         'PrestaShop\\TranslationToolsBundle\\Twig\\NodeVisitor\\TranslationNodeVisitor' => __DIR__ . '/..' . '/prestashop/translationtools-bundle/Twig/NodeVisitor/TranslationNodeVisitor.php',
         'Ps_Facetedsearch' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/ps_facetedsearch.php',
         'Ps_Linklist' => __DIR__ . '/../..' . '/modules/ps_linklist/ps_linklist.php',
+        'Ps_faviconnotificationbo' => __DIR__ . '/../..' . '/modules/ps_faviconnotificationbo/ps_faviconnotificationbo.php',
         'Psr\\Cache\\CacheException' => __DIR__ . '/..' . '/psr/cache/src/CacheException.php',
         'Psr\\Cache\\CacheItemInterface' => __DIR__ . '/..' . '/psr/cache/src/CacheItemInterface.php',
         'Psr\\Cache\\CacheItemPoolInterface' => __DIR__ . '/..' . '/psr/cache/src/CacheItemPoolInterface.php',
@@ -7290,6 +7295,7 @@ class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
         'TCPDF_IMPORT' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_import.php',
         'TCPDF_PARSER' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_parser.php',
         'TCPDF_STATIC' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/tcpdf_static.php',
+        'ThemeCustoRequests' => __DIR__ . '/../..' . '/modules/ps_themecusto/classes/ThemeCustoRequests.php',
         'TijsVerkoyen\\CssToInlineStyles\\CssToInlineStyles' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Processor' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Processor.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\Processor' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php',
@@ -7671,16 +7677,17 @@ class ComposerStaticInitcbe509d105ea27d1b92ddb4526146508
         'Twig_Util_DeprecationCollector' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Util/DeprecationCollector.php',
         'Twig_Util_TemplateDirIterator' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Util/TemplateDirIterator.php',
         'TypeError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/TypeError.php',
+        'ps_themecusto' => __DIR__ . '/../..' . '/modules/ps_themecusto/ps_themecusto.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitcbe509d105ea27d1b92ddb4526146508::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita1d06cce85cb4291eee541057ba85f17::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita1d06cce85cb4291eee541057ba85f17::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInita1d06cce85cb4291eee541057ba85f17::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInita1d06cce85cb4291eee541057ba85f17::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInita1d06cce85cb4291eee541057ba85f17::$classMap;
 
         }, null, ClassLoader::class);
     }
