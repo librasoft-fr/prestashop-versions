@@ -54,7 +54,8 @@ class AdminStockManagementControllerCore extends AdminController
                 'filter_key' => 'a!upc'
             ),
             'name' => array(
-                'title' => $this->l('Name')
+                'title' => $this->l('Name'),
+                'filter_key' => 'b!name'
             ),
             'physical_quantity' => array(
                 'title' => $this->l('Physical quantity'),
@@ -111,7 +112,7 @@ class AdminStockManagementControllerCore extends AdminController
             $this->addRowAction('addstock');
             $this->addRowAction('prepareRemovestock');
 
-            if (count(Warehouse::getWarehouses()) > 1) {
+            if (count(Warehouse::getWarehouses(true)) > 1) {
                 $this->addRowAction('prepareTransferstock');
             }
 
@@ -154,7 +155,7 @@ class AdminStockManagementControllerCore extends AdminController
             $this->addRowAction('addstock');
             $this->addRowAction('prepareRemovestock');
 
-            if (count(Warehouse::getWarehouses()) > 1) {
+            if (count(Warehouse::getWarehouses(true)) > 1) {
                 $this->addRowAction('prepareTransferstock');
             }
 
@@ -176,7 +177,20 @@ class AdminStockManagementControllerCore extends AdminController
             $this->_where = 'AND a.id_product = '.$product_id;
             $this->_group = 'GROUP BY a.id_product_attribute';
 
-            self::$currentIndex = self::$currentIndex.'&id_product='.(int)$product_id;
+            $this->fields_list['name'] =
+                array(
+                    'title' => $this->l('Name'),
+                    'orderby' => false,
+                    'filter' => false,
+                    'search' => false
+                );
+
+            if (Tools::getIsset('id_product_attribute')) {
+                self::$currentIndex = self::$currentIndex.'&id_product='.(int)$product_id;
+            } else {
+                self::$currentIndex = self::$currentIndex.'&id_product='.(int)$product_id.'&detailsproduct';
+            }
+            
             $this->processFilter();
             return parent::renderList();
         }
@@ -269,7 +283,7 @@ class AdminStockManagementControllerCore extends AdminController
         $id_product_attribute = (int)Tools::getValue('id_product_attribute');
 
         // gets warehouses
-        $warehouses_add = Warehouse::getWarehouses();
+        $warehouses_add = Warehouse::getWarehouses(true);
         $warehouses_remove = Warehouse::getWarehousesByProductId($id_product, $id_product_attribute);
 
         // displays warning if no warehouses
@@ -786,7 +800,7 @@ class AdminStockManagementControllerCore extends AdminController
         // sets actions5
         $this->addRowAction('removestock');
 
-        if (count(Warehouse::getWarehouses()) > 1) {
+        if (count(Warehouse::getWarehouses(true)) > 1) {
             $this->addRowAction('transferstock');
         }
 
@@ -796,20 +810,23 @@ class AdminStockManagementControllerCore extends AdminController
         $this->table = 'stock';
         $this->list_id = 'stock';
         $this->lang = false;
+        $lang_id = (int)$this->context->language->id;
 
         $id_warehouse = Tools::getValue('id_warehouse', -1);
 
         $this->_select = 'w.id_currency, a.id_product as id, (a.price_te * a.physical_quantity) as valuation, w.name as warehouse';
         $this->_join = 'INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = a.id_product AND p.advanced_stock_management = 1)';
-        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'warehouse` AS w ON w.id_warehouse = a.id_warehouse';
+        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'warehouse` AS w ON (w.id_warehouse = a.id_warehouse)';
+        $this->_join .= ' RIGHT JOIN `'._DB_PREFIX_.'product_lang` AS b ON (b.id_product = a.id_product)';
 
         $this->_where = 'AND a.id_product = '.(int)$id_product.' AND a.id_product_attribute = '.(int)$id_product_attribute;
+        $this->_where .= ' AND b.id_lang = '.(int)$lang_id.' AND b.id_shop = p.id_shop_default';
 
         if ($id_warehouse != -1) {
             $this->_where .= ' AND a.id_warehouse = '.(int)$id_warehouse;
         }
 
-        $this->_orderBy = 'name';
+        $this->_orderBy = 'b.name';
         $this->_orderWay = 'ASC';
     }
     /**
@@ -868,6 +885,13 @@ class AdminStockManagementControllerCore extends AdminController
 
             $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
             $redirect = self::$currentIndex.'&token='.$token;
+        }
+
+        if (Tools::isSubmit('submitFilter') && Tools::getIsset('detailsproduct')) {
+            $id_product = (int)Tools::getValue('id_product', 0);
+            $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
+            $redirect = self::$currentIndex.'&id_product='.$id_product.'&detailsproduct&token='.$token;
+            Tools::redirectAdmin($redirect);
         }
 
         // Global checks when add / remove product
@@ -1347,6 +1371,10 @@ class AdminStockManagementControllerCore extends AdminController
     {
         if (!array_key_exists('RemoveStock', self::$cache_lang)) {
             self::$cache_lang['RemoveStock'] = $this->l('Remove stock');
+        }
+
+        if (Tools::getIsset('detailsproduct')) {
+            self::$currentIndex = str_replace('&detailsproduct', '', self::$currentIndex);
         }
 
         $this->context->smarty->assign(array(
