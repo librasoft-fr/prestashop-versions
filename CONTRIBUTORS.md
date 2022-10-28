@@ -6,12 +6,14 @@ Adonis Karavokyros
 Adrien
 Agence CINS
 Aleksander Palyan
+Alex Even
 Alexander Grosul
 Alexander Otchenashev
 Alexandra Even
 AlexEven
 Alexey Svistunov
 alexey-svistunov
+Alfakom-MK
 Alfonso Jimenez
 anat
 Anatole
@@ -45,12 +47,14 @@ CINS
 cippest
 cmouleyre
 codvir
+Comkwatt
 Corentin Delcourt
 Cosmin Hutanu
 Cedric Mouleyre
 Damien Metzger
 DamienMetzger
 Damon Skelhorn
+danidomen
 Daniel
 Daniele Giachino
 danoosh
@@ -73,9 +77,12 @@ dreammeup
 DrySs
 DrySs'
 dSevere
+Dustin
 Dvir Julius
+Dvir-Julius
 edamart
 Edouard Gaulue
+elationbase
 eleazar
 Emilien Puget
 emilien-puget
@@ -110,6 +117,7 @@ indesign47
 iNem0o
 ironwo0d
 ITBpro.com
+Ivan
 ivancasasempere
 J. Danse
 janisVincent
@@ -139,11 +147,12 @@ kpodemski
 Krystian Podemski
 Kevin Dunglas
 ldecoker
-lesley paone
+Lesley Paone
 LOIC ROSSET ltd
 Luca T.
 Lucas CERDAN
 LucasC
+Lyo Nick
 LyoNick
 Leo
 M-Mommsen
@@ -158,6 +167,7 @@ Mats Rynge
 MatthieuB
 Maxence
 Maxime
+mchelh
 mchojnacki
 Michel Courtade
 Mickael Desgranges
@@ -183,6 +193,8 @@ oleacorner
 Otto Nascarella
 Panagiotis Tigas
 Patanock
+Patrick Mettraux
+Pavel Novitsky
 Per Lejontand
 Peter Schaeffer
 peterept
@@ -200,8 +212,10 @@ Priyank Bolia
 Pronux
 pxls
 quadrateam
+Quentin Leonetti
 Quentin Montant
 Quetzacoalt91
+Racochejl
 Rafael Cunha
 Raphael Malie
 raulgundin
@@ -214,6 +228,7 @@ runningz
 Remi Gaillard
 s-duval
 Sacha
+Sacha Froment
 sadlyblue
 sagaradonis
 Samir Shah
@@ -225,6 +240,7 @@ sfroment42
 shaffe-fr
 Shagshag
 Shipow
+shudrum
 sjousse
 sLorenzini
 smartdatasoft
@@ -234,10 +250,12 @@ Staging
 Stanislav Yordanov
 Stephan Obadia
 Steven "SDF" Sulley
+Studio Kiwik
 Sumh
 Sylvain Gougouzian
 Sylvain WITMEYER
 Sebastien
+Sebastien Bareyre
 Sebastien Bocahu
 tchauviere
 Thibaud Chauviere
