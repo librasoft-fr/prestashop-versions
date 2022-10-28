@@ -1,0 +1,15 @@
+Dear merchant,
+
+You have received a message from a customer via your shop: {shop_name}
+
+Customer e-mail address: {email}
+
+Customer message:
+
+{message}
+
+Order reference : {order_name}
+
+Attached file : {attached_file}
+
+{shop_url} powered by PrestaShop™
