@@ -619,6 +619,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
 				break;
 		}
 
+		if (count($bread_extended) > 0)
+			$this->addMetaTitle($bread_extended[count($bread_extended) - 1]);
+
 		$this->toolbar_title = $bread_extended;
 	}
 
