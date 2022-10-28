@@ -24,6 +24,10 @@ International Registred Trademark & Property of PrestaShop SA
 Release Notes for PrestaShop 1.6
 --------------------------------
 ####################################
+#   v1.6.1.8 - (2016-10-20)
+####################################
+
+####################################
 #   v1.6.1.7 - (2016-09-06)
 ####################################
 
@@ -37,6 +41,22 @@ Release Notes for PrestaShop 1.6
 	Improved/changed features:
 
 	[*] CORE : (e12c209) Fix a case where $context->smarty could be undefined
+
+
+	Others:
+
+	CO: Fixed cart rule removal with gift product
+	CO: Fix bug #PSCSX-6142 - wrong default cover id in webservice
+	CO: change visibility of installControllers() method
+	CO: Fix warning when duplicating products
+
+	FO: Add a hook on cart product line
+	FO: Solved problem with a situation when we'd like to use category thumb w/o category lead banner
+	FO : Prevent customer to view all codes
+
+	Resolved "price.toFixed is not a function" issue
+	PSCSX-7138 Bad discount computation when multiples tax rates are involved
+	Keep CMS HTML code when upgrading
 
 
 ####################################
@@ -79,7 +99,7 @@ Release Notes for PrestaShop 1.6
 	[+] IN : (a1ce85c) All key must not be nullable
 
 
-	
+
 
 
 ####################################
@@ -143,7 +163,7 @@ Release Notes for PrestaShop 1.6
 	[+] TR : (30c4adc) Adding Vietnamese installer
 
 
-	
+
 
 
 ####################################
@@ -199,7 +219,7 @@ Release Notes for PrestaShop 1.6
 	[-] LO : (673d7fe) Fix Intra-EU VAT
 
 
-	
+
 
 
 ####################################
@@ -429,7 +449,7 @@ Release Notes for PrestaShop 1.6
 	[*] INSTALL : The 1.6.1.1 indexes are now safely removed
 
 
-	
+
 
 
 ####################################
@@ -678,7 +698,7 @@ Release Notes for PrestaShop 1.6
 	[+] TESTS : Add unit tests for PrestaShop#2867 minifyCSS() && ReplaceByAbsoluteURL()
 
 
-	
+
 
 
 ####################################
@@ -1513,7 +1533,7 @@ Release Notes for PrestaShop 1.6
 	[+] DBQUERY : improve to use SELECT or DELETE syntax.
 
 
-	
+
 
 
 
