@@ -231,7 +231,7 @@ EOTXT
 
     /**
      * @group legacy
-     * @expectedDeprecation Passing null as the first argument of "Symfony\Bundle\SecurityBundle\Command\UserPasswordEncoderCommand::__construct" is deprecated since Symfony 3.3 and will be removed in 4.0. If the command was registered by convention, make it a service instead.
+     * @expectedDeprecation Passing null as the first argument of "Symfony\Bundle\SecurityBundle\Command\UserPasswordEncoderCommand::__construct()" is deprecated since Symfony 3.3 and support for it will be removed in 4.0. If the command was registered by convention, make it a service instead.
      */
     public function testLegacy()
     {
@@ -253,7 +253,7 @@ EOTXT
 
     protected function setUp()
     {
-        putenv('COLUMNS='.(119 + strlen(PHP_EOL)));
+        putenv('COLUMNS='.(119 + \strlen(PHP_EOL)));
         $kernel = $this->createKernel(array('test_case' => 'PasswordEncode'));
         $kernel->boot();
 
@@ -271,7 +271,7 @@ EOTXT
 
     private function setupArgon2i()
     {
-        putenv('COLUMNS='.(119 + strlen(PHP_EOL)));
+        putenv('COLUMNS='.(119 + \strlen(PHP_EOL)));
         $kernel = $this->createKernel(array('test_case' => 'PasswordEncode', 'root_config' => 'argon2i.yml'));
         $kernel->boot();
 

@@ -15,8 +15,8 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileExistenceResource;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Twig\Extension\ExtensionInterface;
 use Twig\Extension\RuntimeExtensionInterface;
@@ -61,7 +61,7 @@ class TwigExtension extends Extension
         foreach ($configs as $key => $config) {
             if (isset($config['globals'])) {
                 foreach ($config['globals'] as $name => $value) {
-                    if (is_array($value) && isset($value['key'])) {
+                    if (\is_array($value) && isset($value['key'])) {
                         $configs[$key]['globals'][$name] = array(
                             'key' => $name,
                             'value' => $value,
@@ -120,7 +120,7 @@ class TwigExtension extends Extension
 
             // add exclusive namespace for root bundles only
             // to override a bundle template that also extends itself
-            if (count($bundle['paths']) > 0 && 0 === count($bundle['parents'])) {
+            if (\count($bundle['paths']) > 0 && 0 === \count($bundle['parents'])) {
                 // the last path must be the bundle views directory
                 $twigFilesystemLoaderDefinition->addMethodCall('addPath', array(end($bundle['paths']), '!'.$namespace));
             }
@@ -165,6 +165,11 @@ class TwigExtension extends Extension
         $container->registerForAutoconfiguration(ExtensionInterface::class)->addTag('twig.extension');
         $container->registerForAutoconfiguration(LoaderInterface::class)->addTag('twig.loader');
         $container->registerForAutoconfiguration(RuntimeExtensionInterface::class)->addTag('twig.runtime');
+
+        if (false === $config['cache']) {
+            $container->removeDefinition('twig.cache_warmer');
+            $container->removeDefinition('twig.template_cache_warmer');
+        }
 
         if (\PHP_VERSION_ID < 70000) {
             $this->addClassesToCompile(array(

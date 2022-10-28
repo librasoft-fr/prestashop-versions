@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Form\Tests;
+namespace Symfony\Bridge\Twig\Tests\Extension;
 
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\Tests\AbstractLayoutTest;
 
 abstract class AbstractBootstrap3LayoutTest extends AbstractLayoutTest
 {
@@ -1559,7 +1560,7 @@ abstract class AbstractBootstrap3LayoutTest extends AbstractLayoutTest
     [@type="datetime-local"]
     [@name="name"]
     [@class="my&class form-control"]
-    [@value="2011-02-03T04:05:06Z"]
+    [@value="2011-02-03T04:05:06"]
 '
         );
     }
@@ -1580,7 +1581,7 @@ abstract class AbstractBootstrap3LayoutTest extends AbstractLayoutTest
     [@type="datetime-local"]
     [@name="name"]
     [@class="my&class form-control"]
-    [@value="2011-02-03T04:05:06Z"]
+    [@value="2011-02-03T04:05:06"]
 '
         );
     }

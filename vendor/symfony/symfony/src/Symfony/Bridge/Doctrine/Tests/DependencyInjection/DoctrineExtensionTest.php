@@ -12,8 +12,8 @@
 namespace Symfony\Bridge\Doctrine\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 /**
@@ -68,7 +68,7 @@ class DoctrineExtensionTest extends TestCase
             'SecondBundle' => 'My\SecondBundle',
         );
 
-        $reflection = new \ReflectionClass(get_class($this->extension));
+        $reflection = new \ReflectionClass(\get_class($this->extension));
         $method = $reflection->getMethod('fixManagersAutoMappings');
         $method->setAccessible(true);
 
@@ -157,7 +157,7 @@ class DoctrineExtensionTest extends TestCase
             'SecondBundle' => 'My\SecondBundle',
         );
 
-        $reflection = new \ReflectionClass(get_class($this->extension));
+        $reflection = new \ReflectionClass(\get_class($this->extension));
         $method = $reflection->getMethod('fixManagersAutoMappings');
         $method->setAccessible(true);
 

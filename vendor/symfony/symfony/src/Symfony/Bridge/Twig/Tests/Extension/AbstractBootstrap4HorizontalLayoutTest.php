@@ -9,10 +9,42 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Form\Tests;
+namespace Symfony\Bridge\Twig\Tests\Extension;
 
-abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3LayoutTest
+use Symfony\Component\Form\FormError;
+
+/**
+ * Abstract class providing test cases for the Bootstrap 4 horizontal Twig form theme.
+ *
+ * @author Hidde Wieringa <hidde@hiddewieringa.nl>
+ */
+abstract class AbstractBootstrap4HorizontalLayoutTest extends AbstractBootstrap4LayoutTest
 {
+    public function testRow()
+    {
+        $form = $this->factory->createNamed('name', 'Symfony\Component\Form\Extension\Core\Type\TextType');
+        $form->addError(new FormError('[trans]Error![/trans]'));
+        $view = $form->createView();
+        $html = $this->renderRow($view);
+
+        $this->assertMatchesXpath($html,
+            '/div
+    [
+        ./label[@for="name"]
+        [
+            ./span[@class="alert alert-danger d-block"]
+                [./span[@class="d-block"]
+                    [./span[.="[trans]Error[/trans]"]]
+                    [./span[.="[trans]Error![/trans]"]]
+                ]
+                [count(./span)=1]
+        ]
+        /following-sibling::div[./input[@id="name"]]
+    ]
+'
+        );
+    }
+
     public function testLabelOnForm()
     {
         $form = $this->factory->createNamed('name', 'Symfony\Component\Form\Extension\Core\Type\DateType');
@@ -21,8 +53,8 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
         $html = $this->renderLabel($view);
 
         $this->assertMatchesXpath($html,
-'/label
-    [@class="col-sm-2 control-label required"]
+'/legend
+    [@class="col-form-label col-sm-2 col-form-label required"]
     [.="[trans]Name[/trans]"]
 '
         );
@@ -40,7 +72,7 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
         $this->assertMatchesXpath($html,
 '/label
     [@for="name"]
-    [@class="col-sm-2 control-label required"]
+    [@class="col-form-label col-sm-2 required"]
 '
         );
     }
@@ -57,7 +89,7 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
         $this->assertMatchesXpath($html,
 '/label
     [@for="name"]
-    [@class="my&class col-sm-2 control-label required"]
+    [@class="my&class col-form-label col-sm-2 required"]
 '
         );
     }
@@ -74,7 +106,7 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
         $this->assertMatchesXpath($html,
 '/label
     [@for="name"]
-    [@class="my&class col-sm-2 control-label required"]
+    [@class="my&class col-form-label col-sm-2 required"]
     [.="[trans]Custom label[/trans]"]
 '
         );
@@ -94,7 +126,26 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
         $this->assertMatchesXpath($html,
 '/label
     [@for="name"]
-    [@class="my&class col-sm-2 control-label required"]
+    [@class="my&class col-form-label col-sm-2 required"]
+    [.="[trans]Custom label[/trans]"]
+'
+        );
+    }
+
+    public function testLegendOnExpandedType()
+    {
+        $form = $this->factory->createNamed('name', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', null, array(
+            'label' => 'Custom label',
+            'expanded' => true,
+            'choices' => array('Choice&A' => '&a', 'Choice&B' => '&b'),
+        ));
+        $view = $form->createView();
+        $this->renderWidget($view);
+        $html = $this->renderLabel($view);
+
+        $this->assertMatchesXpath($html,
+'/legend
+    [@class="col-sm-2 col-form-label required"]
     [.="[trans]Custom label[/trans]"]
 '
         );
@@ -109,7 +160,7 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
 
         $html = $this->renderStart($form->createView());
 
-        $this->assertSame('<form name="form" method="get" action="http://example.com/directory" class="form-horizontal">', $html);
+        $this->assertSame('<form name="form" method="get" action="http://example.com/directory">', $html);
     }
 
     public function testStartTagWithOverriddenVars()
@@ -124,7 +175,7 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
             'action' => 'http://foo.com/directory',
         ));
 
-        $this->assertSame('<form name="form" method="post" action="http://foo.com/directory" class="form-horizontal">', $html);
+        $this->assertSame('<form name="form" method="post" action="http://foo.com/directory">', $html);
     }
 
     public function testStartTagForMultipartForm()
@@ -138,7 +189,7 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
 
         $html = $this->renderStart($form->createView());
 
-        $this->assertSame('<form name="form" method="get" action="http://example.com/directory" class="form-horizontal" enctype="multipart/form-data">', $html);
+        $this->assertSame('<form name="form" method="get" action="http://example.com/directory" enctype="multipart/form-data">', $html);
     }
 
     public function testStartTagWithExtraAttributes()
@@ -152,7 +203,7 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
             'attr' => array('class' => 'foobar'),
         ));
 
-        $this->assertSame('<form name="form" method="get" action="http://example.com/directory" class="foobar form-horizontal">', $html);
+        $this->assertSame('<form name="form" method="get" action="http://example.com/directory" class="foobar">', $html);
     }
 
     public function testCheckboxRow()
@@ -161,6 +212,6 @@ abstract class AbstractBootstrap3HorizontalLayoutTest extends AbstractBootstrap3
         $view = $form->createView();
         $html = $this->renderRow($view, array('label' => 'foo'));
 
-        $this->assertMatchesXpath($html, '/div[@class="form-group"]/div[@class="col-sm-2" or @class="col-sm-10"]', 2);
+        $this->assertMatchesXpath($html, '/div[@class="form-group row"]/div[@class="col-sm-2" or @class="col-sm-10"]', 2);
     }
 }
