@@ -3854,23 +3854,23 @@
     },
     {
         "name": "prestashop/ps_themecusto",
-        "version": "v1.0.5",
-        "version_normalized": "1.0.5.0",
+        "version": "v1.0.6",
+        "version_normalized": "1.0.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_themecusto.git",
-            "reference": "e198abbd17b3aaa5a4c09e34bb65f8552b9ee832"
+            "reference": "b52fa3b11f03c38389eda33ba6de5123f1d4fc84"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_themecusto/zipball/e198abbd17b3aaa5a4c09e34bb65f8552b9ee832",
-            "reference": "e198abbd17b3aaa5a4c09e34bb65f8552b9ee832",
+            "url": "https://api.github.com/repos/PrestaShop/ps_themecusto/zipball/b52fa3b11f03c38389eda33ba6de5123f1d4fc84",
+            "reference": "b52fa3b11f03c38389eda33ba6de5123f1d4fc84",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.2"
         },
-        "time": "2018-06-25T13:27:25+00:00",
+        "time": "2018-07-05T13:22:53+00:00",
         "type": "prestashop-module",
         "installation-source": "dist",
         "notification-url": "https://packagist.org/downloads/",
