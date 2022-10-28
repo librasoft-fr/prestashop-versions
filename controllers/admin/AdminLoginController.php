@@ -68,7 +68,13 @@ class AdminLoginControllerCore extends AdminController
 			else
 			{	
 				$url = 'https://'.Tools::safeOutput(Tools::getServerName()).Tools::safeOutput($_SERVER['REQUEST_URI']);
-				$warningSslMessage = sprintf(Tools::displayError('SSL is activated. Please connect using the following link to <a href="%s">log into secure mode (https://)</a>', false), $url);
+				$warningSslMessage = sprintf(
+					Translate::ppTags(
+						Tools::displayError('SSL is activated. Please connect using the following link to [1]log into secure mode (https://)[/1]', false),
+						array('<a href="%s">')
+					),
+					$url
+				);
 			}
 			$this->context->smarty->assign('warningSslMessage', $warningSslMessage);
 		}
@@ -234,7 +240,7 @@ class AdminLoginControllerCore extends AdminController
 		if (!count($this->errors))
 		{	
 			$pwd = Tools::passwdGen();
-			$employee->passwd = md5(pSQL(_COOKIE_KEY_.$pwd));
+			$employee->passwd = Tools::encrypt($pwd);
 			$employee->last_passwd_gen = date('Y-m-d H:i:s', time());
 
 			$params = array(
