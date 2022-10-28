@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4171b75f826c4fbc2df0"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "51c54d611a5f9329baf5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -43475,7 +43475,7 @@ let setNotificationsNumber = function (id, number) {
         }
         __WEBPACK_IMPORTED_MODULE_0_jquery___default()('#create-combinations').click(function(event) {
           event.preventDefault();
-          generate();
+          form.send(false, false, generate);
         });
       });
 

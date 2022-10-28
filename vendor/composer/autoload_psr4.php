@@ -29,6 +29,7 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'PrestaShop\\TranslationToolsBundle\\' => array($vendorDir . '/prestashop/translationtools-bundle'),
     'PrestaShop\\PrestaShop\\' => array($baseDir . '/src'),
+    'PrestaShop\\Decimal\\' => array($vendorDir . '/prestashop/decimal/src'),
     'PrestaShopBundle\\' => array($baseDir . '/src/PrestaShopBundle'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'OnBoarding\\' => array($baseDir . '/modules/welcome/OnBoarding'),
