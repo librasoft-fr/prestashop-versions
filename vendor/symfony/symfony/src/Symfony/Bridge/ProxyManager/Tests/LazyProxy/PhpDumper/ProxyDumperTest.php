@@ -55,10 +55,18 @@ class ProxyDumperTest extends TestCase
         $code = $this->dumper->getProxyCode($definition);
 
         $this->assertStringMatchesFormat(
-            '%Aclass SymfonyBridgeProxyManagerTestsLazyProxyPhpDumperProxyDumperTest%aextends%w'
+            '%Aclass ProxyDumperTest%aextends%w'
                 .'\Symfony\Bridge\ProxyManager\Tests\LazyProxy\PhpDumper\ProxyDumperTest%a',
             $code
         );
+    }
+
+    public function testDeterministicProxyCode()
+    {
+        $definition = new Definition(__CLASS__);
+        $definition->setLazy(true);
+
+        $this->assertSame($this->dumper->getProxyCode($definition), $this->dumper->getProxyCode($definition));
     }
 
     public function testGetProxyFactoryCode()
@@ -67,14 +75,55 @@ class ProxyDumperTest extends TestCase
 
         $definition->setLazy(true);
 
+        $code = $this->dumper->getProxyFactoryCode($definition, 'foo', '$this->getFoo2Service(false)');
+
+        $this->assertStringMatchesFormat(
+            '%A$wrappedInstance = $this->getFoo2Service(false);%w$proxy->setProxyInitializer(null);%A',
+            $code
+        );
+    }
+
+    /**
+     * @dataProvider getPrivatePublicDefinitions
+     */
+    public function testCorrectAssigning(Definition $definition, $access)
+    {
+        $definition->setLazy(true);
+
+        $code = $this->dumper->getProxyFactoryCode($definition, 'foo', '$this->getFoo2Service(false)');
+
+        $this->assertStringMatchesFormat('%A$this->'.$access.'[\'foo\'] = %A', $code);
+    }
+
+    public function getPrivatePublicDefinitions()
+    {
+        return array(
+            array(
+                (new Definition(__CLASS__))
+                    ->setPublic(false),
+                'privates',
+            ),
+            array(
+                (new Definition(__CLASS__))
+                    ->setPublic(true),
+                'services',
+            ),
+        );
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testLegacyGetProxyFactoryCode()
+    {
+        $definition = new Definition(__CLASS__);
+
+        $definition->setLazy(true);
+
         $code = $this->dumper->getProxyFactoryCode($definition, 'foo');
 
         $this->assertStringMatchesFormat(
-            '%wif ($lazyLoad) {%w$container = $this;%wreturn $this->services[\'foo\'] =%s'
-            .'SymfonyBridgeProxyManagerTestsLazyProxyPhpDumperProxyDumperTest_%s(%wfunction '
-            .'(&$wrappedInstance, \ProxyManager\Proxy\LazyLoadingInterface $proxy) use ($container) {'
-            .'%w$wrappedInstance = $container->getFooService(false);%w$proxy->setProxyInitializer(null);'
-            .'%wreturn true;%w}%w);%w}%w',
+            '%A$wrappedInstance = $this->getFooService(false);%w$proxy->setProxyInitializer(null);%A',
             $code
         );
     }

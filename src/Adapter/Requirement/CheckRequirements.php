@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop
+ * 2007-2018 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2017 PrestaShop SA
+ * @copyright 2007-2018 PrestaShop SA
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
@@ -99,7 +99,11 @@ class CheckRequirements
             'phpversion' => $this->translator->trans('Update your PHP version.', array(), 'Admin.Advparameters.Notification'),
             'upload' => $this->translator->trans('Configure your server to allow file uploads.', array(), 'Admin.Advparameters.Notification'),
             'system' => $this->translator->trans('Configure your server to allow the creation of directories and files with write permissions.', array(), 'Admin.Advparameters.Notification'),
+            'curl' => $this->translator->trans('Enable the CURL extension on your server.', array(), 'Admin.Advparameters.Notification'),
             'gd' => $this->translator->trans('Enable the GD library on your server.', array(), 'Admin.Advparameters.Notification'),
+            'json' => $this->translator->trans('Enable the JSON extension on your server.', array(), 'Admin.Advparameters.Notification'),
+            'simplexml' => $this->translator->trans('Enable the XML extension on your server.', array(), 'Admin.Advparameters.Notification'),
+            'zip' => $this->translator->trans('Enable the ZIP extension on your server.', array(), 'Admin.Advparameters.Notification'),
             'mysql_support' => $this->translator->trans('Enable the MySQL support on your server.', array(), 'Admin.Advparameters.Notification'),
             'config_dir' => $this->translator->trans('Set write permissions for the "config" folder.', array(), 'Admin.Advparameters.Notification'),
             'cache_dir' => $this->translator->trans('Set write permissions for the "cache" folder.', array(), 'Admin.Advparameters.Notification'),
@@ -115,7 +119,7 @@ class CheckRequirements
             'fopen' => $this->translator->trans('Allow the PHP fopen() function on your server.', array(), 'Admin.Advparameters.Notification'),
             'gz' => $this->translator->trans('Enable GZIP compression on your server.', array(), 'Admin.Advparameters.Notification'),
             'files' => $this->translator->trans('Some PrestaShop files are missing from your server.', array(), 'Admin.Advparameters.Notification'),
-            'new_phpversion' => $this->translator->trans('You are using PHP %s version. Soon, the latest PHP version supported by PrestaShop will be PHP 5.4. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.4 now!', array('%s' => phpversion()), 'Admin.Advparameters.Notification'),
+            'new_phpversion' => $this->translator->trans('You are using PHP %s version. Soon, the latest PHP version supported by PrestaShop will be PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!', array('%s' => phpversion()), 'Admin.Advparameters.Notification'),
             'apache_mod_rewrite' => $this->translator->trans('Enable the Apache mod_rewrite module', array(), 'Admin.Advparameters.Notification')
         );
     }

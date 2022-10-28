@@ -30,10 +30,7 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
      * Configures the _controller default parameter and eventually the HTTP method
      * requirement of a given Route instance.
      *
-     * @param Route             $route  A route instance
-     * @param \ReflectionClass  $class  A ReflectionClass instance
-     * @param \ReflectionMethod $method A ReflectionClass method
-     * @param mixed             $annot  The annotation class instance
+     * @param mixed $annot The annotation class instance
      *
      * @throws \LogicException When the service option is specified on a method
      */
@@ -43,6 +40,8 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
         $classAnnot = $this->reader->getClassAnnotation($class, $this->routeAnnotationClass);
         if ($classAnnot instanceof FrameworkExtraBundleRoute && $service = $classAnnot->getService()) {
             $route->setDefault('_controller', $service.':'.$method->getName());
+        } elseif ('__invoke' === $method->getName()) {
+            $route->setDefault('_controller', $class->getName());
         } else {
             $route->setDefault('_controller', $class->getName().'::'.$method->getName());
         }
@@ -50,7 +49,7 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
         // requirements (@Method)
         foreach ($this->reader->getMethodAnnotations($method) as $configuration) {
             if ($configuration instanceof Method) {
-                $route->setMethods(implode('|', $configuration->getMethods()));
+                $route->setMethods($configuration->getMethods());
             } elseif ($configuration instanceof FrameworkExtraBundleRoute && $configuration->getService()) {
                 throw new \LogicException('The service option can only be specified at class level.');
             }
@@ -73,23 +72,16 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
     /**
      * Makes the default route name more sane by removing common keywords.
      *
-     * @param \ReflectionClass  $class  A ReflectionClass instance
-     * @param \ReflectionMethod $method A ReflectionMethod instance
-     *
      * @return string The default route name
      */
     protected function getDefaultRouteName(\ReflectionClass $class, \ReflectionMethod $method)
     {
         $routeName = parent::getDefaultRouteName($class, $method);
 
-        return preg_replace(array(
-            '/(bundle|controller)_/',
-            '/action(_\d+)?$/',
-            '/__/',
-        ), array(
-            '_',
-            '\\1',
-            '_',
-        ), $routeName);
+        return preg_replace(
+            ['/(bundle|controller)_/', '/action(_\d+)?$/', '/__/'],
+            ['_', '\\1', '_'],
+            $routeName
+        );
     }
 }

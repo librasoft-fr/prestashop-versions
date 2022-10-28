@@ -20,14 +20,14 @@ use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
 
 /**
- * Csa Guzzle Profiler integration
+ * Csa Guzzle Profiler integration.
  *
  * @author Charles Sarrazin <charles@sarraz.in>
  */
 class DebugSubscriber implements SubscriberInterface, \IteratorAggregate
 {
     /**
-     * @var array An array of guzzle transactions (requests and responses).
+     * @var array an array of guzzle transactions (requests and responses)
      */
     private $transactions = [];
 
@@ -35,7 +35,7 @@ class DebugSubscriber implements SubscriberInterface, \IteratorAggregate
     {
         return [
             'complete' => ['onComplete', RequestEvents::LATE],
-            'error'    => ['onError', RequestEvents::EARLY],
+            'error' => ['onError', RequestEvents::EARLY],
         ];
     }
 
@@ -61,12 +61,12 @@ class DebugSubscriber implements SubscriberInterface, \IteratorAggregate
     }
 
     /**
-     * Add a request to the history
+     * Add a request to the history.
      *
-     * @param RequestInterface  $request   Request to add.
-     * @param array             $info      Transfer info.
-     * @param ResponseInterface $response  Response of the request.
-     * @param RequestException  $exception The exception thrown during the request, if any.
+     * @param RequestInterface  $request   request to add
+     * @param array             $info      transfer info
+     * @param ResponseInterface $response  response of the request
+     * @param RequestException  $exception the exception thrown during the request, if any
      */
     private function add(
         RequestInterface $request,
@@ -74,7 +74,7 @@ class DebugSubscriber implements SubscriberInterface, \IteratorAggregate
         ResponseInterface $response = null,
         RequestException $exception = null
     ) {
-        if (isset($this->transactions[$hash = spl_object_hash($request) . spl_object_hash($response ?: $exception)])) {
+        if (isset($this->transactions[$hash = spl_object_hash($request).spl_object_hash($response ?: $exception)])) {
             return;
         }
 

@@ -11,10 +11,12 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Translation;
 
+use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\Translation\Translator as BaseTranslator;
-use Symfony\Component\Translation\MessageSelector;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Translation\Exception\InvalidArgumentException;
+use Symfony\Component\Translation\Formatter\MessageFormatterInterface;
 
 /**
  * Translator.
@@ -46,34 +48,49 @@ class Translator extends BaseTranslator implements WarmableInterface
     private $resources = array();
 
     /**
+     * Constructor.
+     *
      * Available options:
      *
      *   * cache_dir: The cache directory (or null to disable caching)
      *   * debug:     Whether to enable debugging or not (false by default)
      *   * resource_files: List of translation resources available grouped by locale.
      *
-     * @param ContainerInterface $container A ContainerInterface instance
-     * @param MessageSelector    $selector  The message selector for pluralization
-     * @param array              $loaderIds An array of loader Ids
-     * @param array              $options   An array of options
+     * @param ContainerInterface        $container     A ContainerInterface instance
+     * @param MessageFormatterInterface $formatter     The message formatter
+     * @param string                    $defaultLocale
+     * @param array                     $loaderIds     An array of loader Ids
+     * @param array                     $options       An array of options
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function __construct(ContainerInterface $container, MessageSelector $selector, $loaderIds = array(), array $options = array())
+    public function __construct(ContainerInterface $container, $formatter, $defaultLocale = null, array $loaderIds = array(), array $options = array())
     {
+        // BC 3.x, to be removed in 4.0 along with the $defaultLocale default value
+        if (is_array($defaultLocale) || 3 > func_num_args()) {
+            if (!$container instanceof SymfonyContainerInterface) {
+                throw new \InvalidArgumentException('Missing third $defaultLocale argument.');
+            }
+
+            $options = $loaderIds;
+            $loaderIds = $defaultLocale;
+            $defaultLocale = $container->getParameter('kernel.default_locale');
+            @trigger_error(sprintf('Method %s() takes the default locale as 3rd argument since Symfony 3.3. Not passing it is deprecated and will trigger an error in 4.0.', __METHOD__), E_USER_DEPRECATED);
+        }
+
         $this->container = $container;
         $this->loaderIds = $loaderIds;
 
         // check option names
         if ($diff = array_diff(array_keys($options), array_keys($this->options))) {
-            throw new \InvalidArgumentException(sprintf('The Translator does not support the following options: \'%s\'.', implode('\', \'', $diff)));
+            throw new InvalidArgumentException(sprintf('The Translator does not support the following options: \'%s\'.', implode('\', \'', $diff)));
         }
 
         $this->options = array_merge($this->options, $options);
         $this->resourceLocales = array_keys($this->options['resource_files']);
         $this->addResourceFiles($this->options['resource_files']);
 
-        parent::__construct($container->getParameter('kernel.default_locale'), $selector, $this->options['cache_dir'], $this->options['debug']);
+        parent::__construct($defaultLocale, $formatter, $this->options['cache_dir'], $this->options['debug']);
     }
 
     /**

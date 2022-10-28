@@ -24,35 +24,35 @@ class ParamConverter extends ConfigurationAnnotation
      *
      * @var string
      */
-    protected $name;
+    private $name;
 
     /**
      * The parameter class.
      *
      * @var string
      */
-    protected $class;
+    private $class;
 
     /**
      * An array of options.
      *
      * @var array
      */
-    protected $options = array();
+    private $options = [];
 
     /**
      * Whether or not the parameter is optional.
      *
      * @var bool
      */
-    protected $optional = false;
+    private $isOptional = false;
 
     /**
      * Use explicitly named converter instead of iterating by priorities.
      *
      * @var string
      */
-    protected $converter;
+    private $converter;
 
     /**
      * Returns the parameter name.
@@ -127,11 +127,11 @@ class ParamConverter extends ConfigurationAnnotation
     /**
      * Sets whether or not the parameter is optional.
      *
-     * @param bool $optional Wether the parameter is optional
+     * @param bool $optional Whether the parameter is optional
      */
     public function setIsOptional($optional)
     {
-        $this->optional = (bool) $optional;
+        $this->isOptional = (bool) $optional;
     }
 
     /**
@@ -141,7 +141,7 @@ class ParamConverter extends ConfigurationAnnotation
      */
     public function isOptional()
     {
-        return $this->optional;
+        return $this->isOptional;
     }
 
     /**

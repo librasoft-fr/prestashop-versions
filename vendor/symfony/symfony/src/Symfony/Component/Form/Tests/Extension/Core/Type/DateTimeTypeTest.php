@@ -24,16 +24,6 @@ class DateTimeTypeTest extends BaseTypeTest
         parent::setUp();
     }
 
-    /**
-     * @group legacy
-     */
-    public function testLegacyName()
-    {
-        $form = $this->factory->create('datetime');
-
-        $this->assertSame('datetime', $form->getConfig()->getType()->getName());
-    }
-
     public function testSubmitDateTime()
     {
         $form = $this->factory->create(static::TESTED_TYPE, null, array(
@@ -59,7 +49,7 @@ class DateTimeTypeTest extends BaseTypeTest
 
         $dateTime = new \DateTime('2010-06-02 03:04:00 UTC');
 
-        $this->assertDateTimeEquals($dateTime, $form->getData());
+        $this->assertEquals($dateTime, $form->getData());
     }
 
     public function testSubmitString()
@@ -143,7 +133,7 @@ class DateTimeTypeTest extends BaseTypeTest
 
         $form->submit($input);
 
-        $this->assertDateTimeEquals(new \DateTime('2010-06-02 03:00:00 UTC'), $form->getData());
+        $this->assertEquals(new \DateTime('2010-06-02 03:00:00 UTC'), $form->getData());
     }
 
     public function testSubmitWithSeconds()
@@ -175,7 +165,7 @@ class DateTimeTypeTest extends BaseTypeTest
 
         $form->submit($input);
 
-        $this->assertDateTimeEquals(new \DateTime('2010-06-02 03:04:05 UTC'), $form->getData());
+        $this->assertEquals(new \DateTime('2010-06-02 03:04:05 UTC'), $form->getData());
     }
 
     public function testSubmitDifferentTimezones()
@@ -225,7 +215,7 @@ class DateTimeTypeTest extends BaseTypeTest
 
         $outputTime->setTimezone(new \DateTimeZone('America/New_York'));
 
-        $this->assertDateTimeEquals($outputTime, $form->getData());
+        $this->assertEquals($outputTime, $form->getData());
         $this->assertEquals('2010-06-02T03:04:00-10:00', $form->getViewData());
     }
 
@@ -276,7 +266,7 @@ class DateTimeTypeTest extends BaseTypeTest
             'time' => '03:04',
         ));
 
-        $this->assertDateTimeEquals($dateTime, $form->getData());
+        $this->assertEquals($dateTime, $form->getData());
     }
 
     public function testInitializeWithDateTime()
@@ -293,7 +283,7 @@ class DateTimeTypeTest extends BaseTypeTest
         ))
             ->createView();
 
-        $this->assertEquals('datetime', $view->vars['type']);
+        $this->assertEquals('datetime-local', $view->vars['type']);
     }
 
     public function testPassDefaultPlaceholderToViewIfNotRequired()
@@ -342,31 +332,6 @@ class DateTimeTypeTest extends BaseTypeTest
         $this->assertSame('Empty', $view['time']['hour']->vars['placeholder']);
         $this->assertSame('Empty', $view['time']['minute']->vars['placeholder']);
         $this->assertSame('Empty', $view['time']['second']->vars['placeholder']);
-    }
-
-    /**
-     * @group legacy
-     */
-    public function testPassEmptyValueBC()
-    {
-        $view = $this->factory->create(static::TESTED_TYPE, null, array(
-            'empty_value' => 'Empty',
-            'with_seconds' => true,
-        ))
-            ->createView();
-
-        $this->assertSame('Empty', $view['date']['year']->vars['placeholder']);
-        $this->assertSame('Empty', $view['date']['month']->vars['placeholder']);
-        $this->assertSame('Empty', $view['date']['day']->vars['placeholder']);
-        $this->assertSame('Empty', $view['time']['hour']->vars['placeholder']);
-        $this->assertSame('Empty', $view['time']['minute']->vars['placeholder']);
-        $this->assertSame('Empty', $view['time']['second']->vars['placeholder']);
-        $this->assertSame('Empty', $view['date']['year']->vars['empty_value']);
-        $this->assertSame('Empty', $view['date']['month']->vars['empty_value']);
-        $this->assertSame('Empty', $view['date']['day']->vars['empty_value']);
-        $this->assertSame('Empty', $view['time']['hour']->vars['empty_value']);
-        $this->assertSame('Empty', $view['time']['minute']->vars['empty_value']);
-        $this->assertSame('Empty', $view['time']['second']->vars['empty_value']);
     }
 
     public function testPassPlaceholderAsArray()
@@ -443,7 +408,7 @@ class DateTimeTypeTest extends BaseTypeTest
         ))
             ->createView();
 
-        $this->assertSame('datetime', $view->vars['type']);
+        $this->assertSame('datetime-local', $view->vars['type']);
     }
 
     public function testDontPassHtml5TypeIfHtml5NotAllowed()
@@ -454,7 +419,7 @@ class DateTimeTypeTest extends BaseTypeTest
         ))
             ->createView();
 
-        $this->assertFalse(isset($view->vars['type']));
+        $this->assertArrayNotHasKey('type', $view->vars);
     }
 
     public function testDontPassHtml5TypeIfNotHtml5Format()
@@ -465,7 +430,7 @@ class DateTimeTypeTest extends BaseTypeTest
         ))
             ->createView();
 
-        $this->assertFalse(isset($view->vars['type']));
+        $this->assertArrayNotHasKey('type', $view->vars);
     }
 
     public function testDontPassHtml5TypeIfNotSingleText()
@@ -475,7 +440,7 @@ class DateTimeTypeTest extends BaseTypeTest
         ))
             ->createView();
 
-        $this->assertFalse(isset($view->vars['type']));
+        $this->assertArrayNotHasKey('type', $view->vars);
     }
 
     public function testDateTypeChoiceErrorsBubbleUp()

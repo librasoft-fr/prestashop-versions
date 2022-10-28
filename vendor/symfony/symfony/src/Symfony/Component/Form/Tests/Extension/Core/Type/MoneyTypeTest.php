@@ -26,16 +26,6 @@ class MoneyTypeTest extends BaseTypeTest
         parent::setUp();
     }
 
-    /**
-     * @group legacy
-     */
-    public function testLegacyName()
-    {
-        $form = $this->factory->create('money');
-
-        $this->assertSame('money', $form->getConfig()->getType()->getName());
-    }
-
     public function testPassMoneyPatternToView()
     {
         \Locale::setDefault('de_DE');
@@ -53,7 +43,7 @@ class MoneyTypeTest extends BaseTypeTest
         $view = $this->factory->create(static::TESTED_TYPE, null, array('currency' => 'JPY'))
             ->createView();
 
-        $this->assertTrue((bool) strstr($view->vars['money_pattern'], '¥'));
+        $this->assertSame('¥ {{ widget }}', $view->vars['money_pattern']);
     }
 
     // https://github.com/symfony/symfony/issues/5458
@@ -71,5 +61,13 @@ class MoneyTypeTest extends BaseTypeTest
     public function testSubmitNull($expected = null, $norm = null, $view = null)
     {
         parent::testSubmitNull($expected, $norm, '');
+    }
+
+    public function testMoneyPatternWithoutCurrency()
+    {
+        $view = $this->factory->create(static::TESTED_TYPE, null, array('currency' => false))
+            ->createView();
+
+        $this->assertSame('{{ widget }}', $view->vars['money_pattern']);
     }
 }

@@ -232,9 +232,9 @@ class AdminLinkWidgetController extends ModuleAdminController
         $this->toolbar_title[] = $this->trans('Link Widget', array(), 'Modules.Linklist.Admin');
     }
 
-    public function setMedia()
+    public function setMedia($isNewTheme = false)
     {
-        parent::setMedia();
+        parent::setMedia($isNewTheme);
 
         $this->addJqueryPlugin('tablednd');
         $this->addJS(_PS_JS_DIR_.'admin/dnd.js');

@@ -11,9 +11,6 @@
 
 namespace Symfony\Component\Finder\Tests;
 
-use Symfony\Component\Finder\Adapter\AdapterInterface;
-use Symfony\Component\Finder\Adapter\GnuFindAdapter;
-use Symfony\Component\Finder\Adapter\PhpAdapter;
 use Symfony\Component\Finder\Finder;
 
 class FinderTest extends Iterator\RealIteratorTestCase
@@ -47,6 +44,45 @@ class FinderTest extends Iterator\RealIteratorTestCase
         $finder->directories();
         $finder->files();
         $this->assertIterator($this->toAbsolute(array('foo/bar.tmp', 'test.php', 'test.py', 'foo bar')), $finder->in(self::$tmpDir)->getIterator());
+    }
+
+    public function testRemoveTrailingSlash()
+    {
+        $finder = $this->buildFinder();
+
+        $expected = $this->toAbsolute(array('foo/bar.tmp', 'test.php', 'test.py', 'foo bar'));
+        $in = self::$tmpDir.'//';
+
+        $this->assertIterator($expected, $finder->in($in)->files()->getIterator());
+    }
+
+    public function testSymlinksNotResolved()
+    {
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $this->markTestSkipped('symlinks are not supported on Windows');
+        }
+
+        $finder = $this->buildFinder();
+
+        symlink($this->toAbsolute('foo'), $this->toAbsolute('baz'));
+        $expected = $this->toAbsolute(array('baz/bar.tmp'));
+        $in = self::$tmpDir.'/baz/';
+        try {
+            $this->assertIterator($expected, $finder->in($in)->files()->getIterator());
+            unlink($this->toAbsolute('baz'));
+        } catch (\Exception $e) {
+            unlink($this->toAbsolute('baz'));
+            throw $e;
+        }
+    }
+
+    public function testBackPathNotNormalized()
+    {
+        $finder = $this->buildFinder();
+
+        $expected = $this->toAbsolute(array('foo/../foo/bar.tmp'));
+        $in = self::$tmpDir.'/foo/../foo/';
+        $this->assertIterator($expected, $finder->in($in)->files()->getIterator());
     }
 
     public function testDepth()
@@ -245,10 +281,7 @@ class FinderTest extends Iterator\RealIteratorTestCase
 
         $expected = array(
             self::$tmpDir.DIRECTORY_SEPARATOR.'test.php',
-            __DIR__.DIRECTORY_SEPARATOR.'BsdFinderTest.php',
             __DIR__.DIRECTORY_SEPARATOR.'FinderTest.php',
-            __DIR__.DIRECTORY_SEPARATOR.'GnuFinderTest.php',
-            __DIR__.DIRECTORY_SEPARATOR.'PhpFinderTest.php',
             __DIR__.DIRECTORY_SEPARATOR.'GlobTest.php',
         );
 
@@ -267,7 +300,7 @@ class FinderTest extends Iterator\RealIteratorTestCase
     public function testInWithGlob()
     {
         $finder = $this->buildFinder();
-        $finder->in(array(__DIR__.'/Fixtures/*/B/C', __DIR__.'/Fixtures/*/*/B/C'))->getIterator();
+        $finder->in(array(__DIR__.'/Fixtures/*/B/C/', __DIR__.'/Fixtures/*/*/B/C/'))->getIterator();
 
         $this->assertIterator($this->toAbsoluteFixtures(array('A/B/C/abc.dat', 'copy/A/B/C/abc.dat.copy')), $finder);
     }
@@ -430,6 +463,20 @@ class FinderTest extends Iterator\RealIteratorTestCase
         count($finder);
     }
 
+    public function testHasResults()
+    {
+        $finder = $this->buildFinder();
+        $finder->in(__DIR__);
+        $this->assertTrue($finder->hasResults());
+    }
+
+    public function testNoResults()
+    {
+        $finder = $this->buildFinder();
+        $finder->in(__DIR__)->name('DoesNotExist');
+        $this->assertFalse($finder->hasResults());
+    }
+
     /**
      * @dataProvider getContainsTestData
      */
@@ -535,47 +582,6 @@ class FinderTest extends Iterator\RealIteratorTestCase
         $this->assertIterator($this->toAbsoluteFixtures($expected), $finder);
     }
 
-    /**
-     * @group legacy
-     */
-    public function testAdaptersOrdering()
-    {
-        $finder = Finder::create()
-            ->removeAdapters()
-            ->addAdapter(new FakeAdapter\NamedAdapter('a'), 0)
-            ->addAdapter(new FakeAdapter\NamedAdapter('b'), -50)
-            ->addAdapter(new FakeAdapter\NamedAdapter('c'), 50)
-            ->addAdapter(new FakeAdapter\NamedAdapter('d'), -25)
-            ->addAdapter(new FakeAdapter\NamedAdapter('e'), 25);
-
-        $this->assertEquals(
-            array('c', 'e', 'a', 'd', 'b'),
-            array_map(function (AdapterInterface $adapter) {
-                return $adapter->getName();
-            }, $finder->getAdapters())
-        );
-    }
-
-    /**
-     * @group legacy
-     */
-    public function testAdaptersChaining()
-    {
-        $iterator = new \ArrayIterator(array());
-        $filenames = $this->toAbsolute(array('foo', 'foo/bar.tmp', 'test.php', 'test.py', 'toto'));
-        foreach ($filenames as $file) {
-            $iterator->append(new \Symfony\Component\Finder\SplFileInfo($file, null, null));
-        }
-
-        $finder = Finder::create()
-            ->removeAdapters()
-            ->addAdapter(new FakeAdapter\UnsupportedAdapter(), 3)
-            ->addAdapter(new FakeAdapter\FailingAdapter(), 2)
-            ->addAdapter(new FakeAdapter\DummyAdapter($iterator), 1);
-
-        $this->assertIterator($filenames, $finder->in(sys_get_temp_dir())->getIterator());
-    }
-
     public function getContainsTestData()
     {
         return array(
@@ -611,24 +617,6 @@ class FinderTest extends Iterator\RealIteratorTestCase
             ->notPath($noMatchPatterns);
 
         $this->assertIterator($this->toAbsoluteFixtures($expected), $finder);
-    }
-
-    /**
-     * @group legacy
-     */
-    public function testAdapterSelection()
-    {
-        // test that by default, PhpAdapter is selected
-        $adapters = Finder::create()->getAdapters();
-        $this->assertTrue($adapters[0] instanceof PhpAdapter);
-
-        // test another adapter selection
-        $adapters = Finder::create()->setAdapter('gnu_find')->getAdapters();
-        $this->assertTrue($adapters[0] instanceof GnuFindAdapter);
-
-        // test that useBestAdapter method removes selection
-        $adapters = Finder::create()->useBestAdapter()->getAdapters();
-        $this->assertFalse($adapters[0] instanceof PhpAdapter);
     }
 
     public function getTestPathData()

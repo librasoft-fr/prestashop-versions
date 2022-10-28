@@ -20,6 +20,7 @@ doctrine:
                  now: DoctrineExtensions\Query\Mysql\Now
                  month: DoctrineExtensions\Query\Mysql\Month
                  monthname: DoctrineExtensions\Query\Mysql\MonthName
+                 period_diff: DoctrineExtensions\Query\Mysql\PeriodDiff
                  second: DoctrineExtensions\Query\Mysql\Second
                  sectotime: DoctrineExtensions\Query\Mysql\SecToTime
                  strtodate: DoctrineExtensions\Query\Mysql\StrToDate
@@ -31,6 +32,7 @@ doctrine:
                  week: DoctrineExtensions\Query\Mysql\Week
                  weekday: DoctrineExtensions\Query\Mysql\WeekDay
                  year: DoctrineExtensions\Query\Mysql\Year
+                 yearmonth: DoctrineExtensions\Query\Mysql\YearMonth
                  yearweek: DoctrineExtensions\Query\Mysql\YearWeek
                  unix_timestamp: DoctrineExtensions\Query\Mysql\UnixTimestamp
                  utc_timestamp: DoctrineExtensions\Query\Mysql\UtcTimestamp
@@ -70,6 +72,7 @@ doctrine:
                  any_value: DoctrineExtensions\Query\Mysql\AnyValue
                  ascii: DoctrineExtensions\Query\Mysql\Ascii
                  binary: DoctrineExtensions\Query\Mysql\Binary
+                 cast: DoctrineExtensions\Query\Mysql\Cast
                  char_length: DoctrineExtensions\Query\Mysql\CharLength
                  collate: DoctrineExtensions\Query\Mysql\Collate
                  concat_ws: DoctrineExtensions\Query\Mysql\ConcatWs
@@ -80,8 +83,11 @@ doctrine:
                  find_in_set: DoctrineExtensions\Query\Mysql\FindInSet
                  greatest: DoctrineExtensions\Query\Mysql\Greatest
                  group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
+                 hex: DoctrineExtensions\Query\Mysql\Hex
                  ifelse: DoctrineExtensions\Query\Mysql\IfElse
                  ifnull: DoctrineExtensions\Query\Mysql\IfNull
+                 inet_aton: DoctrineExtensions\Query\Mysql\InetAton
+                 instr: DoctrineExtensions\Query\Mysql\Instr
                  least: DoctrineExtensions\Query\Mysql\Least
                  lpad: DoctrineExtensions\Query\Mysql\Lpad
                  match: DoctrineExtensions\Query\Mysql\MatchAgainst
@@ -96,6 +102,5 @@ doctrine:
                  soundex: DoctrineExtensions\Query\Mysql\Soundex
                  str_to_date: DoctrineExtensions\Query\Mysql\StrToDate
                  substring_index: DoctrineExtensions\Query\Mysql\SubstringIndex
-                 uuid_short: DoctrineExtensions\Query\Mysql\UuidShort
-                 hex: DoctrineExtensions\Query\Mysql\Hex
                  unhex: DoctrineExtensions\Query\Mysql\Unhex
+                 uuid_short: DoctrineExtensions\Query\Mysql\UuidShort

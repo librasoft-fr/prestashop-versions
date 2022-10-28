@@ -27,33 +27,35 @@ class FileType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        // Ensure that submitted data is always an uploaded file or an array of some
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options) {
             $form = $event->getForm();
             $requestHandler = $form->getConfig()->getRequestHandler();
-            $data = null;
 
             if ($options['multiple']) {
                 $data = array();
+                $files = $event->getData();
 
-                foreach ($event->getData() as $file) {
+                if (!is_array($files)) {
+                    $files = array();
+                }
+
+                foreach ($files as $file) {
                     if ($requestHandler->isFileUpload($file)) {
                         $data[] = $file;
                     }
                 }
 
-                // submitted data for an input file (not required) without choosing any file
-                if (array(null) === $data || array() === $data) {
+                // Since the array is never considered empty in the view data format
+                // on submission, we need to evaluate the configured empty data here
+                if (array() === $data) {
                     $emptyData = $form->getConfig()->getEmptyData();
-
-                    $data = is_callable($emptyData) ? call_user_func($emptyData, $form, $data) : $emptyData;
+                    $data = $emptyData instanceof \Closure ? $emptyData($form, $data) : $emptyData;
                 }
 
                 $event->setData($data);
             } elseif (!$requestHandler->isFileUpload($event->getData())) {
-                $emptyData = $form->getConfig()->getEmptyData();
-
-                $data = is_callable($emptyData) ? call_user_func($emptyData, $form, $data) : $emptyData;
-                $event->setData($data);
+                $event->setData(null);
             }
         });
     }
@@ -87,9 +89,12 @@ class FileType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $dataClass = function (Options $options) {
-            return $options['multiple'] ? null : 'Symfony\Component\HttpFoundation\File\File';
-        };
+        $dataClass = null;
+        if (class_exists('Symfony\Component\HttpFoundation\File\File')) {
+            $dataClass = function (Options $options) {
+                return $options['multiple'] ? null : 'Symfony\Component\HttpFoundation\File\File';
+            };
+        }
 
         $emptyData = function (Options $options) {
             return $options['multiple'] ? array() : null;
@@ -101,14 +106,6 @@ class FileType extends AbstractType
             'empty_data' => $emptyData,
             'multiple' => false,
         ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->getBlockPrefix();
     }
 
     /**

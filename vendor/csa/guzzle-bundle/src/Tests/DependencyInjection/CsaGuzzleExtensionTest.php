@@ -22,7 +22,7 @@ class CsaGuzzleExtensionTest extends \PHPUnit_Framework_TestCase
 {
     public function testClientCreated()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 profiler:
     enabled: false
 clients:
@@ -51,7 +51,7 @@ YAML;
 
     public function testClientAliasing()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 profiler:
     enabled: false
 clients:
@@ -82,7 +82,7 @@ YAML;
 
     /**
      * @dataProvider clientConfigInstance
-     * @covers CsaGuzzleExtension::buildGuzzleConfig
+     * @covers \CsaGuzzleExtension::buildGuzzleConfig
      */
     public function testClientConfigInstanceOverride($instanceKey, $serviceId)
     {
@@ -101,7 +101,7 @@ YAML;
         );
         $this->assertSame(
             $serviceId,
-            (string)$config[$instanceKey]
+            (string) $config[$instanceKey]
         );
     }
 
@@ -111,7 +111,7 @@ YAML;
      */
     public function testInvalidClientConfig()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 clients:
     foo:
         config: ~       # legacy mode
@@ -124,22 +124,22 @@ YAML;
 
     public function testClientWithDescription()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 clients:
     foo:
         config: { base_url: example.com }
         description: %s
 YAML;
 
-        $container = $this->createContainer(sprintf($yaml, realpath(__DIR__ . '/../Fixtures/github.description.json')));
+        $container = $this->createContainer(sprintf($yaml, realpath(__DIR__.'/../Fixtures/github.description.json')));
         $this->assertTrue($container->hasDefinition('csa_guzzle.service.foo'));
-        $this->assertSame('csa_guzzle.client.foo', (string)$container->getDefinition('csa_guzzle.service.foo')->getArgument(0));
-        $this->assertSame('service("csa_guzzle.description_factory").getDescription("foo")', (string)$container->getDefinition('csa_guzzle.service.foo')->getArgument(1));
+        $this->assertSame('csa_guzzle.client.foo', (string) $container->getDefinition('csa_guzzle.service.foo')->getArgument(0));
+        $this->assertSame('service("csa_guzzle.description_factory").getDescription("foo")', (string) $container->getDefinition('csa_guzzle.service.foo')->getArgument(1));
     }
 
     public function testSubscribersAddedToClient()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 logger: true
 profiler: true
 clients:
@@ -163,11 +163,9 @@ YAML;
         );
     }
 
-
-
     public function testCustomSubscribersAddedToClient()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 logger: true
 profiler: true
 clients:
@@ -198,7 +196,7 @@ YAML;
 
     public function testLoggerConfiguration()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 logger:
     enabled: true
     service: monolog.logger
@@ -210,10 +208,10 @@ YAML;
             $container = $this->createContainer(sprintf($yaml, $alias));
 
             $this->assertSame($format, $container->getDefinition('csa_guzzle.subscriber.logger')->getArgument(1));
-            $this->assertSame('monolog.logger', (string)$container->getDefinition('csa_guzzle.subscriber.logger')->getArgument(0));
+            $this->assertSame('monolog.logger', (string) $container->getDefinition('csa_guzzle.subscriber.logger')->getArgument(0));
         }
 
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 logger: false
 YAML;
 
@@ -223,14 +221,14 @@ YAML;
 
     public function testCacheConfiguration()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 cache: false
 YAML;
 
         $container = $this->createContainer($yaml);
         $this->assertFalse($container->hasDefinition('csa_guzzle.subscriber.cache'));
 
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 cache:
     enabled: true
     adapter: my.adapter.id
@@ -239,12 +237,12 @@ YAML;
         $container = $this->createContainer($yaml);
         $container->setDefinition('my.adapter.id', new Definition());
         $alias = $container->getAlias('csa_guzzle.default_cache_adapter');
-        $this->assertSame('my.adapter.id', (string)$alias);
+        $this->assertSame('my.adapter.id', (string) $alias);
     }
 
     public function testLegacyCacheConfiguration()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 cache:
     enabled: true
     service: my.service.id
@@ -253,7 +251,7 @@ YAML;
         $container = $this->createContainer($yaml);
         $container->setDefinition('my.service.id', new Definition(null, [null, null]));
         $alias = $container->getAlias('csa_guzzle.default_cache_adapter');
-        $this->assertSame('my.service.id', (string)$container->getDefinition((string) $alias)->getArgument(0));
+        $this->assertSame('my.service.id', (string) $container->getDefinition((string) $alias)->getArgument(0));
     }
 
     public function testLegacyFactoryConfiguration()
@@ -273,7 +271,7 @@ YAML;
      */
     public function testLegacyWrongCacheAdapterTypeThrowsException()
     {
-        $yaml = <<<YAML
+        $yaml = <<<'YAML'
 cache:
     enabled: true
     adapter:
@@ -296,11 +294,11 @@ YAML;
 
     public function clientConfigInstance()
     {
-        return array(
-            array('message_factory', 'my.message.factory.id'),
-            array('fsm', 'my.fsm.id'),
-            array('adapter', 'my.adapter.id'),
-            array('handler', 'my.handler.id'),
-        );
+        return [
+            ['message_factory', 'my.message.factory.id'],
+            ['fsm', 'my.fsm.id'],
+            ['adapter', 'my.adapter.id'],
+            ['handler', 'my.handler.id'],
+        ];
     }
 }

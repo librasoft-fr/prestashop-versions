@@ -25,6 +25,7 @@ abstract class AbstractRendererEngine implements FormRendererEngineInterface
 
     protected $defaultThemes;
     protected $themes = array();
+    protected $useDefaultThemes = array();
     protected $resources = array();
 
     private $resourceHierarchyLevels = array();
@@ -43,12 +44,15 @@ abstract class AbstractRendererEngine implements FormRendererEngineInterface
     /**
      * {@inheritdoc}
      */
-    public function setTheme(FormView $view, $themes)
+    public function setTheme(FormView $view, $themes /*, $useDefaultThemes = true */)
     {
         $cacheKey = $view->vars[self::CACHE_KEY_VAR];
 
         // Do not cast, as casting turns objects into arrays of properties
         $this->themes[$cacheKey] = is_array($themes) ? $themes : array($themes);
+
+        $args = func_get_args();
+        $this->useDefaultThemes[$cacheKey] = isset($args[2]) ? (bool) $args[2] : true;
 
         // Unset instead of resetting to an empty array, in order to allow
         // implementations (like TwigRendererEngine) to check whether $cacheKey

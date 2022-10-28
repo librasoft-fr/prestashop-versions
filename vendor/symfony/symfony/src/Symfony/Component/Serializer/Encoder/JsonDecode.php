@@ -11,7 +11,7 @@
 
 namespace Symfony\Component\Serializer\Encoder;
 
-use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 /**
  * Decodes JSON data.
@@ -24,7 +24,6 @@ class JsonDecode implements DecoderInterface
 
     private $associative;
     private $recursionDepth;
-    private $lastError = JSON_ERROR_NONE;
 
     /**
      * Constructs a new JsonDecode instance.
@@ -36,22 +35,6 @@ class JsonDecode implements DecoderInterface
     {
         $this->associative = $associative;
         $this->recursionDepth = (int) $depth;
-    }
-
-    /**
-     * Returns the last decoding error (if any).
-     *
-     * @return int
-     *
-     * @deprecated since version 2.5, to be removed in 3.0.
-     *             The {@self decode()} method throws an exception if error found.
-     * @see http://php.net/manual/en/function.json-last-error.php json_last_error
-     */
-    public function getLastError()
-    {
-        @trigger_error('The '.__METHOD__.' method is deprecated since version 2.5 and will be removed in 3.0. Catch the exception raised by the decode() method instead to get the last JSON decoding error.', E_USER_DEPRECATED);
-
-        return $this->lastError;
     }
 
     /**
@@ -77,7 +60,7 @@ class JsonDecode implements DecoderInterface
      *
      * @return mixed
      *
-     * @throws UnexpectedValueException
+     * @throws NotEncodableValueException
      *
      * @see http://php.net/json_decode json_decode
      */
@@ -89,14 +72,10 @@ class JsonDecode implements DecoderInterface
         $recursionDepth = $context['json_decode_recursion_depth'];
         $options = $context['json_decode_options'];
 
-        if (\PHP_VERSION_ID >= 50400) {
-            $decodedData = json_decode($data, $associative, $recursionDepth, $options);
-        } else {
-            $decodedData = json_decode($data, $associative, $recursionDepth);
-        }
+        $decodedData = json_decode($data, $associative, $recursionDepth, $options);
 
-        if (JSON_ERROR_NONE !== $this->lastError = json_last_error()) {
-            throw new UnexpectedValueException(json_last_error_msg());
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new NotEncodableValueException(json_last_error_msg());
         }
 
         return $decodedData;

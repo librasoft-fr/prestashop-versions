@@ -83,16 +83,6 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
     }
 
     /**
-     * @deprecated Since version 2.8, to be removed in 3.0. Use getSecret() instead.
-     */
-    public function getKey()
-    {
-        @trigger_error(__METHOD__.'() is deprecated since version 2.8 and will be removed in 3.0. Use getSecret() instead.', E_USER_DEPRECATED);
-
-        return $this->getSecret();
-    }
-
-    /**
      * @return string
      */
     public function getSecret()
@@ -112,7 +102,7 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
     final public function autoLogin(Request $request)
     {
         if (null === $cookie = $request->cookies->get($this->options['name'])) {
-            return;
+            return null;
         }
 
         if (null !== $this->logger) {
@@ -134,24 +124,32 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
 
             return new RememberMeToken($user, $this->providerKey, $this->secret);
         } catch (CookieTheftException $e) {
-            $this->cancelCookie($request);
+            $this->loginFail($request, $e);
 
             throw $e;
         } catch (UsernameNotFoundException $e) {
             if (null !== $this->logger) {
-                $this->logger->info('User for remember-me cookie not found.');
+                $this->logger->info('User for remember-me cookie not found.', array('exception' => $e));
             }
+
+            $this->loginFail($request, $e);
         } catch (UnsupportedUserException $e) {
             if (null !== $this->logger) {
-                $this->logger->warning('User class for remember-me cookie not supported.');
+                $this->logger->warning('User class for remember-me cookie not supported.', array('exception' => $e));
             }
+
+            $this->loginFail($request, $e);
         } catch (AuthenticationException $e) {
             if (null !== $this->logger) {
                 $this->logger->debug('Remember-Me authentication failed.', array('exception' => $e));
             }
-        }
 
-        $this->cancelCookie($request);
+            $this->loginFail($request, $e);
+        } catch (\Exception $e) {
+            $this->loginFail($request, $e);
+
+            throw $e;
+        }
     }
 
     /**
@@ -166,10 +164,10 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
      * Implementation for RememberMeServicesInterface. Deletes the cookie when
      * an attempted authentication fails.
      */
-    final public function loginFail(Request $request)
+    final public function loginFail(Request $request, \Exception $exception = null)
     {
         $this->cancelCookie($request);
-        $this->onLoginFail($request);
+        $this->onLoginFail($request, $exception);
     }
 
     /**
@@ -218,7 +216,7 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
      */
     abstract protected function processAutoLoginCookie(array $cookieParts, Request $request);
 
-    protected function onLoginFail(Request $request)
+    protected function onLoginFail(Request $request, \Exception $exception = null)
     {
     }
 

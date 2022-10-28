@@ -16,7 +16,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\DataTransformer\MoneyToLocalizedStringTransformer;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MoneyType extends AbstractType
@@ -51,20 +50,8 @@ class MoneyType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $scale = function (Options $options) {
-            if (null !== $options['precision']) {
-                @trigger_error('The form option "precision" is deprecated since version 2.7 and will be removed in 3.0. Use "scale" instead.', E_USER_DEPRECATED);
-
-                return $options['precision'];
-            }
-
-            return 2;
-        };
-
         $resolver->setDefaults(array(
-            // deprecated as of Symfony 2.7, to be removed in Symfony 3.0
-            'precision' => null,
-            'scale' => $scale,
+            'scale' => 2,
             'grouping' => false,
             'divisor' => 1,
             'currency' => 'EUR',
@@ -77,21 +64,13 @@ class MoneyType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return $this->getBlockPrefix();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix()
     {
         return 'money';
     }
 
     /**
-     * Returns the pattern for this locale.
+     * Returns the pattern for this locale in UTF-8.
      *
      * The pattern contains the placeholder "{{ widget }}" where the HTML tag should
      * be inserted

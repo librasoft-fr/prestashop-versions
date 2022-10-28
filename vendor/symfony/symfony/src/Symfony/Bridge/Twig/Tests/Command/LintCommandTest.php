@@ -31,7 +31,7 @@ class LintCommandTest extends TestCase
         $ret = $tester->execute(array('filename' => array($filename)), array('verbosity' => OutputInterface::VERBOSITY_VERBOSE, 'decorated' => false));
 
         $this->assertEquals(0, $ret, 'Returns 0 in case of success');
-        $this->assertRegExp('/^\/\/ OK in /', trim($tester->getDisplay()));
+        $this->assertContains('OK in', trim($tester->getDisplay()));
     }
 
     public function testLintIncorrectFile()
@@ -69,14 +69,29 @@ class LintCommandTest extends TestCase
     }
 
     /**
+     * @group legacy
+     * @expectedDeprecation Passing a command name as the first argument of "Symfony\Bridge\Twig\Command\LintCommand::__construct" is deprecated since Symfony 3.4 and will be removed in 4.0. If the command was registered by convention, make it a service instead.
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage The Twig environment needs to be set.
+     */
+    public function testLegacyLintCommand()
+    {
+        $command = new LintCommand();
+
+        $application = new Application();
+        $application->add($command);
+        $command = $application->find('lint:twig');
+
+        $tester = new CommandTester($command);
+        $tester->execute(array());
+    }
+
+    /**
      * @return CommandTester
      */
     private function createCommandTester()
     {
-        $twig = new Environment(new FilesystemLoader());
-
-        $command = new LintCommand();
-        $command->setTwigEnvironment($twig);
+        $command = new LintCommand(new Environment(new FilesystemLoader()));
 
         $application = new Application();
         $application->add($command);

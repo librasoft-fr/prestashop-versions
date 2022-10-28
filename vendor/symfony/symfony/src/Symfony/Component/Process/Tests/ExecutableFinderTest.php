@@ -35,9 +35,6 @@ class ExecutableFinderTest extends TestCase
         putenv('PATH='.$path);
     }
 
-    /**
-     * @requires PHP 5.4
-     */
     public function testFind()
     {
         if (ini_get('open_basedir')) {
@@ -68,9 +65,6 @@ class ExecutableFinderTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    /**
-     * @requires PHP 5.4
-     */
     public function testFindWithExtraDirs()
     {
         if (ini_get('open_basedir')) {
@@ -87,9 +81,6 @@ class ExecutableFinderTest extends TestCase
         $this->assertSamePath(PHP_BINARY, $result);
     }
 
-    /**
-     * @requires PHP 5.4
-     */
     public function testFindWithOpenBaseDir()
     {
         if ('\\' === DIRECTORY_SEPARATOR) {
@@ -108,9 +99,6 @@ class ExecutableFinderTest extends TestCase
         $this->assertSamePath(PHP_BINARY, $result);
     }
 
-    /**
-     * @requires PHP 5.4
-     */
     public function testFindProcessInOpenBasedir()
     {
         if (ini_get('open_basedir')) {
@@ -127,6 +115,36 @@ class ExecutableFinderTest extends TestCase
         $result = $finder->find($this->getPhpBinaryName(), false);
 
         $this->assertSamePath(PHP_BINARY, $result);
+    }
+
+    /**
+     * @requires PHP 5.4
+     */
+    public function testFindBatchExecutableOnWindows()
+    {
+        if (ini_get('open_basedir')) {
+            $this->markTestSkipped('Cannot test when open_basedir is set');
+        }
+        if ('\\' !== DIRECTORY_SEPARATOR) {
+            $this->markTestSkipped('Can be only tested on windows');
+        }
+
+        $target = tempnam(sys_get_temp_dir(), 'example-windows-executable');
+
+        touch($target);
+        touch($target.'.BAT');
+
+        $this->assertFalse(is_executable($target));
+
+        $this->setPath(sys_get_temp_dir());
+
+        $finder = new ExecutableFinder();
+        $result = $finder->find(basename($target), false);
+
+        unlink($target);
+        unlink($target.'.BAT');
+
+        $this->assertSamePath($target.'.BAT', $result);
     }
 
     private function assertSamePath($expected, $tested)

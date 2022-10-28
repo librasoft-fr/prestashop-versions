@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the CsaGuzzleBundle package
+ *
+ * (c) Charles Sarrazin <charles@sarraz.in>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code
+ */
+
 namespace Csa\Bundle\GuzzleBundle\Factory;
 
 use GuzzleHttp\Command\Guzzle\Description;
@@ -10,9 +19,13 @@ use Symfony\Component\Config\Resource\FileResource;
 class DescriptionFactory
 {
     private $resources = [];
+
     private $loader;
+
     private $debug;
+
     private $descriptions = [];
+
     private $cacheDir;
 
     public function __construct(LoaderInterface $loader, $cacheDir, $debug = false)
@@ -43,9 +56,6 @@ class DescriptionFactory
         return new Description($this->descriptions[$alias]);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function loadDescriptions()
     {
         if (!empty($this->descriptions)) {
@@ -53,7 +63,7 @@ class DescriptionFactory
         }
 
         $class = 'descriptionsMetadata';
-        $cachePath = $this->cacheDir . '/csa/guzzle/' . $class . '.php';
+        $cachePath = $this->cacheDir.'/csa/guzzle/'.$class.'.php';
         $resources = [];
         $descriptions = [];
 

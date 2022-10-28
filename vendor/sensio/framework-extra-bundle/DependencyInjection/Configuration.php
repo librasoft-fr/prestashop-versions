@@ -1,12 +1,12 @@
 <?php
 
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Sensio\Bundle\FrameworkExtraBundle\DependencyInjection;
@@ -45,6 +45,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->booleanNode('converters')->defaultTrue()->end()
                         ->booleanNode('auto_convert')->defaultTrue()->end()
+                        ->arrayNode('disable')->prototype('scalar')->end()->end()
                     ->end()
                 ->end()
                 ->arrayNode('view')
@@ -69,7 +70,15 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('psr_message')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->booleanNode('enabled')->defaultValue(interface_exists('Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface'))->end()
+                        ->booleanNode('enabled')->defaultValue(interface_exists('Symfony\Bridge\PsrHttpMessage\HttpFoundationFactoryInterface') && class_exists('Zend\Diactoros\ServerRequestFactory'))->end()
+                    ->end()
+                ->end()
+                ->arrayNode('templating')
+                    ->fixXmlConfig('controller_pattern')
+                    ->children()
+                        ->arrayNode('controller_patterns')
+                            ->prototype('scalar')
+                        ->end()
                     ->end()
                 ->end()
             ->end()

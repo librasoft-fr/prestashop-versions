@@ -12,47 +12,14 @@
 namespace Symfony\Component\Security\Core\Tests\Authorization;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManager;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
+use Symfony\Component\Security\Core\Exception\LogicException;
+use Symfony\Component\Security\Core\Tests\Authorization\Stub\VoterWithoutInterface;
 
 class AccessDecisionManagerTest extends TestCase
 {
-    /**
-     * @group legacy
-     */
-    public function testSupportsClass()
-    {
-        $manager = new AccessDecisionManager(array(
-            $this->getVoterSupportsClass(true),
-            $this->getVoterSupportsClass(false),
-        ));
-        $this->assertTrue($manager->supportsClass('FooClass'));
-
-        $manager = new AccessDecisionManager(array(
-            $this->getVoterSupportsClass(false),
-            $this->getVoterSupportsClass(false),
-        ));
-        $this->assertFalse($manager->supportsClass('FooClass'));
-    }
-
-    /**
-     * @group legacy
-     */
-    public function testSupportsAttribute()
-    {
-        $manager = new AccessDecisionManager(array(
-            $this->getVoterSupportsAttribute(true),
-            $this->getVoterSupportsAttribute(false),
-        ));
-        $this->assertTrue($manager->supportsAttribute('foo'));
-
-        $manager = new AccessDecisionManager(array(
-            $this->getVoterSupportsAttribute(false),
-            $this->getVoterSupportsAttribute(false),
-        ));
-        $this->assertFalse($manager->supportsAttribute('foo'));
-    }
-
     /**
      * @expectedException \InvalidArgumentException
      */
@@ -175,23 +142,33 @@ class AccessDecisionManagerTest extends TestCase
         return $voter;
     }
 
-    protected function getVoterSupportsClass($ret)
+    public function testVotingWrongTypeNoVoteMethod()
     {
-        $voter = $this->getMockBuilder('Symfony\Component\Security\Core\Authorization\Voter\VoterInterface')->getMock();
-        $voter->expects($this->any())
-              ->method('supportsClass')
-              ->will($this->returnValue($ret));
+        $exception = LogicException::class;
+        $message = sprintf('stdClass should implement the %s interface when used as voter.', VoterInterface::class);
 
-        return $voter;
+        if (method_exists($this, 'expectException')) {
+            $this->expectException($exception);
+            $this->expectExceptionMessage($message);
+        } else {
+            $this->setExpectedException($exception, $message);
+        }
+
+        $adm = new AccessDecisionManager(array(new \stdClass()));
+        $token = $this->getMockBuilder(TokenInterface::class)->getMock();
+
+        $adm->decide($token, array('TEST'));
     }
 
-    protected function getVoterSupportsAttribute($ret)
+    /**
+     * @group legacy
+     * @expectedDeprecation Calling vote() on an voter without Symfony\Component\Security\Core\Authorization\Voter\VoterInterface is deprecated as of 3.4 and will be removed in 4.0. Implement the Symfony\Component\Security\Core\Authorization\Voter\VoterInterface on your voter.
+     */
+    public function testVotingWrongTypeWithVote()
     {
-        $voter = $this->getMockBuilder('Symfony\Component\Security\Core\Authorization\Voter\VoterInterface')->getMock();
-        $voter->expects($this->any())
-              ->method('supportsAttribute')
-              ->will($this->returnValue($ret));
+        $adm = new AccessDecisionManager(array(new VoterWithoutInterface()));
+        $token = $this->getMockBuilder(TokenInterface::class)->getMock();
 
-        return $voter;
+        $adm->decide($token, array('TEST'));
     }
 }

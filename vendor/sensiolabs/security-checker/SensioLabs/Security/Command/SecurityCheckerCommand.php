@@ -24,6 +24,8 @@ use SensioLabs\Security\Formatters\TextFormatter;
 
 class SecurityCheckerCommand extends Command
 {
+    protected static $defaultName = 'security:check';
+
     private $checker;
 
     public function __construct(SecurityChecker $checker)
@@ -97,6 +99,12 @@ EOF
             case 'text':
             default:
                 $formatter = new TextFormatter($this->getHelperSet()->get('formatter'));
+        }
+
+        if (!is_array($vulnerabilities)) {
+            $output->writeln($this->getHelperSet()->get('formatter')->formatBlock('Security Checker Server returned garbage.', 'error', true));
+
+            return 127;
         }
 
         $formatter->displayResults($output, $input->getArgument('lockfile'), $vulnerabilities);

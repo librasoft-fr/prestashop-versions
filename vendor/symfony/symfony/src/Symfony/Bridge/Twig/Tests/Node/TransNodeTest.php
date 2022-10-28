@@ -48,15 +48,15 @@ class TransNodeTest extends TestCase
             return sprintf('($context["%s"] ?? null)', $name);
         }
 
-        if (\PHP_VERSION_ID >= 50400) {
-            return sprintf('(isset($context["%s"]) ? $context["%1$s"] : null)', $name);
-        }
-
-        return sprintf('$this->getContext($context, "%s", true)', $name);
+        return sprintf('(isset($context["%s"]) ? $context["%1$s"] : null)', $name);
     }
 
     protected function getVariableGetterWithStrictCheck($name)
     {
+        if (Environment::VERSION_ID > 20404) {
+            return sprintf('(isset($context["%s"]) || array_key_exists("%1$s", $context) ? $context["%1$s"] : (function () { throw new Twig_Error_Runtime(\'Variable "%1$s" does not exist.\', 0, $this->source); })())', $name);
+        }
+
         if (Environment::MAJOR_VERSION >= 2) {
             return sprintf('(isset($context["%s"]) || array_key_exists("%1$s", $context) ? $context["%1$s"] : (function () { throw new Twig_Error_Runtime(\'Variable "%1$s" does not exist.\', 0, $this->getSourceContext()); })())', $name);
         }
@@ -65,10 +65,6 @@ class TransNodeTest extends TestCase
             return sprintf('($context["%s"] ?? $this->getContext($context, "%1$s"))', $name);
         }
 
-        if (\PHP_VERSION_ID >= 50400) {
-            return sprintf('(isset($context["%s"]) ? $context["%1$s"] : $this->getContext($context, "%1$s"))', $name);
-        }
-
-        return sprintf('$this->getContext($context, "%s")', $name);
+        return sprintf('(isset($context["%s"]) ? $context["%1$s"] : $this->getContext($context, "%1$s"))', $name);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use \PrestaShopBundle\Translation\TranslatorComponent as Translator;
+use Symfony\Component\Translation\TranslatorInterface as Translator;
 
 class LinkBlockRepository
 {

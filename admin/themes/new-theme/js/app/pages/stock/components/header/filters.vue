@@ -1,5 +1,5 @@
 <!--**
- * 2007-2017 PrestaShop
+ * 2007-2018 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,7 +18,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2017 PrestaShop SA
+ * @copyright 2007-2018 PrestaShop SA
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  *-->
@@ -56,11 +56,11 @@
             <form class="row">
               <div class="col-md-6">
                 <label>{{trans('filter_datepicker_from')}}</label>
-                <PSDatePicker :locale="locale" @dpChange="onDpChange"  @reset="onClear" data-type="sup"/>
+                <PSDatePicker :locale="locale" @dpChange="onDpChange" @reset="onClear" type="sup"/>
               </div>
               <div class="col-md-6">
                 <label>{{trans('filter_datepicker_to')}}</label>
-                <PSDatePicker :locale="locale" @dpChange="onDpChange" @reset="onClear" data-type="inf" />
+                <PSDatePicker :locale="locale" @dpChange="onDpChange" @reset="onClear" type="inf" />
               </div>
             </form>
           </div>
@@ -137,8 +137,7 @@
     },
     methods: {
       onClear(event) {
-        const type = $(event.currentTarget).data('type');
-        delete this.date_add[type];
+        delete this.date_add[event.dateType];
         this.applyFilter();
       },
       onClick() {
@@ -173,8 +172,7 @@
         this.applyFilter();
       },
       onDpChange(event) {
-        const type = $(event.currentTarget).data('type');
-        this.date_add[type] = event.date.unix();
+        this.date_add[event.dateType] = event.date.unix();
         if (event.oldDate) {
           this.applyFilter();
         }

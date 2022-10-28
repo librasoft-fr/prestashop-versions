@@ -64,14 +64,7 @@ class RegisterEventListenersAndSubscribersPass implements CompilerPassInterface
         $taggedSubscribers = $this->findAndSortTags($subscriberTag, $container);
 
         foreach ($taggedSubscribers as $taggedSubscriber) {
-            $id = $taggedSubscriber[0];
-            $taggedSubscriberDef = $container->getDefinition($id);
-
-            if ($taggedSubscriberDef->isAbstract()) {
-                throw new InvalidArgumentException(sprintf('The abstract service "%s" cannot be tagged as a doctrine event subscriber.', $id));
-            }
-
-            $tag = $taggedSubscriber[1];
+            list($id, $tag) = $taggedSubscriber;
             $connections = isset($tag['connection']) ? array($tag['connection']) : array_keys($this->connections);
             foreach ($connections as $con) {
                 if (!isset($this->connections[$con])) {
@@ -89,13 +82,8 @@ class RegisterEventListenersAndSubscribersPass implements CompilerPassInterface
         $taggedListeners = $this->findAndSortTags($listenerTag, $container);
 
         foreach ($taggedListeners as $taggedListener) {
-            $id = $taggedListener[0];
-            $taggedListenerDef = $container->getDefinition($taggedListener[0]);
-            if ($taggedListenerDef->isAbstract()) {
-                throw new InvalidArgumentException(sprintf('The abstract service "%s" cannot be tagged as a doctrine event listener.', $id));
-            }
-
-            $tag = $taggedListener[1];
+            list($id, $tag) = $taggedListener;
+            $taggedListenerDef = $container->getDefinition($id);
             if (!isset($tag['event'])) {
                 throw new InvalidArgumentException(sprintf('Doctrine event listener "%s" must specify the "event" attribute.', $id));
             }
@@ -144,7 +132,7 @@ class RegisterEventListenersAndSubscribersPass implements CompilerPassInterface
     {
         $sortedTags = array();
 
-        foreach ($container->findTaggedServiceIds($tagName) as $serviceId => $tags) {
+        foreach ($container->findTaggedServiceIds($tagName, true) as $serviceId => $tags) {
             foreach ($tags as $attributes) {
                 $priority = isset($attributes['priority']) ? $attributes['priority'] : 0;
                 $sortedTags[$priority][] = array($serviceId, $attributes);

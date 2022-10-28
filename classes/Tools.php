@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop
+ * 2007-2018 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,13 +19,13 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2017 PrestaShop SA
+ * @copyright 2007-2018 PrestaShop SA
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-use PrestaShopBundle\Service\Cache\Refresh;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Filesystem\Filesystem;
 
 use Composer\CaBundle\CaBundle;
 
@@ -132,7 +132,7 @@ class ToolsCore
      * Replace text within a portion of a string
      *
      * Replaces a string matching a search, (optionally) string from a certain position
-     *  
+     *
      * @param  string  $search  The string to search in the input string
      * @param  string  $replace The replacement string
      * @param  string  $subject The input string
@@ -412,17 +412,69 @@ class ToolsCore
     }
 
     /**
-    * Secure an URL referrer
-    *
-    * @param string $referrer URL referrer
-    * @return string secured referrer
-    */
+     * Returns a safe URL referrer
+     *
+     * @param string $referrer URL referrer
+     * @return string secured referrer
+     */
     public static function secureReferrer($referrer)
     {
-        if (preg_match('/^http[s]?:\/\/'.Tools::getServerName().'(:'._PS_SSL_PORT_.')?\/.*$/Ui', $referrer)) {
+        if (static::urlBelongsToShop($referrer)) {
             return $referrer;
         }
         return __PS_BASE_URI__;
+    }
+
+    /**
+     * Indicates if the provided URL belongs to this shop (relative urls count as belonging to the shop)
+     *
+     * @param string $url
+     *
+     * @return bool
+     */
+    public static function urlBelongsToShop($url)
+    {
+        $urlHost = Tools::extractHost($url);
+
+        return (empty($urlHost) || $urlHost === Tools::getServerName());
+    }
+
+    /**
+     * Safely extracts the host part from an URL
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    public static function extractHost($url)
+    {
+        if (PHP_VERSION_ID >= 50628) {
+            $parsed = parse_url($url);
+            if (!is_array($parsed)) {
+                return $url;
+            }
+            if (empty($parsed['host']) || empty($parsed['scheme'])) {
+                return '';
+            }
+            return $parsed['host'];
+        }
+
+        // big workaround needed
+        // @see: https://bugs.php.net/bug.php?id=73192
+        // @see: https://3v4l.org/nFYJh
+
+        $matches = [];
+        if (!preg_match('/^[\w]+:\/\/(?<authority>[^\/?#$]+)/ui', $url, $matches)) {
+            // relative url
+            return '';
+        }
+        $authority = $matches['authority'];
+
+        if (!preg_match('/(?:(?<user>.+):(?<pass>.+)@)?(?<domain>[\w.-]+)(?::(?<port>\d+))?/ui', $authority, $matches)) {
+            return '';
+        }
+
+        return $matches['domain'];
     }
 
     /**
@@ -693,6 +745,8 @@ class ToolsCore
     /**
     * Return price converted
     *
+    * @deprecated since 1.7.4 use convertPriceToCurrency()
+    *
     * @param float $price Product price
     * @param object|array $currency Current currency object
     * @param bool $to_currency convert to currency or from currency to default currency
@@ -701,11 +755,7 @@ class ToolsCore
     */
     public static function convertPrice($price, $currency = null, $to_currency = true, Context $context = null)
     {
-        static $default_currency = null;
-
-        if ($default_currency === null) {
-            $default_currency = (int)Configuration::get('PS_CURRENCY_DEFAULT');
-        }
+        $default_currency = (int)Configuration::get('PS_CURRENCY_DEFAULT');
 
         if (!$context) {
             $context = Context::getContext();
@@ -2559,6 +2609,9 @@ FileETag none
             '*/modules/*.js',
             '*/modules/*.png',
             '*/modules/*.jpg',
+            '*/themes/*/assets/cache/*.js',
+            '*/themes/*/assets/cache/*.css',
+            '*/themes/*/assets/css/*',
         );
 
         // Directories
@@ -2590,8 +2643,8 @@ FileETag none
         }
 
         $tab['GB'] = array(
-            '?orderby=','?orderway=','?tag=','?id_currency=','?search_query=','?back=','?n=',
-            '&orderby=','&orderway=','&tag=','&id_currency=','&search_query=','&back=','&n='
+            '?order=','?tag=','?id_currency=','?search_query=','?back=','?n=',
+            '&order=','&tag=','&id_currency=','&search_query=','&back=','&n='
         );
 
         foreach ($disallow_controllers as $controller) {
@@ -2650,6 +2703,64 @@ header("Pragma: no-cache");
 header("Location: ../");
 exit;
 ';
+    }
+
+    /**
+     * Return the directory list from the given $path
+     *
+     * @param string $path
+     *
+     * @return array
+     */
+    public static function getDirectories($path)
+    {
+        if (function_exists('glob')) {
+            return self::getDirectoriesWithGlob($path);
+        }
+
+        return self::getDirectoriesWithReaddir($path);
+    }
+
+    /**
+     * Return the directory list from the given $path using php glob function
+     *
+     * @param string $path
+     *
+     * @return array
+     */
+    public static function getDirectoriesWithGlob($path)
+    {
+        $directoryList = glob($path.'/*', GLOB_ONLYDIR | GLOB_NOSORT);
+        array_walk($directoryList,
+            function (&$absolutePath, $key) {
+                $absolutePath = substr($absolutePath, strrpos($absolutePath, '/') + 1);
+            }
+        );
+
+        return $directoryList;
+    }
+
+    /**
+     * Return the directory list from the given $path using php readdir function
+     *
+     * @param string $path
+     *
+     * @return array
+     */
+    public static function getDirectoriesWithReaddir($path)
+    {
+        $directoryList = [];
+        $dh = @opendir($path);
+        if ($dh) {
+            while (($file = @readdir($dh)) !== false) {
+                if (is_dir($path . DIRECTORY_SEPARATOR . $file) && $file[0] != '.') {
+                    $directoryList[] = $file;
+                }
+            }
+            @closedir($dh);
+        }
+
+        return $directoryList;
     }
 
     /**
@@ -2729,7 +2840,7 @@ exit;
     protected static function throwDeprecated($error, $message, $class)
     {
         if (_PS_DISPLAY_COMPATIBILITY_WARNING_) {
-            trigger_error($error, E_USER_WARNING);
+            @trigger_error($error, E_USER_DEPRECATED);
             PrestaShopLogger::addLog($message, 3, $class);
         }
     }
@@ -3060,17 +3171,17 @@ exit;
      */
     public static function clearSf2Cache($env = null)
     {
-        if (!$env) {
+        if (is_null($env)) {
             $env = _PS_MODE_DEV_ ? 'dev' : 'prod';
         }
 
-        $sf2Refresh = new Refresh($env);
-        $sf2Refresh->addCacheClear();
-        $ret = $sf2Refresh->execute();
+        $dir = _PS_ROOT_DIR_ . '/var/cache/' . $env . '/';
 
-        Hook::exec('actionClearSf2Cache');
-
-        return $ret;
+        register_shutdown_function(function() use ($dir) {
+            $fs = new Filesystem();
+            $fs->remove($dir);
+            Hook::exec('actionClearSf2Cache');
+        });
     }
 
     /**
@@ -3785,7 +3896,7 @@ exit;
             return;
         }
 
-        $sort_function = create_function('$a, $b', "return \$b['$column'] > \$a['$column'] ? 1 : -1;");
+        $sort_function = function($a, $b) use ($column) { return $b[$column] > $a[$column] ? 1 : -1; };
 
         uasort($rows, $sort_function);
 

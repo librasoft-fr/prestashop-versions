@@ -175,6 +175,7 @@ class DoctrineExtensionTest extends TestCase
     {
         return array(
             array('doctrine.orm.cache.apc.class',       array('type' => 'apc')),
+            array('doctrine.orm.cache.apcu.class',      array('type' => 'apcu')),
             array('doctrine.orm.cache.array.class',     array('type' => 'array')),
             array('doctrine.orm.cache.xcache.class',    array('type' => 'xcache')),
             array('doctrine.orm.cache.wincache.class',  array('type' => 'wincache')),
@@ -207,9 +208,7 @@ class DoctrineExtensionTest extends TestCase
         $definition = $container->getDefinition('doctrine.orm.default_metadata_cache');
         $defCalls = $definition->getMethodCalls();
         $expectedCalls[] = 'setNamespace';
-        $actualCalls = array_map(function ($call) {
-            return $call[0];
-        }, $defCalls);
+        $actualCalls = array_column($defCalls, 0);
 
         $this->assertFalse($definition->isPublic());
         $this->assertEquals("%$class%", $definition->getClass());

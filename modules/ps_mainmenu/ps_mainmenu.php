@@ -56,7 +56,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
     {
         $this->name = 'ps_mainmenu';
         $this->tab = 'front_office_features';
-        $this->version = '2.1.0';
+        $this->version = '2.1.1';
         $this->author = 'PrestaShop';
 
         $this->bootstrap = true;
@@ -942,7 +942,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
     protected function getCacheDirectory()
     {
-        return _PS_CACHE_DIR_ . DIRECTORY_SEPARATOR . 'ps_mainmenu';
+        return _PS_CACHE_DIR_ . 'ps_mainmenu';
     }
 
     protected function clearMenuCache()

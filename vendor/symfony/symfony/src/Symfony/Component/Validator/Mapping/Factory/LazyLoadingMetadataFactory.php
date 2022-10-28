@@ -14,8 +14,6 @@ namespace Symfony\Component\Validator\Mapping\Factory;
 use Symfony\Component\Validator\Exception\NoSuchMetadataException;
 use Symfony\Component\Validator\Mapping\Cache\CacheInterface;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
-use Symfony\Component\Validator\Mapping\ClassMetadataInterface;
-use Symfony\Component\Validator\Mapping\Loader\LoaderChain;
 use Symfony\Component\Validator\Mapping\Loader\LoaderInterface;
 
 /**
@@ -90,15 +88,15 @@ class LazyLoadingMetadataFactory implements MetadataFactoryInterface
             return $this->loadedClasses[$class];
         }
 
+        if (!class_exists($class) && !interface_exists($class, false)) {
+            throw new NoSuchMetadataException(sprintf('The class or interface "%s" does not exist.', $class));
+        }
+
         if (null !== $this->cache && false !== ($metadata = $this->cache->read($class))) {
             // Include constraints from the parent class
             $this->mergeConstraints($metadata);
 
             return $this->loadedClasses[$class] = $metadata;
-        }
-
-        if (!class_exists($class) && !interface_exists($class)) {
-            throw new NoSuchMetadataException(sprintf('The class or interface "%s" does not exist.', $class));
         }
 
         $metadata = new ClassMetadata($class);
@@ -162,10 +160,6 @@ class LazyLoadingMetadataFactory implements MetadataFactoryInterface
 
         $class = ltrim(is_object($value) ? get_class($value) : $value, '\\');
 
-        if (class_exists($class) || interface_exists($class)) {
-            return true;
-        }
-
-        return false;
+        return class_exists($class) || interface_exists($class, false);
     }
 }

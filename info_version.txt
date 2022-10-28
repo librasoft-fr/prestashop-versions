@@ -1,2 +1,2 @@
-php version: 7.1
+php version: 7.4
 mysql version: 5.7

@@ -36,7 +36,7 @@ class WebProcessorTest extends TestCase
 
     public function testUseRequestClientIp()
     {
-        Request::setTrustedProxies(array('192.168.0.1'));
+        Request::setTrustedProxies(array('192.168.0.1'), Request::HEADER_X_FORWARDED_ALL);
         list($event, $server) = $this->createRequestEvent(array('X_FORWARDED_FOR' => '192.168.0.2'));
 
         $processor = new WebProcessor();
@@ -49,6 +49,8 @@ class WebProcessorTest extends TestCase
         $this->assertEquals($server['REQUEST_METHOD'], $record['extra']['http_method']);
         $this->assertEquals($server['SERVER_NAME'], $record['extra']['server']);
         $this->assertEquals($server['HTTP_REFERER'], $record['extra']['referrer']);
+
+        Request::setTrustedProxies(array(), -1);
     }
 
     public function testCanBeConstructedWithExtraFields()

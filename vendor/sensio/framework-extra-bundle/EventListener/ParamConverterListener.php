@@ -1,12 +1,12 @@
 <?php
 
 /*
- * This file is part of the Symfony framework.
+ * This file is part of the Symfony package.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
  *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Sensio\Bundle\FrameworkExtraBundle\EventListener;
@@ -28,35 +28,36 @@ class ParamConverterListener implements EventSubscriberInterface
     /**
      * @var ParamConverterManager
      */
-    protected $manager;
+    private $manager;
 
-    protected $autoConvert;
+    private $autoConvert;
 
     /**
-     * Constructor.
-     *
-     * @param ParamConverterManager $manager     A ParamConverterManager instance
-     * @param bool                  $autoConvert Auto convert non-configured objects
+     * @var bool
+     */
+    private $isParameterTypeSupported;
+
+    /**
+     * @param bool $autoConvert Auto convert non-configured objects
      */
     public function __construct(ParamConverterManager $manager, $autoConvert = true)
     {
         $this->manager = $manager;
         $this->autoConvert = $autoConvert;
+        $this->isParameterTypeSupported = method_exists('ReflectionParameter', 'getType');
     }
 
     /**
      * Modifies the ParamConverterManager instance.
-     *
-     * @param FilterControllerEvent $event A FilterControllerEvent instance
      */
     public function onKernelController(FilterControllerEvent $event)
     {
         $controller = $event->getController();
         $request = $event->getRequest();
-        $configurations = array();
+        $configurations = [];
 
         if ($configuration = $request->attributes->get('_converters')) {
-            foreach (is_array($configuration) ? $configuration : array($configuration) as $configuration) {
+            foreach (is_array($configuration) ? $configuration : [$configuration] as $configuration) {
                 $configurations[$configuration->getName()] = $configuration;
             }
         }
@@ -80,37 +81,42 @@ class ParamConverterListener implements EventSubscriberInterface
     private function autoConfigure(\ReflectionFunctionAbstract $r, Request $request, $configurations)
     {
         foreach ($r->getParameters() as $param) {
-            if (!$param->getClass() || $param->getClass()->isInstance($request)) {
+            if ($param->getClass() && $param->getClass()->isInstance($request)) {
                 continue;
             }
 
             $name = $param->getName();
+            $class = $param->getClass();
+            $hasType = $this->isParameterTypeSupported && $param->hasType();
 
-            if (!isset($configurations[$name])) {
-                $configuration = new ParamConverter(array());
-                $configuration->setName($name);
-                $configuration->setClass($param->getClass()->getName());
+            if ($class || $hasType) {
+                if (!isset($configurations[$name])) {
+                    $configuration = new ParamConverter([]);
+                    $configuration->setName($name);
 
-                $configurations[$name] = $configuration;
-            } elseif (null === $configurations[$name]->getClass()) {
-                $configurations[$name]->setClass($param->getClass()->getName());
+                    $configurations[$name] = $configuration;
+                }
+
+                if ($class && null === $configurations[$name]->getClass()) {
+                    $configurations[$name]->setClass($class->getName());
+                }
             }
 
-            $configurations[$name]->setIsOptional($param->isOptional());
+            if (isset($configurations[$name])) {
+                $configurations[$name]->setIsOptional($param->isOptional() || $param->isDefaultValueAvailable() || $hasType && $param->getType()->allowsNull());
+            }
         }
 
         return $configurations;
     }
 
     /**
-     * Get subscribed events.
-     *
-     * @return array Subscribed events
+     * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             KernelEvents::CONTROLLER => 'onKernelController',
-        );
+        ];
     }
 }
