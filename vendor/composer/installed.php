@@ -785,12 +785,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_customtext' => array(
-            'pretty_version' => 'v4.1.1',
-            'version' => '4.1.1.0',
+            'pretty_version' => 'v4.2.0',
+            'version' => '4.2.0.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_customtext',
             'aliases' => array(),
-            'reference' => '8d46ad28d99ec03dbba31d121cce1365593425c6',
+            'reference' => 'fb555e29708a3b94784da48f6e2c3fcea8bf9480',
             'dev_requirement' => false,
         ),
         'prestashop/ps_dataprivacy' => array(
@@ -821,12 +821,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_faviconnotificationbo' => array(
-            'pretty_version' => 'v2.1.0',
-            'version' => '2.1.0.0',
+            'pretty_version' => 'v2.1.1',
+            'version' => '2.1.1.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_faviconnotificationbo',
             'aliases' => array(),
-            'reference' => '161cdd57a520d8a0acd3dac96b427acc178dd9d7',
+            'reference' => '47f67bbcf2ee3802d2ed492821a056b9513200d8',
             'dev_requirement' => false,
         ),
         'prestashop/ps_featuredproducts' => array(
@@ -866,21 +866,21 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_mainmenu' => array(
-            'pretty_version' => 'v2.3.0',
-            'version' => '2.3.0.0',
+            'pretty_version' => 'v2.3.1',
+            'version' => '2.3.1.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_mainmenu',
             'aliases' => array(),
-            'reference' => '815484389b0abedc61110347cc0fcdf837141ce8',
+            'reference' => '64dcfbdad19ee20b644b32ea19dafb90c0a66cc2',
             'dev_requirement' => false,
         ),
         'prestashop/ps_searchbar' => array(
-            'pretty_version' => 'v2.1.1',
-            'version' => '2.1.1.0',
+            'pretty_version' => 'v2.1.2',
+            'version' => '2.1.2.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_searchbar',
             'aliases' => array(),
-            'reference' => '70c2d952946aba108b8610c092e267f94fd512b9',
+            'reference' => '68221f79c163e356765a1cfeda7d623e49d54f73',
             'dev_requirement' => false,
         ),
         'prestashop/ps_sharebuttons' => array(
@@ -1046,12 +1046,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/statsproduct' => array(
-            'pretty_version' => 'v2.0.3',
-            'version' => '2.0.3.0',
+            'pretty_version' => 'v2.1.0',
+            'version' => '2.1.0.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/statsproduct',
             'aliases' => array(),
-            'reference' => 'caf05aefabd63ac84e06bc2a0bdcf69f965d03c4',
+            'reference' => 'd9d01b83abee4887a0981e6c54cd9560a34d556e',
             'dev_requirement' => false,
         ),
         'prestashop/statsregistrations' => array(
@@ -1100,12 +1100,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/welcome' => array(
-            'pretty_version' => 'v6.0.6',
-            'version' => '6.0.6.0',
+            'pretty_version' => 'v6.0.7',
+            'version' => '6.0.7.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/welcome',
             'aliases' => array(),
-            'reference' => 'e50132ac6468ac692e3814f5d36605e1537ba9c6',
+            'reference' => '3223b2e34ea2ec6e4477b0217566ab828cdb3d58',
             'dev_requirement' => false,
         ),
         'psr/cache' => array(
@@ -1171,8 +1171,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '1.0.0',
+                0 => '1.0.0',
+                1 => '1.0',
             ),
         ),
         'psr/simple-cache' => array(
