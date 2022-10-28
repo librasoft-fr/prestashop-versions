@@ -18,9 +18,11 @@ use Symfony\Component\Asset\Package;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Lock\Lock;
 use Symfony\Component\Lock\Store\SemaphoreStore;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Translation\Translator;
@@ -266,8 +268,20 @@ class Configuration implements ConfigurationInterface
                                 $workflows = $v;
                                 unset($workflows['enabled']);
 
-                                if (1 === \count($workflows) && isset($workflows[0]['enabled'])) {
+                                if (1 === \count($workflows) && isset($workflows[0]['enabled']) && 1 === \count($workflows[0])) {
                                     $workflows = array();
+                                }
+
+                                if (1 === \count($workflows) && isset($workflows['workflows']) && array_keys($workflows['workflows']) !== range(0, \count($workflows) - 1) && !empty(array_diff(array_keys($workflows['workflows']), array('audit_trail', 'type', 'marking_store', 'supports', 'support_strategy', 'initial_place', 'places', 'transitions')))) {
+                                    $workflows = $workflows['workflows'];
+                                }
+
+                                foreach ($workflows as $key => $workflow) {
+                                    if (isset($workflow['enabled']) && false === $workflow['enabled']) {
+                                        throw new LogicException(sprintf('Cannot disable a single workflow. Remove the configuration for the workflow "%s" instead.', $workflow['name']));
+                                    }
+
+                                    unset($workflows[$key]['enabled']);
                                 }
 
                                 $v = array(
@@ -823,7 +837,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('property_info')
                     ->info('Property info configuration')
-                    ->canBeEnabled()
+                    ->{!class_exists(FullStack::class) && interface_exists(PropertyInfoExtractorInterface::class) ? 'canBeDisabled' : 'canBeEnabled'}()
                 ->end()
             ->end()
         ;
