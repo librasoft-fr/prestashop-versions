@@ -33,7 +33,7 @@ class VatNumber extends TaxManagerModule
 	{
 		$this->name = 'vatnumber';
 		$this->tab = 'billing_invoicing';
-		$this->version = '1.8.0';
+		$this->version = '1.8.1';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 
@@ -225,7 +225,7 @@ class VatNumber extends TaxManagerModule
 					array(
 						'type' => 'select',
 						'label' => $this->l('Customers\' country'),
-						'desc' => $this->l('Operate a filter on customers\' country.'),
+						'desc' => $this->l('Filter customers\' country.'),
 						'name' => 'VATNUMBER_COUNTRY',
 						'required' => false,
 						'default_value' => (int)$this->context->country->id,

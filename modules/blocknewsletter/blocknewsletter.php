@@ -50,7 +50,7 @@ class Blocknewsletter extends Module
 		$this->confirmUninstall = $this->l('Are you sure that you want to delete all of your contacts?');
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
 
-		$this->version = '2.3.0';
+		$this->version = '2.3.1';
 		$this->author = 'PrestaShop';
 		$this->error = false;
 		$this->valid = false;
@@ -82,7 +82,7 @@ class Blocknewsletter extends Module
 			$this->fields_export = array(
 				'COUNTRY' => array(
 					'title' => $this->l('Customers\' country'),
-					'desc' => $this->l('Operate a filter on customers\' country.'),
+					'desc' => $this->l('Filter customers\' country.'),
 					'type' => 'select',
 					'value' => $countries_list,
 					'value_default' => 0
@@ -885,8 +885,8 @@ class Blocknewsletter extends Module
 						'options' => array(
 							'query' => array(
 								array('id' => 0, 'name' => $this->l('All subscribers')),
-								array('id' => 1, 'name' => $this->l('Subscribers with an account')),
-								array('id' => 2, 'name' => $this->l('Subscribers without an account')),
+								array('id' => 1, 'name' => $this->l('Subscribers with account')),
+								array('id' => 2, 'name' => $this->l('Subscribers without account')),
 								array('id' => 3, 'name' => $this->l('Non-subscribers'))
 							),
 							'id' => 'id',
@@ -895,9 +895,9 @@ class Blocknewsletter extends Module
 					),
 					array(
 						'type' => 'select',
-						'label' => $this->l('Opted-in subscribers'),
+						'label' => $this->l('Opt-in subscribers'),
 						'desc' => $this->l('Filter customers who have agreed to receive your partners\' offers or not.'),
-						'hint' => $this->l('Opted-in subscribers have agreed to receive your partners\' offers.'),
+						'hint' => $this->l('Opt-in subscribers have agreed to receive your partners\' offers.'),
 						'name' => 'OPTIN',
 						'required' => false,
 						'default_value' => (int)$this->context->country->id,
@@ -1022,12 +1022,12 @@ class Blocknewsletter extends Module
 				<br />
 				<ol style="margin-top: 10px;">
 					<li style="color: red;">'.
-					$this->l('WARNING: If opening this .csv file with Excel, remember to choose UTF-8 encoding or you may see strange characters.').
+					$this->l('WARNING: When opening this .csv file with Excel, choose UTF-8 encoding to avoid strange characters.').
 					'</li>
 				</ol>');
 			}
 			else
-				$this->_html .= $this->displayError($this->l('Error: cannot write').' '.dirname(__FILE__).'/'.strval(Tools::getValue('action')).'_'.$this->file.' !');
+				$this->_html .= $this->displayError($this->l('Error: Write access limited').' '.dirname(__FILE__).'/'.strval(Tools::getValue('action')).'_'.$this->file.' !');
 		}
 		else
 			$this->_html .= $this->displayError($this->l('No result found!'));
@@ -1095,6 +1095,6 @@ class Blocknewsletter extends Module
 		$line = implode(';', $array);
 		$line .= "\n";
 		if (!fwrite($fd, $line, 4096))
-			$this->post_errors[] = $this->l('Error: cannot write').' '.dirname(__FILE__).'/'.$this->file.' !';
+			$this->post_errors[] = $this->l('Error: Write access limited').' '.dirname(__FILE__).'/'.$this->file.' !';
 	}
 }
