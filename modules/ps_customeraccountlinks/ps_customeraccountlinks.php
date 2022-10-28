@@ -38,15 +38,15 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
     {
         $this->name = 'ps_customeraccountlinks';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.4';
+        $this->version = '2.0.1';
         $this->need_instance = 0;
 
         parent::__construct();
 
-        $this->displayName = $this->l('My Account block');
-        $this->description = $this->l('Displays a block with links relative to a user\'s account.');
+        $this->displayName = $this->trans('My Account block', array(), 'Modules.Customeraccountlinks.Admin');
+        $this->description = $this->trans('Displays a block with links relative to a user\'s account.', array(), 'Modules.Customeraccountlinks.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         $this->templateFile = 'module:ps_customeraccountlinks/ps_customeraccountlinks.tpl';
     }
@@ -100,33 +100,33 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
 
         $my_account_urls = array(
             0 => array(
-                'title' => $this->l('Orders'),
+                'title' => $this->trans('Orders', array(), 'Admin.Global'),
                 'url' => $link->getPageLink('history', true),
             ),
             2 => array(
-                'title' => $this->l('Credit slips'),
+                'title' => $this->trans('Credit slips', array(), 'Modules.Customeraccountlinks.Admin'),
                 'url' => $link->getPageLink('order-slip', true),
             ),
             3 => array(
-                'title' => $this->l('Addresses'),
+                'title' => $this->trans('Addresses', array(), 'Shop.Theme'),
                 'url' => $link->getPageLink('addresses', true),
             ),
             4 => array(
-                'title' => $this->l('Personal info'),
+                'title' => $this->trans('Personal info', array(), 'Modules.Customeraccountlinks.Admin'),
                 'url' => $link->getPageLink('identity', true),
             ),
         );
 
         if ((int)Configuration::get('PS_ORDER_RETURN')) {
             $my_account_urls[1] = array(
-                'title' => $this->l('Merchandise returns'),
+                'title' => $this->trans('Merchandise returns', array(), 'Modules.Customeraccountlinks.Admin'),
                 'url' => $link->getPageLink('order-follow', true),
             );
         }
 
         if (CartRule::isFeatureActive()) {
             $my_account_urls[5] = array(
-                'title' => $this->l('Vouchers'),
+                'title' => $this->trans('Vouchers', array(), 'Shop.Theme.Customeraccount'),
                 'url' => $link->getPageLink('discount', true),
             );
         }

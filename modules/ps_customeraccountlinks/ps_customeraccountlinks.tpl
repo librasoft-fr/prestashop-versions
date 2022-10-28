@@ -24,7 +24,7 @@
 *}
 
 <div id="block_myaccount_infos">
-	<h4><a href="{$urls.pages.my_account}" title="{l s='Your account' mod='ps_customeraccountlinks'}" rel="nofollow">{l s='Your account' mod='ps_customeraccountlinks'}</a></h4>
+	<h4><a href="{$urls.pages.my_account}" title="{l s='Your account' d='Shop.Theme.Customeraccount'}" rel="nofollow">{l s='Your account' d='Shop.Theme.Customeraccount'}</a></h4>
 	<ul>
     {foreach from=$my_account_urls item=my_account_url}
         <li><a href="{$my_account_url.url}" title="{$my_account_url.title}" rel="nofollow">{$my_account_url.title}</a></li>

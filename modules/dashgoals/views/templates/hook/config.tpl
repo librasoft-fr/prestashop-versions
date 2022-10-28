@@ -23,16 +23,16 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 <section id="dashgoals_config" class="dash_config hide">
-	<header><i class="icon-wrench"></i> {l s='Configuration' mod='dashgoals'}</header>
+	<header><i class="icon-wrench"></i> {l s='Configuration' d='Admin.Global'}</header>
 	<form class="defaultForm form-horizontal" method="post" action="{$link->getAdminLink('AdminDashboard')|escape:'html':'UTF-8'}">
 		<table class="table table-condensed table-striped table-bordered">
 			<thead>
 				<tr>
 					<th class="fixed-width-md">{$goals_year}</th>
-					<th class="fixed-width-md">{l s='Traffic' mod='dashgoals'}</th>
-					<th class="fixed-width-md">{l s='Conversion Rate' mod='dashgoals'}</th>
-					<th class="fixed-width-lg">{l s='Average Cart Value' mod='dashgoals'}</th>
-					<th>{l s='Sales' mod='dashgoals'}</th>
+					<th class="fixed-width-md">{l s='Traffic' d='Modules.Dashgoals.Admin'}</th>
+					<th class="fixed-width-md">{l s='Conversion Rate' d='Modules.Dashgoals.Admin'}</th>
+					<th class="fixed-width-lg">{l s='Average Cart Value' d='Modules.Dashgoals.Admin'}</th>
+					<th>{l s='Sales' d='Admin.Global'}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -68,7 +68,7 @@
 			</tbody>
 		</table>
 		<div class="panel-footer">
-			<button class="btn btn-default pull-right" name="submitDashGoals" type="submit"><i class="process-icon-save"></i> {l s='Save' mod='dashgoals'}</button>
+			<button class="btn btn-default pull-right" name="submitDashGoals" type="submit"><i class="process-icon-save"></i> {l s='Save' d='Admin.Actions'}</button>
 		</div>
 	</form>
 </section>

@@ -38,16 +38,16 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
     {
         $this->name = 'ps_shoppingcart';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.2';
+        $this->version = '2.0.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Shopping cart', array(), 'Modules.ShoppingCart.Admin');
-        $this->description = $this->trans('Adds a block containing the customer\'s shopping cart.', array(), 'Modules.ShoppingCart.Admin');
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->displayName = $this->trans('Shopping cart', array(), 'Modules.Shoppingcart.Admin');
+        $this->description = $this->trans('Adds a block containing the customer\'s shopping cart.', array(), 'Modules.Shoppingcart.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
         $this->controllers = array('ajax');
     }
 
@@ -70,7 +70,10 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
             $this->context->language->id,
             array(
                 'action' => 'show'
-            )
+            ),
+            false,
+            null,
+            true
         );
     }
 
@@ -80,7 +83,7 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
 
         return array(
             'cart' => (new CartPresenter)->present(isset($params['cart']) ? $params['cart'] : $this->context->cart),
-            'refresh_url' => $this->context->link->getModuleLink('ps_shoppingcart', 'ajax'),
+            'refresh_url' => $this->context->link->getModuleLink('ps_shoppingcart', 'ajax', array(), null, null, null, true),
             'cart_url' => $cart_url
         );
     }
@@ -121,7 +124,7 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
         if (Tools::isSubmit('submitBlockCart')) {
             $ajax = Tools::getValue('PS_BLOCK_CART_AJAX');
             if ($ajax != 0 && $ajax != 1) {
-                $output .= $this->displayError($this->trans('Ajax: Invalid choice.', array(), 'Modules.ShoppingCart.Admin'));
+                $output .= $this->displayError($this->trans('Ajax: Invalid choice.', array(), 'Modules.Shoppingcart.Admin'));
             } else {
                 Configuration::updateValue('PS_BLOCK_CART_AJAX', (int)($ajax));
             }
@@ -150,10 +153,10 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
                 'input' => array(
                     array(
                         'type' => 'switch',
-                        'label' => $this->trans('Ajax cart', array(), 'Modules.ShoppingCart.Admin'),
+                        'label' => $this->trans('Ajax cart', array(), 'Modules.Shoppingcart.Admin'),
                         'name' => 'PS_BLOCK_CART_AJAX',
                         'is_bool' => true,
-                        'desc' => $this->trans('Activate Ajax mode for the cart (compatible with the default theme).', array(), 'Modules.ShoppingCart.Admin'),
+                        'desc' => $this->trans('Activate Ajax mode for the cart (compatible with the default theme).', array(), 'Modules.Shoppingcart.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',

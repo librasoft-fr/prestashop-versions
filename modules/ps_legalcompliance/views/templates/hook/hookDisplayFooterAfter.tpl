@@ -26,19 +26,19 @@
 <div class="aeuc_footer_info">
 	{if isset($delivery_additional_information)}
 		* {$delivery_additional_information}
-		<a href="{$link_shipping}">{l s='Shipping and payment' mod='ps_legalcompliance'}</a>
+		<a href="{$link_shipping}">{l s='Shipping and payment' d='Modules.Legalcompliance.Shop'}</a>
 	{else}
 		{if $tax_included}
-			{l s='All prices are mentioned tax included' mod='ps_legalcompliance'}
+			{l s='All prices are mentioned tax included' d='Modules.Legalcompliance.Shop'}
 		{else}
-			{l s='All prices are mentioned tax excluded' mod='ps_legalcompliance'}
+			{l s='All prices are mentioned tax excluded' d='Modules.Legalcompliance.Shop'}
 		{/if}
 		{if $show_shipping}
-			{l s='and' mod='ps_legalcompliance'}
+			{l s='and' d='Modules.Legalcompliance.Shop'}
 			{if $link_shipping}
 				<a href="{$link_shipping}">
 			{/if}
-			{l s='shipping excluded' mod='ps_legalcompliance'}
+			{l s='shipping excluded' d='Modules.Legalcompliance.Shop'}
 			{if $link_shipping}
 				</a>
 			{/if}

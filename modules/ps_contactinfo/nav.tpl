@@ -23,7 +23,7 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 <div id="contact-link">
-	<a href="{$urls.pages.contact}">{l s='Contact us' d='Modules.ContactInfo.Shop'}</a>
+	<a href="{$urls.pages.contact}">{l s='Contact us' d='Modules.Contactinfo.Shop'}</a>
     {if $contact_infos.phone}
       {* First tag [1][/1] is for a HTML tag. *}
       {l
@@ -33,7 +33,7 @@
           '[/1]' => '</span>',
           '%phone%' => $contact_infos.phone
         ]
-        d='Modules.ContactInfo.Shop'
+        d='Modules.Contactinfo.Shop'
       }
     {/if}
 </div>

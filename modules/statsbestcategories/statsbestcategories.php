@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2016 PrestaShop
+* 2007-2015 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,103 +19,105 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
+*  @copyright  2007-2015 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-class StatsBestCategories extends ModuleGrid
+class statsbestcategories extends ModuleGrid
 {
-	private $html;
-	private $query;
-	private $columns;
-	private $default_sort_column;
-	private $default_sort_direction;
-	private $empty_message;
-	private $paging_message;
+    private $html;
+    private $query;
+    private $columns;
+    private $default_sort_column;
+    private $default_sort_direction;
+    private $empty_message;
+    private $paging_message;
 
-	public function __construct()
-	{
-		$this->name = 'statsbestcategories';
-		$this->tab = 'analytics_stats';
-		$this->version = '1.5.1';
-		$this->author = 'PrestaShop';
-		$this->need_instance = 0;
+    public function __construct()
+    {
+        $this->name = 'statsbestcategories';
+        $this->tab = 'analytics_stats';
+        $this->version = '2.0.0';
+        $this->author = 'PrestaShop';
+        $this->need_instance = 0;
 
-		parent::__construct();
+        parent::__construct();
 
-		$this->default_sort_column = 'totalPriceSold';
-		$this->default_sort_direction = 'DESC';
-		$this->empty_message = $this->l('Empty recordset returned');
-		$this->paging_message = sprintf($this->l('Displaying %1$s of %2$s'), '{0} - {1}', '{2}');
+        $this->default_sort_column = 'totalPriceSold';
+        $this->default_sort_direction = 'DESC';
+        $this->empty_message = $this->trans('Empty recordset returned', array(), 'Modules.Statsbestcategories.Admin');
+        $this->paging_message = $this->trans('Displaying %1$s of %2$s', array('{0} - {1}', '{2}'), 'Admin.Global');
 
-		$this->columns = array(
-			array(
-				'id' => 'name',
-				'header' => $this->l('Name'),
-				'dataIndex' => 'name',
-				'align' => 'left'
-			),
-			array(
-				'id' => 'totalQuantitySold',
-				'header' => $this->l('Total Quantity Sold'),
-				'dataIndex' => 'totalQuantitySold',
-				'align' => 'center'
-			),
-			array(
-				'id' => 'totalPriceSold',
-				'header' => $this->l('Total Price'),
-				'dataIndex' => 'totalPriceSold',
-				'align' => 'right'
-			),
-			array(
-				'id' => 'totalWholeSalePriceSold',
-				'header' => $this->l('Total Margin'),
-				'dataIndex' => 'totalWholeSalePriceSold',
-				'align' => 'center'
-			),
-			array(
-				'id' => 'totalPageViewed',
-				'header' => $this->l('Total Viewed'),
-				'dataIndex' => 'totalPageViewed',
-				'align' => 'center'
-			)
-		);
+        $this->columns = array(
+            array(
+                'id' => 'name',
+                'header' => $this->trans('Name', array(), 'Admin.Global'),
+                'dataIndex' => 'name',
+                'align' => 'left'
+            ),
+            array(
+                'id' => 'totalQuantitySold',
+                'header' => $this->trans('Total Quantity Sold', array(), 'Modules.Statsbestcategories.Admin'),
+                'dataIndex' => 'totalQuantitySold',
+                'align' => 'center'
+            ),
+            array(
+                'id' => 'totalPriceSold',
+                'header' => $this->trans('Total Price', array(), 'Modules.Statsbestcategories.Admin'),
+                'dataIndex' => 'totalPriceSold',
+                'align' => 'right'
+            ),
+            array(
+                'id' => 'totalWholeSalePriceSold',
+                'header' => $this->trans('Total Margin', array(), 'Modules.Statsbestcategories.Admin'),
+                'dataIndex' => 'totalWholeSalePriceSold',
+                'align' => 'center'
+            ),
+            array(
+                'id' => 'totalPageViewed',
+                'header' => $this->trans('Total Viewed', array(), 'Modules.Statsbestcategories.Admin'),
+                'dataIndex' => 'totalPageViewed',
+                'align' => 'center'
+            )
+        );
 
-		$this->displayName = $this->l('Best categories');
-		$this->description = $this->l('Adds a list of the best categories to the Stats dashboard.');
-		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.7.0.99');
-	}
+        $this->displayName = $this->trans('Best categories', array(), 'Modules.Statsbestcategories.Admin');
+        $this->description = $this->trans('Adds a list of the best categories to the Stats dashboard.', array(), 'Modules.Statsbestcategories.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
+    }
 
-	public function install()
-	{
-		return (parent::install() && $this->registerHook('AdminStatsModules'));
-	}
+    public function install()
+    {
+        return (parent::install() && $this->registerHook('AdminStatsModules'));
+    }
 
-	public function hookAdminStatsModules($params)
-	{
+    public function hookAdminStatsModules($params)
+    {
         $onlyChildren = (int)Tools::getValue('onlyChildren');
-        
-		$engine_params = array(
-			'id' => 'id_category',
-			'title' => $this->displayName,
-			'columns' => $this->columns,
-			'defaultSortColumn' => $this->default_sort_column,
-			'defaultSortDirection' => $this->default_sort_direction,
-			'emptyMessage' => $this->empty_message,
-			'pagingMessage' => $this->paging_message,
+
+        $engine_params = array(
+            'id' => 'id_category',
+            'title' => $this->displayName,
+            'columns' => $this->columns,
+            'defaultSortColumn' => $this->default_sort_column,
+            'defaultSortDirection' => $this->default_sort_direction,
+            'emptyMessage' => $this->empty_message,
+            'pagingMessage' => $this->paging_message,
             'customParams' => array(
                 'onlyChildren' => $onlyChildren,
             )
-		);
+        );
 
-		if (Tools::getValue('export'))
-			$this->csvExport($engine_params);
+        if (Tools::getValue('export')) {
+            $this->csvExport($engine_params);
+        }
 
-		$this->html = '
+        $this->html = '
 			<div class="panel-heading">
 				<i class="icon-sitemap"></i> '.$this->displayName.'
 			</div>
@@ -123,14 +125,14 @@ class StatsBestCategories extends ModuleGrid
             <div class="row form-horizontal">
                 <div class="col-md-3">
                     <a class="btn btn-default export-csv" href="'.Tools::safeOutput($_SERVER['REQUEST_URI'].'&export=1').'">
-                        <i class="icon-cloud-upload"></i> '.$this->l('CSV Export').'
+                        <i class="icon-cloud-upload"></i> '.$this->trans('CSV Export', array(), 'Admin.Global').'
                     </a>
                 </div>
                 <div class="col-md-9">
                     <div class="checkbox">
                         <label for="onlyChildren">
                             <input type="checkbox" name="onlyChildren" id="onlyChildren" value="1" '.($onlyChildren == 1 ? 'checked="checked"' : '').'>
-                            '.$this->l('Display final level categories only (that have no child categories)').'
+                            '.$this->trans('Display final level categories only (that have no child categories)', array(), 'Modules.Statsbestcategories.Admin').'
                         </label>
                     </div>
 
@@ -144,60 +146,58 @@ class StatsBestCategories extends ModuleGrid
                 });
             </script>';
 
-		return $this->html;
-	}
+        return $this->html;
+    }
 
-	public function getData()
-	{
-		$currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
-		$date_between = $this->getDate();
-		$id_lang = $this->getLang();
+    public function getData()
+    {
+        $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+        $date_between = $this->getDate();
+        $id_lang = $this->getLang();
 
-		//If column 'order_detail.original_wholesale_price' does not exist, create it
-		Db::getInstance(_PS_USE_SQL_SLAVE_)->query('SHOW COLUMNS FROM `'._DB_PREFIX_.'order_detail` LIKE "original_wholesale_price"');
-		if (Db::getInstance()->NumRows() == 0) {
-			Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'order_detail` ADD `original_wholesale_price` DECIMAL( 20, 6 ) NOT NULL DEFAULT  "0.000000"');
-		}
+        //If column 'order_detail.original_wholesale_price' does not exist, create it
+        Db::getInstance(_PS_USE_SQL_SLAVE_)->query('SHOW COLUMNS FROM `'._DB_PREFIX_.'order_detail` LIKE "original_wholesale_price"');
+        if (Db::getInstance()->NumRows() == 0) {
+            Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'order_detail` ADD `original_wholesale_price` DECIMAL( 20, 6 ) NOT NULL DEFAULT  "0.000000"');
+        }
 
-		// If a shop is selected, get all children categories for the shop
-		$categories = array();
-		if (Shop::getContext() != Shop::CONTEXT_ALL)
-		{
-			$sql = 'SELECT c.nleft, c.nright
+        // If a shop is selected, get all children categories for the shop
+        $categories = array();
+        if (Shop::getContext() != Shop::CONTEXT_ALL) {
+            $sql = 'SELECT c.nleft, c.nright
 					FROM '._DB_PREFIX_.'category c
 					WHERE c.id_category IN (
 						SELECT s.id_category
 						FROM '._DB_PREFIX_.'shop s
 						WHERE s.id_shop IN ('.implode(', ', Shop::getContextListShopID()).')
 					)';
-			if ($result = Db::getInstance()->executeS($sql))
-			{
-				$ntree_restriction = array();
-				foreach ($result as $row)
-					$ntree_restriction[] = '(nleft >= '.$row['nleft'].' AND nright <= '.$row['nright'].')';
+            if ($result = Db::getInstance()->executeS($sql)) {
+                $ntree_restriction = array();
+                foreach ($result as $row) {
+                    $ntree_restriction[] = '(nleft >= '.$row['nleft'].' AND nright <= '.$row['nright'].')';
+                }
 
-				if ($ntree_restriction)
-				{
-					$sql = 'SELECT id_category
+                if ($ntree_restriction) {
+                    $sql = 'SELECT id_category
 							FROM '._DB_PREFIX_.'category
 							WHERE '.implode(' OR ', $ntree_restriction);
-					if ($result = Db::getInstance()->executeS($sql))
-					{
-						foreach ($result as $row)
-							$categories[] = $row['id_category'];
-					}
-				}
-			}
-		}
+                    if ($result = Db::getInstance()->executeS($sql)) {
+                        foreach ($result as $row) {
+                            $categories[] = $row['id_category'];
+                        }
+                    }
+                }
+            }
+        }
 
         $onlyChildren = '';
         if ((int)Tools::getValue('onlyChildren') == 1) {
             $onlyChildren = 'AND NOT EXISTS (SELECT NULL FROM '._DB_PREFIX_.'category WHERE id_parent = ca.id_category)';
         }
 
-		// Get best categories
-		if (version_compare(_PS_VERSION_, '1.6.1.1', '>=')) {
-			$this->query = '
+        // Get best categories
+        if (version_compare(_PS_VERSION_, '1.6.1.1', '>=')) {
+            $this->query = '
 				SELECT SQL_CALC_FOUND_ROWS ca.`id_category`, CONCAT(parent.name, \' > \', calang.`name`) as name,
 				IFNULL(SUM(t.`totalQuantitySold`), 0) AS totalQuantitySold,
 				ROUND(IFNULL(SUM(t.`totalPriceSold`), 0), 2) AS totalPriceSold,
@@ -252,8 +252,8 @@ class StatsBestCategories extends ModuleGrid
 			'.$onlyChildren.'
 			GROUP BY ca.`id_category`
 			HAVING ca.`id_category` != 1';
-		}else{
-			$this->query = '
+        } else {
+            $this->query = '
 			SELECT SQL_CALC_FOUND_ROWS ca.`id_category`, CONCAT(parent.name, \' > \', calang.`name`) as name,
 				IFNULL(SUM(t.`totalQuantitySold`), 0) AS totalQuantitySold,
 				ROUND(IFNULL(SUM(t.`totalPriceSold`), 0), 2) AS totalPriceSold,
@@ -296,21 +296,21 @@ class StatsBestCategories extends ModuleGrid
 			'.$onlyChildren.'
 			GROUP BY ca.`id_category`
 			HAVING ca.`id_category` != 1';
-		}
+        }
 
-		if (Validate::IsName($this->_sort))
-		{
-			$this->query .= ' ORDER BY `'.bqSQL($this->_sort).'`';
-			if (isset($this->_direction) && Validate::isSortDirection($this->_direction))
-				$this->query .= ' '.$this->_direction;
-		}
+        if (Validate::IsName($this->_sort)) {
+            $this->query .= ' ORDER BY `'.bqSQL($this->_sort).'`';
+            if (isset($this->_direction) && Validate::isSortDirection($this->_direction)) {
+                $this->query .= ' '.$this->_direction;
+            }
+        }
 
-		if (($this->_start === 0 || Validate::IsUnsignedInt($this->_start)) && Validate::IsUnsignedInt($this->_limit))
-			$this->query .= ' LIMIT '.(int)$this->_start.', '.(int)$this->_limit;
+        if (($this->_start === 0 || Validate::IsUnsignedInt($this->_start)) && Validate::IsUnsignedInt($this->_limit)) {
+            $this->query .= ' LIMIT '.(int)$this->_start.', '.(int)$this->_limit;
+        }
 
-		$values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($this->query);
-		foreach ($values as &$value){
-
+        $values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($this->query);
+        foreach ($values as &$value) {
             if ((int)Tools::getIsset('export') == false) {
                 $parts = explode('>', $value['name']);
                 $value['name'] = '<i class="icon-folder-open"></i> '.trim($parts[0]).' > ';
@@ -322,13 +322,13 @@ class StatsBestCategories extends ModuleGrid
                 $value['name'] .= trim($parts[1]);
             }
 
-			if (isset($value['totalWholeSalePriceSold'])) {
-				$value['totalWholeSalePriceSold'] = Tools::displayPrice($value['totalPriceSold'] - $value['totalWholeSalePriceSold'], $currency);
-			}
-			$value['totalPriceSold'] = Tools::displayPrice($value['totalPriceSold'], $currency);
-		}
+            if (isset($value['totalWholeSalePriceSold'])) {
+                $value['totalWholeSalePriceSold'] = Tools::displayPrice($value['totalPriceSold'] - $value['totalWholeSalePriceSold'], $currency);
+            }
+            $value['totalPriceSold'] = Tools::displayPrice($value['totalPriceSold'], $currency);
+        }
 
-		$this->_values = $values;
-		$this->_totalCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()');
-	}
+        $this->_values = $values;
+        $this->_totalCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()');
+    }
 }

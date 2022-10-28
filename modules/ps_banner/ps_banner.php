@@ -37,17 +37,17 @@ class Ps_Banner extends Module implements WidgetInterface
 	public function __construct()
 	{
 		$this->name = 'ps_banner';
-		$this->version = '1.0.5';
+		$this->version = '2.0.1';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Banner', array(), 'Modules.Banner');
-        $this->description = $this->trans('Displays a banner on your shop.', array(), 'Modules.Banner');
+        $this->displayName = $this->trans('Banner', array(), 'Modules.Banner.Admin');
+        $this->description = $this->trans('Displays a banner on your shop.', array(), 'Modules.Banner.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         $this->templateFile = 'module:ps_banner/ps_banner.tpl';
     }
@@ -164,24 +164,24 @@ class Ps_Banner extends Module implements WidgetInterface
                 'input' => array(
                     array(
                         'type' => 'file_lang',
-                        'label' => $this->trans('Banner image', array(), 'Modules.Banner'),
+                        'label' => $this->trans('Banner image', array(), 'Modules.Banner.Admin'),
                         'name' => 'BANNER_IMG',
-                        'desc' => $this->trans('Upload an image for your top banner. The recommended dimensions are 1110 x 214px if you are using the default theme.', array(), 'Modules.Banner'),
+                        'desc' => $this->trans('Upload an image for your top banner. The recommended dimensions are 1110 x 214px if you are using the default theme.', array(), 'Modules.Banner.Admin'),
                         'lang' => true,
                     ),
                     array(
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('Banner Link', array(), 'Modules.Banner'),
+                        'label' => $this->trans('Banner Link', array(), 'Modules.Banner.Admin'),
                         'name' => 'BANNER_LINK',
-                        'desc' => $this->trans('Enter the link associated to your banner. When clicking on the banner, the link opens in the same window. If no link is entered, it redirects to the homepage.', array(), 'Modules.Banner')
+                        'desc' => $this->trans('Enter the link associated to your banner. When clicking on the banner, the link opens in the same window. If no link is entered, it redirects to the homepage.', array(), 'Modules.Banner.Admin')
                     ),
                     array(
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('Banner description', array(), 'Modules.Banner'),
+                        'label' => $this->trans('Banner description', array(), 'Modules.Banner.Admin'),
                         'name' => 'BANNER_DESC',
-                        'desc' => $this->trans('Please enter a short but meaningful description for the banner.', array(), 'Modules.Banner')
+                        'desc' => $this->trans('Please enter a short but meaningful description for the banner.', array(), 'Modules.Banner.Admin')
                     )
                 ),
                 'submit' => array(

@@ -28,21 +28,21 @@
 
 class AdminDashgoalsController extends ModuleAdminController
 {
-	public function ajaxProcessChangeConfYear()
-	{
-		$year = (int)Tools::getValue('year');
-		Configuration::updateValue('PS_DASHGOALS_CURRENT_YEAR', $year);
-		$months = $this->module->setMonths($year);
+    public function ajaxProcessChangeConfYear()
+    {
+        $year = (int)Tools::getValue('year');
+        Configuration::updateValue('PS_DASHGOALS_CURRENT_YEAR', $year);
+        $months = $this->module->setMonths($year);
 
-		$this->context->smarty->assign(
-			array(
-				'currency' => $this->context->currency,
-				'goals_year' => $year,
-				'goals_months' => $months,
-				'link' => $this->context->link
-			)
-		);
+        $this->context->smarty->assign(
+            array(
+                'currency' => $this->context->currency,
+                'goals_year' => $year,
+                'goals_months' => $months,
+                'link' => $this->context->link
+            )
+        );
 
-		die($this->module->display(_PS_MODULE_DIR_.$this->module->name.DIRECTORY_SEPARATOR.$this->module->name.'.php', 'config.tpl'));
-	}
+        die($this->module->display(_PS_MODULE_DIR_.$this->module->name.DIRECTORY_SEPARATOR.$this->module->name.'.php', 'config.tpl'));
+    }
 }

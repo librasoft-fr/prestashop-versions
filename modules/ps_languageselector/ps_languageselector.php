@@ -38,15 +38,15 @@ class Ps_Languageselector extends Module implements WidgetInterface
     {
         $this->name = 'ps_languageselector';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.6';
+        $this->version = '2.0.2';
         $this->need_instance = 0;
 
         parent::__construct();
 
-        $this->displayName = $this->l('Language selector block');
-        $this->description = $this->l('Adds a block allowing customers to select a language for your store\'s content.');
+        $this->displayName = $this->trans('Language selector block', array(), 'Modules.Languageselector.Admin');
+        $this->description = $this->trans('Adds a block allowing customers to select a language for your store\'s content.', array(), 'Modules.Languageselector.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         $this->templateFile = 'module:ps_languageselector/ps_languageselector.tpl';
     }
@@ -57,7 +57,7 @@ class Ps_Languageselector extends Module implements WidgetInterface
 
         if (1 < count($languages)) {
             $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
-            
+
             return $this->fetch($this->templateFile);
         }
 

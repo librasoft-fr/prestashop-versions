@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
+class ComposerStaticInit299b4a229b14993dba31010fd086193b
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -16,8 +16,8 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
         'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         'edc6464955a37aa4d5fbf39d40fb6ee7' => __DIR__ . '/..' . '/symfony/polyfill-php55/bootstrap.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '3e2471375464aac821502deb0ac64275' => __DIR__ . '/..' . '/symfony/polyfill-php54/bootstrap.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '6a47392539ca2329373e0d33e1dba053' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/bootstrap.php',
         '32dcc8afd4335739640db7d200c1971d' => __DIR__ . '/..' . '/symfony/polyfill-apcu/bootstrap.php',
         'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
@@ -518,6 +518,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'DoctrineExtensions\\Query\\Mysql\\DayOfYear' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/DayOfYear.php',
         'DoctrineExtensions\\Query\\Mysql\\Degrees' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Degrees.php',
         'DoctrineExtensions\\Query\\Mysql\\Div' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Div.php',
+        'DoctrineExtensions\\Query\\Mysql\\Extract' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Extract.php',
         'DoctrineExtensions\\Query\\Mysql\\Field' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Field.php',
         'DoctrineExtensions\\Query\\Mysql\\FindInSet' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/FindInSet.php',
         'DoctrineExtensions\\Query\\Mysql\\Floor' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Floor.php',
@@ -565,6 +566,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'DoctrineExtensions\\Query\\Mysql\\TimestampDiff' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/TimestampDiff.php',
         'DoctrineExtensions\\Query\\Mysql\\Unhex' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Unhex.php',
         'DoctrineExtensions\\Query\\Mysql\\UnixTimestamp' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/UnixTimestamp.php',
+        'DoctrineExtensions\\Query\\Mysql\\UtcTimestamp' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/UtcTimestamp.php',
         'DoctrineExtensions\\Query\\Mysql\\UuidShort' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/UuidShort.php',
         'DoctrineExtensions\\Query\\Mysql\\Variance' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Variance.php',
         'DoctrineExtensions\\Query\\Mysql\\Week' => __DIR__ . '/..' . '/beberlei/DoctrineExtensions/src/Query/Mysql/Week.php',
@@ -2215,23 +2217,28 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'PrestaShopBundle\\Entity\\Attribute' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Attribute.php',
         'PrestaShopBundle\\Entity\\AttributeGroup' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeGroup.php',
         'PrestaShopBundle\\Entity\\AttributeGroupLang' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeGroupLang.php',
-        'PrestaShopBundle\\Entity\\AttributeGroupLangRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeGroupLangRepository.php',
-        'PrestaShopBundle\\Entity\\AttributeGroupRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeGroupRepository.php',
         'PrestaShopBundle\\Entity\\AttributeLang' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeLang.php',
-        'PrestaShopBundle\\Entity\\AttributeLangRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeLangRepository.php',
-        'PrestaShopBundle\\Entity\\AttributeRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeRepository.php',
         'PrestaShopBundle\\Entity\\Lang' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Lang.php',
         'PrestaShopBundle\\Entity\\ModuleHistory' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/ModuleHistory.php',
+        'PrestaShopBundle\\Entity\\Repository\\AttributeGroupLangRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/AttributeGroupLangRepository.php',
+        'PrestaShopBundle\\Entity\\Repository\\AttributeGroupRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/AttributeGroupRepository.php',
+        'PrestaShopBundle\\Entity\\Repository\\AttributeLangRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/AttributeLangRepository.php',
+        'PrestaShopBundle\\Entity\\Repository\\AttributeRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/AttributeRepository.php',
         'PrestaShopBundle\\Entity\\Repository\\LangRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/LangRepository.php',
+        'PrestaShopBundle\\Entity\\Repository\\ShopGroupRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/ShopGroupRepository.php',
+        'PrestaShopBundle\\Entity\\Repository\\ShopRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/ShopRepository.php',
+        'PrestaShopBundle\\Entity\\Repository\\TabLangRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/TabLangRepository.php',
+        'PrestaShopBundle\\Entity\\Repository\\TabRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/TabRepository.php',
         'PrestaShopBundle\\Entity\\Repository\\TranslationRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Repository/TranslationRepository.php',
         'PrestaShopBundle\\Entity\\Shop' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Shop.php',
         'PrestaShopBundle\\Entity\\ShopGroup' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/ShopGroup.php',
-        'PrestaShopBundle\\Entity\\ShopGroupRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/ShopGroupRepository.php',
-        'PrestaShopBundle\\Entity\\ShopRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/ShopRepository.php',
+        'PrestaShopBundle\\Entity\\Tab' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Tab.php',
+        'PrestaShopBundle\\Entity\\TabLang' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/TabLang.php',
         'PrestaShopBundle\\Entity\\Translation' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Translation.php',
-        'PrestaShopBundle\\Entity\\TranslationRepository' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/TranslationRepository.php',
         'PrestaShopBundle\\EventListener\\TokenizedUrlsListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/TokenizedUrlsListener.php',
         'PrestaShopBundle\\EventListener\\UserLocaleListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/UserLocaleListener.php',
+        'PrestaShopBundle\\Event\\Dispatcher\\NullDispatcher' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Event/Dispatcher/NullDispatcher.php',
+        'PrestaShopBundle\\Event\\ModuleManagementEvent' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Event/ModuleManagementEvent.php',
         'PrestaShopBundle\\Exception\\ServiceDefinitionException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/ServiceDefinitionException.php',
         'PrestaShopBundle\\Exception\\UpdateProductException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Exception/UpdateProductException.php',
         'PrestaShopBundle\\Form\\Admin\\Category\\SimpleCategory' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Category/SimpleCategory.php',
@@ -2300,6 +2307,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'PrestaShopBundle\\Service\\TransitionalBehavior\\AdminPagePreferenceInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/TransitionalBehavior/AdminPagePreferenceInterface.php',
         'PrestaShopBundle\\Service\\TransitionalBehavior\\AdminUrlGeneratorFactory' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Service/TransitionalBehavior/AdminUrlGeneratorFactory.php',
         'PrestaShopBundle\\Tests\\Command\\ExportThemeCommandTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Command/ExportThemeCommandTest.php',
+        'PrestaShopBundle\\Tests\\Controller\\ControllerTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Controller/ControllerTest.php',
         'PrestaShopBundle\\Tests\\Mock\\AdapterSecurityAdminMock' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Mock/AdapterSecurityAdminMock.php',
         'PrestaShopBundle\\Tests\\Mock\\PageVoter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Mock/PageVoter.php',
         'PrestaShopBundle\\Tests\\Model\\Product\\AdminModelAdapterTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Model/Product/AdminModelAdapterTest.php',
@@ -2310,6 +2318,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'PrestaShopBundle\\Tests\\Translation\\Factory\\TranslationsFactoryTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Translation/Factory/TranslationsFactoryTest.php',
         'PrestaShopBundle\\Tests\\Translation\\Provider\\BackOfficeProviderTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Translation/Provider/BackOfficeProviderTest.php',
         'PrestaShopBundle\\Tests\\Translation\\Provider\\FrontOfficeProviderTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Translation/Provider/FrontOfficeProviderTest.php',
+        'PrestaShopBundle\\Tests\\Translation\\Provider\\ModuleProviderTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Translation/Provider/ModuleProviderTest.php',
         'PrestaShopBundle\\Tests\\Translation\\Provider\\ModulesProviderTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Translation/Provider/ModulesProviderTest.php',
         'PrestaShopBundle\\Tests\\Translation\\Provider\\ThemeProviderTest' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Tests/Translation/Provider/ThemeProviderTest.php',
         'PrestaShopBundle\\Translation\\Exporter\\ThemeExporter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Exporter/ThemeExporter.php',
@@ -2325,6 +2334,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'PrestaShopBundle\\Translation\\Provider\\BackOfficeProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/BackOfficeProvider.php',
         'PrestaShopBundle\\Translation\\Provider\\FrontOfficeProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/FrontOfficeProvider.php',
         'PrestaShopBundle\\Translation\\Provider\\MailsProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/MailsProvider.php',
+        'PrestaShopBundle\\Translation\\Provider\\ModuleProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/ModuleProvider.php',
         'PrestaShopBundle\\Translation\\Provider\\ModulesProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/ModulesProvider.php',
         'PrestaShopBundle\\Translation\\Provider\\OthersProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/OthersProvider.php',
         'PrestaShopBundle\\Translation\\Provider\\ProviderInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/ProviderInterface.php',
@@ -2333,6 +2343,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'PrestaShopBundle\\Translation\\Provider\\UseDefaultCatalogueInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Provider/UseDefaultCatalogueInterface.php',
         'PrestaShopBundle\\Translation\\Translator' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/Translator.php',
         'PrestaShopBundle\\Translation\\TranslatorComponent' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/TranslatorComponent.php',
+        'PrestaShopBundle\\Translation\\View\\TreeBuilder' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Translation/View/TreeBuilder.php',
         'PrestaShopBundle\\Twig\\AdminExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/AdminExtension.php',
         'PrestaShopBundle\\Twig\\DataFormatterExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/DataFormatterExtension.php',
         'PrestaShopBundle\\Twig\\HookExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/HookExtension.php',
@@ -2381,6 +2392,9 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'PrestaShop\\PrestaShop\\Adapter\\Module\\ModuleDataUpdater' => __DIR__ . '/../..' . '/src/Adapter/Module/ModuleDataUpdater.php',
         'PrestaShop\\PrestaShop\\Adapter\\Module\\ModulePresenter' => __DIR__ . '/../..' . '/src/Adapter/Module/ModulePresenter.php',
         'PrestaShop\\PrestaShop\\Adapter\\Module\\ModuleZipManager' => __DIR__ . '/../..' . '/src/Adapter/Module/ModuleZipManager.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Module\\Tab\\ModuleTabManagementSubscriber' => __DIR__ . '/../..' . '/src/Adapter/Module/Tab/ModuleTabManagementSubscriber.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Module\\Tab\\ModuleTabRegister' => __DIR__ . '/../..' . '/src/Adapter/Module/Tab/ModuleTabRegister.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Module\\Tab\\ModuleTabUnregister' => __DIR__ . '/../..' . '/src/Adapter/Module/Tab/ModuleTabUnregister.php',
         'PrestaShop\\PrestaShop\\Adapter\\NewProducts\\NewProductsProductSearchProvider' => __DIR__ . '/../..' . '/src/Adapter/NewProducts/NewProductsProductSearchProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\ObjectPresenter' => __DIR__ . '/../..' . '/src/Adapter/ObjectPresenter.php',
         'PrestaShop\\PrestaShop\\Adapter\\Order\\OrderPresenter' => __DIR__ . '/../..' . '/src/Adapter/Order/OrderPresenter.php',
@@ -2459,6 +2473,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'PrestaShop\\PrestaShop\\Core\\Module\\WidgetInterface' => __DIR__ . '/../..' . '/src/Core/Module/WidgetInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Payment\\PaymentOption' => __DIR__ . '/../..' . '/src/Core/Payment/PaymentOption.php',
         'PrestaShop\\PrestaShop\\Core\\Payment\\PaymentOptionFormDecorator' => __DIR__ . '/../..' . '/src/Core/Payment/PaymentOptionFormDecorator.php',
+        'PrestaShop\\PrestaShop\\Core\\Product\\ProductAdminDrawer' => __DIR__ . '/../..' . '/src/Core/Product/ProductAdminDrawer.php',
         'PrestaShop\\PrestaShop\\Core\\Product\\ProductExtraContent' => __DIR__ . '/../..' . '/src/Core/Product/ProductExtraContent.php',
         'PrestaShop\\PrestaShop\\Core\\Product\\ProductExtraContentFinder' => __DIR__ . '/../..' . '/src/Core/Product/ProductExtraContentFinder.php',
         'PrestaShop\\PrestaShop\\Core\\Product\\ProductListingPresenter' => __DIR__ . '/../..' . '/src/Core/Product/ProductListingPresenter.php',
@@ -2807,6 +2822,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Symfony\\Bundle\\FrameworkBundle\\DependencyInjection\\Compiler\\CompilerDebugDumpPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/Compiler/CompilerDebugDumpPass.php',
         'Symfony\\Bundle\\FrameworkBundle\\DependencyInjection\\Compiler\\ConfigCachePass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/Compiler/ConfigCachePass.php',
         'Symfony\\Bundle\\FrameworkBundle\\DependencyInjection\\Compiler\\ContainerBuilderDebugDumpPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/Compiler/ContainerBuilderDebugDumpPass.php',
+        'Symfony\\Bundle\\FrameworkBundle\\DependencyInjection\\Compiler\\DataCollectorTranslatorPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/Compiler/DataCollectorTranslatorPass.php',
         'Symfony\\Bundle\\FrameworkBundle\\DependencyInjection\\Compiler\\FormPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/Compiler/FormPass.php',
         'Symfony\\Bundle\\FrameworkBundle\\DependencyInjection\\Compiler\\FragmentRendererPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/Compiler/FragmentRendererPass.php',
         'Symfony\\Bundle\\FrameworkBundle\\DependencyInjection\\Compiler\\LoggingTranslatorPass' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/Compiler/LoggingTranslatorPass.php',
@@ -3938,6 +3954,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Symfony\\Component\\Routing\\Loader\\DirectoryLoader' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Routing/Loader/DirectoryLoader.php',
         'Symfony\\Component\\Routing\\Loader\\ObjectRouteLoader' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Routing/Loader/ObjectRouteLoader.php',
         'Symfony\\Component\\Routing\\Loader\\PhpFileLoader' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Routing/Loader/PhpFileLoader.php',
+        'Symfony\\Component\\Routing\\Loader\\RecursiveCallbackFilterIterator' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Routing/Loader/AnnotationDirectoryLoader.php',
         'Symfony\\Component\\Routing\\Loader\\XmlFileLoader' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Routing/Loader/XmlFileLoader.php',
         'Symfony\\Component\\Routing\\Loader\\YamlFileLoader' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Routing/Loader/YamlFileLoader.php',
         'Symfony\\Component\\Routing\\Matcher\\ApacheUrlMatcher' => __DIR__ . '/..' . '/symfony/symfony/src/Symfony/Component/Routing/Matcher/ApacheUrlMatcher.php',
@@ -4584,6 +4601,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Twig_Cache_Null' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Cache/Null.php',
         'Twig_Compiler' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Compiler.php',
         'Twig_CompilerInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/CompilerInterface.php',
+        'Twig_ContainerRuntimeLoader' => __DIR__ . '/..' . '/twig/twig/lib/Twig/ContainerRuntimeLoader.php',
         'Twig_Environment' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Environment.php',
         'Twig_Error' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Error.php',
         'Twig_Error_Loader' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Error/Loader.php',
@@ -4603,6 +4621,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Twig_Extension_Sandbox' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Extension/Sandbox.php',
         'Twig_Extension_Staging' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Extension/Staging.php',
         'Twig_Extension_StringLoader' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Extension/StringLoader.php',
+        'Twig_FactoryRuntimeLoader' => __DIR__ . '/..' . '/twig/twig/lib/Twig/FactoryRuntimeLoader.php',
         'Twig_FileExtensionEscapingStrategy' => __DIR__ . '/..' . '/twig/twig/lib/Twig/FileExtensionEscapingStrategy.php',
         'Twig_Filter' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Filter.php',
         'Twig_FilterCallableInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/FilterCallableInterface.php',
@@ -4625,6 +4644,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Twig_Loader_String' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Loader/String.php',
         'Twig_Markup' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Markup.php',
         'Twig_Node' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Node.php',
+        'Twig_NodeCaptureInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/NodeCaptureInterface.php',
         'Twig_NodeInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/NodeInterface.php',
         'Twig_NodeOutputInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/NodeOutputInterface.php',
         'Twig_NodeTraverser' => __DIR__ . '/..' . '/twig/twig/lib/Twig/NodeTraverser.php',
@@ -4710,6 +4730,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Twig_Node_SetTemp' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Node/SetTemp.php',
         'Twig_Node_Spaceless' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Node/Spaceless.php',
         'Twig_Node_Text' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Node/Text.php',
+        'Twig_Node_With' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Node/With.php',
         'Twig_Parser' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Parser.php',
         'Twig_ParserInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/ParserInterface.php',
         'Twig_Profiler_Dumper_Blackfire' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Profiler/Dumper/Blackfire.php',
@@ -4723,14 +4744,19 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Twig_Sandbox_SecurityError' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityError.php',
         'Twig_Sandbox_SecurityNotAllowedFilterError' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityNotAllowedFilterError.php',
         'Twig_Sandbox_SecurityNotAllowedFunctionError' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityNotAllowedFunctionError.php',
+        'Twig_Sandbox_SecurityNotAllowedMethodError' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityNotAllowedMethodError.php',
+        'Twig_Sandbox_SecurityNotAllowedPropertyError' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityNotAllowedPropertyError.php',
         'Twig_Sandbox_SecurityNotAllowedTagError' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityNotAllowedTagError.php',
         'Twig_Sandbox_SecurityPolicy' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityPolicy.php',
         'Twig_Sandbox_SecurityPolicyInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Sandbox/SecurityPolicyInterface.php',
         'Twig_SimpleFilter' => __DIR__ . '/..' . '/twig/twig/lib/Twig/SimpleFilter.php',
         'Twig_SimpleFunction' => __DIR__ . '/..' . '/twig/twig/lib/Twig/SimpleFunction.php',
         'Twig_SimpleTest' => __DIR__ . '/..' . '/twig/twig/lib/Twig/SimpleTest.php',
+        'Twig_Source' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Source.php',
+        'Twig_SourceContextLoaderInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/SourceContextLoaderInterface.php',
         'Twig_Template' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Template.php',
         'Twig_TemplateInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TemplateInterface.php',
+        'Twig_TemplateWrapper' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TemplateWrapper.php',
         'Twig_Test' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Test.php',
         'Twig_TestCallableInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TestCallableInterface.php',
         'Twig_TestInterface' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TestInterface.php',
@@ -4761,6 +4787,7 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
         'Twig_TokenParser_Set' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TokenParser/Set.php',
         'Twig_TokenParser_Spaceless' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TokenParser/Spaceless.php',
         'Twig_TokenParser_Use' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TokenParser/Use.php',
+        'Twig_TokenParser_With' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TokenParser/With.php',
         'Twig_TokenStream' => __DIR__ . '/..' . '/twig/twig/lib/Twig/TokenStream.php',
         'Twig_Util_DeprecationCollector' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Util/DeprecationCollector.php',
         'Twig_Util_TemplateDirIterator' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Util/TemplateDirIterator.php',
@@ -4770,11 +4797,11 @@ class ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit950f0e3b1c3661fbd81ee9d9bf0d0ab9::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit299b4a229b14993dba31010fd086193b::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit299b4a229b14993dba31010fd086193b::$classMap;
 
         }, null, ClassLoader::class);
     }

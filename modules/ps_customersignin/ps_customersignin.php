@@ -38,14 +38,14 @@ class Ps_CustomerSignIn extends Module implements WidgetInterface
     {
         $this->name = 'ps_customersignin';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.3';
+        $this->version = '2.0.1';
         $this->need_instance = 0;
 
         parent::__construct();
 
-        $this->displayName = $this->getTranslator()->trans('Customer "Sign in" link', array(), 'Modules.CustomerSignIn');
-        $this->description = $this->getTranslator()->trans('Adds a block that displays information about the customer.', array(), 'Modules.CustomerSignIn');
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->displayName = $this->getTranslator()->trans('Customer "Sign in" link', array(), 'Modules.Customersignin.Admin');
+        $this->description = $this->getTranslator()->trans('Adds a block that displays information about the customer.', array(), 'Modules.Customersignin.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         $this->templateFile = 'module:ps_customersignin/ps_customersignin.tpl';
     }
@@ -61,7 +61,7 @@ class Ps_CustomerSignIn extends Module implements WidgetInterface
                     '%firstname%' => $this->context->customer->firstname,
                     '%lastname%' => $this->context->customer->lastname,
                 ),
-                'Modules.CustomerSignIn'
+                'Modules.Customersignin.Admin'
             );
         } else {
             $customerName = '';

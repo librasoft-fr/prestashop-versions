@@ -49,7 +49,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
     {
         $this->name = 'ps_imageslider';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.0';
+        $this->version = '2.0.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->secure_key = Tools::encrypt($this->name);
@@ -57,9 +57,9 @@ class Ps_ImageSlider extends Module implements WidgetInterface
 
         parent::__construct();
 
-        $this->displayName = $this->getTranslator()->trans('Image slider', array(), 'Modules.ImageSlider');
-        $this->description = $this->getTranslator()->trans('Adds an image slider to your site.', array(), 'Modules.ImageSlider');
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->displayName = $this->getTranslator()->trans('Image slider', array(), 'Modules.Imageslider.Admin');
+        $this->description = $this->getTranslator()->trans('Adds an image slider to your site.', array(), 'Modules.Imageslider.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         $this->templateFile = 'module:ps_imageslider/views/templates/hook/slider.tpl';
     }
@@ -294,66 +294,66 @@ class Ps_ImageSlider extends Module implements WidgetInterface
         /* Validation for Slider configuration */
         if (Tools::isSubmit('submitSlider')) {
             if (!Validate::isInt(Tools::getValue('HOMESLIDER_SPEED'))) {
-                $errors[] = $this->getTranslator()->trans('Invalid values', array(), 'Modules.ImageSlider');
+                $errors[] = $this->getTranslator()->trans('Invalid values', array(), 'Modules.Imageslider.Admin');
             }
         } elseif (Tools::isSubmit('changeStatus')) {
             if (!Validate::isInt(Tools::getValue('id_slide'))) {
-                $errors[] = $this->getTranslator()->trans('Invalid slide', array(), 'Modules.ImageSlider');
+                $errors[] = $this->getTranslator()->trans('Invalid slide', array(), 'Modules.Imageslider.Admin');
             }
         } elseif (Tools::isSubmit('submitSlide')) {
             /* Checks state (active) */
             if (!Validate::isInt(Tools::getValue('active_slide')) || (Tools::getValue('active_slide') != 0 && Tools::getValue('active_slide') != 1)) {
-                $errors[] = $this->getTranslator()->trans('Invalid slide state.', array(), 'Modules.ImageSlider');
+                $errors[] = $this->getTranslator()->trans('Invalid slide state.', array(), 'Modules.Imageslider.Admin');
             }
             /* Checks position */
             if (!Validate::isInt(Tools::getValue('position')) || (Tools::getValue('position') < 0)) {
-                $errors[] = $this->getTranslator()->trans('Invalid slide position.', array(), 'Modules.ImageSlider');
+                $errors[] = $this->getTranslator()->trans('Invalid slide position.', array(), 'Modules.Imageslider.Admin');
             }
             /* If edit : checks id_slide */
             if (Tools::isSubmit('id_slide')) {
                 if (!Validate::isInt(Tools::getValue('id_slide')) && !$this->slideExists(Tools::getValue('id_slide'))) {
-                    $errors[] = $this->getTranslator()->trans('Invalid slide ID', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('Invalid slide ID', array(), 'Modules.Imageslider.Admin');
                 }
             }
             /* Checks title/url/legend/description/image */
             $languages = Language::getLanguages(false);
             foreach ($languages as $language) {
                 if (Tools::strlen(Tools::getValue('title_' . $language['id_lang'])) > 255) {
-                    $errors[] = $this->getTranslator()->trans('The title is too long.', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('The title is too long.', array(), 'Modules.Imageslider.Admin');
                 }
                 if (Tools::strlen(Tools::getValue('legend_' . $language['id_lang'])) > 255) {
-                    $errors[] = $this->getTranslator()->trans('The caption is too long.', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('The caption is too long.', array(), 'Modules.Imageslider.Admin');
                 }
                 if (Tools::strlen(Tools::getValue('url_' . $language['id_lang'])) > 255) {
-                    $errors[] = $this->getTranslator()->trans('The URL is too long.', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('The URL is too long.', array(), 'Modules.Imageslider.Admin');
                 }
                 if (Tools::strlen(Tools::getValue('description_' . $language['id_lang'])) > 4000) {
-                    $errors[] = $this->getTranslator()->trans('The description is too long.', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('The description is too long.', array(), 'Modules.Imageslider.Admin');
                 }
                 if (Tools::strlen(Tools::getValue('url_' . $language['id_lang'])) > 0 && !Validate::isUrl(Tools::getValue('url_' . $language['id_lang']))) {
-                    $errors[] = $this->getTranslator()->trans('The URL format is not correct.', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('The URL format is not correct.', array(), 'Modules.Imageslider.Admin');
                 }
                 if (Tools::getValue('image_' . $language['id_lang']) != null && !Validate::isFileName(Tools::getValue('image_' . $language['id_lang']))) {
-                    $errors[] = $this->getTranslator()->trans('Invalid filename.', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('Invalid filename.', array(), 'Modules.Imageslider.Admin');
                 }
                 if (Tools::getValue('image_old_' . $language['id_lang']) != null && !Validate::isFileName(Tools::getValue('image_old_' . $language['id_lang']))) {
-                    $errors[] = $this->getTranslator()->trans('Invalid filename.', array(), 'Modules.ImageSlider');
+                    $errors[] = $this->getTranslator()->trans('Invalid filename.', array(), 'Modules.Imageslider.Admin');
                 }
             }
 
             /* Checks title/url/legend/description for default lang */
             $id_lang_default = (int)Configuration::get('PS_LANG_DEFAULT');
             if (Tools::strlen(Tools::getValue('url_' . $id_lang_default)) == 0) {
-                $errors[] = $this->getTranslator()->trans('The URL is not set.', array(), 'Modules.ImageSlider');
+                $errors[] = $this->getTranslator()->trans('The URL is not set.', array(), 'Modules.Imageslider.Admin');
             }
             if (!Tools::isSubmit('has_picture') && (!isset($_FILES['image_' . $id_lang_default]) || empty($_FILES['image_' . $id_lang_default]['tmp_name']))) {
-                $errors[] = $this->getTranslator()->trans('The image is not set.', array(), 'Modules.ImageSlider');
+                $errors[] = $this->getTranslator()->trans('The image is not set.', array(), 'Modules.Imageslider.Admin');
             }
             if (Tools::getValue('image_old_'.$id_lang_default) && !Validate::isFileName(Tools::getValue('image_old_'.$id_lang_default))) {
-                $errors[] = $this->getTranslator()->trans('The image is not set.', array(), 'Modules.ImageSlider');
+                $errors[] = $this->getTranslator()->trans('The image is not set.', array(), 'Modules.Imageslider.Admin');
             }
         } elseif (Tools::isSubmit('delete_id_slide') && (!Validate::isInt(Tools::getValue('delete_id_slide')) || !$this->slideExists((int)Tools::getValue('delete_id_slide')))) {
-            $errors[] = $this->getTranslator()->trans('Invalid slide ID', array(), 'Modules.ImageSlider');
+            $errors[] = $this->getTranslator()->trans('Invalid slide ID', array(), 'Modules.Imageslider.Admin');
         }
 
         /* Display errors if needed */
@@ -418,7 +418,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
             $this->clearCache();
 
             if (!$res) {
-                $errors[] = $this->displayError($this->getTranslator()->trans('The configuration could not be updated.', array(), 'Modules.ImageSlider'));
+                $errors[] = $this->displayError($this->getTranslator()->trans('The configuration could not be updated.', array(), 'Modules.Imageslider.Admin'));
             } else {
                 Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules', true) . '&conf=6&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name);
             }
@@ -431,13 +431,13 @@ class Ps_ImageSlider extends Module implements WidgetInterface
             }
             $res = $slide->update();
             $this->clearCache();
-            $this->_html .= ($res ? $this->displayConfirmation($this->getTranslator()->trans('Configuration updated', array(), 'Admin.Notifications.Success')) : $this->displayError($this->getTranslator()->trans('The configuration could not be updated.', array(), 'Modules.ImageSlider')));
+            $this->_html .= ($res ? $this->displayConfirmation($this->getTranslator()->trans('Configuration updated', array(), 'Admin.Notifications.Success')) : $this->displayError($this->getTranslator()->trans('The configuration could not be updated.', array(), 'Modules.Imageslider.Admin')));
         } elseif (Tools::isSubmit('submitSlide')) {
             /* Sets ID if needed */
             if (Tools::getValue('id_slide')) {
                 $slide = new Ps_HomeSlide((int)Tools::getValue('id_slide'));
                 if (!Validate::isLoadedObject($slide)) {
-                    $this->_html .= $this->displayError($this->getTranslator()->trans('Invalid slide ID', array(), 'Modules.ImageSlider'));
+                    $this->_html .= $this->displayError($this->getTranslator()->trans('Invalid slide ID', array(), 'Modules.Imageslider.Admin'));
                     return false;
                 }
             } else {
@@ -497,10 +497,10 @@ class Ps_ImageSlider extends Module implements WidgetInterface
                 /* Adds */
                 if (!Tools::getValue('id_slide')) {
                     if (!$slide->add()) {
-                        $errors[] = $this->displayError($this->getTranslator()->trans('The slide could not be added.', array(), 'Modules.ImageSlider'));
+                        $errors[] = $this->displayError($this->getTranslator()->trans('The slide could not be added.', array(), 'Modules.Imageslider.Admin'));
                     }
                 } elseif (!$slide->update()) {
-                    $errors[] = $this->displayError($this->getTranslator()->trans('The slide could not be updated.', array(), 'Modules.ImageSlider'));
+                    $errors[] = $this->displayError($this->getTranslator()->trans('The slide could not be updated.', array(), 'Modules.Imageslider.Admin'));
                 }
                 $this->clearCache();
             }
@@ -723,7 +723,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
         $fields_form = array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->getTranslator()->trans('Slide information', array(), 'Modules.ImageSlider'),
+                    'title' => $this->getTranslator()->trans('Slide information', array(), 'Modules.Imageslider.Admin'),
                     'icon' => 'icon-cogs'
                 ),
                 'input' => array(
@@ -733,7 +733,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
                         'name' => 'image',
                         'required' => true,
                         'lang' => true,
-                        'desc' => sprintf($this->getTranslator()->trans('Maximum image size: %s.', array(), 'Admin.Global'), ini_get('upload_max_filesize'))
+                        'desc' => $this->getTranslator()->trans('Maximum image size: %s.', array(ini_get('upload_max_filesize')), 'Admin.Global')
                     ),
                     array(
                         'type' => 'text',
@@ -743,14 +743,14 @@ class Ps_ImageSlider extends Module implements WidgetInterface
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->getTranslator()->trans('Target URL', array(), 'Modules.ImageSlider'),
+                        'label' => $this->getTranslator()->trans('Target URL', array(), 'Modules.Imageslider.Admin'),
                         'name' => 'url',
                         'required' => true,
                         'lang' => true,
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->getTranslator()->trans('Caption', array(), 'Modules.ImageSlider'),
+                        'label' => $this->getTranslator()->trans('Caption', array(), 'Modules.Imageslider.Admin'),
                         'name' => 'legend',
                         'lang' => true,
                     ),
@@ -851,17 +851,17 @@ class Ps_ImageSlider extends Module implements WidgetInterface
                 'input' => array(
                     array(
                         'type' => 'text',
-                        'label' => $this->getTranslator()->trans('Speed', array(), 'Modules.ImageSlider'),
+                        'label' => $this->getTranslator()->trans('Speed', array(), 'Modules.Imageslider.Admin'),
                         'name' => 'HOMESLIDER_SPEED',
                         'suffix' => 'milliseconds',
                         'class' => 'fixed-width-sm',
-                        'desc' => $this->getTranslator()->trans('The duration of the transition between two slides.', array(), 'Modules.ImageSlider')
+                        'desc' => $this->getTranslator()->trans('The duration of the transition between two slides.', array(), 'Modules.Imageslider.Admin')
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => $this->getTranslator()->trans('Pause on hover', array(), 'Modules.ImageSlider'),
+                        'label' => $this->getTranslator()->trans('Pause on hover', array(), 'Modules.Imageslider.Admin'),
                         'name' => 'HOMESLIDER_PAUSE_ON_HOVER',
-                        'desc' => $this->getTranslator()->trans('Stop sliding when the mouse cursor is over the slideshow.', array(), 'Modules.ImageSlider'),
+                        'desc' => $this->getTranslator()->trans('Stop sliding when the mouse cursor is over the slideshow.', array(), 'Modules.Imageslider.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -877,9 +877,9 @@ class Ps_ImageSlider extends Module implements WidgetInterface
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => $this->getTranslator()->trans('Loop forever', array(), 'Modules.ImageSlider'),
+                        'label' => $this->getTranslator()->trans('Loop forever', array(), 'Modules.Imageslider.Admin'),
                         'name' => 'HOMESLIDER_WRAP',
-                        'desc' => $this->getTranslator()->trans('Loop or stop after the last slide.', array(), 'Modules.ImageSlider'),
+                        'desc' => $this->getTranslator()->trans('Loop or stop after the last slide.', array(), 'Modules.Imageslider.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -963,7 +963,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
     protected function getMultiLanguageInfoMsg()
     {
         return '<p class="alert alert-warning">'.
-                    $this->getTranslator()->trans('Since multiple languages are activated on your shop, please mind to upload your image for each one of them', array(), 'Modules.ImageSlider').
+                    $this->getTranslator()->trans('Since multiple languages are activated on your shop, please mind to upload your image for each one of them', array(), 'Modules.Imageslider.Admin').
                 '</p>';
     }
 
@@ -971,7 +971,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
     {
         if (Shop::getContext() == Shop::CONTEXT_GROUP || Shop::getContext() == Shop::CONTEXT_ALL) {
             return '<p class="alert alert-warning">' .
-            $this->getTranslator()->trans('You cannot manage slides items from a "All Shops" or a "Group Shop" context, select directly the shop you want to edit', array(), 'Modules.ImageSlider') .
+            $this->getTranslator()->trans('You cannot manage slides items from a "All Shops" or a "Group Shop" context, select directly the shop you want to edit', array(), 'Modules.Imageslider.Admin') .
             '</p>';
         } else {
             return '';
@@ -986,11 +986,11 @@ class Ps_ImageSlider extends Module implements WidgetInterface
 
         if ($mode == 'edit') {
             return '<p class="alert alert-danger">' .
-            sprintf($this->getTranslator()->trans('You can only edit this slide from the shop(s) context: %s', array(), 'Modules.ImageSlider'), $shop_contextualized_name) .
+            $this->trans('You can only edit this slide from the shop(s) context: %s', array($shop_contextualized_name), 'Modules.Imageslider.Admin') .
             '</p>';
         } else {
             return '<p class="alert alert-danger">' .
-            sprintf($this->getTranslator()->trans('You cannot add slides from a "All Shops" or a "Group Shop" context', array(), 'Modules.ImageSlider')) .
+            $this->trans('You cannot add slides from a "All Shops" or a "Group Shop" context', array(), 'Modules.Imageslider.Admin') .
             '</p>';
         }
     }
@@ -998,7 +998,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
     protected function getShopAssociationError($id_slide)
     {
         return '<p class="alert alert-danger">'.
-                        sprintf($this->getTranslator()->trans('Unable to get slide shop association information (id_slide: %d)', array(), 'Modules.ImageSlider'), (int)$id_slide).
+                        $this->trans('Unable to get slide shop association information (id_slide: %d)', array((int)$id_slide), 'Modules.Imageslider.Admin') .
                 '</p>';
     }
 
@@ -1009,11 +1009,11 @@ class Ps_ImageSlider extends Module implements WidgetInterface
 
         if (Shop::isFeatureActive()) {
             if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-                $shop_info = sprintf($this->getTranslator()->trans('The modifications will be applied to shop: %s', array(),'Modules.ImageSlider'), $this->context->shop->name);
+                $shop_info = $this->trans('The modifications will be applied to shop: %s', array($this->context->shop->name),'Modules.Imageslider.Admin');
             } else if (Shop::getContext() == Shop::CONTEXT_GROUP) {
-                $shop_info = sprintf($this->getTranslator()->trans('The modifications will be applied to this group: %s', array(), 'Modules.ImageSlider'), Shop::getContextShopGroup()->name);
+                $shop_info = $this->trans('The modifications will be applied to this group: %s', array(Shop::getContextShopGroup()->name), 'Modules.Imageslider.Admin');
             } else {
-                $shop_info = $this->getTranslator()->trans('The modifications will be applied to all shops and shop groups', array(), 'Modules.ImageSlider');
+                $shop_info = $this->trans('The modifications will be applied to all shops and shop groups', array(), 'Modules.Imageslider.Admin');
             }
 
             return '<div class="alert alert-info">'.
@@ -1027,7 +1027,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
     protected function getSharedSlideWarning()
     {
         return '<p class="alert alert-warning">'.
-                    $this->getTranslator()->trans('This slide is shared with other shops! All shops associated to this slide will apply modifications made here', array(), 'Modules.ImageSlider').
+                    $this->trans('This slide is shared with other shops! All shops associated to this slide will apply modifications made here', array(), 'Modules.Imageslider.Admin').
                 '</p>';
     }
 }

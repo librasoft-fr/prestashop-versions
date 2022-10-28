@@ -22,7 +22,7 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
-<div class="panel"><h3><i class="icon-list-ul"></i> {l s='Slides list' d='Modules.ImageSlider'}
+<div class="panel"><h3><i class="icon-list-ul"></i> {l s='Slides list' d='Modules.Imageslider.Admin'}
 	<span class="panel-heading-action">
 		<a id="desc-product-new" class="list-toolbar-btn" href="{$link->getAdminLink('AdminModules')}&configure=ps_imageslider&addSlide=1">
 			<span title="" data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='Add new' d='Admin.Actions'}" data-html="true">
@@ -48,7 +48,7 @@
 								{if $slide.is_shared}
 									<div>
 										<span class="label color_field pull-left" style="background-color:#108510;color:white;margin-top:5px;">
-											{l s='Shared slide' d='Modules.ImageSlider'}
+											{l s='Shared slide' d='Modules.Imageslider.Admin'}
 										</span>
 									</div>
 								{/if}

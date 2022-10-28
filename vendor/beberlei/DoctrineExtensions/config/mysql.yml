@@ -32,6 +32,8 @@ doctrine:
                  year: DoctrineExtensions\Query\Mysql\Year
                  yearweek: DoctrineExtensions\Query\Mysql\YearWeek
                  unix_timestamp: DoctrineExtensions\Query\Mysql\UnixTimestamp
+                 utc_timestamp: DoctrineExtensions\Query\Mysql\UtcTimestamp
+                 extract: DoctrineExtensions\Query\Mysql\Extract
 
              numeric_functions:
                  acos: DoctrineExtensions\Query\Mysql\Acos
@@ -59,6 +61,8 @@ doctrine:
                  variance: DoctrineExtensions\Query\Mysql\Variance
 
              string_functions:
+                 aes_decrypt: DoctrineExtensions\Query\Mysql\AesDecrypt
+                 aes_encrypt: DoctrineExtensions\Query\Mysql\AesEncrypt
                  ascii: DoctrineExtensions\Query\Mysql\Ascii
                  binary: DoctrineExtensions\Query\Mysql\Binary
                  char_length: DoctrineExtensions\Query\Mysql\CharLength

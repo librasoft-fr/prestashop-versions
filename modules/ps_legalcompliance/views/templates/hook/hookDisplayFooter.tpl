@@ -24,7 +24,7 @@
  *}
 
  <div class="euAboutUsCMS col-md-2">
- 	<h3 class="h3">{l s='Information' mod='ps_legalcompliance'}</h3>
+ 	<h3 class="h3">{l s='Information' d='Modules.Legalcompliance.Shop'}</h3>
  	<ul>
  		{foreach from=$cms_links item=cms_link}
  			<li>

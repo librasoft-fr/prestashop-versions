@@ -24,7 +24,7 @@
 *}
 
 <div class="block-contact">
-	<h4>{l s='Contact us' d='Modules.ContactInfo.Shop'}</h4>
+	<h4>{l s='Contact us' d='Shop.Theme'}</h4>
     {$contact_infos.address.formatted nofilter}
     {if $contact_infos.phone}
       <br>
@@ -34,7 +34,7 @@
         sprintf=[
           '%phone%' => $contact_infos.phone
         ]
-        d='Modules.ContactInfo.Shop'
+        d='Modules.Contactinfo.Shop'
       }
     {/if}
     {if $contact_infos.fax}
@@ -45,7 +45,7 @@
         sprintf=[
           '%fax%' => $contact_infos.fax
         ]
-        d='Modules.ContactInfo.Shop'
+        d='Modules.Contactinfo.Shop'
       }
     {/if}
     {if $contact_infos.email}
@@ -56,7 +56,7 @@
         sprintf=[
           '%email%' => $contact_infos.email
         ]
-        d='Modules.ContactInfo.Shop'
+        d='Modules.Contactinfo.Shop'
       }
     {/if}
 </div>

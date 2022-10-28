@@ -24,12 +24,12 @@
 *}
 
 <div class="email_subscription">
-  <h4>{l s='Newsletter' d='Modules.EmailSubscription.Shop'}</h4>
+  <h4>{l s='Newsletter' d='Modules.Emailsubscription.Shop'}</h4>
   {if $msg}
     <p class="notification {if $nw_error}notification-error{else}notification-success{/if}">{$msg}</p>
   {/if}
   <form action="{$urls.pages.index}" method="post">
-    <input type="text" name="email" value="{$value}" placeholder="{l s='Your e-mail' d='Modules.EmailSubscription.Shop'}" />
+    <input type="text" name="email" value="{$value}" placeholder="{l s='Your e-mail' d='Modules.Emailsubscription.Shop'}" />
     {if $conditions}
       <p>{$conditions}</p>
     {/if}

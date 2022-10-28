@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2016 PrestaShop.
+ * 2007-2017 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author     PrestaShop SA <contact@prestashop.com>
- * @copyright  2007-2016 PrestaShop SA
+ * @copyright  2007-2017 PrestaShop SA
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  International Registered Trademark & Property of PrestaShop SA
  */
@@ -64,7 +64,7 @@ class Ps_LegalCompliance extends Module
     {
         $this->name = 'ps_legalcompliance';
         $this->tab = 'administration';
-        $this->version = '1.1.9';
+        $this->version = '2.0.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -76,11 +76,11 @@ class Ps_LegalCompliance extends Module
         $this->filesystem = $fs;
         $this->emails = $email;
 
-        $this->displayName = $this->l('Legal Compliance');
-        $this->description = $this->l('This module helps merchants comply with applicable e-commerce laws.');
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
+        $this->displayName = $this->trans('Legal Compliance', array(), 'Modules.Legalcompliance.Admin');
+        $this->description = $this->trans('This module helps merchants comply with applicable e-commerce laws.', array(), 'Modules.Legalcompliance.Admin');
+        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall this module?', array(), 'Modules.Legalcompliance.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         /* Init errors var */
         $this->_errors = array();
@@ -209,7 +209,7 @@ class Ps_LegalCompliance extends Module
 
             if (!$new_hook->add()) {
                 $return &= false;
-                $this->_errors[] = $this->l('Could not install new hook', 'ps_legalcompliance').': '.$hook_name;
+                $this->_errors[] = $this->trans('Could not install new hook', array(), 'Modules.Legalcompliance.Admin').': '.$hook_name;
             }
         }
 
@@ -226,9 +226,9 @@ class Ps_LegalCompliance extends Module
         $langs = $langs_repository->findAll();
 
         foreach ($langs as $lang) {
-            $delivery_time_available_values[(int) $lang->id] = $this->l('Delivery: 1 to 3 weeks', 'ps_legalcompliance');
-            $delivery_time_oos_values[(int) $lang->id] = $this->l('Delivery: 3 to 6 weeks', 'ps_legalcompliance');
-            $custom_cart_text_values[(int) $lang->id] = $this->l('The order will only be confirmed when you click on the button \'Order with an obligation to pay\' at the end of the checkout!', 'ps_legalcompliance');
+            $delivery_time_available_values[(int) $lang->id] = $this->trans('Delivery: 1 to 3 weeks', array(), 'Modules.Legalcompliance.Shop');
+            $delivery_time_oos_values[(int) $lang->id] = $this->trans('Delivery: 3 to 6 weeks', array(), 'Modules.Legalcompliance.Shop');
+            $custom_cart_text_values[(int) $lang->id] = $this->trans('The order will only be confirmed when you click on the button \'Order with an obligation to pay\' at the end of the checkout!', array(), 'Modules.Legalcompliance.Shop');
         }
 
         /* Base settings */
@@ -259,25 +259,24 @@ class Ps_LegalCompliance extends Module
     public function generateAndLinkCMSPages()
     {
         $cms_pages = array(
-            self::LEGAL_NOTICE => array('meta_title' => $this->l('Legal notice', 'ps_legalcompliance'),
+            self::LEGAL_NOTICE => array('meta_title' => $this->trans('Legal notice', array(), 'Modules.Legalcompliance.Admin'),
                                         'link_rewrite' => 'legal-notice',
-                                        'content' => $this->l('Please add your legal information to this site.', 'ps_legalcompliance'), ),
-            self::LEGAL_CONDITIONS => array('meta_title' => $this->l('Terms of Service (ToS)', 'ps_legalcompliance'),
+                                        'content' => $this->trans('Please add your legal information to this site.', array(), 'Modules.Legalcompliance.Admin'), ),
+            self::LEGAL_CONDITIONS => array('meta_title' => $this->trans('Terms of Service (ToS)', array(), 'Modules.Legalcompliance.Admin'),
                                             'link_rewrite' => 'terms-of-service-tos',
-                                            'content' => $this->l('Please add your Terms of Service (ToS) to this site.', 'ps_legalcompliance'), ),
-            self::LEGAL_REVOCATION => array('meta_title' => $this->l('Revocation terms', 'ps_legalcompliance'),
+                                            'content' => $this->trans('Please add your Terms of Service (ToS) to this site.', array(), 'Modules.Legalcompliance.Admin'), ),
+            self::LEGAL_REVOCATION => array('meta_title' => $this->trans('Revocation terms', array(), 'Modules.Legalcompliance.Admin'),
                                             'link_rewrite' => 'revocation-terms',
-                                            'content' => $this->l('Please add your Revocation terms to this site.', 'ps_legalcompliance'), ),
-            self::LEGAL_PRIVACY => array('meta_title' => $this->l('Privacy', 'ps_legalcompliance'),
+                                            'content' => $this->trans('Please add your Revocation terms to this site.', array(), 'Modules.Legalcompliance.Admin'), ),
+            self::LEGAL_PRIVACY => array('meta_title' => $this->trans('Privacy', array(), 'Modules.Legalcompliance.Admin'),
                                         'link_rewrite' => 'privacy',
-                                        'content' => $this->l('Please insert here your content about privacy. If you have activated Social Media modules, please provide a notice about third-party access to data.',
-                                            'ps_legalcompliance'), ),
-            self::LEGAL_SHIP_PAY => array('meta_title' => $this->l('Shipping and payment', 'ps_legalcompliance'),
+                                        'content' => $this->trans('Please insert here your content about privacy. If you have activated Social Media modules, please provide a notice about third-party access to data.', array(), 'Modules.Legalcompliance.Admin'), ),
+            self::LEGAL_SHIP_PAY => array('meta_title' => $this->trans('Shipping and payment', array(), 'Modules.Legalcompliance.Admin'),
                                           'link_rewrite' => 'shipping-and-payment',
-                                          'content' => $this->l('Please add your Shipping and payment information to this site.', 'ps_legalcompliance'), ),
-            self::LEGAL_ENVIRONMENTAL => array('meta_title' => $this->l('Environmental notice', 'ps_legalcompliance'),
+                                          'content' => $this->trans('Please add your Shipping and payment information to this site.', array(), 'Modules.Legalcompliance.Admin'), ),
+            self::LEGAL_ENVIRONMENTAL => array('meta_title' => $this->trans('Environmental notice', array(), 'Modules.Legalcompliance.Admin'),
                                                'link_rewrite' => 'environmental-notice',
-                                               'content' => $this->l('Please add your Environmental information to this site.', 'ps_legalcompliance'), ),
+                                               'content' => $this->trans('Please add your Environmental information to this site.', array(), 'Modules.Legalcompliance.Admin'), ),
         );
 
         $cms_role_repository = $this->entity_manager->getRepository('CMSRole');
@@ -505,9 +504,9 @@ class Ps_LegalCompliance extends Module
 
             if ((bool) Configuration::get('PS_TAX') === true && $this->context->country->display_tax_label &&
                 !(Validate::isLoadedObject($customer_default_group) && (bool) $customer_default_group->price_display_method === true)) {
-                $smartyVars['price']['tax_str_i18n'] = $this->l('Tax included', 'ps_legalcompliance');
+                $smartyVars['price']['tax_str_i18n'] = $this->trans('Tax included', array(), 'Shop.Theme.Checkout');
             } else {
-                $smartyVars['price']['tax_str_i18n'] = $this->l('Tax excluded', 'ps_legalcompliance');
+                $smartyVars['price']['tax_str_i18n'] = $this->trans('Tax excluded', array(), 'Shop.Theme.Checkout');
             }
         }
 
@@ -637,14 +636,10 @@ class Ps_LegalCompliance extends Module
         $legacyOptions = Hook::exec('displayPaymentEU', array(), null, true);
         $newOptions = array();
 
-        Media::addJsDef(array('aeuc_tos_err_str' => Tools::htmlentitiesUTF8($this->l('You must agree to our Terms of Service before going any further!',
-                                                                                     'ps_legalcompliance'))));
-        Media::addJsDef(array('aeuc_submit_err_str' => Tools::htmlentitiesUTF8($this->l('Something went wrong. If the problem persists, please contact us.',
-                                                                                        'ps_legalcompliance'))));
-        Media::addJsDef(array('aeuc_no_pay_err_str' => Tools::htmlentitiesUTF8($this->l('Select a payment option first.',
-                                                                                        'ps_legalcompliance'))));
-        Media::addJsDef(array('aeuc_virt_prod_err_str' => Tools::htmlentitiesUTF8($this->l('Please check the "Revocation of virtual products" box first!',
-                                                                                           'ps_legalcompliance'))));
+        Media::addJsDef(array('aeuc_tos_err_str' => Tools::htmlentitiesUTF8($this->trans('You must agree to our Terms of Service before going any further!', array(), 'Modules.Legalcompliance.Shop'))));
+        Media::addJsDef(array('aeuc_submit_err_str' => Tools::htmlentitiesUTF8($this->trans('Something went wrong. If the problem persists, please contact us.', array(), 'Modules.Legalcompliance.Shop'))));
+        Media::addJsDef(array('aeuc_no_pay_err_str' => Tools::htmlentitiesUTF8($this->trans('Select a payment option first.', array(), 'Modules.Legalcompliance.Shop'))));
+        Media::addJsDef(array('aeuc_virt_prod_err_str' => Tools::htmlentitiesUTF8($this->trans('Please check the "Revocation of virtual products" box first!', array(), 'Modules.Legalcompliance.Shop'))));
         if ($legacyOptions) {
             foreach ($legacyOptions as $module_name => $legacyOption) {
                 if (!$legacyOption) {
@@ -788,7 +783,7 @@ class Ps_LegalCompliance extends Module
         $cms_page_conditions_associated = $cms_role_repository->findOneByName(self::LEGAL_CONDITIONS);
         $cms_page_revocation_associated = $cms_role_repository->findOneByName(self::LEGAL_REVOCATION);
 
-        if ((int) $cms_page_conditions_associated->id_cms > 0 && (int) $cms_page_revocation_associated->id_cms > 0) {
+        if (Configuration::get('PS_CONDITIONS') && (int) $cms_page_conditions_associated->id_cms > 0 && (int) $cms_page_revocation_associated->id_cms > 0) {
             $cms_conditions = $cms_repository->i10nFindOneById((int) $cms_page_conditions_associated->id_cms,
                                                                (int) $this->context->language->id,
                                                                (int) $this->context->shop->id);
@@ -804,7 +799,7 @@ class Ps_LegalCompliance extends Module
             $termsAndConditions = new TermsAndConditions();
             $termsAndConditions
                 ->setText(
-                    $this->l('I agree to the [terms of service] and [revocation terms] and will adhere to them unconditionally.', [], 'Checkout'),
+                    $this->trans('I agree to the [terms of service] and [revocation terms] and will adhere to them unconditionally.', [], 'Modules.Legalcompliance.Shop'),
                     $link_conditions,
                     $link_revocation
                 )
@@ -825,7 +820,7 @@ class Ps_LegalCompliance extends Module
                             '[/1]' => '</strong>',
                             '[2]' => '<br>',
                         ),
-                        'Modules.LegalCompliance.Shop'
+                        'Modules.Legalcompliance.Shop'
                     )
                 )
                 ->setIdentifier('virtual-products')
@@ -900,7 +895,7 @@ class Ps_LegalCompliance extends Module
 
                     if ($need_display) {
                         $smartyVars['before_price'] = array();
-                        $smartyVars['before_price']['from_str_i18n'] = $this->l('From', 'ps_legalcompliance');
+                        $smartyVars['before_price']['from_str_i18n'] = $this->trans('From', array(), 'Modules.Legalcompliance.Shop');
 
                         return $this->dumpHookDisplayProductPriceBlock($smartyVars, $hook_type);
                     }
@@ -913,7 +908,7 @@ class Ps_LegalCompliance extends Module
         /* Handle Specific Price label*/
         if ($param['type'] == 'old_price' && (bool) Configuration::get('AEUC_LABEL_SPECIFIC_PRICE') === true && 'catalog/_partials/miniatures/product.tpl' != $param['smarty']->template_resource) {
             $smartyVars['old_price'] = array();
-            $smartyVars['old_price']['before_str_i18n'] = $this->l('Our previous price', 'ps_legalcompliance');
+            $smartyVars['old_price']['before_str_i18n'] = $this->trans('Our previous price', array(), 'Modules.Legalcompliance.Shop');
 
             return $this->dumpHookDisplayProductPriceBlock($smartyVars, $hook_type);
         }
@@ -938,7 +933,7 @@ class Ps_LegalCompliance extends Module
 
                         $smartyVars['ship'] = array();
                         $smartyVars['ship']['link_ship_pay'] = $link_ship_pay;
-                        $smartyVars['ship']['ship_str_i18n'] = $this->l('Shipping excluded', 'ps_legalcompliance');
+                        $smartyVars['ship']['ship_str_i18n'] = $this->trans('Shipping excluded', array(), 'Modules.Legalcompliance.Shop');
                     }
                 }
             }
@@ -977,9 +972,9 @@ class Ps_LegalCompliance extends Module
 
                 if ((bool) Configuration::get('PS_TAX') === true && $this->context->country->display_tax_label &&
                     !(Validate::isLoadedObject($customer_default_group) && (bool) $customer_default_group->price_display_method === true)) {
-                    $smartyVars['list_taxes']['tax_str_i18n'] = $this->l('Tax included', 'ps_legalcompliance');
+                    $smartyVars['list_taxes']['tax_str_i18n'] = $this->trans('Tax included', array(), 'Shop.Theme.Checkout');
                 } else {
-                    $smartyVars['list_taxes']['tax_str_i18n'] = $this->l('Tax excluded', 'ps_legalcompliance');
+                    $smartyVars['list_taxes']['tax_str_i18n'] = $this->trans('Tax excluded', array(), 'Shop.Theme.Checkout');
                 }
             }
 
@@ -1052,7 +1047,7 @@ class Ps_LegalCompliance extends Module
                 '[2]' => '<a href="http://doc.prestashop.com/display/PS17/Complying+with+the+European+legislation" target="_blank">',
                 '[/2]' => '</a>',
             ),
-            'Modules.LegalCompliance.Admin'
+            'Modules.Legalcompliance.Admin'
         );
 
         $this->context->smarty->assign('module_dir', $this->_path);
@@ -1148,7 +1143,7 @@ class Ps_LegalCompliance extends Module
 
             return (count($this->_errors) ? $this->displayError($this->_errors) : '').
                    (count($this->_warnings) ? $this->displayWarning($this->_warnings) : '').
-                   $this->displayConfirmation($this->l('Settings saved successfully!', 'ps_legalcompliance'));
+                   $this->displayConfirmation($this->trans('The settings have been updated.', array(), 'Admin.Notifications.Success'));
         } else {
             return (count($this->_errors) ? $this->displayError($this->_errors) : '').
                    (count($this->_warnings) ? $this->displayWarning($this->_warnings) : '').'';
@@ -1206,7 +1201,7 @@ class Ps_LegalCompliance extends Module
             $assoc_obj->id_cms_role = $assoc->id_cms_role;
 
             if (!$assoc_obj->save()) {
-                $this->_errors[] = $this->l('Failed to associate legal content with an email template.', 'ps_legalcompliance');
+                $this->_errors[] = $this->trans('Failed to associate legal content with an email template.', array(), 'Modules.Legalcompliance.Admin');
             }
         }
     }
@@ -1221,8 +1216,13 @@ class Ps_LegalCompliance extends Module
         if ((bool) $is_option_active) {
             if (!$cms_page_associated instanceof CMSRole || (int) $cms_page_associated->id_cms == 0) {
                 $this->_errors[] =
-                    sprintf($this->l('\'Revocation Terms within ToS\' label cannot be activated unless you associate "%s" role with a Page.',
-                                     'ps_legalcompliance'), (string) $cms_roles[self::LEGAL_REVOCATION]);
+                    $this->trans(
+                        '\'Revocation Terms within ToS\' label cannot be activated unless you associate "%s" role with a Page.',
+                        array(
+                            '%s' => (string) $cms_roles[self::LEGAL_REVOCATION],
+                        ),
+                        'Modules.Legalcompliance.Admin'
+                    );
 
                 return;
             }
@@ -1251,8 +1251,13 @@ class Ps_LegalCompliance extends Module
         if ((bool) $is_option_active) {
             if (!$cms_page_associated instanceof CMSRole || (int) $cms_page_associated->id_cms === 0) {
                 $this->_errors[] =
-                    sprintf($this->l('Shipping fees label cannot be activated unless you associate "%s" role with a Page.',
-                                     'ps_legalcompliance'), (string) $cms_roles[self::LEGAL_SHIP_PAY]);
+                    $this->trans(
+                        'Shipping fees label cannot be activated unless you associate "%s" role with a Page.',
+                        array(
+                            '%s' => (string) $cms_roles[self::LEGAL_SHIP_PAY],
+                        ),
+                        'Modules.Legalcompliance.Admin'
+                    );
 
                 return;
             }
@@ -1310,13 +1315,13 @@ class Ps_LegalCompliance extends Module
 
     protected function getCMSRoles()
     {
-        return array(self::LEGAL_NOTICE => $this->l('Legal notice', 'ps_legalcompliance'),
-                     self::LEGAL_CONDITIONS => $this->l('Terms of Service (ToS)', 'ps_legalcompliance'),
-                     self::LEGAL_REVOCATION => $this->l('Revocation terms', 'ps_legalcompliance'),
-                     self::LEGAL_REVOCATION_FORM => $this->l('Revocation form', 'ps_legalcompliance'),
-                     self::LEGAL_PRIVACY => $this->l('Privacy', 'ps_legalcompliance'),
-                     self::LEGAL_ENVIRONMENTAL => $this->l('Environmental notice', 'ps_legalcompliance'),
-                     self::LEGAL_SHIP_PAY => $this->l('Shipping and payment', 'ps_legalcompliance'),
+        return array(self::LEGAL_NOTICE => $this->trans('Legal notice', array(), 'Modules.Legalcompliance.Admin'),
+                     self::LEGAL_CONDITIONS => $this->trans('Terms of Service (ToS)', array(), 'Modules.Legalcompliance.Admin'),
+                     self::LEGAL_REVOCATION => $this->trans('Revocation terms', array(), 'Modules.Legalcompliance.Admin'),
+                     self::LEGAL_REVOCATION_FORM => $this->trans('Revocation form', array(), 'Modules.Legalcompliance.Admin'),
+                     self::LEGAL_PRIVACY => $this->trans('Privacy', array(), 'Modules.Legalcompliance.Admin'),
+                     self::LEGAL_ENVIRONMENTAL => $this->trans('Environmental notice', array(), 'Modules.Legalcompliance.Admin'),
+                     self::LEGAL_SHIP_PAY => $this->trans('Shipping and payment', array(), 'Modules.Legalcompliance.Admin'),
         );
     }
 
@@ -1355,170 +1360,167 @@ class Ps_LegalCompliance extends Module
      */
     protected function getConfigFormLabelsManager()
     {
-        return array('form' => array('legend' => array('title' => $this->l('Labels', 'ps_legalcompliance'),
+        return array('form' => array('legend' => array('title' => $this->trans('Labels', array(), 'Modules.Legalcompliance.Admin'),
                                                        'icon' => 'icon-tags',
         ),
                                      'input' => array(array('type' => 'text',
                                                              'lang' => true,
-                                                             'label' => $this->l('Delivery time label (available products)', 'ps_legalcompliance'),
+                                                             'label' => $this->trans('Delivery time label (available products)', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_DELIVERY_TIME_AVAILABLE',
-                                                             'desc' => $this->l('It is displayed on the product page and in the footer of other pages. Leave the field empty to disable.', 'ps_legalcompliance'),
-                                                             'hint' => $this->l('Indicate the delivery time for your in-stock products.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('It is displayed on the product page and in the footer of other pages. Leave the field empty to disable.', array(), 'Modules.Legalcompliance.Admin'),
+                                                             'hint' => $this->trans('Indicate the delivery time for your in-stock products.', array(), 'Modules.Legalcompliance.Admin'),
                                                        ),
                                                        array('type' => 'text',
                                                              'lang' => true,
-                                                             'label' => $this->l('Delivery time label (out-of-stock products)',
-                                                                                 'ps_legalcompliance'),
+                                                             'label' => $this->trans('Delivery time label (out-of-stock products)', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_DELIVERY_TIME_OOS',
-                                                             'desc' => $this->l('It is displayed on the product page and in the footer of other pages. Leave the field empty to disable.', 'ps_legalcompliance'),
-                                                             'hint' => $this->l('Indicate the delivery time for your out-of-stock products.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('It is displayed on the product page and in the footer of other pages. Leave the field empty to disable.', array(), 'Modules.Legalcompliance.Admin'),
+                                                             'hint' => $this->trans('Indicate the delivery time for your out-of-stock products.', array(), 'Modules.Legalcompliance.Admin'),
                                                        ),
                                                        array('type' => 'text',
                                                              'lang' => true,
-                                                             'label' => $this->l('Additional information about delivery time',
-                                                                                 'ps_legalcompliance'),
+                                                             'label' => $this->trans('Additional information about delivery time', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_DELIVERY_ADDITIONAL',
-                                                             'desc' => $this->l('If you specified a delivery time, this additional information is displayed in the footer of product pages with a link to the "Shipping & Payment" Page. Leave the field empty to disable.', 'ps_legalcompliance'),
-                                                             'hint' => $this->l('Indicate for which countries your delivery time applies.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('If you specified a delivery time, this additional information is displayed in the footer of product pages with a link to the "Shipping & Payment" Page. Leave the field empty to disable.', array(), 'Modules.Legalcompliance.Admin'),
+                                                             'hint' => $this->trans('Indicate for which countries your delivery time applies.', array(), 'Modules.Legalcompliance.Admin'),
                                                        ),
                                                        array('type' => 'switch',
-                                                             'label' => $this->l(' \'Our previous price\' label', 'ps_legalcompliance'),
+                                                             'label' => $this->trans(' \'Our previous price\' label', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_SPECIFIC_PRICE',
                                                              'is_bool' => true,
-                                                             'desc' => $this->l('When a product is on sale, displays a \'Our previous price\' label before the original price crossed out, next to the price on the product page.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('When a product is on sale, displays a \'Our previous price\' label before the original price crossed out, next to the price on the product page.', array(), 'Modules.Legalcompliance.Admin'),
                                                              'values' => array(array('id' => 'active_on',
                                                                                       'value' => true,
-                                                                                      'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                                                                      'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                                                                                 ),
                                                                                 array('id' => 'active_off',
                                                                                       'value' => false,
-                                                                                      'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                                                                      'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                                                                                 ),
                                                              ),
                                                        ),
                                                        array('type' => 'switch',
-                                                             'label' => $this->l('Tax \'inc./excl.\' label', 'ps_legalcompliance'),
+                                                             'label' => $this->trans('Tax \'inc./excl.\' label', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_TAX_INC_EXC',
                                                              'is_bool' => true,
-                                                             'desc' => $this->l('Displays whether the tax is included on the product page (\'Tax incl./excl.\' label) and adds a short mention in the footer of other pages.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('Displays whether the tax is included on the product page (\'Tax incl./excl.\' label) and adds a short mention in the footer of other pages.', array(), 'Modules.Legalcompliance.Admin'),
                                                              'values' => array(array('id' => 'active_on',
                                                                                       'value' => true,
-                                                                                      'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                                                                      'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                                                                                 ),
                                                                                 array('id' => 'active_off',
                                                                                       'value' => false,
-                                                                                      'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                                                                      'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                                                                                 ),
                                                              ),
                                                        ),
                                                        array('type' => 'switch',
-                                                             'label' => $this->l('Price per unit label', 'ps_legalcompliance'),
+                                                             'label' => $this->trans('Price per unit label', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_UNIT_PRICE',
                                                              'is_bool' => true,
-                                                             'desc' => $this->l('If available, displays the price per unit everywhere the product price is listed.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('If available, displays the price per unit everywhere the product price is listed.', array(), 'Modules.Legalcompliance.Admin'),
                                                              'values' => array(array('id' => 'active_on',
                                                                                       'value' => true,
-                                                                                      'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                                                                      'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                                                                                 ),
                                                                                 array('id' => 'active_off',
                                                                                       'value' => false,
-                                                                                      'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                                                                      'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                                                                                 ),
                                                              ),
                                                        ),
                                                        array('type' => 'switch',
-                                                             'label' => $this->l('\'Shipping fees excl.\' label', 'ps_legalcompliance'),
+                                                             'label' => $this->trans('\'Shipping fees excl.\' label', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_SHIPPING_INC_EXC',
                                                              'is_bool' => true,
-                                                             'desc' => $this->l('Displays a label next to the product price (\'Shipping excluded\') and adds a short mention in the footer of other pages.', 'ps_legalcompliance'),
-                                                             'hint' => $this->l('If enabled, make sure the Shipping terms are associated with a page below (Legal Content Management). The label will link to this content.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('Displays a label next to the product price (\'Shipping excluded\') and adds a short mention in the footer of other pages.', array(), 'Modules.Legalcompliance.Admin'),
+                                                             'hint' => $this->trans('If enabled, make sure the Shipping terms are associated with a page below (Legal Content Management). The label will link to this content.', array(), 'Modules.Legalcompliance.Admin'),
                                                              'values' => array(
                                                                  array(
                                                                      'id' => 'active_on',
                                                                      'value' => true,
-                                                                     'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                                                     'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                                                                  ),
                                                                  array(
                                                                      'id' => 'active_off',
                                                                      'value' => false,
-                                                                     'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                                                     'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                                                                  ),
                                                              ),
                                                        ),
                                                        array(
                                                            'type' => 'switch',
-                                                           'label' => $this->l('Revocation Terms within ToS', 'ps_legalcompliance'),
+                                                           'label' => $this->trans('Revocation Terms within ToS', array(), 'Modules.Legalcompliance.Admin'),
                                                            'name' => 'AEUC_LABEL_REVOCATION_TOS',
                                                            'is_bool' => true,
-                                                           'desc' => $this->l('Includes content from the Revocation Terms page within the Terms of Services (ToS).', 'ps_legalcompliance'),
-                                                           'hint' => $this->l('If enabled, make sure the Revocation Terms are associated with a page below (Legal Content Management).', 'ps_legalcompliance'),
+                                                           'desc' => $this->trans('Includes content from the Revocation Terms page within the Terms of Services (ToS).', array(), 'Modules.Legalcompliance.Admin'),
+                                                           'hint' => $this->trans('If enabled, make sure the Revocation Terms are associated with a page below (Legal Content Management).', array(), 'Modules.Legalcompliance.Admin'),
                                                            'disable' => true,
                                                            'values' => array(
                                                                array(
                                                                    'id' => 'active_on',
                                                                    'value' => true,
-                                                                   'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                                                   'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                                                                ),
                                                                array(
                                                                    'id' => 'active_off',
                                                                    'value' => false,
-                                                                   'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                                                   'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                                                                ),
                                                            ),
                                                        ),
                                                        array(
                                                            'type' => 'switch',
-                                                           'label' => $this->l('Revocation for virtual products', 'ps_legalcompliance'),
+                                                           'label' => $this->trans('Revocation for virtual products', array(), 'Modules.Legalcompliance.Admin'),
                                                            'name' => 'AEUC_LABEL_REVOCATION_VP',
                                                            'is_bool' => true,
-                                                           'desc' => $this->l('Adds a mandatory checkbox when the cart contains a virtual product. Use it to ensure customers are aware that a virtual product cannot be returned.', 'ps_legalcompliance'),
-                                                           'hint' => $this->l('Require customers to renounce their revocation right when purchasing virtual products (digital goods or services).', 'ps_legalcompliance'),
+                                                           'desc' => $this->trans('Adds a mandatory checkbox when the cart contains a virtual product. Use it to ensure customers are aware that a virtual product cannot be returned.', array(), 'Modules.Legalcompliance.Admin'),
+                                                           'hint' => $this->trans('Require customers to renounce their revocation right when purchasing virtual products (digital goods or services).', array(), 'Modules.Legalcompliance.Admin'),
                                                            'disable' => true,
                                                            'values' => array(
                                                                array(
                                                                    'id' => 'active_on',
                                                                    'value' => true,
-                                                                   'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                                                   'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                                                                ),
                                                                array(
                                                                    'id' => 'active_off',
                                                                    'value' => false,
-                                                                   'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                                                   'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                                                                ),
                                                            ),
                                                        ),
                                                        array(
                                                            'type' => 'switch',
-                                                           'label' => $this->l('\'From\' price label (when combinations)'),
+                                                           'label' => $this->trans('\'From\' price label (when combinations)', array(), 'Modules.Legalcompliance.Admin'),
                                                            'name' => 'AEUC_LABEL_COMBINATION_FROM',
                                                            'is_bool' => true,
-                                                           'desc' => $this->l('Displays a \'From\' label before the price on products with combinations.', 'ps_legalcompliance'),
-                                                           'hint' => $this->l('As prices can vary from a combination to another, this label indicates that the final price may be higher.', 'ps_legalcompliance'),
+                                                           'desc' => $this->trans('Displays a \'From\' label before the price on products with combinations.', array(), 'Modules.Legalcompliance.Admin'),
+                                                           'hint' => $this->trans('As prices can vary from a combination to another, this label indicates that the final price may be higher.', array(), 'Modules.Legalcompliance.Admin'),
                                                            'disable' => true,
                                                            'values' => array(
                                                                array(
                                                                    'id' => 'active_on',
                                                                    'value' => true,
-                                                                   'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                                                   'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                                                                ),
                                                                array(
                                                                    'id' => 'active_off',
                                                                    'value' => false,
-                                                                   'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                                                   'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                                                                ),
                                                            ),
                                                        ),
                                                        array('type' => 'text',
                                                              'lang' => true,
-                                                             'label' => $this->l('Custom text in shopping cart page',
-                                                                                 'ps_legalcompliance'),
+                                                             'label' => $this->trans('Custom text in shopping cart page', array(), 'Modules.Legalcompliance.Admin'),
                                                              'name' => 'AEUC_LABEL_CUSTOM_CART_TEXT',
-                                                             'desc' => $this->l('This text will be displayed on the shopping cart page. Leave empty to disable.', 'ps_legalcompliance'),
-                                                             'hint' => $this->l('Please inform your customers about how the order is legally confirmed.', 'ps_legalcompliance'),
+                                                             'desc' => $this->trans('This text will be displayed on the shopping cart page. Leave empty to disable.', array(), 'Modules.Legalcompliance.Admin'),
+                                                             'hint' => $this->trans('Please inform your customers about how the order is legally confirmed.', array(), 'Modules.Legalcompliance.Admin'),
                                                        ),
                                      ),
                                      'submit' => array(
-                                         'title' => $this->l('Save', 'ps_legalcompliance'),
+                                         'title' => $this->trans('Save', array(), 'Admin.Actions'),
                                      ),
         ),
         );
@@ -1595,54 +1597,53 @@ class Ps_LegalCompliance extends Module
         return array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->l('Features', 'ps_legalcompliance'),
+                    'title' => $this->trans('Features', array(), 'Modules.Legalcompliance.Admin'),
                     'icon' => 'icon-cogs',
                 ),
                 'input' => array(
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('Enable \'Reordering\' feature', 'ps_legalcompliance'),
-                        'hint' => $this->l('If enabled, the \'Reorder\' option allows customers to reorder in one click from their Order History page.', 'ps_legalcompliance'),
+                        'label' => $this->trans('Enable \'Reordering\' feature', array(), 'Modules.Legalcompliance.Admin'),
+                        'hint' => $this->trans('If enabled, the \'Reorder\' option allows customers to reorder in one click from their Order History page.', array(), 'Modules.Legalcompliance.Admin'),
                         'name' => 'AEUC_FEAT_REORDER',
                         'is_bool' => true,
-                        'desc' => $this->l('Make sure you comply with your local legislation before enabling: it can be considered as unsolicited goods.', 'ps_legalcompliance'),
+                        'desc' => $this->trans('Make sure you comply with your local legislation before enabling: it can be considered as unsolicited goods.', array(), 'Modules.Legalcompliance.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
                                 'value' => true,
-                                'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                             ),
                             array(
                                 'id' => 'active_off',
                                 'value' => false,
-                                'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                             ),
                         ),
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('Proportionate tax for shipping and wrapping', 'ps_legalcompliance'),
+                        'label' => $this->trans('Proportionate tax for shipping and wrapping', array(), 'Modules.Legalcompliance.Admin'),
                         'name' => 'PS_ATCP_SHIPWRAP',
                         'is_bool' => true,
-                        'desc' => $this->l('When enabled, tax for shipping and wrapping costs will be calculated proportionate to taxes applying to the products in the cart.',
-                                              'ps_legalcompliance'),
-                        'hint' => $this->l('If active, your carriers\' shipping fees must be tax included! Make sure it is the case in the Shipping section.', 'ps_legalcompliance'),
+                        'desc' => $this->trans('When enabled, tax for shipping and wrapping costs will be calculated proportionate to taxes applying to the products in the cart.', array(), 'Modules.Legalcompliance.Admin'),
+                        'hint' => $this->trans('If active, your carriers\' shipping fees must be tax included! Make sure it is the case in the Shipping section.', array(), 'Modules.Legalcompliance.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
                                 'value' => true,
-                                'label' => $this->l('Enabled', 'ps_legalcompliance'),
+                                'label' => $this->trans('Enabled', array(), 'Admin.Global'),
                             ),
                             array(
                                 'id' => 'active_off',
                                 'value' => false,
-                                'label' => $this->l('Disabled', 'ps_legalcompliance'),
+                                'label' => $this->trans('Disabled', array(), 'Admin.Global'),
                             ),
                         ),
                     ),
                 ),
                 'submit' => array(
-                    'title' => $this->l('Save', 'ps_legalcompliance'),
+                    'title' => $this->trans('Save', array(), 'Admin.Actions'),
                 ),
             ),
         );
@@ -1677,7 +1678,7 @@ class Ps_LegalCompliance extends Module
                 $cms_entity = $cms_repository->findOne((int) $cms_role->id_cms);
                 $assoc_cms_name = $cms_entity->meta_title[(int) $id_lang];
             } else {
-                $assoc_cms_name = $this->l('-- Select associated page --', 'ps_legalcompliance');
+                $assoc_cms_name = $this->trans('-- Select associated page --', array(), 'Modules.Legalcompliance.Admin');
             }
 
             $cms_roles_assoc[(int) $cms_role->id] = array('id_cms' => (int) $cms_role->id_cms,
@@ -1689,7 +1690,7 @@ class Ps_LegalCompliance extends Module
         $cms_pages = $cms_repository->i10nFindAll($id_lang, $id_shop);
         $fake_object = new stdClass();
         $fake_object->id = 0;
-        $fake_object->meta_title = $this->l('-- Select associated page --', 'ps_legalcompliance');
+        $fake_object->meta_title = $this->trans('-- Select associated page --', array(), 'Modules.Legalcompliance.Admin');
         $cms_pages[-1] = $fake_object;
         unset($fake_object);
 

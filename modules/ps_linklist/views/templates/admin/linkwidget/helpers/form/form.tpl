@@ -220,21 +220,21 @@
                 </thead>
                 <tbody>
                 <tr class="js-custom-link-row-template-{$lang['id_lang']}" data-item="0" style="display: none">
-                  <td><a href="#" class="js-clear-custom-link" style="display: none"><i class="material-icons action-disabled">clear</i></a></td>
-                  <td>
+                  <td class="col-md-1"><a href="#" class="js-clear-custom-link" style="display: none"><i class="material-icons action-disabled">{l s='Clear' d='Admin.Actions'}</i></a></td>
+                  <td class="col-md-2">
                     <label class="control-label">
                       <input type="text" name="custom[{$lang['id_lang']}][0][title]"/>
                     </label>
                   </td>
-                  <td>
-                    <label class="control-label">
+                  <td class="col-md-9">
+                    <label class="control-label col-md-12">
                       <input type="text" name="custom[{$lang['id_lang']}][0][url]"/>
                     </label>
                   </td>
                 </tr>
                 {foreach $input.values[$lang['id_lang']] as $key => $page}
                   <tr {if $key%2}class="alt_row"{/if} data-item="{$key}">
-                    <td><a href="#" class="js-clear-custom-link"><i class="material-icons action-disabled">clear</i></a></td>
+                    <td><a href="#" class="js-clear-custom-link"><i class="material-icons action-disabled">{l s='Clear' d='Admin.Actions'}</i></a></td>
                     <td>
                       <label class="control-label">
                         <input type="text" name="custom[{$lang['id_lang']}][{$key}][title]" value="{$page.title}"/>
@@ -249,7 +249,9 @@
                 {/foreach}
                 </tbody>
               </table>
-              <a href="#" class="js-add-custom-link-{$lang['id_lang']}">Add</a>
+              <div class="panel-footer">
+                <a href="#" class="js-add-custom-link-{$lang['id_lang']} btn btn-default pull-right"><i class="process-icon-new"></i>{l s='Add' d='Admin.Actions'}</a>
+              </div>
             </div>
           </div>
         </div>

@@ -56,15 +56,15 @@ class Ps_MainMenu extends Module implements WidgetInterface
     {
         $this->name = 'ps_mainmenu';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.6';
+        $this->version = '2.0.2';
         $this->author = 'PrestaShop';
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->l('Main menu');
-        $this->description = $this->l('Adds a new menu to the top of your e-commerce website.');
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->displayName = $this->trans('Main menu', array(), 'Modules.Mainmenu.Admin');
+        $this->description = $this->trans('Adds a new menu to the top of your e-commerce website.', array(), 'Modules.Mainmenu.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
     }
 
     public function install($delete_params = true)
@@ -194,9 +194,9 @@ class Ps_MainMenu extends Module implements WidgetInterface
             }
 
             if (!count($errors_update_shops)) {
-                $this->_html .= $this->displayConfirmation($this->l('The settings have been updated.'));
+                $this->_html .= $this->displayConfirmation($this->trans('The settings have been updated.', array(), 'Admin.Notifications.Success'));
             } else {
-                $this->_html .= $this->displayError(sprintf($this->l('Unable to update settings for the following shop(s): %s'), implode(', ', $errors_update_shops)));
+                $this->_html .= $this->displayError(sprintf($this->trans('Unable to update settings for the following shop(s): %s', array(), 'Modules.Mainmenu.Admin'), implode(', ', $errors_update_shops)));
             }
 
             $update_cache = true;
@@ -214,11 +214,11 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
                 if ($count_links_label || $count_label) {
                     if (!$count_links_label) {
-                        $this->_html .= $this->displayError($this->l('Please complete the "Link" field.'));
+                        $this->_html .= $this->displayError($this->trans('Please complete the "Link" field.', array(), 'Modules.Mainmenu.Admin'));
                     } elseif (!$count_label) {
-                        $this->_html .= $this->displayError($this->l('Please add a label.'));
+                        $this->_html .= $this->displayError($this->trans('Please add a label.', array(), 'Modules.Mainmenu.Admin'));
                     } elseif (!isset($labels[$default_language])) {
-                        $this->_html .= $this->displayError($this->l('Please add a label for your default language.'));
+                        $this->_html .= $this->displayError($this->trans('Please add a label for your default language.', array(), 'Modules.Mainmenu.Admin'));
                     } else {
                         $shops = Shop::getContextListShopID();
 
@@ -232,9 +232,9 @@ class Ps_MainMenu extends Module implements WidgetInterface
                         }
 
                         if (!count($errors_add_link)) {
-                            $this->_html .= $this->displayConfirmation($this->l('The link has been added.'));
+                            $this->_html .= $this->displayConfirmation($this->trans('The link has been added.', array(), 'Modules.Mainmenu.Admin'));
                         } else {
-                            $this->_html .= $this->displayError(sprintf($this->l('Unable to add link for the following shop(s): %s'), implode(', ', $errors_add_link)));
+                            $this->_html .= $this->displayError($this->trans('Unable to add link for the following shop(s): %s', array(implode(', ', $errors_add_link)), 'Modules.Mainmenu.Admin'));
                         }
                     }
                 }
@@ -255,9 +255,9 @@ class Ps_MainMenu extends Module implements WidgetInterface
                 }
 
                 if (!count($errors_delete_link)) {
-                    $this->_html .= $this->displayConfirmation($this->l('The link has been removed.'));
+                    $this->_html .= $this->displayConfirmation($this->trans('The link has been removed.', array(), 'Modules.Mainmenu.Admin'));
                 } else {
-                    $this->_html .= $this->displayError(sprintf($this->l('Unable to remove link for the following shop(s): %s'), implode(', ', $errors_delete_link)));
+                    $this->_html .= $this->displayError($this->trans('Unable to remove link for the following shop(s): %s', array(implode(', ', $errors_delete_link)), 'Modules.Mainmenu.Admin'));
                 }
 
                 $update_cache = true;
@@ -276,7 +276,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
                     }
 
                     Ps_MenuTopLinks::update($link, $label, $new_window, (int)$id_shop, (int)$id_linksmenutop, (int)$id_linksmenutop);
-                    $this->_html .= $this->displayConfirmation($this->l('The link has been edited.'));
+                    $this->_html .= $this->displayConfirmation($this->trans('The link has been edited.', array(), 'Modules.Mainmenu.Admin'));
                 }
                 $update_cache = true;
             }
@@ -315,7 +315,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
     protected function getWarningMultishopHtml()
     {
         return '<p class="alert alert-warning">'.
-                    $this->l('You cannot manage top menu items from a "All Shops" or a "Group Shop" context, select directly the shop you want to edit').
+                    $this->trans('You cannot manage top menu items from a "All Shops" or a "Group Shop" context, select directly the shop you want to edit', array(), 'Modules.Mainmenu.Admin').
                 '</p>';
     }
 
@@ -324,12 +324,12 @@ class Ps_MainMenu extends Module implements WidgetInterface
         $shop_info = null;
 
         if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-            $shop_info = sprintf($this->l('The modifications will be applied to shop: %s'), $this->context->shop->name);
+            $shop_info = $this->trans('The modifications will be applied to shop: %s', array($this->context->shop->name), 'Modules.Mainmenu.Admin');
         } else {
             if (Shop::getContext() == Shop::CONTEXT_GROUP) {
-                $shop_info = sprintf($this->l('The modifications will be applied to this group: %s'), Shop::getContextShopGroup()->name);
+                $shop_info = $this->trans('The modifications will be applied to this group: %s', array(Shop::getContextShopGroup()->name), 'Modules.Mainmenu.Admin');
             } else {
-                $shop_info = $this->l('The modifications will be applied to all shops');
+                $shop_info = $this->trans('The modifications will be applied to all shops', array(), 'Modules.Mainmenu.Admin');
             }
         }
 
@@ -413,7 +413,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
                 // Case to handle the option to show all Manufacturers
                 case 'ALLMAN':
-                    $html .= '<option selected="selected" value="ALLMAN0">'.$this->l('All manufacturers').'</option>'.PHP_EOL;
+                    $html .= '<option selected="selected" value="ALLMAN0">'.$this->trans('All brands', array(), 'Modules.Mainmenu.Admin').'</option>'.PHP_EOL;
                     break;
 
                 case 'MAN':
@@ -425,7 +425,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
                 // Case to handle the option to show all Suppliers
                 case 'ALLSUP':
-                    $html .= '<option selected="selected" value="ALLSUP0">'.$this->l('All suppliers').'</option>'.PHP_EOL;
+                    $html .= '<option selected="selected" value="ALLSUP0">'.$this->trans('All suppliers', array(), 'Modules.Mainmenu.Admin').'</option>'.PHP_EOL;
                     break;
 
                 case 'SUP':
@@ -582,7 +582,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
                     $root_node['children'][] = $this->makeNode([
                         'type' => 'manufacturers',
                         'page_identifier' => 'manufacturers',
-                        'label' => $this->l('All manufacturers'),
+                        'label' => $this->trans('All brands', array(), 'Modules.Mainmenu.Admin'),
                         'url' => $this->context->link->getPageLink('manufacturer'),
                         'children' => $children
                     ]);
@@ -622,7 +622,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
                     $root_node['children'][] = $this->makeNode([
                         'type' => 'suppliers',
                         'page_identifier' => 'suppliers',
-                        'label' => $this->l('All suppliers'),
+                        'label' => $this->trans('All suppliers', array(), 'Modules.Mainmenu.Admin'),
                         'url' => $this->context->link->getPageLink('supplier'),
                         'children' => $children
                     ]);
@@ -998,7 +998,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
             $fields_form = array(
                 'form' => array(
                     'legend' => array(
-                        'title' => $this->l('Menu Top Link'),
+                        'title' => $this->trans('Menu Top Link', array(), 'Modules.Mainmenu.Admin'),
                         'icon' => 'icon-link'
                     ),
                     'input' => array(
@@ -1011,7 +1011,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
                     ),
                     'submit' => array(
                         'name' => 'submitBlocktopmenu',
-                        'title' => $this->l('Save')
+                        'title' => $this->trans('Save', array(), 'Admin.Actions')
                     )
                 ),
             );
@@ -1019,14 +1019,14 @@ class Ps_MainMenu extends Module implements WidgetInterface
             $fields_form = array(
                 'form' => array(
                     'legend' => array(
-                        'title' => $this->l('Menu Top Link'),
+                        'title' => $this->trans('Menu Top Link', array(), 'Modules.Mainmenu.Admin'),
                         'icon' => 'icon-link'
                     ),
                     'info' => '<div class="alert alert-warning">'.
-                        $this->l('All active products combinations quantities will be changed').'</div>',
+                        $this->trans('All active products combinations quantities will be changed', array(), 'Modules.Mainmenu.Admin').'</div>',
                     'submit' => array(
                         'name' => 'submitBlocktopmenu',
-                        'title' => $this->l('Save')
+                        'title' => $this->trans('Save', array(), 'Admin.Actions')
                     )
                 ),
             );
@@ -1059,44 +1059,45 @@ class Ps_MainMenu extends Module implements WidgetInterface
             'form' => array(
                 'legend' => array(
                     'title' => (Tools::getIsset('updatelinksmenutop') && !Tools::getValue('updatelinksmenutop')) ?
-                        $this->l('Update link') : $this->l('Add a new link'),
+                        $this->trans('Update link', array(), 'Modules.Mainmenu.Admin') : $this->trans('Add a new link', array(), 'Modules.Mainmenu.Admin'),
                     'icon' => 'icon-link'
                 ),
                 'input' => array(
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Label'),
+                        'label' => $this->trans('Label', array(), 'Admin.Global'),
                         'name' => 'label',
                         'lang' => true,
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->l('Link'),
+                        'label' => $this->trans('Link', array(), 'Admin.Global'),
+                        'placeholder' => 'http://www.example.com',
                         'name' => 'link',
                         'lang' => true,
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('New window'),
+                        'label' => $this->trans('New window', array(), 'Admin.Navigation.Header'),
                         'name' => 'new_window',
                         'is_bool' => true,
                         'values' => array(
                             array(
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->l('Enabled')
+                                'label' => $this->trans('Enabled', array(), 'Admin.Global')
                             ),
                             array(
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->l('Disabled')
+                                'label' => $this->trans('Disabled', array(), 'Admin.Global')
                             )
                         ),
                     )
                 ),
                 'submit' => array(
                     'name' => 'submitBlocktopmenuLinks',
-                    'title' => $this->l('Add')
+                    'title' => $this->trans('Add', array(), 'Admin.Actions')
                 )
             ),
         );
@@ -1114,7 +1115,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
         if (Tools::getIsset('updatelinksmenutop') && !Tools::getValue('updatelinksmenutop')) {
             $fields_form['form']['submit'] = array(
                 'name' => 'updatelinksmenutop',
-                'title' => $this->l('Update')
+                'title' => $this->trans('Update', array(), 'Admin.Actions')
             );
         }
 
@@ -1139,14 +1140,14 @@ class Ps_MainMenu extends Module implements WidgetInterface
         $items = $this->getMenuItems();
 
         $html = '<select multiple="multiple" id="availableItems" style="width: 300px; height: 160px;">';
-        $html .= '<optgroup label="'.$this->l('CMS').'">';
+        $html .= '<optgroup label="'.$this->trans('CMS', array(), 'Modules.Mainmenu.Admin').'">';
         $html .= $this->getCMSOptions(0, 1, $this->context->language->id, $items);
         $html .= '</optgroup>';
 
         // BEGIN SUPPLIER
-        $html .= '<optgroup label="'.$this->l('Supplier').'">';
+        $html .= '<optgroup label="'.$this->trans('Supplier', array(), 'Admin.Global').'">';
         // Option to show all Suppliers
-        $html .= '<option value="ALLSUP0">'.$this->l('All suppliers').'</option>';
+        $html .= '<option value="ALLSUP0">'.$this->trans('All suppliers', array(), 'Modules.Mainmenu.Admin').'</option>';
         $suppliers = Supplier::getSuppliers(false, $this->context->language->id);
         foreach ($suppliers as $supplier) {
             if (!in_array('SUP'.$supplier['id_supplier'], $items)) {
@@ -1156,9 +1157,9 @@ class Ps_MainMenu extends Module implements WidgetInterface
         $html .= '</optgroup>';
 
         // BEGIN Manufacturer
-        $html .= '<optgroup label="'.$this->l('Manufacturer').'">';
+        $html .= '<optgroup label="'.$this->trans('Brand', array(), 'Admin.Global').'">';
         // Option to show all Manufacturers
-        $html .= '<option value="ALLMAN0">'.$this->l('All manufacturers').'</option>';
+        $html .= '<option value="ALLMAN0">'.$this->trans('All brands', array(), 'Modules.Mainmenu.Admin').'</option>';
         $manufacturers = Manufacturer::getManufacturers(false, $this->context->language->id);
         foreach ($manufacturers as $manufacturer) {
             if (!in_array('MAN'.$manufacturer['id_manufacturer'], $items)) {
@@ -1169,7 +1170,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
         // BEGIN Categories
         $shop = new Shop((int)Shop::getContextShopID());
-        $html .= '<optgroup label="'.$this->l('Categories').'">';
+        $html .= '<optgroup label="'.$this->trans('Categories', array(), 'Admin.Global').'">';
 
         $shops_to_get = Shop::getContextListShopID();
 
@@ -1180,7 +1181,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
         // BEGIN Shops
         if (Shop::isFeatureActive()) {
-            $html .= '<optgroup label="'.$this->l('Shops').'">';
+            $html .= '<optgroup label="'.$this->trans('Shops', array(), 'Modules.Mainmenu.Admin').'">';
             $shops = Shop::getShopsCollection();
             foreach ($shops as $shop) {
                 if (!$shop->setUrl() && !$shop->getBaseURL()) {
@@ -1195,12 +1196,12 @@ class Ps_MainMenu extends Module implements WidgetInterface
         }
 
         // BEGIN Products
-        $html .= '<optgroup label="'.$this->l('Products').'">';
-        $html .= '<option value="PRODUCT" style="font-style:italic">'.$spacer.$this->l('Choose product ID').'</option>';
+        $html .= '<optgroup label="'.$this->trans('Products', array(), 'Admin.Global').'">';
+        $html .= '<option value="PRODUCT" style="font-style:italic">'.$spacer.$this->trans('Choose product ID', array(), 'Modules.Mainmenu.Admin').'</option>';
         $html .= '</optgroup>';
 
         // BEGIN Menu Top Links
-        $html .= '<optgroup label="'.$this->l('Menu Top Links').'">';
+        $html .= '<optgroup label="'.$this->trans('Menu Top Links', array(), 'Modules.Mainmenu.Admin').'">';
         $links = Ps_MenuTopLinks::gets($this->context->language->id, null, (int)Shop::getContextShopID());
         foreach ($links as $link) {
             if ($link['label'] == '') {
@@ -1322,23 +1323,23 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
         $fields_list = array(
             'id_linksmenutop' => array(
-                'title' => $this->l('Link ID'),
+                'title' => $this->trans('Link ID', array(), 'Modules.Mainmenu.Admin'),
                 'type' => 'text',
             ),
             'name' => array(
-                'title' => $this->l('Shop name'),
+                'title' => $this->trans('Shop name', array(), 'Admin.Shopparameters.Feature'),
                 'type' => 'text',
             ),
             'label' => array(
-                'title' => $this->l('Label'),
+                'title' => $this->trans('Label', array(), 'Admin.Global'),
                 'type' => 'text',
             ),
             'link' => array(
-                'title' => $this->l('Link'),
+                'title' => $this->trans('Link', array(), 'Admin.Global'),
                 'type' => 'link',
             ),
             'new_window' => array(
-                'title' => $this->l('New window'),
+                'title' => $this->trans('New window', array(), 'Admin.Navigation.Header'),
                 'type' => 'bool',
                 'align' => 'center',
                 'active' => 'status',
@@ -1353,7 +1354,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
         $helper->actions = array('edit', 'delete');
         $helper->show_toolbar = false;
         $helper->module = $this;
-        $helper->title = $this->l('Link list');
+        $helper->title = $this->trans('Link list', array(), 'Modules.Mainmenu.Admin');
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
 

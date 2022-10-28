@@ -40,34 +40,35 @@ class GridHtml extends ModuleGridEngine
 		{
 			$this->name = 'gridhtml';
 			$this->tab = 'administration';
-			$this->version = '1.3.1';
+			$this->version = '2.0.0';
 			$this->author = 'PrestaShop';
 			$this->need_instance = 0;
-			
+
 			Module::__construct();
-			
-			$this->displayName = $this->l('Simple HTML table display');
-			$this->description = $this->l('Allows the statistics system to display data in a grid.');
+
+			$this->displayName = $this->trans('Simple HTML table display', array(), 'Modules.Gridhtml.Admin');
+			$this->description = $this->trans('Allows the statistics system to display data in a grid.', array(), 'Modules.Gridhtml.Admin');
+			$this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 		}
 	}
-	
+
 	function install()
 	{
 		return (parent::install() AND $this->registerHook('GridEngine'));
 	}
-	
+
 	public static function hookGridEngine($params, $grider)
 	{
 		self::$_columns = $params['columns'];
 		if (!isset($params['emptyMsg']))
 			$params['emptyMsg'] = 'Empty';
 
-        $customParams = '';
-        if (isset($params['customParams'])) {
-            foreach ($params['customParams'] as $name => $value) {
-                $customParams .= '&'.$name.'='.urlencode($value);
-            }
-        }
+		$customParams = '';
+		if (isset($params['customParams'])) {
+			foreach ($params['customParams'] as $name => $value) {
+				$customParams .= '&'.$name.'='.urlencode($value);
+			}
+		}
 
 		$html = '
 		<table class="table" id="grid_1">
@@ -145,38 +146,38 @@ class GridHtml extends ModuleGridEngine
 		</script>';
 		return $html;
 	}
-	
+
 	public function setColumnsInfos(&$infos)
 	{
 	}
-	
+
 	public function setValues($values)
 	{
 		$this->_values = $values;
 	}
-	
+
 	public function setTitle($title)
 	{
 		$this->_title = $title;
 	}
-	
+
 	public function setSize($width, $height)
 	{
 		$this->_width = $width;
 		$this->_height = $height;
 	}
-	
+
 	public function setTotalCount($totalCount)
 	{
 		$this->_totalCount = $totalCount;
 	}
-	
+
 	public function setLimit($start, $limit)
 	{
 		$this->_start = (int)$start;
 		$this->_limit = (int)$limit;
 	}
-	
+
 	public function render()
 	{
 		echo Tools::jsonEncode(array(
@@ -185,6 +186,6 @@ class GridHtml extends ModuleGridEngine
 			'to' => min($this->_start + $this->_limit, $this->_totalCount),
 			'values' => $this->_values
 		));
-	}	
+	}
 }
 

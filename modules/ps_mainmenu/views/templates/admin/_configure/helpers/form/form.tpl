@@ -50,10 +50,10 @@ function add()
 		text = text.replace(/(^\s*)|(\s*$)/gi,"");
 		if (val == "PRODUCT")
 		{
-			val = prompt('{l s="Indicate the ID number for the product" mod='ps_mainmenu' js=1}');
+			val = prompt('{l s="Indicate the ID number for the product" d='Modules.Mainmenu.Admin' js=1}');
 			if (val == null || val == "" || isNaN(val))
 				return;
-			text = '{l s="Product ID #" mod='ps_mainmenu' js=1}'+val;
+			text = '{l s="Product ID #" d='Modules.Mainmenu.Admin' js=1}'+val;
 			val = "PRD"+val;
 		}
 		$("#items").append('<option value="'+val+'" selected="selected">'+text+'</option>');
@@ -82,7 +82,7 @@ function move(up)
         var tomove = $('#items option:selected');
         if (tomove.length >1)
         {
-                alert('{l s="Please select just one item" mod='ps_mainmenu'}');
+                alert('{l s="Please select just one item" d='Modules.Mainmenu.Admin'}');
                 return false;
         }
         if (up)
@@ -99,16 +99,16 @@ function move(up)
     {if $input.type == 'link_choice'}
 	    <div class="row">
 	    	<div class="col-lg-1">
-	    		<h4 style="margin-top:5px;">{l s='Change position' mod='ps_mainmenu'}</h4> 
+	    		<h4 style="margin-top:5px;">{l s='Change position' d='Modules.Mainmenu.Admin'}</h4>
                 <a href="#" id="menuOrderUp" class="btn btn-default" style="font-size:20px;display:block;"><i class="icon-chevron-up"></i></a><br/>
                 <a href="#" id="menuOrderDown" class="btn btn-default" style="font-size:20px;display:block;"><i class="icon-chevron-down"></i></a><br/>
 	    	</div>
 	    	<div class="col-lg-4">
-	    		<h4 style="margin-top:5px;">{l s='Selected items' mod='ps_mainmenu'}</h4>
+	    		<h4 style="margin-top:5px;">{l s='Selected items' d='Modules.Mainmenu.Admin'}</h4>
 	    		{$selected_links}
 	    	</div>
 	    	<div class="col-lg-4">
-	    		<h4 style="margin-top:5px;">{l s='Available items' mod='ps_mainmenu'}</h4>
+	    		<h4 style="margin-top:5px;">{l s='Available items' d='Modules.Mainmenu.Admin'}</h4>
 	    		{$choices}
 	    	</div>
 
@@ -116,8 +116,8 @@ function move(up)
 	    <br/>
 	    <div class="row">
 	    	<div class="col-lg-1"></div>
-	    	<div class="col-lg-4"><a href="#" id="removeItem" class="btn btn-default"><i class="icon-arrow-right"></i> {l s='Remove' mod='ps_mainmenu'}</a></div>
-	    	<div class="col-lg-4"><a href="#" id="addItem" class="btn btn-default"><i class="icon-arrow-left"></i> {l s='Add' mod='ps_mainmenu'}</a></div>
+	    	<div class="col-lg-4"><a href="#" id="removeItem" class="btn btn-default"><i class="icon-arrow-right"></i> {l s='Remove' d='Modules.Mainmenu.Admin'}</a></div>
+		<div class="col-lg-4"><a href="#" id="addItem" class="btn btn-default"><i class="icon-arrow-left"></i> {l s='Add' d='Admin.Actions'}</a></div>
 	    </div>
 	{else}
 		{$smarty.block.parent}

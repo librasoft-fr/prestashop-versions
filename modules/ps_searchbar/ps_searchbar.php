@@ -38,15 +38,15 @@ class Ps_Searchbar extends Module implements WidgetInterface
     {
         $this->name = 'ps_searchbar';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.5';
+        $this->version = '2.0.1';
         $this->need_instance = 0;
 
         parent::__construct();
 
-        $this->displayName = $this->l('Search bar');
-        $this->description = $this->l('Adds a quick search field to your website.');
+        $this->displayName = $this->trans('Search bar', array(), 'Modules.Searchbar.Admin');
+        $this->description = $this->trans('Adds a quick search field to your website.', array(), 'Modules.Searchbar.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         $this->templateFile = 'module:ps_searchbar/ps_searchbar.tpl';
     }
@@ -69,7 +69,7 @@ class Ps_Searchbar extends Module implements WidgetInterface
     public function getWidgetVariables($hookName, array $configuration = [])
     {
         $widgetVariables = array(
-            'search_controller_url' => $this->context->link->getPageLink('search'),
+            'search_controller_url' => $this->context->link->getPageLink('search', null, null, null, false, null, true),
         );
 
         if (!array_key_exists('search_string', $this->context->smarty->getTemplateVars())) {

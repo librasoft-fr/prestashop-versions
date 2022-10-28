@@ -12,7 +12,7 @@ class AdminLinkWidgetController extends ModuleAdminController
         $this->display = 'view';
 
         parent::__construct();
-        $this->meta_title = $this->trans('Link Widget', array(), 'Modules.LinkList');
+        $this->meta_title = $this->trans('Link Widget', array(), 'Modules.Linklist.Admin');
 
         if (!$this->module->active) {
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminHome'));
@@ -22,7 +22,8 @@ class AdminLinkWidgetController extends ModuleAdminController
 
         $this->repository = new LinkBlockRepository(
             Db::getInstance(),
-            $this->context->shop
+            $this->context->shop,
+            $this->context->getTranslator()
         );
     }
 
@@ -39,7 +40,13 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     public function postProcess()
     {
-        if (Tools::isSubmit('submit'.$this->className)) {
+        if (Tools::isSubmit('action')) {
+            switch (Tools::getValue('action')) {
+                case 'updatePositions':
+                    $this->updatePositions();
+                    break;
+            }
+        } elseif (Tools::isSubmit('submit'.$this->className)) {
             if (!$this->manageLinkList()) {
                 return false;
             }
@@ -67,7 +74,7 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     public function renderView()
     {
-        $title = $this->trans('Link block configuration', array(), 'Modules.LinkList');
+        $title = $this->trans('Link block configuration', array(), 'Modules.Linklist.Admin');
 
         $this->fields_form[]['form'] = array(
             'legend' => array(
@@ -77,14 +84,14 @@ class AdminLinkWidgetController extends ModuleAdminController
             'input' => array(
                 array(
                     'type' => 'link_blocks',
-                    'label' => $this->trans('Link Blocks', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Link Blocks', array(), 'Modules.Linklist.Admin'),
                     'name' => 'link_blocks',
                     'values' => $this->repository->getCMSBlocksSortedByHook(),
                 ),
             ),
             'buttons' => array(
                 'newBlock' => array(
-                    'title' => $this->trans('New block', array(), 'Modules.LinkList'),
+                    'title' => $this->trans('New block', array(), 'Modules.Linklist.Admin'),
                     'href' => $this->context->link->getAdminLink('Admin'.$this->name).'&amp;addLinkBlock',
                     'class' => 'pull-right',
                     'icon' => 'process-icon-new'
@@ -111,7 +118,7 @@ class AdminLinkWidgetController extends ModuleAdminController
         $this->fields_form[0]['form'] = array(
             'tinymce' => true,
             'legend' => array(
-                'title' => isset($block) ? $this->trans('Edit the link block.', array(), 'Modules.LinkList') : $this->trans('New link block', array(), 'Modules.LinkList'),
+                'title' => isset($block) ? $this->trans('Edit the link block.', array(), 'Modules.Linklist.Admin') : $this->trans('New link block', array(), 'Modules.Linklist.Admin'),
                 'icon' => isset($block) ? 'icon-edit' : 'icon-plus-square'
             ),
             'input' => array(
@@ -121,7 +128,7 @@ class AdminLinkWidgetController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->trans('Name of the link block', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Name of the link block', array(), 'Modules.Linklist.Admin'),
                     'name' => 'name',
                     'lang' => true,
                     'required' => true,
@@ -139,31 +146,31 @@ class AdminLinkWidgetController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'cms_pages',
-                    'label' => $this->trans('Content pages', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Content pages', array(), 'Modules.Linklist.Admin'),
                     'name' => 'cms[]',
                     'values' => $this->repository->getCmsPages(),
-                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
                 array(
                     'type' => 'product_pages',
-                    'label' => $this->trans('Product pages', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Product pages', array(), 'Modules.Linklist.Admin'),
                     'name' => 'product[]',
                     'values' => $this->repository->getProductPages(),
-                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
                 array(
                     'type' => 'static_pages',
-                    'label' => $this->trans('Static content', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Static content', array(), 'Modules.Linklist.Admin'),
                     'name' => 'static[]',
                     'values' => $this->repository->getStaticPages(),
-                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
                 array(
                     'type' => 'custom_pages',
-                    'label' => $this->trans('Custom content', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Custom content', array(), 'Modules.Linklist.Admin'),
                     'name' => 'custom[]',
                     'values' => $this->repository->getCustomPages($block),
-                    'desc' => $this->trans('Please add every page that you want to display in this block.', array(), 'Modules.LinkList')
+                    'desc' => $this->trans('Please add every page that you want to display in this block.', array(), 'Modules.Linklist.Admin')
                 ),
             ),
             'buttons' => array(
@@ -221,8 +228,8 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     public function initToolBarTitle()
     {
-        $this->toolbar_title[] = $this->trans('Themes', array(), 'Modules.LinkList');
-        $this->toolbar_title[] = $this->trans('Link Widget', array(), 'Modules.LinkList');
+        $this->toolbar_title[] = $this->trans('Themes', array(), 'Modules.Linklist.Admin');
+        $this->toolbar_title[] = $this->trans('Link Widget', array(), 'Modules.Linklist.Admin');
     }
 
     public function setMedia()
@@ -231,6 +238,26 @@ class AdminLinkWidgetController extends ModuleAdminController
 
         $this->addJqueryPlugin('tablednd');
         $this->addJS(_PS_JS_DIR_.'admin/dnd.js');
+    }
+
+    private function updatePositions()
+    {
+        if (!Tools::isSubmit('link_block_0')) {
+            return false;
+        }
+
+        $linkBlocks = Tools::getValue('link_block_0');
+        $query = 'UPDATE `' . _DB_PREFIX_ . 'link_block` SET `position` = CASE `id_link_block` ';
+
+        foreach ($linkBlocks as $position => $linkBlock) {
+            preg_match('/tr_\d+_(\d+)_\d+/', $linkBlock, $matches);
+            if (isset($matches[1])) {
+                $query .= 'WHEN ' . $matches[1] . ' THEN ' . $position . ' ';
+            }
+        }
+
+        $query .= 'ELSE `position` END';
+        return DB::getInstance()->execute($query);
     }
 
     private function manageLinkList()

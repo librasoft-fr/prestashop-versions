@@ -1,16 +1,20 @@
 <?php
 
+use \PrestaShopBundle\Translation\TranslatorComponent as Translator;
+
 class LinkBlockRepository
 {
     private $db;
     private $shop;
     private $db_prefix;
+    private $translator;
 
-    public function __construct(Db $db, Shop $shop)
+    public function __construct(Db $db, Shop $shop, Translator $translator)
     {
         $this->db = $db;
         $this->shop = $shop;
         $this->db_prefix = $db->getPrefix();
+        $this->translator = $translator;
     }
 
     public function createTables()
@@ -132,6 +136,7 @@ class LinkBlockRepository
         $sql = "SELECT cb.`id_link_block`
                     FROM {$this->db_prefix}link_block cb
                     WHERE `id_hook` = $id_hook
+                    ORDER by cb.`position`
                 ";
         $ids = $this->db->executeS($sql);
 
@@ -265,10 +270,13 @@ class LinkBlockRepository
                 (2, '.$id_hook.', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
         ];
 
+        $product = $this->translator->trans('Products', array(), 'Modules.Linklist.Shop');
+        $ourCompany = $this->translator->trans('Our company', array(), 'Modules.Linklist.Shop');
+
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `'.$this->db_prefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1,'.$lang['id_lang'].', \'Products\'),
-                (2, '.$lang['id_lang'].', \'Our company\')'
+                (1, '.(int)$lang['id_lang'].', "'.pSQL($product).'"),
+                (2, '.(int)$lang['id_lang'].', "'.pSQL($ourCompany).'")'
             ;
         }
 
@@ -284,41 +292,41 @@ class LinkBlockRepository
         $success = true;
 
         if (empty($id_link_block)) {
-            $query = 'INSERT INTO `'.$this->db_prefix.'link_block` (`id_hook`, `position`, `content`) VALUES
-                (' . $id_hook.', 1, \''.$content. '\')';
+            $query = 'INSERT INTO `'._DB_PREFIX_.'link_block` (`id_hook`, `position`, `content`)
+                SELECT ' . $id_hook . ', MAX(`position`) + 1, \''.$content. '\' FROM '._DB_PREFIX_.'link_block WHERE id_hook = ' . $id_hook;
 
-            $success &= $this->db->execute($query);
-            $id_link_block = (int)$this->db->Insert_ID();
+            $success &= Db::getInstance()->execute($query);
+            $id_link_block = (int) Db::getInstance()->Insert_ID();
 
             if (!empty($success) && !empty($id_link_block)) {
                 $languages = Language::getLanguages(true, Context::getContext()->shop->id);
 
                 if (!empty($languages)) {
-                    $query = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`, `custom_content`) VALUES ';
+                    $query = 'INSERT INTO `' . _DB_PREFIX_ . 'link_block_lang` (`id_link_block`, `id_lang`, `name`, `custom_content`) VALUES ';
 
                     foreach ($languages as $lang) {
                         $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int)$lang['id_lang']]) . '\'),';
                     }
 
-                    $success &= $this->db->execute(rtrim($query, ','));
+                    $success &= Db::getInstance()->execute(rtrim($query, ','));
                 }
             }
         } else {
-            $query = 'UPDATE `'.$this->db_prefix.'link_block` 
+            $query = 'UPDATE `'._DB_PREFIX_.'link_block` 
                     SET `content` = \''.$content.'\', `id_hook` = '.$id_hook.' 
                     WHERE `id_link_block` = '.$id_link_block;
-            $success &= $this->db->execute($query);
+            $success &= Db::getInstance()->execute($query);
 
             if (!empty($success) && !empty($id_link_block)) {
                 $languages = Language::getLanguages(true, Context::getContext()->shop->id);
 
                 if (!empty($languages)) {
                     foreach ($languages as $lang) {
-                        $query = 'UPDATE `' . $this->db_prefix . 'link_block_lang` 
+                        $query = 'UPDATE `' . _DB_PREFIX_ . 'link_block_lang` 
                                 SET `name` = \''.bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])).'\',
                                 `custom_content` = \''.bqSQL($custom_content[$lang['id_lang']]).'\'
                                 WHERE `id_link_block` = '.$id_link_block.' AND `id_lang` = '.(int)$lang['id_lang'];
-                        $success &= $this->db->execute($query);
+                        $success &= Db::getInstance()->execute($query);
                     }
                 }
             }

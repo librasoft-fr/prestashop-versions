@@ -50,14 +50,14 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Newsletter subscription', array(), 'Modules.EmailSubscription.Admin');
-        $this->description = $this->trans('Adds a form for newsletter subscription.', array(), 'Modules.EmailSubscription.Admin');
-        $this->confirmUninstall = $this->trans('Are you sure that you want to delete all of your contacts?', array(), 'Modules.EmailSubscription.Admin');
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->displayName = $this->trans('Newsletter subscription', array(), 'Modules.Emailsubscription.Admin');
+        $this->description = $this->trans('Adds a form for newsletter subscription.', array(), 'Modules.Emailsubscription.Admin');
+        $this->confirmUninstall = $this->trans('Are you sure that you want to delete all of your contacts?', array(), 'Modules.Emailsubscription.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
 
         $this->entity_manager = $entity_manager;
 
-        $this->version = '1.1.6';
+        $this->version = '2.0.0';
         $this->author = 'PrestaShop';
         $this->error = false;
         $this->valid = false;
@@ -213,13 +213,13 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                 'search' => false,
             ),
             'subscribed' => array(
-                'title' => $this->trans('Subscribed', array(), 'Modules.EmailSubscription.Admin'),
+                'title' => $this->trans('Subscribed', array(), 'Modules.Emailsubscription.Admin'),
                 'type' => 'bool',
                 'active' => 'subscribed',
                 'search' => false,
             ),
             'newsletter_date_add' => array(
-                'title' => $this->trans('Subscribed on', array(), 'Modules.EmailSubscription.Admin'),
+                'title' => $this->trans('Subscribed on', array(), 'Modules.Emailsubscription.Admin'),
                 'type' => 'date',
                 'search' => false,
             ),
@@ -231,7 +231,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
 
         $helper_list = new HelperList();
         $helper_list->module = $this;
-        $helper_list->title = $this->trans('Newsletter registrations', array(), 'Modules.EmailSubscription.Admin');
+        $helper_list->title = $this->trans('Newsletter registrations', array(), 'Modules.Emailsubscription.Admin');
         $helper_list->shopLinkType = '';
         $helper_list->no_link = true;
         $helper_list->show_toolbar = true;
@@ -283,7 +283,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
     {
         $this->smarty->assign(array(
             'href' => $this->_helperlist->currentIndex.'&subscribedcustomer&'.$this->_helperlist->identifier.'='.$id.'&token='.$token,
-            'action' => $this->trans('Unsubscribe', array(), 'Modules.EmailSubscription.Admin'),
+            'action' => $this->trans('Unsubscribe', array(), 'Modules.Emailsubscription.Admin'),
         ));
 
         return $this->display(__FILE__, 'views/templates/admin/list_action_unsubscribe.tpl');
@@ -337,18 +337,18 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
             $register_status = $this->isNewsletterRegistered($_POST['email']);
 
             if ($register_status < 1) {
-                return $this->error = $this->trans('This email address is not registered.', array(), 'Modules.EmailSubscription.Shop');
+                return $this->error = $this->trans('This email address is not registered.', array(), 'Modules.Emailsubscription.Shop');
             }
 
             if (!$this->unregister($_POST['email'], $register_status)) {
-                return $this->error = $this->trans('An error occurred while attempting to unsubscribe.', array(), 'Modules.EmailSubscription.Shop');
+                return $this->error = $this->trans('An error occurred while attempting to unsubscribe.', array(), 'Modules.Emailsubscription.Shop');
             }
 
-            return $this->valid = $this->trans('Unsubscription successful.', array(), 'Modules.EmailSubscription.Shop');
+            return $this->valid = $this->trans('Unsubscription successful.', array(), 'Modules.Emailsubscription.Shop');
         } elseif ($_POST['action'] == '0') {
             $register_status = $this->isNewsletterRegistered($_POST['email']);
             if ($register_status > 0) {
-                return $this->error = $this->trans('This email address is already registered.', array(), 'Modules.EmailSubscription.Shop');
+                return $this->error = $this->trans('This email address is already registered.', array(), 'Modules.Emailsubscription.Shop');
             }
 
             $email = pSQL($_POST['email']);
@@ -360,17 +360,17 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                     }
 
                     if (!$token = $this->getToken($email, $register_status)) {
-                        return $this->error = $this->trans('An error occurred during the subscription process.', array(), 'Modules.EmailSubscription.Shop');
+                        return $this->error = $this->trans('An error occurred during the subscription process.', array(), 'Modules.Emailsubscription.Shop');
                     }
 
                     $this->sendVerificationEmail($email, $token);
 
-                    return $this->valid = $this->trans('A verification email has been sent. Please check your inbox.', array(), 'Modules.EmailSubscription.Shop');
+                    return $this->valid = $this->trans('A verification email has been sent. Please check your inbox.', array(), 'Modules.Emailsubscription.Shop');
                 } else {
                     if ($this->register($email, $register_status)) {
-                        $this->valid = $this->trans('You have successfully subscribed to this newsletter.', array(), 'Modules.EmailSubscription.Shop');
+                        $this->valid = $this->trans('You have successfully subscribed to this newsletter.', array(), 'Modules.Emailsubscription.Shop');
                     } else {
-                        return $this->error = $this->trans('An error occurred during the subscription process.', array(), 'Modules.EmailSubscription.Shop');
+                        return $this->error = $this->trans('An error occurred during the subscription process.', array(), 'Modules.Emailsubscription.Shop');
                     }
 
                     if ($code = Configuration::get('NW_VOUCHER_CODE')) {
@@ -605,7 +605,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         }
 
         if (!$activated) {
-            return $this->trans('This email is already registered and/or invalid.', array(), 'Modules.EmailSubscription.Shop');
+            return $this->trans('This email is already registered and/or invalid.', array(), 'Modules.Emailsubscription.Shop');
         }
 
         if ($discount = Configuration::get('NW_VOUCHER_CODE')) {
@@ -616,7 +616,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
             $this->sendConfirmationEmail($email);
         }
 
-        return $this->trans('Thank you for subscribing to our newsletter.', array(), 'Modules.EmailSubscription.Shop');
+        return $this->trans('Thank you for subscribing to our newsletter.', array(), 'Modules.Emailsubscription.Shop');
     }
 
     /**
@@ -813,7 +813,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                 '%conditions%' => Configuration::get('NW_CONDITIONS', $this->context->language->id),
                 '[/2]' => '</em>',
             ),
-            'Modules.EmailSubscription.Shop'
+            'Modules.Emailsubscription.Shop'
         );
 
         return array(
@@ -834,7 +834,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                 'input' => array(
                     array(
                         'type' => 'switch',
-                        'label' => $this->trans('Would you like to send a verification email after subscription?', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Would you like to send a verification email after subscription?', array(), 'Modules.Emailsubscription.Admin'),
                         'name' => 'NW_VERIFICATION_EMAIL',
                         'values' => array(
                             array(
@@ -851,7 +851,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => $this->trans('Would you like to send a confirmation email after subscription?', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Would you like to send a confirmation email after subscription?', array(), 'Modules.Emailsubscription.Admin'),
                         'name' => 'NW_CONFIRMATION_EMAIL',
                         'values' => array(
                             array(
@@ -868,14 +868,14 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->trans('Welcome voucher code', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Welcome voucher code', array(), 'Modules.Emailsubscription.Admin'),
                         'name' => 'NW_VOUCHER_CODE',
                         'class' => 'fixed-width-md',
-                        'desc' => $this->trans('Leave blank to disable by default.', array(), 'Modules.EmailSubscription.Admin'),
+                        'desc' => $this->trans('Leave blank to disable by default.', array(), 'Modules.Emailsubscription.Admin'),
                     ),
                     array(
                         'type' => 'textarea',
-                        'label' => $this->trans('Newsletter conditions', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Newsletter conditions', array(), 'Modules.Emailsubscription.Admin'),
                         'lang' => true,
                         'name' => 'NW_CONDITIONS',
                         'cols' => 40,
@@ -883,9 +883,9 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                         'hint' => $this->trans(
                             'This text will be displayed beneath the newsletter subscribe button.',
                             array(),
-                            'Modules.EmailSubscription.Admin'
+                            'Modules.Emailsubscription.Admin'
                         ),
-                        'desc' => $this->trans('Leave blank to disable by default.', array(), 'Modules.EmailSubscription.Admin'),
+                        'desc' => $this->trans('Leave blank to disable by default.', array(), 'Modules.Emailsubscription.Admin'),
                     ),
                 ),
                 'submit' => array(
@@ -927,14 +927,14 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $fields_form = array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->trans('Export customers\' addresses', array(), 'Modules.EmailSubscription.Admin'),
+                    'title' => $this->trans('Export customers\' addresses', array(), 'Modules.Emailsubscription.Admin'),
                     'icon' => 'icon-envelope',
                 ),
                 'input' => array(
                     array(
                         'type' => 'select',
-                        'label' => $this->trans('Customers\' country', array(), 'Modules.EmailSubscription.Admin'),
-                        'desc' => $this->trans('Filter customers by country.', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Customers\' country', array(), 'Modules.Emailsubscription.Admin'),
+                        'desc' => $this->trans('Filter customers by country.', array(), 'Modules.Emailsubscription.Admin'),
                         'name' => 'COUNTRY',
                         'required' => false,
                         'default_value' => (int) $this->context->country->id,
@@ -946,18 +946,18 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                     ),
                     array(
                         'type' => 'select',
-                        'label' => $this->trans('Newsletter subscribers', array(), 'Modules.EmailSubscription.Admin'),
-                        'desc' => $this->trans('Filter customers who have subscribed to the newsletter or not, and who have an account or not.', array(), 'Modules.EmailSubscription.Admin'),
-                        'hint' => $this->trans('Customers can subscribe to your newsletter when registering, or by entering their email in the newsletter form.', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Newsletter subscribers', array(), 'Modules.Emailsubscription.Admin'),
+                        'desc' => $this->trans('Filter customers who have subscribed to the newsletter or not, and who have an account or not.', array(), 'Modules.Emailsubscription.Admin'),
+                        'hint' => $this->trans('Customers can subscribe to your newsletter when registering, or by entering their email in the newsletter form.', array(), 'Modules.Emailsubscription.Admin'),
                         'name' => 'SUSCRIBERS',
                         'required' => false,
                         'default_value' => (int) $this->context->country->id,
                         'options' => array(
                             'query' => array(
-                                array('id' => 0, 'name' => $this->trans('All subscribers', array(), 'Modules.EmailSubscription.Admin')),
-                                array('id' => 1, 'name' => $this->trans('Subscribers with account', array(), 'Modules.EmailSubscription.Admin')),
-                                array('id' => 2, 'name' => $this->trans('Subscribers without account', array(), 'Modules.EmailSubscription.Admin')),
-                                array('id' => 3, 'name' => $this->trans('Non-subscribers', array(), 'Modules.EmailSubscription.Admin')),
+                                array('id' => 0, 'name' => $this->trans('All subscribers', array(), 'Modules.Emailsubscription.Admin')),
+                                array('id' => 1, 'name' => $this->trans('Subscribers with account', array(), 'Modules.Emailsubscription.Admin')),
+                                array('id' => 2, 'name' => $this->trans('Subscribers without account', array(), 'Modules.Emailsubscription.Admin')),
+                                array('id' => 3, 'name' => $this->trans('Non-subscribers', array(), 'Modules.Emailsubscription.Admin')),
                             ),
                             'id' => 'id',
                             'name' => 'name',
@@ -965,17 +965,17 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                     ),
                     array(
                         'type' => 'select',
-                        'label' => $this->trans('Partner offers subscribers', array(), 'Modules.EmailSubscription.Admin'),
-                        'desc' => $this->trans('Filter customers who have agreed to receive your partners\' offers or not.', array(), 'Modules.EmailSubscription.Admin'),
-                        'hint' => $this->trans('Partner offers subscribers have agreed to receive your partners\' offers.', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Partner offers subscribers', array(), 'Modules.Emailsubscription.Admin'),
+                        'desc' => $this->trans('Filter customers who have agreed to receive your partners\' offers or not.', array(), 'Modules.Emailsubscription.Admin'),
+                        'hint' => $this->trans('Partner offers subscribers have agreed to receive your partners\' offers.', array(), 'Modules.Emailsubscription.Admin'),
                         'name' => 'OPTIN',
                         'required' => false,
                         'default_value' => (int) $this->context->country->id,
                         'options' => array(
                             'query' => array(
-                                array('id' => 0, 'name' => $this->trans('All customers', array(), 'Modules.EmailSubscription.Admin')),
-                                array('id' => 2, 'name' => $this->trans('Partner offers subscribers', array(), 'Modules.EmailSubscription.Admin')),
-                                array('id' => 1, 'name' => $this->trans('Partner offers non-subscribers', array(), 'Modules.EmailSubscription.Admin')),
+                                array('id' => 0, 'name' => $this->trans('All customers', array(), 'Modules.Emailsubscription.Admin')),
+                                array('id' => 2, 'name' => $this->trans('Partner offers subscribers', array(), 'Modules.Emailsubscription.Admin')),
+                                array('id' => 1, 'name' => $this->trans('Partner offers non-subscribers', array(), 'Modules.Emailsubscription.Admin')),
                             ),
                             'id' => 'id',
                             'name' => 'name',
@@ -1019,16 +1019,16 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $fields_form = array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->trans('Search for addresses', array(), 'Modules.EmailSubscription.Admin'),
+                    'title' => $this->trans('Search for addresses', array(), 'Modules.Emailsubscription.Admin'),
                     'icon' => 'icon-search',
                 ),
                 'input' => array(
                     array(
                         'type' => 'text',
-                        'label' => $this->trans('Email address to search', array(), 'Modules.EmailSubscription.Admin'),
+                        'label' => $this->trans('Email address to search', array(), 'Modules.Emailsubscription.Admin'),
                         'name' => 'searched_email',
                         'class' => 'fixed-width-xxl',
-                        'desc' => $this->trans('Example: contact@prestashop.com or @prestashop.com', array(), 'Modules.EmailSubscription.Admin'),
+                        'desc' => $this->trans('Example: contact@prestashop.com or @prestashop.com', array(), 'Modules.Emailsubscription.Admin'),
                     ),
                 ),
                 'submit' => array(
@@ -1087,7 +1087,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
 
         if ($result) {
             if (!$nb = count($result)) {
-                $this->_html .= $this->displayError($this->trans('No customers found with these filters!', array(), 'Modules.EmailSubscription.Admin'));
+                $this->_html .= $this->displayError($this->trans('No customers found with these filters!', array(), 'Modules.Emailsubscription.Admin'));
             } elseif ($fd = @fopen(dirname(__FILE__).'/'.strval(preg_replace('#\.{2,}#', '.', Tools::getValue('action'))).'_'.$this->file, 'w')) {
                 $header = array('id', 'shop_name', 'gender', 'lastname', 'firstname', 'email', 'subscribed', 'subscribed_on');
                 $array_to_export = array_merge(array($header), $result);
@@ -1096,21 +1096,21 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                 }
                 fclose($fd);
                 $this->_html .= $this->displayConfirmation(
-                    sprintf($this->trans('The .CSV file has been successfully exported: %d customers found.', array(), 'Modules.EmailSubscription.Admin'), $nb).'<br />
+                    sprintf($this->trans('The .CSV file has been successfully exported: %d customers found.', array(), 'Modules.Emailsubscription.Admin'), $nb).'<br />
                 <a href="'.$this->context->shop->getBaseURI().'modules/ps_emailsubscription/'.Tools::safeOutput(strval(Tools::getValue('action'))).'_'.$this->file.'">
-                <b>'.$this->trans('Download the file', array(), 'Modules.EmailSubscription.Admin').' '.$this->file.'</b>
+                <b>'.$this->trans('Download the file', array(), 'Modules.Emailsubscription.Admin').' '.$this->file.'</b>
                 </a>
                 <br />
                 <ol style="margin-top: 10px;">
                     <li style="color: red;">'.
-                    $this->trans('WARNING: When opening this .csv file with Excel, choose UTF-8 encoding to avoid strange characters.', array(), 'Modules.EmailSubscription.Admin').
+                    $this->trans('WARNING: When opening this .csv file with Excel, choose UTF-8 encoding to avoid strange characters.', array(), 'Modules.Emailsubscription.Admin').
                     '</li>
                 </ol>');
             } else {
-                $this->_html .= $this->displayError($this->trans('Error: Write access limited', array(), 'Modules.EmailSubscription.Admin').' '.dirname(__FILE__).'/'.strval(Tools::getValue('action')).'_'.$this->file.' !');
+                $this->_html .= $this->displayError($this->trans('Error: Write access limited', array(), 'Modules.Emailsubscription.Admin').' '.dirname(__FILE__).'/'.strval(Tools::getValue('action')).'_'.$this->file.' !');
             }
         } else {
-            $this->_html .= $this->displayError($this->trans('No result found!', array(), 'Modules.EmailSubscription.Admin'));
+            $this->_html .= $this->displayError($this->trans('No result found!', array(), 'Modules.Emailsubscription.Admin'));
         }
     }
 
@@ -1123,7 +1123,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
 
         $fake_object = new stdClass();
         $fake_object->id = 0;
-        $fake_object->name = $this->trans('-- Select associated page --', array(), 'Modules.EmailSubscription.Admin');
+        $fake_object->name = $this->trans('-- Select associated page --', array(), 'Modules.Emailsubscription.Admin');
         $cms_pages[-1] = $fake_object;
         unset($fake_object);
 
@@ -1202,7 +1202,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $line = implode(';', $array);
         $line .= "\n";
         if (!fwrite($fd, $line, 4096)) {
-            $this->post_errors[] = $this->trans('Error: Write access limited', array(), 'Modules.EmailSubscription.Admin').' '.dirname(__FILE__).'/'.$this->file.' !';
+            $this->post_errors[] = $this->trans('Error: Write access limited', array(), 'Modules.Emailsubscription.Admin').' '.dirname(__FILE__).'/'.$this->file.' !';
         }
     }
 
@@ -1211,7 +1211,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $locale = $lang['locale'];
 
         return
-            $this->trans('You may unsubscribe at any moment. For that purpose, please find our contact info in the legal notice.', array(), 'Modules.EmailSubscription.Shop', $locale)
+            $this->trans('You may unsubscribe at any moment. For that purpose, please find our contact info in the legal notice.', array(), 'Modules.Emailsubscription.Shop', $locale)
         ;
     }
 }

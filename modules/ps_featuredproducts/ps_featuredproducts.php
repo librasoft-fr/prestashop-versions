@@ -46,19 +46,19 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
     {
         $this->name = 'ps_featuredproducts';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.7';
+        $this->version = '2.0.0';
         $this->need_instance = 0;
 
         $this->ps_versions_compliancy = [
-            'min' => '1.7.0.0',
+            'min' => '1.7.1.0',
             'max' => _PS_VERSION_,
         ];
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Featured products', array(), 'Modules.FeaturedProducts.Admin');
-        $this->description = $this->trans('Displays featured products in the central column of your homepage.', array(), 'Modules.FeaturedProducts.Admin');
+        $this->displayName = $this->trans('Featured products', array(), 'Modules.Featuredproducts.Admin');
+        $this->description = $this->trans('Displays featured products in the central column of your homepage.', array(), 'Modules.Featuredproducts.Admin');
 
         $this->templateFile = 'module:ps_featuredproducts/views/templates/hook/ps_featuredproducts.tpl';
     }
@@ -128,17 +128,17 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
         if (Tools::isSubmit('submitHomeFeatured')) {
             $nbr = Tools::getValue('HOME_FEATURED_NBR');
             if (!Validate::isInt($nbr) || $nbr <= 0) {
-                $errors[] = $this->trans('The number of products is invalid. Please enter a positive number.', array(), 'Modules.FeaturedProducts.Admin');
+                $errors[] = $this->trans('The number of products is invalid. Please enter a positive number.', array(), 'Modules.Featuredproducts.Admin');
             }
 
             $cat = Tools::getValue('HOME_FEATURED_CAT');
             if (!Validate::isInt($cat) || $cat <= 0) {
-                $errors[] = $this->trans('The category ID is invalid. Please choose an existing category ID.', array(), 'Modules.FeaturedProducts.Admin');
+                $errors[] = $this->trans('The category ID is invalid. Please choose an existing category ID.', array(), 'Modules.Featuredproducts.Admin');
             }
 
             $rand = Tools::getValue('HOME_FEATURED_RANDOMIZE');
             if (!Validate::isBool($rand)) {
-                $errors[] = $this->trans('Invalid value for the "randomize" flag.', array(), 'Modules.FeaturedProducts.Admin');
+                $errors[] = $this->trans('Invalid value for the "randomize" flag.', array(), 'Modules.Featuredproducts.Admin');
             }
             if (isset($errors) && count($errors)) {
                 $output = $this->displayError(implode('<br />', $errors));
@@ -165,28 +165,28 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
                     'icon' => 'icon-cogs',
                 ),
 
-                'description' => $this->trans('To add products to your homepage, simply add them to the corresponding product category (default: "Home").', array(), 'Modules.FeaturedProducts.Admin'),
+                'description' => $this->trans('To add products to your homepage, simply add them to the corresponding product category (default: "Home").', array(), 'Modules.Featuredproducts.Admin'),
                 'input' => array(
                     array(
                         'type' => 'text',
-                        'label' => $this->trans('Number of products to be displayed', array(), 'Modules.FeaturedProducts.Admin'),
+                        'label' => $this->trans('Number of products to be displayed', array(), 'Modules.Featuredproducts.Admin'),
                         'name' => 'HOME_FEATURED_NBR',
                         'class' => 'fixed-width-xs',
-                        'desc' => $this->trans('Set the number of products that you would like to display on homepage (default: 8).', array(), 'Modules.FeaturedProducts.Admin'),
+                        'desc' => $this->trans('Set the number of products that you would like to display on homepage (default: 8).', array(), 'Modules.Featuredproducts.Admin'),
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->trans('Category from which to pick products to be displayed', array(), 'Modules.FeaturedProducts.Admin'),
+                        'label' => $this->trans('Category from which to pick products to be displayed', array(), 'Modules.Featuredproducts.Admin'),
                         'name' => 'HOME_FEATURED_CAT',
                         'class' => 'fixed-width-xs',
-                        'desc' => $this->trans('Choose the category ID of the products that you would like to display on homepage (default: 2 for "Home").', array(), 'Modules.FeaturedProducts.Admin'),
+                        'desc' => $this->trans('Choose the category ID of the products that you would like to display on homepage (default: 2 for "Home").', array(), 'Modules.Featuredproducts.Admin'),
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => $this->trans('Randomly display featured products', array(), 'Modules.FeaturedProducts.Admin'),
+                        'label' => $this->trans('Randomly display featured products', array(), 'Modules.Featuredproducts.Admin'),
                         'name' => 'HOME_FEATURED_RANDOMIZE',
                         'class' => 'fixed-width-xs',
-                        'desc' => $this->trans('Enable if you wish the products to be displayed randomly (default: no).', array(), 'Modules.FeaturedProducts.Admin'),
+                        'desc' => $this->trans('Enable if you wish the products to be displayed randomly (default: no).', array(), 'Modules.Featuredproducts.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',

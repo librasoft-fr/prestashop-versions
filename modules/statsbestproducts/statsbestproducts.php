@@ -1,6 +1,6 @@
 <?php
 /*
-* 2007-2016 PrestaShop
+* 2007-2015 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,135 +19,137 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
+*  @copyright  2007-2015 PrestaShop SA
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-class StatsBestProducts extends ModuleGrid
+class statsbestproducts extends ModuleGrid
 {
-	private $html = null;
-	private $query = null;
-	private $columns = null;
-	private $default_sort_column = null;
-	private $default_sort_direction = null;
-	private $empty_message = null;
-	private $paging_message = null;
+    private $html = null;
+    private $query = null;
+    private $columns = null;
+    private $default_sort_column = null;
+    private $default_sort_direction = null;
+    private $empty_message = null;
+    private $paging_message = null;
 
-	public function __construct()
-	{
-		$this->name = 'statsbestproducts';
-		$this->tab = 'analytics_stats';
-		$this->version = '1.5.1';
-		$this->author = 'PrestaShop';
-		$this->need_instance = 0;
+    public function __construct()
+    {
+        $this->name = 'statsbestproducts';
+        $this->tab = 'analytics_stats';
+        $this->version = '2.0.0';
+        $this->author = 'PrestaShop';
+        $this->need_instance = 0;
 
-		parent::__construct();
+        parent::__construct();
 
-		$this->default_sort_column = 'totalPriceSold';
-		$this->default_sort_direction = 'DESC';
-		$this->empty_message = $this->l('An empty record-set was returned.');
-		$this->paging_message = sprintf($this->l('Displaying %1$s of %2$s'), '{0} - {1}', '{2}');
+        $this->default_sort_column = 'totalPriceSold';
+        $this->default_sort_direction = 'DESC';
+        $this->empty_message = $this->trans('An empty record-set was returned.', array(), 'Modules.Statsbestproducts.Admin');
+        $this->paging_message = $this->trans('Displaying %1$s of %2$s', array('{0} - {1}', '{2}'), 'Admin.Global');
 
-		$this->columns = array(
-			array(
-				'id' => 'reference',
-				'header' => $this->l('Reference'),
-				'dataIndex' => 'reference',
-				'align' => 'left'
-			),
-			array(
-				'id' => 'name',
-				'header' => $this->l('Name'),
-				'dataIndex' => 'name',
-				'align' => 'left'
-			),
-			array(
-				'id' => 'totalQuantitySold',
-				'header' => $this->l('Quantity sold'),
-				'dataIndex' => 'totalQuantitySold',
-				'align' => 'center'
-			),
-			array(
-				'id' => 'avgPriceSold',
-				'header' => $this->l('Price sold'),
-				'dataIndex' => 'avgPriceSold',
-				'align' => 'right'
-			),
-			array(
-				'id' => 'totalPriceSold',
-				'header' => $this->l('Sales'),
-				'dataIndex' => 'totalPriceSold',
-				'align' => 'right'
-			),
-			array(
-				'id' => 'averageQuantitySold',
-				'header' => $this->l('Quantity sold in a day'),
-				'dataIndex' => 'averageQuantitySold',
-				'align' => 'center'
-			),
-			array(
-				'id' => 'totalPageViewed',
-				'header' => $this->l('Page views'),
-				'dataIndex' => 'totalPageViewed',
-				'align' => 'center'
-			),
-			array(
-				'id' => 'quantity',
-				'header' => $this->l('Available quantity for sale'),
-				'dataIndex' => 'quantity',
-				'align' => 'center'
-			),
-			array(
-				'id' => 'active',
-				'header' => $this->l('Active'),
-				'dataIndex' => 'active',
-				'align' => 'center'
-			)
-		);
+        $this->columns = array(
+            array(
+                'id' => 'reference',
+                'header' => $this->trans('Reference', array(), 'Admin.Global'),
+                'dataIndex' => 'reference',
+                'align' => 'left'
+            ),
+            array(
+                'id' => 'name',
+                'header' => $this->trans('Name', array(), 'Admin.Global'),
+                'dataIndex' => 'name',
+                'align' => 'left'
+            ),
+            array(
+                'id' => 'totalQuantitySold',
+                'header' => $this->trans('Quantity sold', array(), 'Admin.Global'),
+                'dataIndex' => 'totalQuantitySold',
+                'align' => 'center'
+            ),
+            array(
+                'id' => 'avgPriceSold',
+                'header' => $this->trans('Price sold', array(), 'Modules.Statsbestproducts.Admin'),
+                'dataIndex' => 'avgPriceSold',
+                'align' => 'right'
+            ),
+            array(
+                'id' => 'totalPriceSold',
+                'header' => $this->trans('Sales', array(), 'Admin.Global'),
+                'dataIndex' => 'totalPriceSold',
+                'align' => 'right'
+            ),
+            array(
+                'id' => 'averageQuantitySold',
+                'header' => $this->trans('Quantity sold in a day', array(), 'Modules.Statsbestproducts.Admin'),
+                'dataIndex' => 'averageQuantitySold',
+                'align' => 'center'
+            ),
+            array(
+                'id' => 'totalPageViewed',
+                'header' => $this->trans('Page views', array(), 'Modules.Statsbestproducts.Admin'),
+                'dataIndex' => 'totalPageViewed',
+                'align' => 'center'
+            ),
+            array(
+                'id' => 'quantity',
+                'header' => $this->trans('Available quantity for sale', array(), 'Admin.Global'),
+                'dataIndex' => 'quantity',
+                'align' => 'center'
+            ),
+            array(
+                'id' => 'active',
+                'header' => $this->trans('Active', array(), 'Admin.Global'),
+                'dataIndex' => 'active',
+                'align' => 'center'
+            )
+        );
 
-		$this->displayName = $this->l('Best-selling products');
-		$this->description = $this->l('Adds a list of the best-selling products to the Stats dashboard.');
-		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.7.0.99');
-	}
+        $this->displayName = $this->trans('Best-selling products', array(), 'Modules.Statsbestproducts.Admin');
+        $this->description = $this->trans('Adds a list of the best-selling products to the Stats dashboard.', array(), 'Modules.Statsbestproducts.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
+    }
 
-	public function install()
-	{
-		return (parent::install() && $this->registerHook('AdminStatsModules'));
-	}
+    public function install()
+    {
+        return (parent::install() && $this->registerHook('AdminStatsModules'));
+    }
 
-	public function hookAdminStatsModules($params)
-	{
-		$engine_params = array(
-			'id' => 'id_product',
-			'title' => $this->displayName,
-			'columns' => $this->columns,
-			'defaultSortColumn' => $this->default_sort_column,
-			'defaultSortDirection' => $this->default_sort_direction,
-			'emptyMessage' => $this->empty_message,
-			'pagingMessage' => $this->paging_message
-		);
+    public function hookAdminStatsModules($params)
+    {
+        $engine_params = array(
+            'id' => 'id_product',
+            'title' => $this->displayName,
+            'columns' => $this->columns,
+            'defaultSortColumn' => $this->default_sort_column,
+            'defaultSortDirection' => $this->default_sort_direction,
+            'emptyMessage' => $this->empty_message,
+            'pagingMessage' => $this->paging_message
+        );
 
-		if (Tools::getValue('export'))
-			$this->csvExport($engine_params);
+        if (Tools::getValue('export')) {
+            $this->csvExport($engine_params);
+        }
 
-		return '<div class="panel-heading">'.$this->displayName.'</div>
+        return '<div class="panel-heading">'.$this->displayName.'</div>
 		'.$this->engine($engine_params).'
 		<a class="btn btn-default export-csv" href="'.Tools::safeOutput($_SERVER['REQUEST_URI'].'&export=1').'">
-			<i class="icon-cloud-upload"></i> '.$this->l('CSV Export').'
+			<i class="icon-cloud-upload"></i> '.$this->trans('CSV Export', array(), 'Admin.Global').'
 		</a>';
-	}
+    }
 
-	public function getData()
-	{
-		$currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
-		$date_between = $this->getDate();
-		$array_date_between = explode(' AND ', $date_between);
+    public function getData()
+    {
+        $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+        $date_between = $this->getDate();
+        $array_date_between = explode(' AND ', $date_between);
 
-		$this->query = 'SELECT SQL_CALC_FOUND_ROWS p.reference, p.id_product, pl.name,
+        $this->query = 'SELECT SQL_CALC_FOUND_ROWS p.reference, p.id_product, pl.name,
 				ROUND(AVG(od.product_price / o.conversion_rate), 2) as avgPriceSold,
 				IFNULL(stock.quantity, 0) as quantity,
 				IFNULL(SUM(od.product_quantity), 0) AS totalQuantitySold,
@@ -174,25 +176,25 @@ class StatsBestProducts extends ModuleGrid
 				AND o.invoice_date BETWEEN '.$date_between.'
 				GROUP BY od.product_id';
 
-		if (Validate::IsName($this->_sort))
-		{
-			$this->query .= ' ORDER BY `'.bqSQL($this->_sort).'`';
-			if (isset($this->_direction) && Validate::isSortDirection($this->_direction))
-				$this->query .= ' '.$this->_direction;
-		}
+        if (Validate::IsName($this->_sort)) {
+            $this->query .= ' ORDER BY `'.bqSQL($this->_sort).'`';
+            if (isset($this->_direction) && Validate::isSortDirection($this->_direction)) {
+                $this->query .= ' '.$this->_direction;
+            }
+        }
 
-		if (($this->_start === 0 || Validate::IsUnsignedInt($this->_start)) && Validate::IsUnsignedInt($this->_limit))
-			$this->query .= ' LIMIT '.(int)$this->_start.', '.(int)$this->_limit;
+        if (($this->_start === 0 || Validate::IsUnsignedInt($this->_start)) && Validate::IsUnsignedInt($this->_limit)) {
+            $this->query .= ' LIMIT '.(int)$this->_start.', '.(int)$this->_limit;
+        }
 
-		$values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($this->query);
-		foreach ($values as &$value)
-		{
-			$value['avgPriceSold'] = Tools::displayPrice($value['avgPriceSold'], $currency);
-			$value['totalPriceSold'] = Tools::displayPrice($value['totalPriceSold'], $currency);
-		}
-		unset($value);
+        $values = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($this->query);
+        foreach ($values as &$value) {
+            $value['avgPriceSold'] = Tools::displayPrice($value['avgPriceSold'], $currency);
+            $value['totalPriceSold'] = Tools::displayPrice($value['totalPriceSold'], $currency);
+        }
+        unset($value);
 
-		$this->_values = $values;
-		$this->_totalCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()');
-	}
+        $this->_values = $values;
+        $this->_totalCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()');
+    }
 }

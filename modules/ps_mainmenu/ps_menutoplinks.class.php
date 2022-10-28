@@ -67,6 +67,16 @@ class Ps_MenuTopLinks
         return array('link' => $link, 'label' => $label, 'new_window' => $new_window);
     }
 
+    public static function updateUrl($link)
+    {
+        for($i = 1; $i <= count($link); $i++) {
+            if (substr($link[$i], 0, 7) !== "http://" && substr($link[$i], 0, 8) !== "https://") {
+                $link[$i] = "http://" . $link[$i];
+            }
+        }
+        return $link;
+    }
+
     public static function add($link, $label, $newWindow = 0, $id_shop)
     {
         if (!is_array($label)) {
@@ -76,6 +86,7 @@ class Ps_MenuTopLinks
             return false;
         }
 
+        $link = self::updateUrl($link);
         Db::getInstance()->insert(
             'linksmenutop',
             array(
@@ -89,15 +100,15 @@ class Ps_MenuTopLinks
 
         foreach ($label as $id_lang=>$label) {
             $result &= Db::getInstance()->insert(
-            'linksmenutop_lang',
-            array(
-                'id_linksmenutop'=>(int)$id_linksmenutop,
-                'id_lang'=>(int)$id_lang,
-                'id_shop'=>(int)$id_shop,
-                'label'=>pSQL($label),
-                'link'=>pSQL($link[$id_lang])
-            )
-        );
+                'linksmenutop_lang',
+                array(
+                    'id_linksmenutop'=>(int)$id_linksmenutop,
+                    'id_lang'=>(int)$id_lang,
+                    'id_shop'=>(int)$id_shop,
+                    'label'=>pSQL($label),
+                    'link'=>pSQL($link[$id_lang])
+                )
+            );
         }
 
         return $result;
@@ -112,6 +123,7 @@ class Ps_MenuTopLinks
             return false;
         }
 
+        $link = self::updateUrl($link);
         Db::getInstance()->update(
             'linksmenutop',
             array(
@@ -134,13 +146,12 @@ class Ps_MenuTopLinks
         }
     }
 
-
     public static function remove($id_linksmenutop, $id_shop)
     {
         $result = true;
         $result &= Db::getInstance()->delete('linksmenutop', 'id_linksmenutop = '.(int)$id_linksmenutop.' AND id_shop = '.(int)$id_shop);
         $result &= Db::getInstance()->delete('linksmenutop_lang', 'id_linksmenutop = '.(int)$id_linksmenutop);
-        
+
         return $result;
     }
 }

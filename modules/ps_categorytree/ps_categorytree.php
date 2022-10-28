@@ -36,15 +36,15 @@ class Ps_CategoryTree extends Module implements WidgetInterface
     {
         $this->name = 'ps_categorytree';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.5';
+        $this->version = '2.0.0';
         $this->author = 'PrestaShop';
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->getTranslator()->trans('Category tree links', array(), 'Modules.CategoryTree');
-        $this->description = $this->getTranslator()->trans('Adds a block featuring product categories.', array(), 'Modules.CategoryTree');
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->displayName = $this->getTranslator()->trans('Category tree links', array(), 'Modules.Categorytree.Admin');
+        $this->description = $this->getTranslator()->trans('Adds a block featuring product categories.', array(), 'Modules.Categorytree.Admin');
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
     }
 
     public function install()
@@ -165,37 +165,37 @@ class Ps_CategoryTree extends Module implements WidgetInterface
                 'input' => array(
                     array(
                         'type' => 'radio',
-                        'label' => $this->getTranslator()->trans('Category root', array(), 'Modules.CategoryTree'),
+                        'label' => $this->getTranslator()->trans('Category root', array(), 'Modules.Categorytree.Admin'),
                         'name' => 'BLOCK_CATEG_ROOT_CATEGORY',
-                        'hint' => $this->getTranslator()->trans('Select which category is displayed in the block. The current category is the one the visitor is currently browsing.', array(), 'Modules.CategoryTree'),
+                        'hint' => $this->getTranslator()->trans('Select which category is displayed in the block. The current category is the one the visitor is currently browsing.', array(), 'Modules.Categorytree.Admin'),
                         'values' => array(
                             array(
                                 'id' => 'home',
                                 'value' => 0,
-                                'label' => $this->getTranslator()->trans('Home category', array(), 'Modules.CategoryTree')
+                                'label' => $this->getTranslator()->trans('Home category', array(), 'Modules.Categorytree.Admin')
                             ),
                             array(
                                 'id' => 'current',
                                 'value' => 1,
-                                'label' => $this->getTranslator()->trans('Current category', array(), 'Modules.CategoryTree')
+                                'label' => $this->getTranslator()->trans('Current category', array(), 'Modules.Categorytree.Admin')
                             ),
                             array(
                                 'id' => 'parent',
                                 'value' => 2,
-                                'label' => $this->getTranslator()->trans('Parent category', array(), 'Modules.CategoryTree')
+                                'label' => $this->getTranslator()->trans('Parent category', array(), 'Modules.Categorytree.Admin')
                             ),
                             array(
                                 'id' => 'current_parent',
                                 'value' => 3,
-                                'label' => $this->getTranslator()->trans('Current category, unless it has no subcategories, in which case the parent category of the current category is used', array(), 'Modules.CategoryTree')
+                                'label' => $this->getTranslator()->trans('Current category, unless it has no subcategories, in which case the parent category of the current category is used', array(), 'Modules.Categorytree.Admin')
                             ),
                         )
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->getTranslator()->trans('Maximum depth', array(), 'Modules.CategoryTree'),
+                        'label' => $this->getTranslator()->trans('Maximum depth', array(), 'Modules.Categorytree.Admin'),
                         'name' => 'BLOCK_CATEG_MAX_DEPTH',
-                        'desc' => $this->getTranslator()->trans('Set the maximum depth of category sublevels displayed in this block (0 = infinite).', array(), 'Modules.CategoryTree'),
+                        'desc' => $this->getTranslator()->trans('Set the maximum depth of category sublevels displayed in this block (0 = infinite).', array(), 'Modules.Categorytree.Admin'),
                     ),
                     array(
                         'type' => 'radio',

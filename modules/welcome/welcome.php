@@ -47,7 +47,7 @@ class Welcome extends Module
     public function __construct()
     {
         $this->name = 'welcome';
-        $this->version = '1.1.1';
+        $this->version = '2.0.1';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -55,7 +55,7 @@ class Welcome extends Module
         $this->displayName = $this->trans('Welcome', array(), 'Modules.Welcome.Admin');
         $this->description = $this->trans('Help the user to create his first product.', array(), 'Modules.Welcome.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.0.0',
+            'min' => '1.7.1.0',
             'max' => _PS_VERSION_,
         ];
 

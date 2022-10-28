@@ -28,13 +28,13 @@
     <div class="panel">
         <div class="panel-heading">
             <i class="icon-envelope"></i>
-            {l s='Email content inclusion' mod='advancedeucompliance'}
+            {l s='Email content inclusion' d='Modules.Legalcompliance.Admin'}
         </div>
         <p>
-            {l s='This section allows you to include information from the "Legal Content Management" section above at the bottom of your shop\'s emails.' mod='advancedeucompliance'}
+            {l s='This section allows you to include information from the "Legal Content Management" section above at the bottom of your shop\'s emails.' d='Modules.Legalcompliance.Admin'}
         </p>
         <p>
-            {l s='For each type of email, you can define which content you would like to include.' mod='advancedeucompliance'}
+            {l s='For each type of email, you can define which content you would like to include.' d='Modules.Legalcompliance.Admin'}
         </p>
         <br/>
         <div class="form-wrapper">
@@ -44,7 +44,7 @@
                     <th>
                         <span class="title_box">
                             <input id="selectall_attach" type="checkbox"/>
-                            {l s='Email templates' mod='advancedeucompliance'}
+                            {l s='Email templates' d='Modules.Legalcompliance.Admin'}
                         </span>
 
                     </th>
@@ -80,7 +80,7 @@
 
         <div class="panel-footer">
             <button type="submit" class="btn btn-default pull-right">
-                <i class="process-icon-save"></i>  {l s='Save' mod='advancedeucompliance'}
+                <i class="process-icon-save"></i>  {l s='Save' d='Admin.Actions'}
             </button>
 
         </div>

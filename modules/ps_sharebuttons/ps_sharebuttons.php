@@ -40,17 +40,17 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
     {
         $this->name = 'ps_sharebuttons';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.7';
+        $this->version = '2.0.0';
         $this->need_instance = 0;
 
-        $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
         $this->_directory = dirname(__FILE__);
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->getTranslator()->trans('Social media share buttons', array(), 'Modules.ShareButtons.Admin');
-        $this->description = $this->getTranslator()->trans('Displays social media sharing buttons (Twitter, Facebook, Google+ and Pinterest) on every product page.', array(), 'Modules.ShareButtons.Admin');
+        $this->displayName = $this->trans('Social media share buttons', array(), 'Modules.Sharebuttons.Admin');
+        $this->description = $this->trans('Displays social media sharing buttons (Twitter, Facebook, Google+ and Pinterest) on every product page.', array(), 'Modules.Sharebuttons.Admin');
 
         $this->templateFile = 'module:ps_sharebuttons/views/templates/hook/ps_sharebuttons.tpl';
     }
@@ -87,7 +87,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
 
             $this->_clearCache($this->templateFile);
 
-            $output .= $this->displayConfirmation($this->getTranslator()->trans('Settings updated.', array(), 'Admin.Notifications.Success'));
+            $output .= $this->displayConfirmation($this->trans('Settings updated.', array(), 'Admin.Notifications.Success'));
 
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules', true).'&conf=6&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name);
         }
@@ -108,12 +108,12 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
                     array(
                         'id' => Tools::strtolower($network).'_active_on',
                         'value' => 1,
-                        'label' => $this->getTranslator()->trans('Enabled', array(), 'Admin.Global')
+                        'label' => $this->trans('Enabled', array(), 'Admin.Global')
                     ),
                     array(
                         'id' => Tools::strtolower($network).'_active_off',
                         'value' => 0,
-                        'label' => $this->getTranslator()->trans('Disabled', array(), 'Admin.Global')
+                        'label' => $this->trans('Disabled', array(), 'Admin.Global')
                     )
                 )
             );
@@ -128,7 +128,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
                     ),
                     'input' => $fields,
                     'submit' => array(
-                        'title' => $this->getTranslator()->trans('Save', array(), 'Admin.Actions')
+                        'title' => $this->trans('Save', array(), 'Admin.Actions')
                     )
                 )
             )
@@ -176,7 +176,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
 
         if (Configuration::get('PS_SC_FACEBOOK')) {
             $social_share_links['facebook'] = array(
-                'label' => $this->getTranslator()->trans('Share', array(), 'Modules.ShareButtons.Shop'),
+                'label' => $this->trans('Share', array(), 'Modules.Sharebuttons.Shop'),
                 'class' => 'facebook',
                 'url' => 'http://www.facebook.com/sharer.php?u='.$sharing_url,
             );
@@ -184,7 +184,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
 
         if (Configuration::get('PS_SC_TWITTER')) {
             $social_share_links['twitter'] = array(
-                'label' => $this->getTranslator()->trans('Tweet', array(), 'Modules.ShareButtons.Shop'),
+                'label' => $this->trans('Tweet', array(), 'Modules.Sharebuttons.Shop'),
                 'class' => 'twitter',
                 'url' => 'https://twitter.com/intent/tweet?text='.$sharing_name.' '.$sharing_url,
             );
@@ -192,7 +192,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
 
         if (Configuration::get('PS_SC_GOOGLE')) {
             $social_share_links['googleplus'] = array(
-                'label' => $this->getTranslator()->trans('Google+', array(), 'Modules.ShareButtons.Shop'),
+                'label' => $this->trans('Google+', array(), 'Modules.Sharebuttons.Shop'),
                 'class' => 'googleplus',
                 'url' => 'https://plus.google.com/share?url='.$sharing_url,
             );
@@ -200,7 +200,7 @@ class Ps_Sharebuttons extends Module implements WidgetInterface
 
         if (Configuration::get('PS_SC_PINTEREST')) {
             $social_share_links['pinterest'] = array(
-                'label' => $this->getTranslator()->trans('Pinterest', array(), 'Modules.ShareButtons.Shop'),
+                'label' => $this->trans('Pinterest', array(), 'Modules.Sharebuttons.Shop'),
                 'class' => 'pinterest',
                 'url' => 'http://www.pinterest.com/pin/create/button/?media='.$sharing_img.'&url='.$sharing_url,
             );

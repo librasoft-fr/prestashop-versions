@@ -48,21 +48,21 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '1.2.0';
+        $this->version = '2.1.0';
         $this->need_instance = 0;
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Link List', array(), 'Modules.LinkList');
-        $this->description = $this->trans('Adds a block with several links.', array(), 'Modules.LinkList');
+        $this->displayName = $this->trans('Link List', array(), 'Modules.Linklist.Admin');
+        $this->description = $this->trans('Adds a block with several links.', array(), 'Modules.Linklist.Admin');
         $this->secure_key = Tools::encrypt($this->name);
 
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
 
         $this->linkBlockPresenter = new LinkBlockPresenter(new Link(), $this->context->language);
-        $this->linkBlockRepository = new LinkBlockRepository(Db::getInstance(), $this->context->shop);
+        $this->linkBlockRepository = new LinkBlockRepository(Db::getInstance(), $this->context->shop, $this->context->getTranslator());
     }
 
     public function install()
@@ -71,7 +71,8 @@ class Ps_Linklist extends Module implements WidgetInterface
             && $this->installTab()
             && $this->linkBlockRepository->createTables()
             && $this->linkBlockRepository->installFixtures()
-            && $this->registerHook('displayFooter');
+            && $this->registerHook('displayFooter')
+            && $this->registerHook('actionUpdateLangAfter');
     }
 
     public function uninstall()
@@ -100,6 +101,15 @@ class Ps_Linklist extends Module implements WidgetInterface
         $id_tab = (int)Tab::getIdFromClassName('AdminLinkWidget');
         $tab = new Tab($id_tab);
         return $tab->delete();
+    }
+
+    public function hookActionUpdateLangAfter($params)
+    {
+        if (!empty($params['lang']) && $params['lang'] instanceOf Language) {
+            include_once _PS_MODULE_DIR_ . $this->name . '/lang/LinkBlockLang.php';
+
+            Language::updateMultilangFromClass(_DB_PREFIX_ . 'link_block_lang', 'LinkBlockLang', $params['lang']);
+        }
     }
 
     public function _clearCache($template, $cache_id = null, $compile_id = null)

@@ -24,5 +24,5 @@
  *}
 
  <a href="{$link}" target="_blank">
-    {l s='(Under conditions)' mod='ps_legalcompliance'}
+    {l s='(Under conditions)' d='Modules.Legalcompliance.Shop'}
  </a>
