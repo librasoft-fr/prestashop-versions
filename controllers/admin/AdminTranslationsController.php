@@ -134,7 +134,7 @@ class AdminTranslationsControllerCore extends AdminController
         // Create a title for each translation page
         $title = $this->trans('%1$s (Language: %2$s, Theme: %3$s)',
                 array(
-                    '%1$s' => $this->translations_informations[$this->type_selected]['name'],
+                    '%1$s' => (empty($this->translations_informations[$this->type_selected]['name']) ? false: $this->translations_informations[$this->type_selected]['name']),
                     '%2$s' => $this->lang_selected->name,
                     '%3$s' => $this->theme_selected ? $this->theme_selected : $this->trans('None', array(), 'Admin.Global'),
                 ),
@@ -232,7 +232,7 @@ class AdminTranslationsControllerCore extends AdminController
     protected function getModuleTranslations()
     {
         global $_MODULE;
-        $name_var = $this->translations_informations[$this->type_selected]['var'];
+        $name_var = (empty($this->translations_informations[$this->type_selected]['var']) ? false: $this->translations_informations[$this->type_selected]['var']);
 
         if (!isset($_MODULE) && !isset($GLOBALS[$name_var])) {
             $GLOBALS[$name_var] = array();
@@ -1020,7 +1020,7 @@ class AdminTranslationsControllerCore extends AdminController
      */
     protected function findAndFillTranslations($files, $theme_name, $module_name, $dir = false)
     {
-        $name_var = $this->translations_informations[$this->type_selected]['var'];
+        $name_var = (empty($this->translations_informations[$this->type_selected]['var']) ? false: $this->translations_informations[$this->type_selected]['var']);
 
         // added for compatibility
         $GLOBALS[$name_var] = array_change_key_case($GLOBALS[$name_var]);
@@ -1308,7 +1308,7 @@ class AdminTranslationsControllerCore extends AdminController
                 'dir' => _PS_MAIL_DIR_.$this->lang_selected->iso_code.'/',
                 'file' => 'lang.php',
                 'sf_controller' => false,
-                'choice_theme' => true,
+                'choice_theme' => false,
             ),
             'others' => array(
                 'name' => $this->trans('Other translations', array(), 'Admin.International.Feature'),
@@ -1549,6 +1549,7 @@ class AdminTranslationsControllerCore extends AdminController
 
     protected function getMailPattern()
     {
+        Tools::displayAsDeprecated('Email pattern is no longer used, emails are always saved like they are.');
         // Let the indentation like it.
         return '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/strict.dtd">
 <html>
@@ -1621,9 +1622,6 @@ class AdminTranslationsControllerCore extends AdminController
                         // replace correct end of line
                         $content = str_replace("\r\n", PHP_EOL, $content);
 
-                        $string_mail = $this->getMailPattern();
-                        $content = str_replace(array('#content'), array($content), $string_mail);
-
                         // Magic Quotes shall... not.. PASS!
                         if (_PS_MAGIC_QUOTES_GPC_) {
                             $content = stripslashes($content);
@@ -1638,8 +1636,6 @@ class AdminTranslationsControllerCore extends AdminController
                         if (!file_exists($path) && !mkdir($path, 0777, true)) {
                             throw new PrestaShopException(sprintf($this->trans('Directory "%s" cannot be created', array(), 'Admin.International.Notification'), dirname($path)));
                         }
-
-                        $content = Tools::purifyHTML($content, array('{', '}'), true);
 
                         if ($type_content == 'tpl') {
                             preg_match('/{\s*[^$]+/s', $content, $matches);
@@ -2567,18 +2563,12 @@ class AdminTranslationsControllerCore extends AdminController
 
     protected function cleanMailContent(&$content, $lang, &$title)
     {
-        // Because TinyMCE don't work correctly with <DOCTYPE>, <html> and <body> tags
         if (stripos($content[$lang], '<body')) {
             $array_lang = $lang != 'en' ? array('en', $lang) : array($lang);
             foreach ($array_lang as $language) {
                 $title[$language] = substr($content[$language], 0, stripos($content[$language], '<body'));
                 preg_match('#<title>([^<]+)</title>#Ui', $title[$language], $matches);
                 $title[$language] = empty($matches[1])?'':$matches[1];
-                // The 2 lines below allow to exlude <body> tag from the content.
-                // This allow to exclude body tag even if attributs are setted.
-                $content[$language] = substr($content[$language], stripos($content[$language], '<body') + 5);
-                $content[$language] = substr($content[$language], stripos($content[$language], '>') + 1);
-                $content[$language] = substr($content[$language], 0, stripos($content[$language], '</body>'));
             }
         }
         $content[$lang] = (isset($content[$lang]) ? Tools::htmlentitiesUTF8(stripslashes($content[$lang])) : '');
