@@ -97,6 +97,7 @@ class HelperTreeCategoriesCore extends TreeCore
                 }
             }
         }
+
         return $tree;
     }
 

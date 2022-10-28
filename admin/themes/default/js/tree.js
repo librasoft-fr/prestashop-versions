@@ -25,13 +25,14 @@ function disableTreeItem(item) {
 	} else if (item.hasClass('tree-item')) {
 		item.addClass('tree-item-disable');
 	}
-
 }
 
 function organizeTree() {
-	var id = $('#id_category').val();
-	var item = getCategoryById(id).parent().parent();
-	disableTreeItem(item);
+	if ($('#id_category').length != 0) {
+		var id = $('#id_category').val();
+		var item = getCategoryById(id).parent().parent();
+		disableTreeItem(item);
+	}
 }
 
 Tree.prototype =
@@ -191,9 +192,9 @@ Tree.prototype =
 				{controller:'AdminProducts',token:currentToken,action:'getCategoryTree',type:idTree,fullTree:1,selected:selected, inputName:name,useCheckBox:useCheckBox},
 				function(content)
 				{
-					$('#'+idTree).html(content);
+					$('#' + idTree).html(content);
 					organizeTree();
-					$('#'+idTree).tree('init');
+					$('#' + idTree).tree('init');
 					that.$element.find("label.tree-toggler").each(
 						function()
 						{
