@@ -31,7 +31,7 @@ final class CachePoolPruneCommand extends Command
     /**
      * @param iterable|PruneableInterface[] $pools
      */
-    public function __construct($pools)
+    public function __construct(iterable $pools)
     {
         parent::__construct();
 
@@ -44,7 +44,7 @@ final class CachePoolPruneCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Prunes cache pools')
+            ->setDescription('Prune cache pools')
             ->setHelp(<<<'EOF'
 The <info>%command.name%</info> command deletes all expired items from all pruneable pools.
 
@@ -57,7 +57,7 @@ EOF
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -67,5 +67,7 @@ EOF
         }
 
         $io->success('Successfully pruned cache pool(s).');
+
+        return 0;
     }
 }

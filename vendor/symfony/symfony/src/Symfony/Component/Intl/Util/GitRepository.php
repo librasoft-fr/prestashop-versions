@@ -21,23 +21,14 @@ final class GitRepository
 {
     private $path;
 
-    /**
-     * @param string $path
-     */
-    public function __construct($path)
+    public function __construct(string $path)
     {
         $this->path = $path;
 
         $this->getUrl();
     }
 
-    /**
-     * @param string $remote
-     * @param string $targetDir
-     *
-     * @return GitRepository
-     */
-    public static function download($remote, $targetDir)
+    public static function download(string $remote, string $targetDir): self
     {
         self::exec('which git', 'The command "git" is not installed.');
 
@@ -53,32 +44,32 @@ final class GitRepository
         return new self(realpath($targetDir));
     }
 
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
 
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->getLastLine($this->execInPath('git config --get remote.origin.url'));
     }
 
-    public function getLastCommitHash()
+    public function getLastCommitHash(): string
     {
         return $this->getLastLine($this->execInPath('git log -1 --format="%H"'));
     }
 
-    public function getLastAuthor()
+    public function getLastAuthor(): string
     {
         return $this->getLastLine($this->execInPath('git log -1 --format="%an"'));
     }
 
-    public function getLastAuthoredDate()
+    public function getLastAuthoredDate(): \DateTime
     {
         return new \DateTime($this->getLastLine($this->execInPath('git log -1 --format="%ai"')));
     }
 
-    public function getLastTag(callable $filter = null)
+    public function getLastTag(callable $filter = null): string
     {
         $tags = $this->execInPath('git tag -l --sort=v:refname');
 
@@ -89,28 +80,28 @@ final class GitRepository
         return $this->getLastLine($tags);
     }
 
-    public function checkout($branch)
+    public function checkout(string $branch)
     {
         $this->execInPath(sprintf('git checkout %s', escapeshellarg($branch)));
     }
 
-    private function execInPath($command)
+    private function execInPath(string $command): array
     {
         return self::exec(sprintf('cd %s && %s', escapeshellarg($this->path), $command));
     }
 
-    private static function exec($command, $customErrorMessage = null)
+    private static function exec(string $command, string $customErrorMessage = null): array
     {
         exec(sprintf('%s 2>&1', $command), $output, $result);
 
         if (0 !== $result) {
-            throw new RuntimeException(null !== $customErrorMessage ? $customErrorMessage : sprintf('The `%s` command failed.', $command));
+            throw new RuntimeException($customErrorMessage ?? sprintf('The "%s" command failed.', $command));
         }
 
         return $output;
     }
 
-    private function getLastLine(array $output)
+    private function getLastLine(array $output): string
     {
         return array_pop($output);
     }

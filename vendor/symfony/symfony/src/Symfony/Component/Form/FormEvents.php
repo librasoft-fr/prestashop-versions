@@ -29,9 +29,9 @@ final class FormEvents
      *  - Change data from the request, before submitting the data to the form.
      *  - Add or remove form fields, before submitting the data to the form.
      *
-     * @Event("Symfony\Component\Form\FormEvent")
+     * @Event("Symfony\Component\Form\Event\PreSubmitEvent")
      */
-    const PRE_SUBMIT = 'form.pre_bind';
+    public const PRE_SUBMIT = 'form.pre_submit';
 
     /**
      * The SUBMIT event is dispatched after the Form::submit() method
@@ -48,9 +48,9 @@ final class FormEvents
      * Since the current form is not synchronized yet, it is still possible to add and
      * remove fields.
      *
-     * @Event("Symfony\Component\Form\FormEvent")
+     * @Event("Symfony\Component\Form\Event\SubmitEvent")
      */
-    const SUBMIT = 'form.bind';
+    public const SUBMIT = 'form.submit';
 
     /**
      * The FormEvents::POST_SUBMIT event is dispatched at the very end of the Form::submit().
@@ -63,9 +63,9 @@ final class FormEvents
      * The event attaches the current view data. To know whether this is the renormalized data
      * or the invalid request data, call Form::isSynchronized() first.
      *
-     * @Event("Symfony\Component\Form\FormEvent")
+     * @Event("Symfony\Component\Form\Event\PostSubmitEvent")
      */
-    const POST_SUBMIT = 'form.post_bind';
+    public const POST_SUBMIT = 'form.post_submit';
 
     /**
      * The FormEvents::PRE_SET_DATA event is dispatched at the beginning of the Form::setData() method.
@@ -74,9 +74,9 @@ final class FormEvents
      *  - Modify the data given during pre-population;
      *  - Keep synchronized the form depending on the data (adding or removing fields dynamically).
      *
-     * @Event("Symfony\Component\Form\FormEvent")
+     * @Event("Symfony\Component\Form\Event\PreSetDataEvent")
      */
-    const PRE_SET_DATA = 'form.pre_set_data';
+    public const PRE_SET_DATA = 'form.pre_set_data';
 
     /**
      * The FormEvents::POST_SET_DATA event is dispatched at the end of the Form::setData() method.
@@ -84,9 +84,9 @@ final class FormEvents
      * This event can be used to modify the form depending on the final state of the underlying data
      * accessible in every representation: model, normalized and view.
      *
-     * @Event("Symfony\Component\Form\FormEvent")
+     * @Event("Symfony\Component\Form\Event\PostSetDataEvent")
      */
-    const POST_SET_DATA = 'form.post_set_data';
+    public const POST_SET_DATA = 'form.post_set_data';
 
     private function __construct()
     {

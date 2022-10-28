@@ -23,8 +23,8 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
  */
 class PercentToLocalizedStringTransformer implements DataTransformerInterface
 {
-    const FRACTIONAL = 'fractional';
-    const INTEGER = 'integer';
+    public const FRACTIONAL = 'fractional';
+    public const INTEGER = 'integer';
 
     protected static $types = [
         self::FRACTIONAL,
@@ -37,17 +37,10 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
     /**
      * @see self::$types for a list of supported types
      *
-     * @param int    $scale The scale
-     * @param string $type  One of the supported types
-     *
      * @throws UnexpectedTypeException if the given value of type is unknown
      */
-    public function __construct($scale = null, $type = null)
+    public function __construct(int $scale = null, string $type = null)
     {
-        if (null === $scale) {
-            $scale = 0;
-        }
-
         if (null === $type) {
             $type = self::FRACTIONAL;
         }
@@ -57,7 +50,7 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
         }
 
         $this->type = $type;
-        $this->scale = $scale;
+        $this->scale = $scale ?? 0;
     }
 
     /**
@@ -129,7 +122,7 @@ class PercentToLocalizedStringTransformer implements DataTransformerInterface
             $value = str_replace(',', $decSep, $value);
         }
 
-        if (false !== strpos($value, $decSep)) {
+        if (str_contains($value, $decSep)) {
             $type = \NumberFormatter::TYPE_DOUBLE;
         } else {
             $type = \PHP_INT_SIZE === 8 ? \NumberFormatter::TYPE_INT64 : \NumberFormatter::TYPE_INT32;

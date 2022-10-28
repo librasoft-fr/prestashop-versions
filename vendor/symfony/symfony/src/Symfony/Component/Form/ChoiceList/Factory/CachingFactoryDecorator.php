@@ -14,13 +14,14 @@ namespace Symfony\Component\Form\ChoiceList\Factory;
 use Symfony\Component\Form\ChoiceList\ChoiceListInterface;
 use Symfony\Component\Form\ChoiceList\Loader\ChoiceLoaderInterface;
 use Symfony\Component\Form\ChoiceList\View\ChoiceListView;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Caches the choice lists created by the decorated factory.
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class CachingFactoryDecorator implements ChoiceListFactoryInterface
+class CachingFactoryDecorator implements ChoiceListFactoryInterface, ResetInterface
 {
     private $decoratedFactory;
 
@@ -40,14 +41,13 @@ class CachingFactoryDecorator implements ChoiceListFactoryInterface
      * Optionally, a namespace string can be passed. Calling this method will
      * the same values, but different namespaces, will return different hashes.
      *
-     * @param mixed  $value     The value to hash
-     * @param string $namespace Optional. The namespace
+     * @param mixed $value The value to hash
      *
      * @return string The SHA-256 hash
      *
      * @internal
      */
-    public static function generateHash($value, $namespace = '')
+    public static function generateHash($value, string $namespace = ''): string
     {
         if (\is_object($value)) {
             $value = spl_object_hash($value);
@@ -133,5 +133,11 @@ class CachingFactoryDecorator implements ChoiceListFactoryInterface
         }
 
         return $this->views[$hash];
+    }
+
+    public function reset()
+    {
+        $this->lists = [];
+        $this->views = [];
     }
 }

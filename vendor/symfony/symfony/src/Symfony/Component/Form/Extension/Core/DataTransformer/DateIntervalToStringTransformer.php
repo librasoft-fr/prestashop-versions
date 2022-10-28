@@ -31,7 +31,7 @@ class DateIntervalToStringTransformer implements DataTransformerInterface
      *
      * @param string $format The date format
      */
-    public function __construct($format = 'P%yY%mM%dDT%hH%iM%sS')
+    public function __construct(string $format = 'P%yY%mM%dDT%hH%iM%sS')
     {
         $this->format = $format;
     }
@@ -39,7 +39,7 @@ class DateIntervalToStringTransformer implements DataTransformerInterface
     /**
      * Transforms a DateInterval object into a date string with the configured format.
      *
-     * @param \DateInterval $value A DateInterval object
+     * @param \DateInterval|null $value A DateInterval object
      *
      * @return string An ISO 8601 or relative date string like date interval presentation
      *
@@ -51,7 +51,7 @@ class DateIntervalToStringTransformer implements DataTransformerInterface
             return '';
         }
         if (!$value instanceof \DateInterval) {
-            throw new UnexpectedTypeException($value, '\DateInterval');
+            throw new UnexpectedTypeException($value, \DateInterval::class);
         }
 
         return $value->format($this->format);
@@ -94,7 +94,7 @@ class DateIntervalToStringTransformer implements DataTransformerInterface
         return $dateInterval;
     }
 
-    private function isISO8601($string)
+    private function isISO8601(string $string): bool
     {
         return preg_match('/^P(?=\w*(?:\d|%\w))(?:\d+Y|%[yY]Y)?(?:\d+M|%[mM]M)?(?:(?:\d+D|%[dD]D)|(?:\d+W|%[wW]W))?(?:T(?:\d+H|[hH]H)?(?:\d+M|[iI]M)?(?:\d+S|[sS]S)?)?$/', $string);
     }

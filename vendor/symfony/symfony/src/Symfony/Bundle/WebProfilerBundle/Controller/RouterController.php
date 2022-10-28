@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\WebProfilerBundle\Controller;
 
+use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\RequestDataCollector;
@@ -26,6 +27,8 @@ use Twig\Environment;
  * RouterController.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @internal since Symfony 4.4
  */
 class RouterController
 {
@@ -34,12 +37,18 @@ class RouterController
     private $matcher;
     private $routes;
 
-    public function __construct(Profiler $profiler = null, Environment $twig, UrlMatcherInterface $matcher = null, RouteCollection $routes = null)
+    /**
+     * @var ExpressionFunctionProviderInterface[]
+     */
+    private $expressionLanguageProviders = [];
+
+    public function __construct(Profiler $profiler = null, Environment $twig, UrlMatcherInterface $matcher = null, RouteCollection $routes = null, iterable $expressionLanguageProviders = [])
     {
         $this->profiler = $profiler;
         $this->twig = $twig;
         $this->matcher = $matcher;
         $this->routes = (null === $routes && $matcher instanceof RouterInterface) ? $matcher->getRouteCollection() : $routes;
+        $this->expressionLanguageProviders = $expressionLanguageProviders;
     }
 
     /**
@@ -77,17 +86,13 @@ class RouterController
 
     /**
      * Returns the routing traces associated to the given request.
-     *
-     * @param string $method
-     *
-     * @return array
      */
-    private function getTraces(RequestDataCollector $request, $method)
+    private function getTraces(RequestDataCollector $request, string $method): array
     {
         $traceRequest = Request::create(
             $request->getPathInfo(),
             $request->getRequestServer(true)->get('REQUEST_METHOD'),
-            [],
+            \in_array($request->getMethod(), ['DELETE', 'PATCH', 'POST', 'PUT'], true) ? $request->getRequestRequest()->all() : $request->getRequestQuery()->all(),
             $request->getRequestCookies(true)->all(),
             [],
             $request->getRequestServer(true)->all()
@@ -96,6 +101,9 @@ class RouterController
         $context = $this->matcher->getContext();
         $context->setMethod($method);
         $matcher = new TraceableUrlMatcher($this->routes, $context);
+        foreach ($this->expressionLanguageProviders as $provider) {
+            $matcher->addExpressionLanguageProvider($provider);
+        }
 
         return $matcher->getTracesForRequest($traceRequest);
     }

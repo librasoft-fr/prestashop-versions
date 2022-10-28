@@ -39,9 +39,7 @@ class UrlPackage extends Package
     private $sslPackage;
 
     /**
-     * @param string|string[]          $baseUrls        Base asset URLs
-     * @param VersionStrategyInterface $versionStrategy The version strategy
-     * @param ContextInterface|null    $context         Context
+     * @param string|string[] $baseUrls Base asset URLs
      */
     public function __construct($baseUrls, VersionStrategyInterface $versionStrategy, ContextInterface $context = null)
     {
@@ -123,13 +121,13 @@ class UrlPackage extends Package
         return (int) fmod(hexdec(substr(hash('sha256', $path), 0, 10)), \count($this->baseUrls));
     }
 
-    private function getSslUrls($urls)
+    private function getSslUrls(array $urls)
     {
         $sslUrls = [];
         foreach ($urls as $url) {
             if ('https://' === substr($url, 0, 8) || '//' === substr($url, 0, 2)) {
                 $sslUrls[] = $url;
-            } elseif ('http://' !== substr($url, 0, 7)) {
+            } elseif (null === parse_url($url, \PHP_URL_SCHEME)) {
                 throw new InvalidArgumentException(sprintf('"%s" is not a valid URL.', $url));
             }
         }

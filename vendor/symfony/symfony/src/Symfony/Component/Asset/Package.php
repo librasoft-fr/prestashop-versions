@@ -29,7 +29,7 @@ class Package implements PackageInterface
     public function __construct(VersionStrategyInterface $versionStrategy, ContextInterface $context = null)
     {
         $this->versionStrategy = $versionStrategy;
-        $this->context = $context ?: new NullContext();
+        $this->context = $context ?? new NullContext();
     }
 
     /**
@@ -68,8 +68,11 @@ class Package implements PackageInterface
         return $this->versionStrategy;
     }
 
+    /**
+     * @return bool
+     */
     protected function isAbsoluteUrl($url)
     {
-        return false !== strpos($url, '://') || '//' === substr($url, 0, 2);
+        return str_contains($url, '://') || '//' === substr($url, 0, 2);
     }
 }

@@ -11,20 +11,22 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Controller;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Templating\EngineInterface;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Environment;
 
 /**
@@ -45,12 +47,28 @@ abstract class AbstractController implements ServiceSubscriberInterface
      * @internal
      * @required
      */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): ?ContainerInterface
     {
         $previous = $this->container;
         $this->container = $container;
 
         return $previous;
+    }
+
+    /**
+     * Gets a container parameter by its name.
+     *
+     * @return array|bool|float|int|string|\UnitEnum|null
+     *
+     * @final
+     */
+    protected function getParameter(string $name)
+    {
+        if (!$this->container->has('parameter_bag')) {
+            throw new ServiceNotFoundException('parameter_bag.', null, null, [], sprintf('The "%s::getParameter()" method is missing a parameter bag to work properly. Did you forget to register your controller as a service subscriber? This can be fixed either by using autoconfiguration or by manually wiring a "parameter_bag" in the service locator passed to the controller.', static::class));
+        }
+
+        return $this->container->get('parameter_bag')->get($name);
     }
 
     public static function getSubscribedServices()
@@ -64,10 +82,13 @@ abstract class AbstractController implements ServiceSubscriberInterface
             'security.authorization_checker' => '?'.AuthorizationCheckerInterface::class,
             'templating' => '?'.EngineInterface::class,
             'twig' => '?'.Environment::class,
-            'doctrine' => '?'.(interface_exists(ManagerRegistry::class) ? ManagerRegistry::class : LegacyManagerRegistry::class),
+            'doctrine' => '?'.ManagerRegistry::class,
             'form.factory' => '?'.FormFactoryInterface::class,
             'security.token_storage' => '?'.TokenStorageInterface::class,
             'security.csrf.token_manager' => '?'.CsrfTokenManagerInterface::class,
+            'parameter_bag' => '?'.ContainerBagInterface::class,
+            'message_bus' => '?'.MessageBusInterface::class,
+            'messenger.default_bus' => '?'.MessageBusInterface::class,
         ];
     }
 }

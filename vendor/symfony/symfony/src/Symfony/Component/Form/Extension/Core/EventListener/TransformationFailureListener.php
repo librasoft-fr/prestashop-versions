@@ -15,7 +15,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface as LegacyTranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @author Christian Flothmann <christian.flothmann@sensiolabs.de>
@@ -24,8 +25,14 @@ class TransformationFailureListener implements EventSubscriberInterface
 {
     private $translator;
 
-    public function __construct(TranslatorInterface $translator = null)
+    /**
+     * @param TranslatorInterface|null $translator
+     */
+    public function __construct($translator = null)
     {
+        if (null !== $translator && !$translator instanceof LegacyTranslatorInterface && !$translator instanceof TranslatorInterface) {
+            throw new \TypeError(sprintf('Argument 1 passed to "%s()" must be an instance of "%s", "%s" given.', __METHOD__, TranslatorInterface::class, \is_object($translator) ? \get_class($translator) : \gettype($translator)));
+        }
         $this->translator = $translator;
     }
 
@@ -50,7 +57,7 @@ class TransformationFailureListener implements EventSubscriberInterface
             }
         }
 
-        $clientDataAsString = is_scalar($form->getViewData()) ? (string) $form->getViewData() : \gettype($form->getViewData());
+        $clientDataAsString = \is_scalar($form->getViewData()) ? (string) $form->getViewData() : \gettype($form->getViewData());
         $messageTemplate = 'The value {{ value }} is not valid.';
 
         if (null !== $this->translator) {

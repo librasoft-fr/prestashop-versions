@@ -30,7 +30,7 @@ class JsonManifestVersionStrategy implements VersionStrategyInterface
     /**
      * @param string $manifestPath Absolute path to the manifest file
      */
-    public function __construct($manifestPath)
+    public function __construct(string $manifestPath)
     {
         $this->manifestPath = $manifestPath;
     }
@@ -50,11 +50,11 @@ class JsonManifestVersionStrategy implements VersionStrategyInterface
         return $this->getManifestPath($path) ?: $path;
     }
 
-    private function getManifestPath($path)
+    private function getManifestPath(string $path): ?string
     {
         if (null === $this->manifestData) {
             if (!file_exists($this->manifestPath)) {
-                throw new \RuntimeException(sprintf('Asset manifest file "%s" does not exist.', $this->manifestPath));
+                throw new \RuntimeException(sprintf('Asset manifest file "%s" does not exist. Did you forget to build the assets with npm or yarn?', $this->manifestPath));
             }
 
             $this->manifestData = json_decode(file_get_contents($this->manifestPath), true);
@@ -63,6 +63,6 @@ class JsonManifestVersionStrategy implements VersionStrategyInterface
             }
         }
 
-        return isset($this->manifestData[$path]) ? $this->manifestData[$path] : null;
+        return $this->manifestData[$path] ?? null;
     }
 }

@@ -24,15 +24,14 @@ interface LoaderInterface
     /**
      * Loads a template.
      *
-     * @return Storage|bool false if the template cannot be loaded, a Storage instance otherwise
+     * @return Storage|false false if the template cannot be loaded, a Storage instance otherwise
      */
     public function load(TemplateReferenceInterface $template);
 
     /**
      * Returns true if the template is still fresh.
      *
-     * @param TemplateReferenceInterface $template A template
-     * @param int                        $time     The last modification time of the cached template (timestamp)
+     * @param int $time The last modification time of the cached template (timestamp)
      *
      * @return bool
      */

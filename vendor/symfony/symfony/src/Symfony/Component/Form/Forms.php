@@ -58,30 +58,6 @@ namespace Symfony\Component\Form;
  *         ->addExtension(new ValidatorExtension($validator))
  *         ->getFormFactory();
  *
- * Support for the Templating component is provided by TemplatingExtension.
- * This extension needs a PhpEngine object for rendering forms. As second
- * argument you should pass the names of the default themes. Here is an
- * example for using the default layout with "<div>" tags:
- *
- *     use Symfony\Component\Form\Extension\Templating\TemplatingExtension;
- *
- *     $formFactory = Forms::createFormFactoryBuilder()
- *         ->addExtension(new TemplatingExtension($engine, null, [
- *             'FrameworkBundle:Form',
- *         ]))
- *         ->getFormFactory();
- *
- * The next example shows how to include the "<table>" layout:
- *
- *     use Symfony\Component\Form\Extension\Templating\TemplatingExtension;
- *
- *     $formFactory = Forms::createFormFactoryBuilder()
- *         ->addExtension(new TemplatingExtension($engine, null, [
- *             'FrameworkBundle:Form',
- *             'FrameworkBundle:FormTable',
- *         ]))
- *         ->getFormFactory();
- *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
 final class Forms
@@ -91,7 +67,7 @@ final class Forms
      *
      * @return FormFactoryInterface The form factory
      */
-    public static function createFormFactory()
+    public static function createFormFactory(): FormFactoryInterface
     {
         return self::createFormFactoryBuilder()->getFormFactory();
     }
@@ -101,7 +77,7 @@ final class Forms
      *
      * @return FormFactoryBuilderInterface The form factory builder
      */
-    public static function createFormFactoryBuilder()
+    public static function createFormFactoryBuilder(): FormFactoryBuilderInterface
     {
         return new FormFactoryBuilder(true);
     }

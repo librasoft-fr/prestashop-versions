@@ -14,18 +14,18 @@ namespace Symfony\Component\Security\Guard\Firewall;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
-use Symfony\Component\Security\Guard\GuardAuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\PreAuthenticationGuardToken;
+use Symfony\Component\Security\Http\Firewall\AbstractListener;
+use Symfony\Component\Security\Http\Firewall\LegacyListenerTrait;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface;
 
@@ -34,9 +34,13 @@ use Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface;
  *
  * @author Ryan Weaver <ryan@knpuniversity.com>
  * @author Amaury Leroux de Lens <amaury@lerouxdelens.com>
+ *
+ * @final since Symfony 4.3
  */
-class GuardAuthenticationListener implements ListenerInterface
+class GuardAuthenticationListener extends AbstractListener implements ListenerInterface
 {
+    use LegacyListenerTrait;
+
     private $guardHandler;
     private $authenticationManager;
     private $providerKey;
@@ -46,13 +50,10 @@ class GuardAuthenticationListener implements ListenerInterface
     private $hideUserNotFoundExceptions;
 
     /**
-     * @param GuardAuthenticatorHandler         $guardHandler          The Guard handler
-     * @param AuthenticationManagerInterface    $authenticationManager An AuthenticationManagerInterface instance
-     * @param string                            $providerKey           The provider (i.e. firewall) key
-     * @param iterable|AuthenticatorInterface[] $guardAuthenticators   The authenticators, with keys that match what's passed to GuardAuthenticationProvider
-     * @param LoggerInterface                   $logger                A LoggerInterface instance
+     * @param string                            $providerKey         The provider (i.e. firewall) key
+     * @param iterable|AuthenticatorInterface[] $guardAuthenticators The authenticators, with keys that match what's passed to GuardAuthenticationProvider
      */
-    public function __construct(GuardAuthenticatorHandler $guardHandler, AuthenticationManagerInterface $authenticationManager, $providerKey, $guardAuthenticators, LoggerInterface $logger = null, $hideUserNotFoundExceptions = true)
+    public function __construct(GuardAuthenticatorHandler $guardHandler, AuthenticationManagerInterface $authenticationManager, string $providerKey, iterable $guardAuthenticators, LoggerInterface $logger = null, bool $hideUserNotFoundExceptions = true)
     {
         if (empty($providerKey)) {
             throw new \InvalidArgumentException('$providerKey must not be empty.');
@@ -67,9 +68,9 @@ class GuardAuthenticationListener implements ListenerInterface
     }
 
     /**
-     * Iterates over each authenticator to see if each wants to authenticate the request.
+     * {@inheritdoc}
      */
-    public function handle(GetResponseEvent $event)
+    public function supports(Request $request): ?bool
     {
         if (null !== $this->logger) {
             $context = ['firewall_key' => $this->providerKey];
@@ -81,7 +82,39 @@ class GuardAuthenticationListener implements ListenerInterface
             $this->logger->debug('Checking for guard authentication credentials.', $context);
         }
 
+        $guardAuthenticators = [];
+
         foreach ($this->guardAuthenticators as $key => $guardAuthenticator) {
+            if (null !== $this->logger) {
+                $this->logger->debug('Checking support on guard authenticator.', ['firewall_key' => $this->providerKey, 'authenticator' => \get_class($guardAuthenticator)]);
+            }
+
+            if ($guardAuthenticator->supports($request)) {
+                $guardAuthenticators[$key] = $guardAuthenticator;
+            } elseif (null !== $this->logger) {
+                $this->logger->debug('Guard authenticator does not support the request.', ['firewall_key' => $this->providerKey, 'authenticator' => \get_class($guardAuthenticator)]);
+            }
+        }
+
+        if (!$guardAuthenticators) {
+            return false;
+        }
+
+        $request->attributes->set('_guard_authenticators', $guardAuthenticators);
+
+        return true;
+    }
+
+    /**
+     * Iterates over each authenticator to see if each wants to authenticate the request.
+     */
+    public function authenticate(RequestEvent $event)
+    {
+        $request = $event->getRequest();
+        $guardAuthenticators = $request->attributes->get('_guard_authenticators');
+        $request->attributes->remove('_guard_authenticators');
+
+        foreach ($guardAuthenticators as $key => $guardAuthenticator) {
             // get a key that's unique to *this* guard authenticator
             // this MUST be the same as GuardAuthenticationProvider
             $uniqueGuardKey = $this->providerKey.'_'.$key;
@@ -98,31 +131,10 @@ class GuardAuthenticationListener implements ListenerInterface
         }
     }
 
-    private function executeGuardAuthenticator($uniqueGuardKey, GuardAuthenticatorInterface $guardAuthenticator, GetResponseEvent $event)
+    private function executeGuardAuthenticator(string $uniqueGuardKey, AuthenticatorInterface $guardAuthenticator, RequestEvent $event)
     {
         $request = $event->getRequest();
         try {
-            // abort the execution of the authenticator if it doesn't support the request
-            if ($guardAuthenticator instanceof AuthenticatorInterface) {
-                if (null !== $this->logger) {
-                    $this->logger->debug('Checking support on guard authenticator.', ['firewall_key' => $this->providerKey, 'authenticator' => \get_class($guardAuthenticator)]);
-                }
-
-                if (!$guardAuthenticator->supports($request)) {
-                    if (null !== $this->logger) {
-                        $this->logger->debug('Guard authenticator does not support the request.', ['firewall_key' => $this->providerKey, 'authenticator' => \get_class($guardAuthenticator)]);
-                    }
-
-                    return;
-                }
-                // as there was a support for given request,
-                // authenticator is expected to give not-null credentials.
-                $credentialsCanBeNull = false;
-            } else {
-                // deprecated since version 3.4, to be removed in 4.0
-                $credentialsCanBeNull = true;
-            }
-
             if (null !== $this->logger) {
                 $this->logger->debug('Calling getCredentials() on guard authenticator.', ['firewall_key' => $this->providerKey, 'authenticator' => \get_class($guardAuthenticator)]);
             }
@@ -131,17 +143,6 @@ class GuardAuthenticationListener implements ListenerInterface
             $credentials = $guardAuthenticator->getCredentials($request);
 
             if (null === $credentials) {
-                // deprecated since version 3.4, to be removed in 4.0
-                if ($credentialsCanBeNull) {
-                    return;
-                }
-
-                if ($guardAuthenticator instanceof AbstractGuardAuthenticator) {
-                    @trigger_error(sprintf('Returning null from "%1$s::getCredentials()" is deprecated since Symfony 3.4 and will throw an \UnexpectedValueException in 4.0. Return false from "%1$s::supports()" instead.', \get_class($guardAuthenticator)), \E_USER_DEPRECATED);
-
-                    return;
-                }
-
                 throw new \UnexpectedValueException(sprintf('The return value of "%1$s::getCredentials()" must not be null. Return false from "%1$s::supports()" instead.', \get_class($guardAuthenticator)));
             }
 
@@ -213,7 +214,7 @@ class GuardAuthenticationListener implements ListenerInterface
      * Checks to see if remember me is supported in the authenticator and
      * on the firewall. If it is, the RememberMeServicesInterface is notified.
      */
-    private function triggerRememberMe(GuardAuthenticatorInterface $guardAuthenticator, Request $request, TokenInterface $token, Response $response = null)
+    private function triggerRememberMe(AuthenticatorInterface $guardAuthenticator, Request $request, TokenInterface $token, Response $response = null)
     {
         if (null === $this->rememberMeServices) {
             if (null !== $this->logger) {

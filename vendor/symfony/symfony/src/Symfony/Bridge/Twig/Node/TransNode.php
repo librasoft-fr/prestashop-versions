@@ -20,14 +20,16 @@ use Twig\Node\Node;
 use Twig\Node\TextNode;
 
 // BC/FC with namespaced Twig
-class_exists('Twig\Node\Expression\ArrayExpression');
+class_exists(ArrayExpression::class);
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @final since Symfony 4.4
  */
 class TransNode extends Node
 {
-    public function __construct(Node $body, Node $domain = null, AbstractExpression $count = null, AbstractExpression $vars = null, AbstractExpression $locale = null, $lineno = 0, $tag = null)
+    public function __construct(Node $body, Node $domain = null, AbstractExpression $count = null, AbstractExpression $vars = null, AbstractExpression $locale = null, int $lineno = 0, string $tag = null)
     {
         $nodes = ['body' => $body];
         if (null !== $domain) {
@@ -46,6 +48,9 @@ class TransNode extends Node
         parent::__construct($nodes, [], $lineno, $tag);
     }
 
+    /**
+     * @return void
+     */
     public function compile(Compiler $compiler)
     {
         $compiler->addDebugInfo($this);
@@ -55,23 +60,14 @@ class TransNode extends Node
             $defaults = $this->getNode('vars');
             $vars = null;
         }
-        list($msg, $defaults) = $this->compileString($this->getNode('body'), $defaults, (bool) $vars);
-
-        $method = !$this->hasNode('count') ? 'trans' : 'transChoice';
+        [$msg, $defaults] = $this->compileString($this->getNode('body'), $defaults, (bool) $vars);
 
         $compiler
-            ->write('echo $this->env->getExtension(\'Symfony\Bridge\Twig\Extension\TranslationExtension\')->getTranslator()->'.$method.'(')
+            ->write('echo $this->env->getExtension(\'Symfony\Bridge\Twig\Extension\TranslationExtension\')->trans(')
             ->subcompile($msg)
         ;
 
         $compiler->raw(', ');
-
-        if ($this->hasNode('count')) {
-            $compiler
-                ->subcompile($this->getNode('count'))
-                ->raw(', ')
-            ;
-        }
 
         if (null !== $vars) {
             $compiler
@@ -98,7 +94,17 @@ class TransNode extends Node
                 ->raw(', ')
                 ->subcompile($this->getNode('locale'))
             ;
+        } elseif ($this->hasNode('count')) {
+            $compiler->raw(', null');
         }
+
+        if ($this->hasNode('count')) {
+            $compiler
+                ->raw(', ')
+                ->subcompile($this->getNode('count'))
+            ;
+        }
+
         $compiler->raw(");\n");
     }
 

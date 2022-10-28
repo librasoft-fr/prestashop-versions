@@ -6,7 +6,6 @@
 
     <parameters>
         <parameter key="serializer.mapping.cache.file">%kernel.cache_dir%/serialization.php</parameter>
-        <parameter key="serializer.mapping.cache.prefix" />
     </parameters>
 
     <services>
@@ -24,13 +23,32 @@
 
         <service id="serializer.property_accessor" alias="property_accessor" />
 
+        <!-- Discriminator Map -->
+        <service id="serializer.mapping.class_discriminator_resolver" class="Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata">
+            <argument type="service" id="serializer.mapping.class_metadata_factory" />
+        </service>
+        <service id="Symfony\Component\Serializer\Mapping\ClassDiscriminatorResolverInterface" alias="serializer.mapping.class_discriminator_resolver" />
+
         <!-- Normalizer -->
+        <service id="serializer.normalizer.constraint_violation_list" class="Symfony\Component\Serializer\Normalizer\ConstraintViolationListNormalizer">
+            <argument type="collection" />
+            <argument type="service" id="serializer.name_converter.metadata_aware" />
+            <!-- Run before serializer.normalizer.object -->
+            <tag name="serializer.normalizer" priority="-915" />
+        </service>
+
+        <service id="serializer.normalizer.datetimezone" class="Symfony\Component\Serializer\Normalizer\DateTimeZoneNormalizer">
+            <!-- Run before serializer.normalizer.object -->
+            <tag name="serializer.normalizer" priority="-915" />
+        </service>
+
         <service id="serializer.normalizer.dateinterval" class="Symfony\Component\Serializer\Normalizer\DateIntervalNormalizer">
             <!-- Run before serializer.normalizer.object -->
             <tag name="serializer.normalizer" priority="-915" />
         </service>
 
         <service id="serializer.normalizer.data_uri" class="Symfony\Component\Serializer\Normalizer\DataUriNormalizer">
+            <argument type="service" id="mime_types" on-invalid="null" />
             <!-- Run before serializer.normalizer.object -->
             <tag name="serializer.normalizer" priority="-920" />
         </service>
@@ -42,14 +60,23 @@
 
         <service id="serializer.normalizer.json_serializable" class="Symfony\Component\Serializer\Normalizer\JsonSerializableNormalizer">
             <!-- Run before serializer.normalizer.object -->
-            <tag name="serializer.normalizer" priority="-900" />
+            <tag name="serializer.normalizer" priority="-950" />
+        </service>
+
+        <service id="serializer.normalizer.problem" class="Symfony\Component\Serializer\Normalizer\ProblemNormalizer">
+            <argument>%kernel.debug%</argument>
+            <!-- Run before serializer.normalizer.object -->
+            <tag name="serializer.normalizer" priority="-890" />
         </service>
 
         <service id="serializer.normalizer.object" class="Symfony\Component\Serializer\Normalizer\ObjectNormalizer">
             <argument type="service" id="serializer.mapping.class_metadata_factory" />
-            <argument>null</argument> <!-- name converter -->
+            <argument type="service" id="serializer.name_converter.metadata_aware" />
             <argument type="service" id="serializer.property_accessor" />
             <argument type="service" id="property_info" on-invalid="ignore" />
+            <argument type="service" id="serializer.mapping.class_discriminator_resolver" on-invalid="ignore" />
+            <argument>null</argument>
+            <argument type="collection" />
 
             <!-- Run after all custom normalizers -->
             <tag name="serializer.normalizer" priority="-1000" />
@@ -69,7 +96,6 @@
         <!-- Class Metadata Factory -->
         <service id="serializer.mapping.class_metadata_factory" class="Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory">
             <argument type="service" id="serializer.mapping.chain_loader" />
-            <argument>null</argument>
         </service>
 
         <service id="Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface" alias="serializer.mapping.class_metadata_factory" />
@@ -78,7 +104,6 @@
         <service id="serializer.mapping.cache_warmer" class="Symfony\Bundle\FrameworkBundle\CacheWarmer\SerializerCacheWarmer">
             <argument type="collection" /><!-- Loaders injected by the extension -->
             <argument>%serializer.mapping.cache.file%</argument>
-            <argument type="service" id="cache.serializer" />
             <tag name="kernel.cache_warmer" />
         </service>
 
@@ -88,15 +113,9 @@
             <argument type="service" id="cache.serializer" />
         </service>
 
-        <service id="serializer.mapping.cache.doctrine.apc" class="Doctrine\Common\Cache\ApcCache">
-            <call method="setNamespace">
-                <argument>%serializer.mapping.cache.prefix%</argument>
-            </call>
-            <deprecated>The "%service_id%" service is deprecated since Symfony 3.2 and will be removed in 4.0. APCu should now be automatically used when available.</deprecated>
-        </service>
-
-        <service id="serializer.mapping.cache.apc" parent="serializer.mapping.cache.doctrine.apc" public="false">
-            <deprecated>The "%service_id%" service is deprecated since Symfony 3.1 and will be removed in 4.0. APCu should now be automatically used when available.</deprecated>
+        <service id="serializer.mapping.cache_class_metadata_factory" decorates="serializer.mapping.class_metadata_factory" class="Symfony\Component\Serializer\Mapping\Factory\CacheClassMetadataFactory">
+            <argument type="service" id="serializer.mapping.cache_class_metadata_factory.inner" />
+            <argument type="service" id="serializer.mapping.cache.symfony" />
         </service>
 
         <!-- Encoders -->
@@ -119,11 +138,36 @@
         <!-- Name converter -->
         <service id="serializer.name_converter.camel_case_to_snake_case" class="Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter" />
 
+        <service id="serializer.name_converter.metadata_aware" class="Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter" >
+            <argument type="service" id="serializer.mapping.class_metadata_factory"/>
+        </service>
+
         <!-- PropertyInfo extractor -->
         <service id="property_info.serializer_extractor" class="Symfony\Component\PropertyInfo\Extractor\SerializerExtractor">
             <argument type="service" id="serializer.mapping.class_metadata_factory" />
 
             <tag name="property_info.list_extractor" priority="-999" />
+        </service>
+
+        <!-- ErrorRenderer integration -->
+        <service id="error_renderer" alias="error_renderer.serializer" />
+        <service id="error_renderer.serializer" alias="error_handler.error_renderer.serializer" />
+        <service id="error_handler.error_renderer.serializer" class="Symfony\Component\ErrorHandler\ErrorRenderer\SerializerErrorRenderer">
+            <argument type="service" id="serializer" />
+            <argument type="service">
+                <service>
+                    <factory class="Symfony\Component\ErrorHandler\ErrorRenderer\SerializerErrorRenderer" method="getPreferredFormat" />
+                    <argument type="service" id="request_stack" />
+                </service>
+            </argument>
+            <argument type="service" id="error_renderer.html" />
+            <argument type="service">
+                <service>
+                    <factory class="Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer" method="isDebug" />
+                    <argument type="service" id="request_stack" />
+                    <argument>%kernel.debug%</argument>
+                </service>
+            </argument>
         </service>
     </services>
 </container>

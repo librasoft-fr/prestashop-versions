@@ -19,27 +19,31 @@ use Twig\TwigFilter;
  * Twig extension relate to PHP code and used by the profiler and the default exception templates.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @final since Symfony 4.4
  */
 class CodeExtension extends AbstractExtension
 {
     private $fileLinkFormat;
-    private $rootDir;
     private $charset;
+    private $projectDir;
 
     /**
      * @param string|FileLinkFormatter $fileLinkFormat The format for links to source files
-     * @param string                   $rootDir        The project root directory
+     * @param string                   $projectDir     The project directory
      * @param string                   $charset        The charset
      */
-    public function __construct($fileLinkFormat, $rootDir, $charset)
+    public function __construct($fileLinkFormat, string $projectDir, string $charset)
     {
-        $this->fileLinkFormat = $fileLinkFormat ?: ini_get('xdebug.file_link_format') ?: get_cfg_var('xdebug.file_link_format');
-        $this->rootDir = str_replace('/', \DIRECTORY_SEPARATOR, \dirname($rootDir)).\DIRECTORY_SEPARATOR;
+        $this->fileLinkFormat = $fileLinkFormat ?: \ini_get('xdebug.file_link_format') ?: get_cfg_var('xdebug.file_link_format');
+        $this->projectDir = str_replace('\\', '/', $projectDir).'/';
         $this->charset = $charset;
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @return TwigFilter[]
      */
     public function getFilters()
     {
@@ -53,6 +57,7 @@ class CodeExtension extends AbstractExtension
             new TwigFilter('format_file_from_text', [$this, 'formatFileFromText'], ['is_safe' => ['html']]),
             new TwigFilter('format_log_message', [$this, 'formatLogMessage'], ['is_safe' => ['html']]),
             new TwigFilter('file_link', [$this, 'getFileLink']),
+            new TwigFilter('file_relative', [$this, 'getFileRelative']),
         ];
     }
 
@@ -66,8 +71,8 @@ class CodeExtension extends AbstractExtension
 
     public function abbrMethod($method)
     {
-        if (false !== strpos($method, '::')) {
-            list($class, $method) = explode('::', $method, 2);
+        if (str_contains($method, '::')) {
+            [$class, $method] = explode('::', $method, 2);
             $result = sprintf('%s::%s()', $this->abbrClass($class), $method);
         } elseif ('Closure' === $method) {
             $result = sprintf('<abbr title="%s">%1$s</abbr>', $method);
@@ -175,11 +180,10 @@ class CodeExtension extends AbstractExtension
         $file = trim($file);
 
         if (null === $text) {
-            $text = str_replace('/', \DIRECTORY_SEPARATOR, $file);
-            if (0 === strpos($text, $this->rootDir)) {
-                $text = substr($text, \strlen($this->rootDir));
-                $text = explode(\DIRECTORY_SEPARATOR, $text, 2);
-                $text = sprintf('<abbr title="%s%2$s">%s</abbr>%s', $this->rootDir, $text[0], isset($text[1]) ? \DIRECTORY_SEPARATOR.$text[1] : '');
+            $text = $file;
+            if (null !== $rel = $this->getFileRelative($text)) {
+                $rel = explode('/', $rel, 2);
+                $text = sprintf('<abbr title="%s%2$s">%s</abbr>%s', $this->projectDir, $rel[0], '/'.($rel[1] ?? ''));
             }
         }
 
@@ -211,6 +215,17 @@ class CodeExtension extends AbstractExtension
         return false;
     }
 
+    public function getFileRelative(string $file): ?string
+    {
+        $file = str_replace('\\', '/', $file);
+
+        if (null !== $this->projectDir && str_starts_with($file, $this->projectDir)) {
+            return ltrim(substr($file, \strlen($this->projectDir)), '/');
+        }
+
+        return null;
+    }
+
     public function formatFileFromText($text)
     {
         return preg_replace_callback('/in ("|&quot;)?(.+?)\1(?: +(?:on|at))? +line (\d+)/s', function ($match) {
@@ -221,12 +236,12 @@ class CodeExtension extends AbstractExtension
     /**
      * @internal
      */
-    public function formatLogMessage($message, array $context)
+    public function formatLogMessage(string $message, array $context): string
     {
-        if ($context && false !== strpos($message, '{')) {
+        if ($context && str_contains($message, '{')) {
             $replacements = [];
             foreach ($context as $key => $val) {
-                if (is_scalar($val)) {
+                if (\is_scalar($val)) {
                     $replacements['{'.$key.'}'] = $val;
                 }
             }

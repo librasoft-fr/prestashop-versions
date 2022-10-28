@@ -13,6 +13,7 @@ namespace Symfony\Bundle\WebServerBundle\Command;
 
 use Symfony\Bundle\WebServerBundle\WebServer;
 use Symfony\Bundle\WebServerBundle\WebServerConfig;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,18 +26,22 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * Runs a local web server in a background process.
  *
  * @author Christian Flothmann <christian.flothmann@xabbuh.de>
+ *
+ * @deprecated since Symfony 4.4, to be removed in 5.0; the new Symfony local server has more features, you can use it instead.
  */
-class ServerStartCommand extends ServerCommand
+class ServerStartCommand extends Command
 {
     private $documentRoot;
     private $environment;
+    private $pidFileDirectory;
 
     protected static $defaultName = 'server:start';
 
-    public function __construct($documentRoot = null, $environment = null)
+    public function __construct(string $documentRoot = null, string $environment = null, string $pidFileDirectory = null)
     {
         $this->documentRoot = $documentRoot;
         $this->environment = $environment;
+        $this->pidFileDirectory = $pidFileDirectory;
 
         parent::__construct();
     }
@@ -53,7 +58,7 @@ class ServerStartCommand extends ServerCommand
                 new InputOption('router', 'r', InputOption::VALUE_REQUIRED, 'Path to custom router script'),
                 new InputOption('pidfile', null, InputOption::VALUE_REQUIRED, 'PID file'),
             ])
-            ->setDescription('Starts a local web server in the background')
+            ->setDescription('Start a local web server in the background')
             ->setHelp(<<<'EOF'
 <info>%command.name%</info> runs a local web server: By default, the server
 listens on <comment>127.0.0.1</> address and the port number is automatically selected
@@ -87,6 +92,8 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        @trigger_error('Using the WebserverBundle is deprecated since Symfony 4.4. The new Symfony local server has more features, you can use it instead.', \E_USER_DEPRECATED);
+
         $io = new SymfonyStyle($input, $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output);
 
         if (!\extension_loaded('pcntl')) {
@@ -100,12 +107,6 @@ EOF
             }
 
             return 1;
-        }
-
-        // deprecated, logic to be removed in 4.0
-        // this allows the commands to work out of the box with web/ and public/
-        if ($this->documentRoot && !is_dir($this->documentRoot) && is_dir(\dirname($this->documentRoot).'/web')) {
-            $this->documentRoot = \dirname($this->documentRoot).'/web';
         }
 
         if (null === $documentRoot = $input->getOption('docroot')) {
@@ -138,9 +139,9 @@ EOF
         $this->getApplication()->setDispatcher(new EventDispatcher());
 
         try {
-            $server = new WebServer();
+            $server = new WebServer($this->pidFileDirectory);
             if ($server->isRunning($input->getOption('pidfile'))) {
-                $io->error(sprintf('The web server is already running (listening on http://%s).', $server->getAddress($input->getOption('pidfile'))));
+                $io->error(sprintf('The web server has already been started. It is currently listening on http://%s. Please stop the web server before you try to start it again.', $server->getAddress($input->getOption('pidfile'))));
 
                 return 1;
             }
@@ -148,7 +149,14 @@ EOF
             $config = new WebServerConfig($documentRoot, $env, $input->getArgument('addressport'), $input->getOption('router'));
 
             if (WebServer::STARTED === $server->start($config, $input->getOption('pidfile'))) {
-                $io->success(sprintf('Server listening on http://%s', $config->getAddress()));
+                $message = sprintf('Server listening on http://%s', $config->getAddress());
+                if ('' !== $displayAddress = $config->getDisplayAddress()) {
+                    $message = sprintf('Server listening on all interfaces, port %s -- see http://%s', $config->getPort(), $displayAddress);
+                }
+                $io->success($message);
+                if (\ini_get('xdebug.profiler_enable_trigger')) {
+                    $io->comment('Xdebug profiler trigger enabled.');
+                }
             }
         } catch (\Exception $e) {
             $io->error($e->getMessage());
@@ -156,6 +164,6 @@ EOF
             return 1;
         }
 
-        return null;
+        return 0;
     }
 }

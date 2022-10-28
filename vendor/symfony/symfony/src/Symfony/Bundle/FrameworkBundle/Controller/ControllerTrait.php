@@ -11,24 +11,29 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Controller;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
+use Psr\Link\LinkInterface;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Stamp\StampInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\WebLink\EventListener\AddLinkHeaderListener;
+use Symfony\Component\WebLink\GenericLinkProvider;
 
 /**
  * Common features needed in controllers.
@@ -44,13 +49,9 @@ trait ControllerTrait
     /**
      * Returns true if the service id is defined.
      *
-     * @param string $id The service id
-     *
-     * @return bool true if the service id is defined, false otherwise
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function has($id)
+    protected function has(string $id): bool
     {
         return $this->container->has($id);
     }
@@ -58,13 +59,11 @@ trait ControllerTrait
     /**
      * Gets a container service by its id.
      *
-     * @param string $id The service id
-     *
      * @return object The service
      *
-     * @final since version 3.4
+     * @final
      */
-    protected function get($id)
+    protected function get(string $id)
     {
         return $this->container->get($id);
     }
@@ -72,17 +71,11 @@ trait ControllerTrait
     /**
      * Generates a URL from the given parameters.
      *
-     * @param string $route         The name of the route
-     * @param array  $parameters    An array of parameters
-     * @param int    $referenceType The type of reference (one of the constants in UrlGeneratorInterface)
-     *
-     * @return string The generated URL
-     *
      * @see UrlGeneratorInterface
      *
-     * @final since version 3.4
+     * @final
      */
-    protected function generateUrl($route, $parameters = [], $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH)
+    protected function generateUrl(string $route, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
         return $this->container->get('router')->generate($route, $parameters, $referenceType);
     }
@@ -90,18 +83,13 @@ trait ControllerTrait
     /**
      * Forwards the request to another controller.
      *
-     * @param string $controller The controller name (a string like BlogBundle:Post:index)
-     * @param array  $path       An array of path parameters
-     * @param array  $query      An array of query parameters
+     * @param string $controller The controller name (a string like Bundle\BlogBundle\Controller\PostController::indexAction)
      *
-     * @return Response A Response instance
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function forward($controller, array $path = [], array $query = [])
+    protected function forward(string $controller, array $path = [], array $query = []): Response
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
-        $path['_forwarded'] = $request->attributes;
         $path['_controller'] = $controller;
         $subRequest = $request->duplicate($query, null, $path);
 
@@ -111,14 +99,9 @@ trait ControllerTrait
     /**
      * Returns a RedirectResponse to the given URL.
      *
-     * @param string $url    The URL to redirect to
-     * @param int    $status The status code to use for the Response
-     *
-     * @return RedirectResponse
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function redirect($url, $status = 302)
+    protected function redirect(string $url, int $status = 302): RedirectResponse
     {
         return new RedirectResponse($url, $status);
     }
@@ -126,15 +109,9 @@ trait ControllerTrait
     /**
      * Returns a RedirectResponse to the given route with the given parameters.
      *
-     * @param string $route      The name of the route
-     * @param array  $parameters An array of parameters
-     * @param int    $status     The status code to use for the Response
-     *
-     * @return RedirectResponse
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function redirectToRoute($route, array $parameters = [], $status = 302)
+    protected function redirectToRoute(string $route, array $parameters = [], int $status = 302): RedirectResponse
     {
         return $this->redirect($this->generateUrl($route, $parameters), $status);
     }
@@ -142,16 +119,9 @@ trait ControllerTrait
     /**
      * Returns a JsonResponse that uses the serializer component if enabled, or json_encode.
      *
-     * @param mixed $data    The response data
-     * @param int   $status  The status code to use for the Response
-     * @param array $headers Array of extra headers to add
-     * @param array $context Context to pass to serializer when using serializer component
-     *
-     * @return JsonResponse
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function json($data, $status = 200, $headers = [], $context = [])
+    protected function json($data, int $status = 200, array $headers = [], array $context = []): JsonResponse
     {
         if ($this->container->has('serializer')) {
             $json = $this->container->get('serializer')->serialize($data, 'json', array_merge([
@@ -167,18 +137,14 @@ trait ControllerTrait
     /**
      * Returns a BinaryFileResponse object with original or customized file name and disposition header.
      *
-     * @param \SplFileInfo|string $file        File object or path to file to be sent as response
-     * @param string|null         $fileName    File name to be sent to response or null (will use original file name)
-     * @param string              $disposition Disposition of response ("attachment" is default, other type is "inline")
+     * @param \SplFileInfo|string $file File object or path to file to be sent as response
      *
-     * @return BinaryFileResponse
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function file($file, $fileName = null, $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT)
+    protected function file($file, string $fileName = null, string $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT): BinaryFileResponse
     {
         $response = new BinaryFileResponse($file);
-        $response->setContentDisposition($disposition, null === $fileName ? $response->getFile()->getFilename() : $fileName);
+        $response->setContentDisposition($disposition, $fileName ?? $response->getFile()->getFilename());
 
         return $response;
     }
@@ -186,14 +152,11 @@ trait ControllerTrait
     /**
      * Adds a flash message to the current session for type.
      *
-     * @param string $type    The type
-     * @param mixed  $message The message
-     *
      * @throws \LogicException
      *
-     * @final since version 3.4
+     * @final
      */
-    protected function addFlash($type, $message)
+    protected function addFlash(string $type, $message)
     {
         if (!$this->container->has('session')) {
             throw new \LogicException('You can not use the addFlash method if sessions are disabled. Enable them in "config/packages/framework.yaml".');
@@ -205,16 +168,11 @@ trait ControllerTrait
     /**
      * Checks if the attributes are granted against the current authentication token and optionally supplied subject.
      *
-     * @param mixed $attributes The attributes
-     * @param mixed $subject    The subject
-     *
-     * @return bool
-     *
      * @throws \LogicException
      *
-     * @final since version 3.4
+     * @final
      */
-    protected function isGranted($attributes, $subject = null)
+    protected function isGranted($attributes, $subject = null): bool
     {
         if (!$this->container->has('security.authorization_checker')) {
             throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
@@ -227,15 +185,11 @@ trait ControllerTrait
      * Throws an exception unless the attributes are granted against the current authentication token and optionally
      * supplied subject.
      *
-     * @param mixed  $attributes The attributes
-     * @param mixed  $subject    The subject
-     * @param string $message    The message passed to the exception
-     *
      * @throws AccessDeniedException
      *
-     * @final since version 3.4
+     * @final
      */
-    protected function denyAccessUnlessGranted($attributes, $subject = null, $message = 'Access Denied.')
+    protected function denyAccessUnlessGranted($attributes, $subject = null, string $message = 'Access Denied.')
     {
         if (!$this->isGranted($attributes, $subject)) {
             $exception = $this->createAccessDeniedException($message);
@@ -249,16 +203,13 @@ trait ControllerTrait
     /**
      * Returns a rendered view.
      *
-     * @param string $view       The view name
-     * @param array  $parameters An array of parameters to pass to the view
-     *
-     * @return string The rendered view
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function renderView($view, array $parameters = [])
+    protected function renderView(string $view, array $parameters = []): string
     {
-        if ($this->container->has('templating')) {
+        if ($this->container->has('templating') && $this->container->get('templating')->supports($view)) {
+            @trigger_error('Using the "templating" service is deprecated since version 4.3 and will be removed in 5.0; use Twig instead.', \E_USER_DEPRECATED);
+
             return $this->container->get('templating')->render($view, $parameters);
         }
 
@@ -272,17 +223,13 @@ trait ControllerTrait
     /**
      * Renders a view.
      *
-     * @param string   $view       The view name
-     * @param array    $parameters An array of parameters to pass to the view
-     * @param Response $response   A response instance
-     *
-     * @return Response A Response instance
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function render($view, array $parameters = [], Response $response = null)
+    protected function render(string $view, array $parameters = [], Response $response = null): Response
     {
-        if ($this->container->has('templating')) {
+        if ($this->container->has('templating') && $this->container->get('templating')->supports($view)) {
+            @trigger_error('Using the "templating" service is deprecated since version 4.3 and will be removed in 5.0; use Twig instead.', \E_USER_DEPRECATED);
+
             $content = $this->container->get('templating')->render($view, $parameters);
         } elseif ($this->container->has('twig')) {
             $content = $this->container->get('twig')->render($view, $parameters);
@@ -302,17 +249,13 @@ trait ControllerTrait
     /**
      * Streams a view.
      *
-     * @param string           $view       The view name
-     * @param array            $parameters An array of parameters to pass to the view
-     * @param StreamedResponse $response   A response instance
-     *
-     * @return StreamedResponse A StreamedResponse instance
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function stream($view, array $parameters = [], StreamedResponse $response = null)
+    protected function stream(string $view, array $parameters = [], StreamedResponse $response = null): StreamedResponse
     {
         if ($this->container->has('templating')) {
+            @trigger_error('Using the "templating" service is deprecated since version 4.3 and will be removed in 5.0; use Twig instead.', \E_USER_DEPRECATED);
+
             $templating = $this->container->get('templating');
 
             $callback = function () use ($templating, $view, $parameters) {
@@ -344,14 +287,9 @@ trait ControllerTrait
      *
      *     throw $this->createNotFoundException('Page not found!');
      *
-     * @param string          $message  A message
-     * @param \Exception|null $previous The previous exception
-     *
-     * @return NotFoundHttpException
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function createNotFoundException($message = 'Not Found', \Exception $previous = null)
+    protected function createNotFoundException(string $message = 'Not Found', \Throwable $previous = null): NotFoundHttpException
     {
         return new NotFoundHttpException($message, $previous);
     }
@@ -363,16 +301,11 @@ trait ControllerTrait
      *
      *     throw $this->createAccessDeniedException('Unable to access this page!');
      *
-     * @param string          $message  A message
-     * @param \Exception|null $previous The previous exception
-     *
-     * @return AccessDeniedException
-     *
      * @throws \LogicException If the Security component is not available
      *
-     * @final since version 3.4
+     * @final
      */
-    protected function createAccessDeniedException($message = 'Access Denied.', \Exception $previous = null)
+    protected function createAccessDeniedException(string $message = 'Access Denied.', \Throwable $previous = null): AccessDeniedException
     {
         if (!class_exists(AccessDeniedException::class)) {
             throw new \LogicException('You can not use the "createAccessDeniedException" method if the Security component is not available. Try running "composer require symfony/security-bundle".');
@@ -384,15 +317,9 @@ trait ControllerTrait
     /**
      * Creates and returns a Form instance from the type of the form.
      *
-     * @param string $type    The fully qualified class name of the form type
-     * @param mixed  $data    The initial data for the form
-     * @param array  $options Options for the form
-     *
-     * @return FormInterface
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function createForm($type, $data = null, array $options = [])
+    protected function createForm(string $type, $data = null, array $options = []): FormInterface
     {
         return $this->container->get('form.factory')->create($type, $data, $options);
     }
@@ -400,14 +327,9 @@ trait ControllerTrait
     /**
      * Creates and returns a form builder instance.
      *
-     * @param mixed $data    The initial data for the form
-     * @param array $options Options for the form
-     *
-     * @return FormBuilderInterface
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function createFormBuilder($data = null, array $options = [])
+    protected function createFormBuilder($data = null, array $options = []): FormBuilderInterface
     {
         return $this->container->get('form.factory')->createBuilder(FormType::class, $data, $options);
     }
@@ -415,11 +337,11 @@ trait ControllerTrait
     /**
      * Shortcut to return the Doctrine Registry service.
      *
-     * @return ManagerRegistry|LegacyManagerRegistry
+     * @return ManagerRegistry
      *
      * @throws \LogicException If DoctrineBundle is not available
      *
-     * @final since version 3.4
+     * @final
      */
     protected function getDoctrine()
     {
@@ -439,7 +361,7 @@ trait ControllerTrait
      *
      * @see TokenInterface::getUser()
      *
-     * @final since version 3.4
+     * @final
      */
     protected function getUser()
     {
@@ -462,19 +384,57 @@ trait ControllerTrait
     /**
      * Checks the validity of a CSRF token.
      *
-     * @param string $id    The id used when generating the token
-     * @param string $token The actual token sent with the request that should be validated
+     * @param string      $id    The id used when generating the token
+     * @param string|null $token The actual token sent with the request that should be validated
      *
-     * @return bool
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function isCsrfTokenValid($id, $token)
+    protected function isCsrfTokenValid(string $id, ?string $token): bool
     {
         if (!$this->container->has('security.csrf.token_manager')) {
             throw new \LogicException('CSRF protection is not enabled in your application. Enable it with the "csrf_protection" key in "config/packages/framework.yaml".');
         }
 
         return $this->container->get('security.csrf.token_manager')->isTokenValid(new CsrfToken($id, $token));
+    }
+
+    /**
+     * Dispatches a message to the bus.
+     *
+     * @param object|Envelope  $message The message or the message pre-wrapped in an envelope
+     * @param StampInterface[] $stamps
+     *
+     * @final
+     */
+    protected function dispatchMessage($message, array $stamps = []): Envelope
+    {
+        if (!$this->container->has('messenger.default_bus')) {
+            $message = class_exists(Envelope::class) ? 'You need to define the "messenger.default_bus" configuration option.' : 'Try running "composer require symfony/messenger".';
+            throw new \LogicException('The message bus is not enabled in your application. '.$message);
+        }
+
+        return $this->container->get('messenger.default_bus')->dispatch($message, $stamps);
+    }
+
+    /**
+     * Adds a Link HTTP header to the current response.
+     *
+     * @see https://tools.ietf.org/html/rfc5988
+     *
+     * @final
+     */
+    protected function addLink(Request $request, LinkInterface $link)
+    {
+        if (!class_exists(AddLinkHeaderListener::class)) {
+            throw new \LogicException('You can not use the "addLink" method if the WebLink component is not available. Try running "composer require symfony/web-link".');
+        }
+
+        if (null === $linkProvider = $request->attributes->get('_links')) {
+            $request->attributes->set('_links', new GenericLinkProvider([$link]));
+
+            return;
+        }
+
+        $request->attributes->set('_links', $linkProvider->withLink($link));
     }
 }

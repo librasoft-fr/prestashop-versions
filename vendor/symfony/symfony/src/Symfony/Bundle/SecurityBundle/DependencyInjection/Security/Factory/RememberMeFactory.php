@@ -15,6 +15,7 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class RememberMeFactory implements SecurityFactoryInterface
 {
@@ -68,7 +69,12 @@ class RememberMeFactory implements SecurityFactoryInterface
         }
 
         // remember-me options
-        $rememberMeServices->replaceArgument(3, array_intersect_key($config, $this->options));
+        $mergedOptions = array_intersect_key($config, $this->options);
+        if ('auto' === $mergedOptions['secure']) {
+            $mergedOptions['secure'] = null;
+        }
+
+        $rememberMeServices->replaceArgument(3, $mergedOptions);
 
         // attach to remember-me aware listeners
         $userProviders = [];
@@ -144,8 +150,14 @@ class RememberMeFactory implements SecurityFactoryInterface
         ;
 
         foreach ($this->options as $name => $value) {
-            if (\is_bool($value)) {
+            if ('secure' === $name) {
+                $builder->enumNode($name)->values([true, false, 'auto'])->defaultValue('auto' === $value ? null : $value);
+            } elseif ('samesite' === $name) {
+                $builder->enumNode($name)->values([null, Cookie::SAMESITE_LAX, Cookie::SAMESITE_STRICT, Cookie::SAMESITE_NONE])->defaultValue($value);
+            } elseif (\is_bool($value)) {
                 $builder->booleanNode($name)->defaultValue($value);
+            } elseif (\is_int($value)) {
+                $builder->integerNode($name)->defaultValue($value);
             } else {
                 $builder->scalarNode($name)->defaultValue($value);
             }

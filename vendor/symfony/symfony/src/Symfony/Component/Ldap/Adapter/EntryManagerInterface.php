@@ -20,6 +20,11 @@ use Symfony\Component\Ldap\Exception\NotBoundException;
  *
  * @author Charles Sarrazin <charles@sarraz.in>
  * @author Bob van de Vijver <bobvandevijver@hotmail.com>
+ * @author Kevin Schuurmans <kevin.schuurmans@freshheads.com>
+ *
+ * The move() methods must be added to the interface in Symfony 5.0
+ *
+ * @method void move(Entry $entry, string $newParent) Moves an entry on the Ldap server
  */
 interface EntryManagerInterface
 {
@@ -38,6 +43,14 @@ interface EntryManagerInterface
      * @throws LdapException
      */
     public function update(Entry $entry);
+
+    /**
+     * Renames an entry on the Ldap server.
+     *
+     * @param string $newRdn
+     * @param bool   $removeOldRdn
+     */
+    public function rename(Entry $entry, $newRdn, $removeOldRdn = true);
 
     /**
      * Removes an entry from the Ldap server.

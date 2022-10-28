@@ -12,10 +12,10 @@
 namespace Symfony\Bundle\SwiftmailerBundle\EventListener;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Sends emails for the memory spool.
@@ -45,7 +45,7 @@ class EmailSenderListener implements EventSubscriberInterface
 
     public function onTerminate()
     {
-        if (!$this->container->has('mailer') || $this->wasExceptionThrown) {
+        if ((!$this->container->has('mailer') && !$this->container->has('swiftmailer.mailer.default')) || $this->wasExceptionThrown) {
             return;
         }
         $mailers = array_keys($this->container->getParameter('swiftmailer.mailers'));

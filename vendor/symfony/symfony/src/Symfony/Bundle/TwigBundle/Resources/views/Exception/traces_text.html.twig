@@ -21,7 +21,7 @@
                 <pre class="stacktrace">
                 {%- apply escape('html') -%}
                     {{- include('@Twig/Exception/traces.txt.twig', { exception: exception, format: 'html' }, with_context = false) }}
-                {% endapply %}
+                {%- endapply -%}
                 </pre>
                 {% endif %}
             </td>

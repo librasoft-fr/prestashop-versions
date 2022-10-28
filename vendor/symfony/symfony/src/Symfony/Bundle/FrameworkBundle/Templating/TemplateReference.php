@@ -11,16 +11,20 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Templating;
 
+@trigger_error('The '.TemplateReference::class.' class is deprecated since version 4.3 and will be removed in 5.0; use Twig instead.', \E_USER_DEPRECATED);
+
 use Symfony\Component\Templating\TemplateReference as BaseTemplateReference;
 
 /**
  * Internal representation of a template.
  *
  * @author Victor Berchet <victor@suumit.com>
+ *
+ * @deprecated since version 4.3, to be removed in 5.0; use Twig instead.
  */
 class TemplateReference extends BaseTemplateReference
 {
-    public function __construct($bundle = null, $controller = null, $name = null, $format = null, $engine = null)
+    public function __construct(string $bundle = null, string $controller = null, string $name = null, string $format = null, string $engine = null)
     {
         $this->parameters = [
             'bundle' => $bundle,

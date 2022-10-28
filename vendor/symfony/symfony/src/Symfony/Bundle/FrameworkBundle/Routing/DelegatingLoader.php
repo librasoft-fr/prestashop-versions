@@ -12,7 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\Routing;
 
 use Symfony\Bundle\FrameworkBundle\Controller\ControllerNameParser;
-use Symfony\Component\Config\Exception\FileLoaderLoadException;
+use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\DelegatingLoader as BaseDelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 
@@ -23,19 +23,34 @@ use Symfony\Component\Config\Loader\LoaderResolverInterface;
  * to the fully-qualified form (from a:b:c to class::method).
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @final since Symfony 4.4
  */
 class DelegatingLoader extends BaseDelegatingLoader
 {
+    /**
+     * @deprecated since Symfony 4.4
+     */
     protected $parser;
     private $loading = false;
+    private $defaultOptions;
 
     /**
-     * @param ControllerNameParser    $parser   A ControllerNameParser instance
-     * @param LoaderResolverInterface $resolver A LoaderResolverInterface instance
+     * @param LoaderResolverInterface $resolver
+     * @param array                   $defaultOptions
      */
-    public function __construct(ControllerNameParser $parser, LoaderResolverInterface $resolver)
+    public function __construct($resolver, $defaultOptions = [])
     {
-        $this->parser = $parser;
+        if ($resolver instanceof ControllerNameParser) {
+            @trigger_error(sprintf('Passing a "%s" instance as first argument to "%s()" is deprecated since Symfony 4.4, pass a "%s" instance instead.', ControllerNameParser::class, __METHOD__, LoaderResolverInterface::class), \E_USER_DEPRECATED);
+            $this->parser = $resolver;
+            $resolver = $defaultOptions;
+            $defaultOptions = 2 < \func_num_args() ? func_get_arg(2) : [];
+        } elseif (2 < \func_num_args() && func_get_arg(2) instanceof ControllerNameParser) {
+            $this->parser = func_get_arg(2);
+        }
+
+        $this->defaultOptions = $defaultOptions;
 
         parent::__construct($resolver);
     }
@@ -62,7 +77,7 @@ class DelegatingLoader extends BaseDelegatingLoader
             // - this handles the case and prevents the second fatal error
             //   by triggering an exception beforehand.
 
-            throw new FileLoaderLoadException($resource, null, null, null, $type);
+            throw new LoaderLoadException($resource, null, 0, null, $type);
         }
         $this->loading = true;
 
@@ -73,14 +88,27 @@ class DelegatingLoader extends BaseDelegatingLoader
         }
 
         foreach ($collection->all() as $route) {
-            if (!\is_string($controller = $route->getDefault('_controller')) || !$controller) {
+            if ($this->defaultOptions) {
+                $route->setOptions($route->getOptions() + $this->defaultOptions);
+            }
+            if (!\is_string($controller = $route->getDefault('_controller'))) {
                 continue;
             }
 
-            try {
-                $controller = $this->parser->parse($controller);
-            } catch (\InvalidArgumentException $e) {
-                // unable to optimize unknown notation
+            if (str_contains($controller, '::')) {
+                continue;
+            }
+
+            if ($this->parser && 2 === substr_count($controller, ':')) {
+                $deprecatedNotation = $controller;
+
+                try {
+                    $controller = $this->parser->parse($controller, false);
+
+                    @trigger_error(sprintf('Referencing controllers with %s is deprecated since Symfony 4.1, use "%s" instead.', $deprecatedNotation, $controller), \E_USER_DEPRECATED);
+                } catch (\InvalidArgumentException $e) {
+                    // unable to optimize unknown notation
+                }
             }
 
             $route->setDefault('_controller', $controller);

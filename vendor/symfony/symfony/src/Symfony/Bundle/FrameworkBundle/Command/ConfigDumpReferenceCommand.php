@@ -27,7 +27,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Wouter J <waldio.webdesign@gmail.com>
  * @author Grégoire Pineau <lyrixx@lyrixx.info>
  *
- * @final since version 3.4
+ * @final
  */
 class ConfigDumpReferenceCommand extends AbstractConfigCommand
 {
@@ -44,7 +44,7 @@ class ConfigDumpReferenceCommand extends AbstractConfigCommand
                 new InputArgument('path', InputArgument::OPTIONAL, 'The configuration option path'),
                 new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (yaml or xml)', 'yaml'),
             ])
-            ->setDescription('Dumps the default configuration for an extension')
+            ->setDescription('Dump the default configuration for an extension')
             ->setHelp(<<<'EOF'
 The <info>%command.name%</info> command dumps the default configuration for an
 extension/bundle.
@@ -74,7 +74,7 @@ EOF
      *
      * @throws \LogicException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $errorIo = $io->getErrorStyle();
@@ -86,7 +86,7 @@ EOF
                 'For dumping a specific option, add its path as the second argument of this command. (e.g. <comment>config:dump-reference FrameworkBundle profiler.matcher</comment> to dump the <comment>framework.profiler.matcher</comment> configuration)',
             ]);
 
-            return null;
+            return 0;
         }
 
         $extension = $this->findExtension($name);
@@ -130,6 +130,6 @@ EOF
 
         $io->writeln(null === $path ? $dumper->dump($configuration, $extension->getNamespace()) : $dumper->dumpAtPath($configuration, $path));
 
-        return null;
+        return 0;
     }
 }

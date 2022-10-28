@@ -29,7 +29,7 @@ class LanguageDataGenerator extends AbstractDataGenerator
     /**
      * Source: https://iso639-3.sil.org/code_tables/639/data.
      */
-    private static $preferredAlpha2ToAlpha3Mapping = [
+    private const PREFERRED_ALPHA2_TO_ALPHA3_MAPPING = [
         'ak' => 'aka',
         'ar' => 'ara',
         'ay' => 'aym',
@@ -83,6 +83,13 @@ class LanguageDataGenerator extends AbstractDataGenerator
         'za' => 'zha',
         'zh' => 'zho',
     ];
+    private const DENYLIST = [
+        'root' => true, // Absolute root language
+        'mul' => true, // Multiple languages
+        'mis' => true, // Uncoded language
+        'und' => true, // Unknown language
+        'zxx' => true, // No linguistic content
+    ];
 
     /**
      * Collects all available language codes.
@@ -94,7 +101,7 @@ class LanguageDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function scanLocales(LocaleScanner $scanner, $sourceDir)
+    protected function scanLocales(LocaleScanner $scanner, string $sourceDir): array
     {
         return $scanner->scanLocales($sourceDir.'/lang');
     }
@@ -102,7 +109,7 @@ class LanguageDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function compileTemporaryBundles(BundleCompilerInterface $compiler, $sourceDir, $tempDir)
+    protected function compileTemporaryBundles(BundleCompilerInterface $compiler, string $sourceDir, string $tempDir)
     {
         $compiler->compile($sourceDir.'/lang', $tempDir);
         $compiler->compile($sourceDir.'/misc/metadata.txt', $tempDir);
@@ -119,17 +126,26 @@ class LanguageDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForLocale(BundleEntryReaderInterface $reader, $tempDir, $displayLocale)
+    protected function generateDataForLocale(BundleEntryReaderInterface $reader, string $tempDir, string $displayLocale): ?array
     {
         $localeBundle = $reader->read($tempDir, $displayLocale);
 
         // isset() on \ResourceBundle returns true even if the value is null
         if (isset($localeBundle['Languages']) && null !== $localeBundle['Languages']) {
+            $names = [];
+            $localizedNames = [];
+            foreach (self::generateLanguageNames($localeBundle) as $language => $name) {
+                if (!str_contains($language, '_')) {
+                    $this->languageCodes[] = $language;
+                    $names[$language] = $name;
+                } else {
+                    $localizedNames[$language] = $name;
+                }
+            }
             $data = [
-                'Names' => iterator_to_array($localeBundle['Languages']),
+                'Names' => $names,
+                'LocalizedNames' => $localizedNames,
             ];
-
-            $this->languageCodes = array_merge($this->languageCodes, array_keys($data['Names']));
 
             return $data;
         }
@@ -140,14 +156,15 @@ class LanguageDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForRoot(BundleEntryReaderInterface $reader, $tempDir)
+    protected function generateDataForRoot(BundleEntryReaderInterface $reader, string $tempDir): ?array
     {
+        return null;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForMeta(BundleEntryReaderInterface $reader, $tempDir)
+    protected function generateDataForMeta(BundleEntryReaderInterface $reader, string $tempDir): ?array
     {
         $metadataBundle = $reader->read($tempDir, 'metadata');
 
@@ -157,11 +174,35 @@ class LanguageDataGenerator extends AbstractDataGenerator
 
         return [
             'Languages' => $this->languageCodes,
+            'Alpha3Languages' => $this->generateAlpha3Codes($this->languageCodes, $metadataBundle),
             'Alpha2ToAlpha3' => $this->generateAlpha2ToAlpha3Mapping($metadataBundle),
+            'Alpha3ToAlpha2' => $this->generateAlpha3ToAlpha2Mapping($metadataBundle),
         ];
     }
 
-    private function generateAlpha2ToAlpha3Mapping(ArrayAccessibleResourceBundle $metadataBundle)
+    private static function generateLanguageNames(ArrayAccessibleResourceBundle $localeBundle): array
+    {
+        return array_diff_key(iterator_to_array($localeBundle['Languages']), self::DENYLIST);
+    }
+
+    private function generateAlpha3Codes(array $languageCodes, ArrayAccessibleResourceBundle $metadataBundle): array
+    {
+        $alpha3Codes = array_flip(array_filter($languageCodes, static function (string $language): bool {
+            return 3 === \strlen($language);
+        }));
+
+        foreach ($metadataBundle['alias']['language'] as $alias => $data) {
+            if (3 === \strlen($alias) && 'overlong' === $data['reason']) {
+                $alpha3Codes[$alias] = true;
+            }
+        }
+
+        ksort($alpha3Codes);
+
+        return array_keys($alpha3Codes);
+    }
+
+    private function generateAlpha2ToAlpha3Mapping(ArrayAccessibleResourceBundle $metadataBundle): array
     {
         $aliases = iterator_to_array($metadataBundle['alias']['language']);
         $alpha2ToAlpha3 = [];
@@ -169,13 +210,13 @@ class LanguageDataGenerator extends AbstractDataGenerator
         foreach ($aliases as $alias => $data) {
             $language = $data['replacement'];
             if (2 === \strlen($language) && 3 === \strlen($alias) && 'overlong' === $data['reason']) {
-                if (isset(self::$preferredAlpha2ToAlpha3Mapping[$language])) {
+                if (isset(self::PREFERRED_ALPHA2_TO_ALPHA3_MAPPING[$language])) {
                     // Validate to prevent typos
-                    if (!isset($aliases[self::$preferredAlpha2ToAlpha3Mapping[$language]])) {
-                        throw new RuntimeException('The statically set three-letter mapping '.self::$preferredAlpha2ToAlpha3Mapping[$language].' for the language code '.$language.' seems to be invalid. Typo?');
+                    if (!isset($aliases[self::PREFERRED_ALPHA2_TO_ALPHA3_MAPPING[$language]])) {
+                        throw new RuntimeException('The statically set three-letter mapping '.self::PREFERRED_ALPHA2_TO_ALPHA3_MAPPING[$language].' for the language code '.$language.' seems to be invalid. Typo?');
                     }
 
-                    $alpha3 = self::$preferredAlpha2ToAlpha3Mapping[$language];
+                    $alpha3 = self::PREFERRED_ALPHA2_TO_ALPHA3_MAPPING[$language];
                     $alpha2 = $aliases[$alpha3]['replacement'];
 
                     if ($language !== $alpha2) {
@@ -184,7 +225,7 @@ class LanguageDataGenerator extends AbstractDataGenerator
 
                     $alpha2ToAlpha3[$language] = $alpha3;
                 } elseif (isset($alpha2ToAlpha3[$language])) {
-                    throw new RuntimeException('Multiple three-letter mappings exist for the language code '.$language.'. Please add one of them to the property $preferredAlpha2ToAlpha3Mapping.');
+                    throw new RuntimeException('Multiple three-letter mappings exist for the language code '.$language.'. Please add one of them to the const PREFERRED_ALPHA2_TO_ALPHA3_MAPPING.');
                 } else {
                     $alpha2ToAlpha3[$language] = $alias;
                 }
@@ -194,5 +235,21 @@ class LanguageDataGenerator extends AbstractDataGenerator
         asort($alpha2ToAlpha3);
 
         return $alpha2ToAlpha3;
+    }
+
+    private function generateAlpha3ToAlpha2Mapping(ArrayAccessibleResourceBundle $metadataBundle): array
+    {
+        $alpha3ToAlpha2 = [];
+
+        foreach ($metadataBundle['alias']['language'] as $alias => $data) {
+            $language = $data['replacement'];
+            if (2 === \strlen($language) && 3 === \strlen($alias) && 'overlong' === $data['reason']) {
+                $alpha3ToAlpha2[$alias] = $language;
+            }
+        }
+
+        asort($alpha3ToAlpha2);
+
+        return $alpha3ToAlpha2;
     }
 }

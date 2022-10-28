@@ -29,7 +29,7 @@ class GraphvizDumper implements DumperInterface
     // All values should be strings
     protected static $defaultOptions = [
         'graph' => ['ratio' => 'compress', 'rankdir' => 'LR'],
-        'node' => ['fontsize' => '9', 'fontname' => 'Arial', 'color' => '#333333', 'fillcolor' => 'lightblue', 'fixedsize' => '1', 'width' => '1'],
+        'node' => ['fontsize' => '9', 'fontname' => 'Arial', 'color' => '#333333', 'fillcolor' => 'lightblue', 'fixedsize' => 'false', 'width' => '1'],
         'edge' => ['fontsize' => '9', 'fontname' => 'Arial', 'color' => '#333333', 'arrowhead' => 'normal', 'arrowsize' => '0.5'],
     ];
 
@@ -62,18 +62,29 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function findPlaces(Definition $definition, Marking $marking = null)
+    protected function findPlaces(Definition $definition, Marking $marking = null): array
     {
+        $workflowMetadata = $definition->getMetadataStore();
+
         $places = [];
 
         foreach ($definition->getPlaces() as $place) {
             $attributes = [];
-            if ($place === $definition->getInitialPlace()) {
+            if (\in_array($place, $definition->getInitialPlaces(), true)) {
                 $attributes['style'] = 'filled';
             }
             if ($marking && $marking->has($place)) {
                 $attributes['color'] = '#FF0000';
                 $attributes['shape'] = 'doublecircle';
+            }
+            $backgroundColor = $workflowMetadata->getMetadata('bg_color', $place);
+            if (null !== $backgroundColor) {
+                $attributes['style'] = 'filled';
+                $attributes['fillcolor'] = $backgroundColor;
+            }
+            $label = $workflowMetadata->getMetadata('label', $place);
+            if (null !== $label) {
+                $attributes['name'] = $label;
             }
             $places[$place] = [
                 'attributes' => $attributes,
@@ -86,14 +97,25 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function findTransitions(Definition $definition)
+    protected function findTransitions(Definition $definition): array
     {
+        $workflowMetadata = $definition->getMetadataStore();
+
         $transitions = [];
 
         foreach ($definition->getTransitions() as $transition) {
+            $attributes = ['shape' => 'box', 'regular' => true];
+
+            $backgroundColor = $workflowMetadata->getMetadata('bg_color', $transition);
+            if (null !== $backgroundColor) {
+                $attributes['style'] = 'filled';
+                $attributes['fillcolor'] = $backgroundColor;
+            }
+            $name = $workflowMetadata->getMetadata('label', $transition) ?? $transition->getName();
+
             $transitions[] = [
-                'attributes' => ['shape' => 'box', 'regular' => true],
-                'name' => $transition->getName(),
+                'attributes' => $attributes,
+                'name' => $name,
             ];
         }
 
@@ -103,12 +125,19 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function addPlaces(array $places)
+    protected function addPlaces(array $places): string
     {
         $code = '';
 
         foreach ($places as $id => $place) {
-            $code .= sprintf("  place_%s [label=\"%s\", shape=circle%s];\n", $this->dotize($id), $id, $this->addAttributes($place['attributes']));
+            if (isset($place['attributes']['name'])) {
+                $placeName = $place['attributes']['name'];
+                unset($place['attributes']['name']);
+            } else {
+                $placeName = $id;
+            }
+
+            $code .= sprintf("  place_%s [label=\"%s\", shape=circle%s];\n", $this->dotize($id), $this->escape($placeName), $this->addAttributes($place['attributes']));
         }
 
         return $code;
@@ -117,12 +146,12 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function addTransitions(array $transitions)
+    protected function addTransitions(array $transitions): string
     {
         $code = '';
 
         foreach ($transitions as $i => $place) {
-            $code .= sprintf("  transition_%d [label=\"%s\", shape=box%s];\n", $this->dotize($i), $place['name'], $this->addAttributes($place['attributes']));
+            $code .= sprintf("  transition_%s [label=\"%s\",%s];\n", $this->dotize($i), $this->escape($place['name']), $this->addAttributes($place['attributes']));
         }
 
         return $code;
@@ -131,22 +160,26 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function findEdges(Definition $definition)
+    protected function findEdges(Definition $definition): array
     {
+        $workflowMetadata = $definition->getMetadataStore();
+
         $dotEdges = [];
 
         foreach ($definition->getTransitions() as $i => $transition) {
+            $transitionName = $workflowMetadata->getMetadata('label', $transition) ?? $transition->getName();
+
             foreach ($transition->getFroms() as $from) {
                 $dotEdges[] = [
                     'from' => $from,
-                    'to' => $transition->getName(),
+                    'to' => $transitionName,
                     'direction' => 'from',
                     'transition_number' => $i,
                 ];
             }
             foreach ($transition->getTos() as $to) {
                 $dotEdges[] = [
-                    'from' => $transition->getName(),
+                    'from' => $transitionName,
                     'to' => $to,
                     'direction' => 'to',
                     'transition_number' => $i,
@@ -160,18 +193,18 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function addEdges(array $edges)
+    protected function addEdges(array $edges): string
     {
         $code = '';
 
         foreach ($edges as $edge) {
             if ('from' === $edge['direction']) {
-                $code .= sprintf("  place_%s -> transition_%d [style=\"solid\"];\n",
+                $code .= sprintf("  place_%s -> transition_%s [style=\"solid\"];\n",
                     $this->dotize($edge['from']),
                     $this->dotize($edge['transition_number'])
                 );
             } else {
-                $code .= sprintf("  transition_%d -> place_%s [style=\"solid\"];\n",
+                $code .= sprintf("  transition_%s -> place_%s [style=\"solid\"];\n",
                     $this->dotize($edge['transition_number']),
                     $this->dotize($edge['to'])
                 );
@@ -184,7 +217,7 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function startDot(array $options)
+    protected function startDot(array $options): string
     {
         return sprintf("digraph workflow {\n  %s\n  node [%s];\n  edge [%s];\n\n",
             $this->addOptions($options['graph']),
@@ -196,7 +229,7 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function endDot()
+    protected function endDot(): string
     {
         return "}\n";
     }
@@ -204,23 +237,31 @@ class GraphvizDumper implements DumperInterface
     /**
      * @internal
      */
-    protected function dotize($id)
+    protected function dotize(string $id): string
     {
-        return strtolower(preg_replace('/[^\w]/i', '_', $id));
+        return hash('sha1', $id);
     }
 
-    private function addAttributes(array $attributes)
+    /**
+     * @internal
+     */
+    protected function escape($value): string
+    {
+        return \is_bool($value) ? ($value ? '1' : '0') : addslashes($value);
+    }
+
+    protected function addAttributes(array $attributes): string
     {
         $code = [];
 
         foreach ($attributes as $k => $v) {
-            $code[] = sprintf('%s="%s"', $k, $v);
+            $code[] = sprintf('%s="%s"', $k, $this->escape($v));
         }
 
-        return $code ? ', '.implode(', ', $code) : '';
+        return $code ? ' '.implode(' ', $code) : '';
     }
 
-    private function addOptions(array $options)
+    private function addOptions(array $options): string
     {
         $code = [];
 

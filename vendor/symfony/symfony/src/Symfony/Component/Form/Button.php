@@ -22,7 +22,7 @@ use Symfony\Component\Form\Exception\BadMethodCallException;
 class Button implements \IteratorAggregate, FormInterface
 {
     /**
-     * @var FormInterface
+     * @var FormInterface|null
      */
     private $parent;
 
@@ -51,6 +51,7 @@ class Button implements \IteratorAggregate, FormInterface
      *
      * @return bool Always returns false
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return false;
@@ -63,8 +64,11 @@ class Button implements \IteratorAggregate, FormInterface
      *
      * @param mixed $offset
      *
+     * @return mixed
+     *
      * @throws BadMethodCallException
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         throw new BadMethodCallException('Buttons cannot have children.');
@@ -78,8 +82,11 @@ class Button implements \IteratorAggregate, FormInterface
      * @param mixed $offset
      * @param mixed $value
      *
+     * @return void
+     *
      * @throws BadMethodCallException
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new BadMethodCallException('Buttons cannot have children.');
@@ -92,8 +99,11 @@ class Button implements \IteratorAggregate, FormInterface
      *
      * @param mixed $offset
      *
+     * @return void
+     *
      * @throws BadMethodCallException
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new BadMethodCallException('Buttons cannot have children.');
@@ -371,8 +381,8 @@ class Button implements \IteratorAggregate, FormInterface
     /**
      * Submits data to the button.
      *
-     * @param string|null $submittedData Not used
-     * @param bool        $clearMissing  Not used
+     * @param array|string|null $submittedData Not used
+     * @param bool              $clearMissing  Not used
      *
      * @return $this
      *
@@ -430,6 +440,7 @@ class Button implements \IteratorAggregate, FormInterface
      *
      * @return int Always returns 0
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return 0;
@@ -440,6 +451,7 @@ class Button implements \IteratorAggregate, FormInterface
      *
      * @return \EmptyIterator Always returns an empty iterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \EmptyIterator();

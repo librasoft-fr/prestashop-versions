@@ -20,9 +20,9 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
  */
 interface VoterInterface
 {
-    const ACCESS_GRANTED = 1;
-    const ACCESS_ABSTAIN = 0;
-    const ACCESS_DENIED = -1;
+    public const ACCESS_GRANTED = 1;
+    public const ACCESS_ABSTAIN = 0;
+    public const ACCESS_DENIED = -1;
 
     /**
      * Returns the vote for the given parameters.
@@ -30,9 +30,8 @@ interface VoterInterface
      * This method must return one of the following constants:
      * ACCESS_GRANTED, ACCESS_DENIED, or ACCESS_ABSTAIN.
      *
-     * @param TokenInterface $token      A TokenInterface instance
-     * @param mixed          $subject    The subject to secure
-     * @param array          $attributes An array of attributes associated with the method being invoked
+     * @param mixed $subject    The subject to secure
+     * @param array $attributes An array of attributes associated with the method being invoked
      *
      * @return int either ACCESS_GRANTED, ACCESS_ABSTAIN, or ACCESS_DENIED
      */

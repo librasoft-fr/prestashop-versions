@@ -11,12 +11,12 @@
 
 namespace Symfony\Bridge\Doctrine\Validator\Constraints;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 /**
  * Unique Entity Validator checks if one or a set of fields contain unique values.
@@ -27,10 +27,7 @@ class UniqueEntityValidator extends ConstraintValidator
 {
     private $registry;
 
-    /**
-     * @param ManagerRegistry|LegacyManagerRegistry $registry
-     */
-    public function __construct($registry)
+    public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
     }
@@ -63,6 +60,10 @@ class UniqueEntityValidator extends ConstraintValidator
 
         if (null === $entity) {
             return;
+        }
+
+        if (!\is_object($entity)) {
+            throw new UnexpectedValueException($entity, 'object');
         }
 
         if ($constraint->em) {
@@ -151,8 +152,7 @@ class UniqueEntityValidator extends ConstraintValidator
             if ($result instanceof \Countable && 1 < \count($result)) {
                 $result = [$result->current(), $result->current()];
             } else {
-                $result = $result->current();
-                $result = null === $result ? [] : [$result];
+                $result = $result->valid() && null !== $result->current() ? [$result->current()] : [];
             }
         } elseif (\is_array($result)) {
             reset($result);
@@ -168,8 +168,8 @@ class UniqueEntityValidator extends ConstraintValidator
             return;
         }
 
-        $errorPath = null !== $constraint->errorPath ? $constraint->errorPath : $fields[0];
-        $invalidValue = isset($criteria[$errorPath]) ? $criteria[$errorPath] : $criteria[$fields[0]];
+        $errorPath = $constraint->errorPath ?? $fields[0];
+        $invalidValue = $criteria[$errorPath] ?? $criteria[$fields[0]];
 
         $this->context->buildViolation($constraint->message)
             ->atPath($errorPath)

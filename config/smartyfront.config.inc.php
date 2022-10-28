@@ -25,9 +25,11 @@
  */
 global $smarty;
 
+use PrestaShop\TranslationToolsBundle\Translation\Helper\DomainHelper;
+
 $template_dirs = array(_PS_THEME_DIR_.'templates');
 $plugin_dirs = array(_PS_THEME_DIR_.'plugins');
-if (_PS_PARENT_THEME_DIR_) {
+if (_PS_PARENT_THEME_DIR_ !== '') {
     $template_dirs[] = _PS_PARENT_THEME_DIR_.'templates';
     $plugin_dirs[] = _PS_PARENT_THEME_DIR_.'plugins';
 }
@@ -36,14 +38,14 @@ $smarty->setTemplateDir($template_dirs);
 $smarty->addPluginsDir($plugin_dirs);
 
 $module_resources = array('theme' => _PS_THEME_DIR_.'modules/');
-if (_PS_PARENT_THEME_DIR_) {
+if (_PS_PARENT_THEME_DIR_ !== '') {
     $module_resources['parent'] = _PS_PARENT_THEME_DIR_.'modules/';
 }
 $module_resources['modules'] = _PS_MODULE_DIR_;
 $smarty->registerResource('module', new SmartyResourceModule($module_resources));
 
 $parent_resources = array();
-if (_PS_PARENT_THEME_DIR_) {
+if (_PS_PARENT_THEME_DIR_ !== '') {
     $parent_resources['parent'] = _PS_PARENT_THEME_DIR_.'templates/';
 }
 $smarty->registerResource('parent', new SmartyResourceParent($parent_resources));
@@ -171,6 +173,14 @@ function smartyTranslate($params, $smarty)
     if (!isset($params['sprintf'])) {
         $params['sprintf'] = array();
     }
+
+    // fix inheritance template filename in case of includes from different cross sources between theme, modules, ...
+    $filename = $smarty->template_resource;
+    if (!isset($smarty->inheritance->sourceStack[0]) || $filename === $smarty->inheritance->sourceStack[0]->resource) {
+        $filename = $smarty->source->name;
+    }
+    $basename = basename($filename, '.tpl');
+
     if (!isset($params['d'])) {
         $params['d'] = null;
     }
@@ -214,14 +224,6 @@ function smartyTranslate($params, $smarty)
     }
 
     $string = str_replace('\'', '\\\'', $params['s']);
-
-    // fix inheritance template filename in case of includes from different cross sources between theme, modules, ...
-    $filename = $smarty->template_resource;
-    if (!isset($smarty->inheritance->sourceStack[0]) || $filename === $smarty->inheritance->sourceStack[0]->resource) {
-        $filename = $smarty->source->name;
-    }
-
-    $basename = basename($filename, '.tpl');
     $key = $basename.'_'.md5($string);
 
     if (isset($smarty->source) && (strpos($smarty->source->filepath, DIRECTORY_SEPARATOR.'override'.DIRECTORY_SEPARATOR) !== false)) {

@@ -12,6 +12,8 @@
 namespace Symfony\Component\Ldap;
 
 use Symfony\Component\Ldap\Adapter\AdapterInterface;
+use Symfony\Component\Ldap\Adapter\EntryManagerInterface;
+use Symfony\Component\Ldap\Adapter\QueryInterface;
 use Symfony\Component\Ldap\Exception\DriverNotFoundException;
 
 /**
@@ -21,7 +23,7 @@ final class Ldap implements LdapInterface
 {
     private $adapter;
 
-    private static $adapterMap = [
+    private const ADAPTER_MAP = [
         'ext_ldap' => 'Symfony\Component\Ldap\Adapter\ExtLdap\Adapter',
     ];
 
@@ -41,7 +43,7 @@ final class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function query($dn, $query, array $options = [])
+    public function query($dn, $query, array $options = []): QueryInterface
     {
         return $this->adapter->createQuery($dn, $query, $options);
     }
@@ -49,7 +51,7 @@ final class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function getEntryManager()
+    public function getEntryManager(): EntryManagerInterface
     {
         return $this->adapter->getEntryManager();
     }
@@ -57,7 +59,7 @@ final class Ldap implements LdapInterface
     /**
      * {@inheritdoc}
      */
-    public function escape($subject, $ignore = '', $flags = 0)
+    public function escape($subject, $ignore = '', $flags = 0): string
     {
         return $this->adapter->escape($subject, $ignore, $flags);
     }
@@ -70,13 +72,13 @@ final class Ldap implements LdapInterface
      *
      * @return static
      */
-    public static function create($adapter, array $config = [])
+    public static function create($adapter, array $config = []): self
     {
-        if (!isset(self::$adapterMap[$adapter])) {
-            throw new DriverNotFoundException(sprintf('Adapter "%s" not found. You should use one of: "%s".', $adapter, implode('", "', self::$adapterMap)));
+        if (!isset(self::ADAPTER_MAP[$adapter])) {
+            throw new DriverNotFoundException(sprintf('Adapter "%s" not found. You should use one of: "%s".', $adapter, implode('", "', self::ADAPTER_MAP)));
         }
 
-        $class = self::$adapterMap[$adapter];
+        $class = self::ADAPTER_MAP[$adapter];
 
         return new self(new $class($config));
     }

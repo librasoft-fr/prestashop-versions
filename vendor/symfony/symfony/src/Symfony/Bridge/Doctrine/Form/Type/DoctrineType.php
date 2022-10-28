@@ -11,8 +11,7 @@
 
 namespace Symfony\Bridge\Doctrine\Form\Type;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
-use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\DoctrineChoiceLoader;
@@ -23,11 +22,13 @@ use Symfony\Bridge\Doctrine\Form\EventListener\MergeDoctrineCollectionListener;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\ChoiceList\Factory\CachingFactoryDecorator;
 use Symfony\Component\Form\Exception\RuntimeException;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Service\ResetInterface;
 
-abstract class DoctrineType extends AbstractType
+abstract class DoctrineType extends AbstractType implements ResetInterface
 {
     /**
      * @var ManagerRegistry
@@ -51,12 +52,10 @@ abstract class DoctrineType extends AbstractType
      *
      * @param object $choice The object
      *
-     * @return string The string representation of the object
-     *
      * @internal This method is public to be usable as callback. It should not
      *           be used in user code.
      */
-    public static function createChoiceLabel($choice)
+    public static function createChoiceLabel($choice): string
     {
         return (string) $choice;
     }
@@ -73,12 +72,10 @@ abstract class DoctrineType extends AbstractType
      * @param string     $value  The choice value. Corresponds to the object's
      *                           ID here.
      *
-     * @return string The field name
-     *
      * @internal This method is public to be usable as callback. It should not
      *           be used in user code.
      */
-    public static function createChoiceName($choice, $key, $value)
+    public static function createChoiceName($choice, $key, $value): string
     {
         return str_replace('-', '_', (string) $value);
     }
@@ -88,30 +85,28 @@ abstract class DoctrineType extends AbstractType
      * For instance in ORM two query builders with an equal SQL string and
      * equal parameters are considered to be equal.
      *
-     * @param object $queryBuilder
+     * @param object $queryBuilder A query builder, type declaration is not present here as there
+     *                             is no common base class for the different implementations
      *
-     * @return array|false Array with important QueryBuilder parts or false if
-     *                     they can't be determined
+     * @return array|null Array with important QueryBuilder parts or null if
+     *                    they can't be determined
      *
      * @internal This method is public to be usable as callback. It should not
      *           be used in user code.
      */
-    public function getQueryBuilderPartsForCachingHash($queryBuilder)
+    public function getQueryBuilderPartsForCachingHash($queryBuilder): ?array
     {
-        return false;
+        return null;
     }
 
-    /**
-     * @param ManagerRegistry|LegacyManagerRegistry $registry
-     */
-    public function __construct($registry)
+    public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if ($options['multiple']) {
+        if ($options['multiple'] && interface_exists(Collection::class)) {
             $builder
                 ->addEventSubscriber(new MergeDoctrineCollectionListener())
                 ->addViewTransformer(new CollectionToArrayTransformer(), true)
@@ -130,7 +125,7 @@ abstract class DoctrineType extends AbstractType
                 // If there is no QueryBuilder we can safely cache DoctrineChoiceLoader,
                 // also if concrete Type can return important QueryBuilder parts to generate
                 // hash key we go for it as well
-                if (!$options['query_builder'] || false !== ($qbParts = $this->getQueryBuilderPartsForCachingHash($options['query_builder']))) {
+                if (!$options['query_builder'] || null !== $qbParts = $this->getQueryBuilderPartsForCachingHash($options['query_builder'])) {
                     $hash = CachingFactoryDecorator::generateHash([
                         $options['em'],
                         $options['class'],
@@ -153,7 +148,8 @@ abstract class DoctrineType extends AbstractType
                     $options['em'],
                     $options['class'],
                     $options['id_reader'],
-                    $entityLoader
+                    $entityLoader,
+                    false
                 );
 
                 if (null !== $hash) {
@@ -167,13 +163,10 @@ abstract class DoctrineType extends AbstractType
         };
 
         $choiceName = function (Options $options) {
-            /** @var IdReader $idReader */
-            $idReader = $options['id_reader'];
-
             // If the object has a single-column, numeric ID, use that ID as
             // field name. We can only use numeric IDs as names, as we cannot
             // guarantee that a non-numeric ID contains a valid form name
-            if ($idReader->isIntId()) {
+            if ($options['id_reader'] instanceof IdReader && $options['id_reader']->isIntId()) {
                 return [__CLASS__, 'createChoiceName'];
             }
 
@@ -186,12 +179,9 @@ abstract class DoctrineType extends AbstractType
         // are indexed by an incrementing integer.
         // Use the ID/incrementing integer as choice value.
         $choiceValue = function (Options $options) {
-            /** @var IdReader $idReader */
-            $idReader = $options['id_reader'];
-
             // If the entity has a single-column ID, use that ID as value
-            if ($idReader->isSingleId()) {
-                return [$idReader, 'getIdValue'];
+            if ($options['id_reader'] instanceof IdReader && $options['id_reader']->isSingleId()) {
+                return [$options['id_reader'], 'getIdValue'];
             }
 
             // Otherwise, an incrementing integer is used as value automatically
@@ -200,7 +190,7 @@ abstract class DoctrineType extends AbstractType
 
         $emNormalizer = function (Options $options, $em) {
             if (null !== $em) {
-                if ($em instanceof ObjectManager || $em instanceof LegacyObjectManager) {
+                if ($em instanceof ObjectManager) {
                     return $em;
                 }
 
@@ -220,7 +210,7 @@ abstract class DoctrineType extends AbstractType
         // for equal query builders
         $queryBuilderNormalizer = function (Options $options, $queryBuilder) {
             if (\is_callable($queryBuilder)) {
-                $queryBuilder = \call_user_func($queryBuilder, $options['em']->getRepository($options['class']));
+                $queryBuilder = $queryBuilder($options['em']->getRepository($options['class']));
             }
 
             return $queryBuilder;
@@ -245,7 +235,11 @@ abstract class DoctrineType extends AbstractType
                 $this->idReaders[$hash] = new IdReader($options['em'], $classMetadata);
             }
 
-            return $this->idReaders[$hash];
+            if ($this->idReaders[$hash]->isSingleId()) {
+                return $this->idReaders[$hash];
+            }
+
+            return null;
         };
 
         $resolver->setDefaults([
@@ -266,7 +260,7 @@ abstract class DoctrineType extends AbstractType
         $resolver->setNormalizer('query_builder', $queryBuilderNormalizer);
         $resolver->setNormalizer('id_reader', $idReaderNormalizer);
 
-        $resolver->setAllowedTypes('em', ['null', 'string', ObjectManager::class, LegacyObjectManager::class]);
+        $resolver->setAllowedTypes('em', ['null', 'string', ObjectManager::class]);
     }
 
     /**
@@ -277,15 +271,18 @@ abstract class DoctrineType extends AbstractType
      *
      * @return EntityLoaderInterface
      */
-    abstract public function getLoader(LegacyObjectManager $manager, $queryBuilder, $class);
+    abstract public function getLoader(ObjectManager $manager, $queryBuilder, $class);
 
     public function getParent()
     {
-        return 'Symfony\Component\Form\Extension\Core\Type\ChoiceType';
+        return ChoiceType::class;
     }
 
     public function reset()
     {
+        $this->idReaders = [];
         $this->choiceLoaders = [];
     }
 }
+
+interface_exists(ObjectManager::class);

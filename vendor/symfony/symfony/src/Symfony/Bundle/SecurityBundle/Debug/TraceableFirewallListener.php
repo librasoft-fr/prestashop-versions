@@ -12,7 +12,10 @@
 namespace Symfony\Bundle\SecurityBundle\Debug;
 
 use Symfony\Bundle\SecurityBundle\EventListener\FirewallListener;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Bundle\SecurityBundle\Security\FirewallContext;
+use Symfony\Bundle\SecurityBundle\Security\LazyFirewallContext;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\Security\Http\Firewall\AbstractListener;
 
 /**
  * Firewall collecting called listeners.
@@ -21,23 +24,56 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
  */
 final class TraceableFirewallListener extends FirewallListener
 {
-    private $wrappedListeners;
+    private $wrappedListeners = [];
 
     public function getWrappedListeners()
     {
         return $this->wrappedListeners;
     }
 
-    protected function handleRequest(GetResponseEvent $event, $listeners)
+    protected function callListeners(RequestEvent $event, iterable $listeners)
     {
+        $wrappedListeners = [];
+        $wrappedLazyListeners = [];
+
         foreach ($listeners as $listener) {
-            $wrappedListener = new WrappedListener($listener);
-            $wrappedListener->handle($event);
-            $this->wrappedListeners[] = $wrappedListener->getInfo();
+            if ($listener instanceof LazyFirewallContext) {
+                \Closure::bind(function () use (&$wrappedLazyListeners, &$wrappedListeners) {
+                    $listeners = [];
+                    foreach ($this->listeners as $listener) {
+                        if ($listener instanceof AbstractListener) {
+                            $listener = new WrappedLazyListener($listener);
+                            $listeners[] = $listener;
+                            $wrappedLazyListeners[] = $listener;
+                        } else {
+                            $listeners[] = function (RequestEvent $event) use ($listener, &$wrappedListeners) {
+                                $wrappedListener = new WrappedListener($listener);
+                                $wrappedListener($event);
+                                $wrappedListeners[] = $wrappedListener->getInfo();
+                            };
+                        }
+                    }
+                    $this->listeners = $listeners;
+                }, $listener, FirewallContext::class)();
+
+                $listener($event);
+            } else {
+                $wrappedListener = $listener instanceof AbstractListener ? new WrappedLazyListener($listener) : new WrappedListener($listener);
+                $wrappedListener($event);
+                $wrappedListeners[] = $wrappedListener->getInfo();
+            }
 
             if ($event->hasResponse()) {
                 break;
             }
         }
+
+        if ($wrappedLazyListeners) {
+            foreach ($wrappedLazyListeners as $lazyListener) {
+                $this->wrappedListeners[] = $lazyListener->getInfo();
+            }
+        }
+
+        $this->wrappedListeners = array_merge($this->wrappedListeners, $wrappedListeners);
     }
 }

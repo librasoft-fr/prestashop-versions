@@ -49,7 +49,7 @@ class PersistentTokenBasedRememberMeServices extends AbstractRememberMeServices
         if (null !== ($cookie = $request->cookies->get($this->options['name']))
             && 2 === \count($parts = $this->decodeCookie($cookie))
         ) {
-            list($series) = $parts;
+            [$series] = $parts;
             $this->tokenProvider->deleteTokenBySeries($series);
         }
     }
@@ -63,7 +63,7 @@ class PersistentTokenBasedRememberMeServices extends AbstractRememberMeServices
             throw new AuthenticationException('The cookie is invalid.');
         }
 
-        list($series, $tokenValue) = $cookieParts;
+        [$series, $tokenValue] = $cookieParts;
         $persistentToken = $this->tokenProvider->loadTokenBySeries($series);
 
         if (!hash_equals($persistentToken->getTokenValue(), $tokenValue)) {
@@ -83,7 +83,7 @@ class PersistentTokenBasedRememberMeServices extends AbstractRememberMeServices
                 time() + $this->options['lifetime'],
                 $this->options['path'],
                 $this->options['domain'],
-                $this->options['secure'],
+                $this->options['secure'] ?? $request->isSecure(),
                 $this->options['httponly'],
                 false,
                 $this->options['samesite']
@@ -118,7 +118,7 @@ class PersistentTokenBasedRememberMeServices extends AbstractRememberMeServices
                 time() + $this->options['lifetime'],
                 $this->options['path'],
                 $this->options['domain'],
-                $this->options['secure'],
+                $this->options['secure'] ?? $request->isSecure(),
                 $this->options['httponly'],
                 false,
                 $this->options['samesite']

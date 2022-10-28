@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +23,7 @@ use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\Reader\TranslationReaderInterface;
 use Symfony\Component\Translation\Writer\TranslationWriterInterface;
 
@@ -31,10 +33,14 @@ use Symfony\Component\Translation\Writer\TranslationWriterInterface;
  *
  * @author Michel Salib <michelsalib@hotmail.com>
  *
- * @final since version 3.4
+ * @final
  */
-class TranslationUpdateCommand extends ContainerAwareCommand
+class TranslationUpdateCommand extends Command
 {
+    private const ASC = 'asc';
+    private const DESC = 'desc';
+    private const SORT_ORDERS = [self::ASC, self::DESC];
+
     protected static $defaultName = 'translation:update';
 
     private $writer;
@@ -43,25 +49,11 @@ class TranslationUpdateCommand extends ContainerAwareCommand
     private $defaultLocale;
     private $defaultTransPath;
     private $defaultViewsPath;
+    private $transPaths;
+    private $viewsPaths;
 
-    /**
-     * @param TranslationWriterInterface $writer
-     * @param TranslationReaderInterface $reader
-     * @param ExtractorInterface         $extractor
-     * @param string                     $defaultLocale
-     * @param string                     $defaultTransPath
-     * @param string                     $defaultViewsPath
-     */
-    public function __construct($writer = null, TranslationReaderInterface $reader = null, ExtractorInterface $extractor = null, $defaultLocale = null, $defaultTransPath = null, $defaultViewsPath = null)
+    public function __construct(TranslationWriterInterface $writer, TranslationReaderInterface $reader, ExtractorInterface $extractor, string $defaultLocale, string $defaultTransPath = null, string $defaultViewsPath = null, array $transPaths = [], array $viewsPaths = [])
     {
-        if (!$writer instanceof TranslationWriterInterface) {
-            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, TranslationWriterInterface::class), \E_USER_DEPRECATED);
-
-            parent::__construct($writer);
-
-            return;
-        }
-
         parent::__construct();
 
         $this->writer = $writer;
@@ -70,6 +62,8 @@ class TranslationUpdateCommand extends ContainerAwareCommand
         $this->defaultLocale = $defaultLocale;
         $this->defaultTransPath = $defaultTransPath;
         $this->defaultViewsPath = $defaultViewsPath;
+        $this->transPaths = $transPaths;
+        $this->viewsPaths = $viewsPaths;
     }
 
     /**
@@ -82,29 +76,38 @@ class TranslationUpdateCommand extends ContainerAwareCommand
                 new InputArgument('locale', InputArgument::REQUIRED, 'The locale'),
                 new InputArgument('bundle', InputArgument::OPTIONAL, 'The bundle name or directory where to load the messages'),
                 new InputOption('prefix', null, InputOption::VALUE_OPTIONAL, 'Override the default prefix', '__'),
-                new InputOption('no-prefix', null, InputOption::VALUE_NONE, '[DEPRECATED] If set, no prefix is added to the translations'),
-                new InputOption('output-format', null, InputOption::VALUE_OPTIONAL, 'Override the default output format', 'yaml'),
+                new InputOption('output-format', null, InputOption::VALUE_OPTIONAL, 'Override the default output format', 'xlf'),
                 new InputOption('dump-messages', null, InputOption::VALUE_NONE, 'Should the messages be dumped in the console'),
                 new InputOption('force', null, InputOption::VALUE_NONE, 'Should the update be done'),
                 new InputOption('no-backup', null, InputOption::VALUE_NONE, 'Should backup be disabled'),
                 new InputOption('clean', null, InputOption::VALUE_NONE, 'Should clean not found messages'),
                 new InputOption('domain', null, InputOption::VALUE_OPTIONAL, 'Specify the domain to update'),
+                new InputOption('xliff-version', null, InputOption::VALUE_OPTIONAL, 'Override the default xliff version', '1.2'),
+                new InputOption('sort', null, InputOption::VALUE_OPTIONAL, 'Return list of messages sorted alphabetically', 'asc'),
             ])
-            ->setDescription('Updates the translation file')
+            ->setDescription('Update the translation file')
             ->setHelp(<<<'EOF'
 The <info>%command.name%</info> command extracts translation strings from templates
-of a given bundle or the default translations directory. It can display them or merge the new ones into the translation files.
+of a given bundle or the default translations directory. It can display them or merge
+the new ones into the translation files.
 
 When new translation strings are found it can automatically add a prefix to the translation
 message.
 
 Example running against a Bundle (AcmeBundle)
+
   <info>php %command.full_name% --dump-messages en AcmeBundle</info>
   <info>php %command.full_name% --force --prefix="new_" fr AcmeBundle</info>
 
 Example running against default messages directory
+
   <info>php %command.full_name% --dump-messages en</info>
   <info>php %command.full_name% --force --prefix="new_" fr</info>
+
+You can sort the output with the <comment>--sort</> flag:
+
+    <info>php %command.full_name% --dump-messages --sort=asc en AcmeBundle</info>
+    <info>php %command.full_name% --dump-messages --sort=desc fr</info>
 EOF
             )
         ;
@@ -112,36 +115,9 @@ EOF
 
     /**
      * {@inheritdoc}
-     *
-     * BC to be removed in 4.0
      */
-    public function isEnabled()
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (null !== $this->writer) {
-            return parent::isEnabled();
-        }
-        if (!class_exists('Symfony\Component\Translation\Translator')) {
-            return false;
-        }
-
-        return parent::isEnabled();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        // BC to be removed in 4.0
-        if (null === $this->writer) {
-            $this->writer = $this->getContainer()->get('translation.writer');
-            $this->reader = $this->getContainer()->get('translation.reader');
-            $this->extractor = $this->getContainer()->get('translation.extractor');
-            $this->defaultLocale = $this->getContainer()->getParameter('kernel.default_locale');
-            $this->defaultTransPath = $this->getContainer()->getParameter('translator.default_path');
-            $this->defaultViewsPath = $this->getContainer()->getParameter('twig.default_path');
-        }
-
         $io = new SymfonyStyle($input, $output);
         $errorIo = $io->getErrorStyle();
 
@@ -154,20 +130,35 @@ EOF
 
         // check format
         $supportedFormats = $this->writer->getFormats();
-        if (!\in_array($input->getOption('output-format'), $supportedFormats)) {
+        if (!\in_array($input->getOption('output-format'), $supportedFormats, true)) {
             $errorIo->error(['Wrong output format', 'Supported formats are: '.implode(', ', $supportedFormats).'.']);
 
             return 1;
         }
         /** @var KernelInterface $kernel */
         $kernel = $this->getApplication()->getKernel();
+        $rootDir = $kernel->getContainer()->getParameter('kernel.root_dir');
 
         // Define Root Paths
-        $transPaths = [$kernel->getRootDir().'/Resources/translations'];
+        $transPaths = $this->transPaths;
+        if (is_dir($dir = $rootDir.'/Resources/translations')) {
+            if ($dir !== $this->defaultTransPath) {
+                $notice = sprintf('Storing translations in the "%s" directory is deprecated since Symfony 4.2, ', $dir);
+                @trigger_error($notice.($this->defaultTransPath ? sprintf('use the "%s" directory instead.', $this->defaultTransPath) : 'configure and use "framework.translator.default_path" instead.'), \E_USER_DEPRECATED);
+            }
+            $transPaths[] = $dir;
+        }
         if ($this->defaultTransPath) {
             $transPaths[] = $this->defaultTransPath;
         }
-        $viewsPaths = [$kernel->getRootDir().'/Resources/views'];
+        $viewsPaths = $this->viewsPaths;
+        if (is_dir($dir = $rootDir.'/Resources/views')) {
+            if ($dir !== $this->defaultViewsPath) {
+                $notice = sprintf('Storing templates in the "%s" directory is deprecated since Symfony 4.2, ', $dir);
+                @trigger_error($notice.($this->defaultViewsPath ? sprintf('use the "%s" directory instead.', $this->defaultViewsPath) : 'configure and use "twig.default_path" instead.'), \E_USER_DEPRECATED);
+            }
+            $viewsPaths[] = $dir;
+        }
         if ($this->defaultViewsPath) {
             $viewsPaths[] = $this->defaultViewsPath;
         }
@@ -177,24 +168,47 @@ EOF
         if (null !== $input->getArgument('bundle')) {
             try {
                 $foundBundle = $kernel->getBundle($input->getArgument('bundle'));
-                $transPaths = [$foundBundle->getPath().'/Resources/translations'];
+                $bundleDir = $foundBundle->getPath();
+                $transPaths = [is_dir($bundleDir.'/Resources/translations') ? $bundleDir.'/Resources/translations' : $bundleDir.'/translations'];
+                $viewsPaths = [is_dir($bundleDir.'/Resources/views') ? $bundleDir.'/Resources/views' : $bundleDir.'/templates'];
                 if ($this->defaultTransPath) {
-                    $transPaths[] = $this->defaultTransPath.'/'.$foundBundle->getName();
+                    $transPaths[] = $this->defaultTransPath;
                 }
-                $transPaths[] = sprintf('%s/Resources/%s/translations', $kernel->getRootDir(), $foundBundle->getName());
-                $viewsPaths = [$foundBundle->getPath().'/Resources/views'];
+                if (is_dir($dir = sprintf('%s/Resources/%s/translations', $rootDir, $foundBundle->getName()))) {
+                    $transPaths[] = $dir;
+                    $notice = sprintf('Storing translations files for "%s" in the "%s" directory is deprecated since Symfony 4.2, ', $foundBundle->getName(), $dir);
+                    @trigger_error($notice.($this->defaultTransPath ? sprintf('use the "%s" directory instead.', $this->defaultTransPath) : 'configure and use "framework.translator.default_path" instead.'), \E_USER_DEPRECATED);
+                }
                 if ($this->defaultViewsPath) {
-                    $viewsPaths[] = $this->defaultViewsPath.'/bundles/'.$foundBundle->getName();
+                    $viewsPaths[] = $this->defaultViewsPath;
                 }
-                $viewsPaths[] = sprintf('%s/Resources/%s/views', $kernel->getRootDir(), $foundBundle->getName());
+                if (is_dir($dir = sprintf('%s/Resources/%s/views', $rootDir, $foundBundle->getName()))) {
+                    $viewsPaths[] = $dir;
+                    $notice = sprintf('Storing templates for "%s" in the "%s" directory is deprecated since Symfony 4.2, ', $foundBundle->getName(), $dir);
+                    @trigger_error($notice.($this->defaultViewsPath ? sprintf('use the "%s" directory instead.', $this->defaultViewsPath) : 'configure and use "twig.default_path" instead.'), \E_USER_DEPRECATED);
+                }
                 $currentName = $foundBundle->getName();
             } catch (\InvalidArgumentException $e) {
                 // such a bundle does not exist, so treat the argument as path
-                $transPaths = [$input->getArgument('bundle').'/Resources/translations'];
-                $viewsPaths = [$input->getArgument('bundle').'/Resources/views'];
-                $currentName = $transPaths[0];
+                $path = $input->getArgument('bundle');
 
-                if (!is_dir($transPaths[0])) {
+                $transPaths = [$path.'/translations'];
+                if (is_dir($dir = $path.'/Resources/translations')) {
+                    if ($dir !== $this->defaultTransPath) {
+                        @trigger_error(sprintf('Storing translations in the "%s" directory is deprecated since Symfony 4.2, use the "%s" directory instead.', $dir, $path.'/translations'), \E_USER_DEPRECATED);
+                    }
+                    $transPaths[] = $dir;
+                }
+
+                $viewsPaths = [$path.'/templates'];
+                if (is_dir($dir = $path.'/Resources/views')) {
+                    if ($dir !== $this->defaultViewsPath) {
+                        @trigger_error(sprintf('Storing templates in the "%s" directory is deprecated since Symfony 4.2, use the "%s" directory instead.', $dir, $path.'/templates'), \E_USER_DEPRECATED);
+                    }
+                    $viewsPaths[] = $dir;
+                }
+
+                if (!is_dir($transPaths[0]) && !isset($transPaths[1])) {
                     throw new InvalidArgumentException(sprintf('"%s" is neither an enabled bundle nor a directory.', $transPaths[0]));
                 }
             }
@@ -206,15 +220,9 @@ EOF
         // load any messages from templates
         $extractedCatalogue = new MessageCatalogue($input->getArgument('locale'));
         $io->comment('Parsing templates...');
-        $prefix = $input->getOption('prefix');
-        // @deprecated since version 3.4, to be removed in 4.0 along with the --no-prefix option
-        if ($input->getOption('no-prefix')) {
-            @trigger_error('The "--no-prefix" option is deprecated since Symfony 3.4 and will be removed in 4.0. Use the "--prefix" option with an empty string as value instead.', \E_USER_DEPRECATED);
-            $prefix = '';
-        }
-        $this->extractor->setPrefix($prefix);
+        $this->extractor->setPrefix($input->getOption('prefix'));
         foreach ($viewsPaths as $path) {
-            if (is_dir($path)) {
+            if (is_dir($path) || is_file($path)) {
                 $this->extractor->extract($path, $extractedCatalogue);
             }
         }
@@ -242,10 +250,28 @@ EOF
         if (!\count($operation->getDomains())) {
             $errorIo->warning('No translation messages were found.');
 
-            return null;
+            return 0;
         }
 
         $resultMessage = 'Translation files were successfully updated';
+
+        // move new messages to intl domain when possible
+        if (class_exists(\MessageFormatter::class)) {
+            foreach ($operation->getDomains() as $domain) {
+                $intlDomain = $domain.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX;
+                $newMessages = $operation->getNewMessages($domain);
+
+                if ([] === $newMessages || ([] === $currentCatalogue->all($intlDomain) && [] !== $currentCatalogue->all($domain))) {
+                    continue;
+                }
+
+                $result = $operation->getResult();
+                $allIntlMessages = $result->all($intlDomain);
+                $currentMessages = array_diff_key($newMessages, $result->all($domain));
+                $result->replace($currentMessages, $domain);
+                $result->replace($allIntlMessages + $newMessages, $intlDomain);
+            }
+        }
 
         // show compiled list of messages
         if (true === $input->getOption('dump-messages')) {
@@ -267,14 +293,29 @@ EOF
 
                 $domainMessagesCount = \count($list);
 
+                if ($sort = $input->getOption('sort')) {
+                    $sort = strtolower($sort);
+                    if (!\in_array($sort, self::SORT_ORDERS, true)) {
+                        $errorIo->error(['Wrong sort order', 'Supported formats are: '.implode(', ', self::SORT_ORDERS).'.']);
+
+                        return 1;
+                    }
+
+                    if (self::DESC === $sort) {
+                        rsort($list);
+                    } else {
+                        sort($list);
+                    }
+                }
+
                 $io->section(sprintf('Messages extracted for domain "<info>%s</info>" (%d message%s)', $domain, $domainMessagesCount, $domainMessagesCount > 1 ? 's' : ''));
                 $io->listing($list);
 
                 $extractedMessagesCount += $domainMessagesCount;
             }
 
-            if ('xlf' == $input->getOption('output-format')) {
-                $io->comment('Xliff output version is <info>1.2</info>');
+            if ('xlf' === $input->getOption('output-format')) {
+                $io->comment(sprintf('Xliff output version is <info>%s</info>', $input->getOption('xliff-version')));
             }
 
             $resultMessage = sprintf('%d message%s successfully extracted', $extractedMessagesCount, $extractedMessagesCount > 1 ? 's were' : ' was');
@@ -299,7 +340,7 @@ EOF
                 $bundleTransPath = end($transPaths);
             }
 
-            $this->writer->write($operation->getResult(), $input->getOption('output-format'), ['path' => $bundleTransPath, 'default_locale' => $this->defaultLocale]);
+            $this->writer->write($operation->getResult(), $input->getOption('output-format'), ['path' => $bundleTransPath, 'default_locale' => $this->defaultLocale, 'xliff_version' => $input->getOption('xliff-version')]);
 
             if (true === $input->getOption('dump-messages')) {
                 $resultMessage .= ' and translation files were updated';
@@ -308,18 +349,30 @@ EOF
 
         $io->success($resultMessage.'.');
 
-        return null;
+        return 0;
     }
 
-    private function filterCatalogue(MessageCatalogue $catalogue, $domain)
+    private function filterCatalogue(MessageCatalogue $catalogue, string $domain): MessageCatalogue
     {
         $filteredCatalogue = new MessageCatalogue($catalogue->getLocale());
 
-        if ($messages = $catalogue->all($domain)) {
+        // extract intl-icu messages only
+        $intlDomain = $domain.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX;
+        if ($intlMessages = $catalogue->all($intlDomain)) {
+            $filteredCatalogue->add($intlMessages, $intlDomain);
+        }
+
+        // extract all messages and subtract intl-icu messages
+        if ($messages = array_diff($catalogue->all($domain), $intlMessages)) {
             $filteredCatalogue->add($messages, $domain);
         }
         foreach ($catalogue->getResources() as $resource) {
             $filteredCatalogue->addResource($resource);
+        }
+        if ($metadata = $catalogue->getMetadata('', $intlDomain)) {
+            foreach ($metadata as $k => $v) {
+                $filteredCatalogue->setMetadata($k, $v, $intlDomain);
+            }
         }
         if ($metadata = $catalogue->getMetadata('', $domain)) {
             foreach ($metadata as $k => $v) {

@@ -11,8 +11,12 @@
 
 namespace Symfony\Component\Ldap\Adapter\ExtLdap;
 
+use LDAP\Connection as LDAPConnection;
 use Symfony\Component\Ldap\Adapter\AbstractConnection;
+use Symfony\Component\Ldap\Exception\AlreadyExistsException;
 use Symfony\Component\Ldap\Exception\ConnectionException;
+use Symfony\Component\Ldap\Exception\ConnectionTimeoutException;
+use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
 use Symfony\Component\Ldap\Exception\LdapException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,11 +26,34 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class Connection extends AbstractConnection
 {
+    private const LDAP_INVALID_CREDENTIALS = 0x31;
+    private const LDAP_TIMEOUT = 0x55;
+    private const LDAP_ALREADY_EXISTS = 0x44;
+    private const PRECONNECT_OPTIONS = [
+        ConnectionOptions::DEBUG_LEVEL,
+        ConnectionOptions::X_TLS_CACERTDIR,
+        ConnectionOptions::X_TLS_CACERTFILE,
+        ConnectionOptions::X_TLS_REQUIRE_CERT,
+    ];
+
     /** @var bool */
     private $bound = false;
 
-    /** @var resource */
+    /** @var resource|LDAPConnection */
     private $connection;
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
+    }
+
+    public function __wakeup()
+    {
+        throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
+    }
 
     public function __destruct()
     {
@@ -43,6 +70,8 @@ class Connection extends AbstractConnection
 
     /**
      * {@inheritdoc}
+     *
+     * @param string $password WARNING: When the LDAP server allows unauthenticated binds, a blank $password will always be valid
      */
     public function bind($dn = null, $password = null)
     {
@@ -51,16 +80,23 @@ class Connection extends AbstractConnection
         }
 
         if (false === @ldap_bind($this->connection, $dn, $password)) {
-            throw new ConnectionException(ldap_error($this->connection));
+            $error = ldap_error($this->connection);
+            switch (ldap_errno($this->connection)) {
+                case self::LDAP_INVALID_CREDENTIALS:
+                    throw new InvalidCredentialsException($error);
+                case self::LDAP_TIMEOUT:
+                    throw new ConnectionTimeoutException($error);
+                case self::LDAP_ALREADY_EXISTS:
+                    throw new AlreadyExistsException($error);
+            }
+            throw new ConnectionException($error);
         }
 
         $this->bound = true;
     }
 
     /**
-     * Returns a link resource.
-     *
-     * @return resource
+     * @return resource|LDAPConnection
      *
      * @internal
      */
@@ -93,35 +129,21 @@ class Connection extends AbstractConnection
         $resolver->setAllowedTypes('debug', 'bool');
         $resolver->setDefault('referrals', false);
         $resolver->setAllowedTypes('referrals', 'bool');
+        $resolver->setDefault('options', function (OptionsResolver $options, Options $parent) {
+            $options->setDefined(array_map('strtolower', array_keys((new \ReflectionClass(ConnectionOptions::class))->getConstants())));
 
-        $resolver->setNormalizer('options', function (Options $options, $value) {
-            if (true === $options['debug']) {
-                $value['debug_level'] = 7;
+            if (true === $parent['debug']) {
+                $options->setDefault('debug_level', 7);
             }
 
-            if (!isset($value['protocol_version'])) {
-                $value['protocol_version'] = $options['version'];
+            if (!isset($parent['network_timeout'])) {
+                $options->setDefault('network_timeout', \ini_get('default_socket_timeout'));
             }
 
-            if (!isset($value['referrals'])) {
-                $value['referrals'] = $options['referrals'];
-            }
-
-            if (!isset($value['network_timeout'])) {
-                $value['network_timeout'] = ini_get('default_socket_timeout');
-            }
-
-            return $value;
-        });
-
-        $resolver->setAllowedValues('options', function (array $values) {
-            foreach ($values as $name => $value) {
-                if (!ConnectionOptions::isOption($name)) {
-                    return false;
-                }
-            }
-
-            return true;
+            $options->setDefaults([
+                'protocol_version' => $parent['version'],
+                'referrals' => $parent['referrals'],
+            ]);
         });
     }
 
@@ -131,10 +153,18 @@ class Connection extends AbstractConnection
             return;
         }
 
+        foreach ($this->config['options'] as $name => $value) {
+            if (\in_array(ConnectionOptions::getOption($name), self::PRECONNECT_OPTIONS, true)) {
+                $this->setOption($name, $value);
+            }
+        }
+
         $this->connection = ldap_connect($this->config['connection_string']);
 
         foreach ($this->config['options'] as $name => $value) {
-            $this->setOption($name, $value);
+            if (!\in_array(ConnectionOptions::getOption($name), self::PRECONNECT_OPTIONS, true)) {
+                $this->setOption($name, $value);
+            }
         }
 
         if (false === $this->connection) {
@@ -148,7 +178,7 @@ class Connection extends AbstractConnection
 
     private function disconnect()
     {
-        if ($this->connection && \is_resource($this->connection)) {
+        if ($this->connection) {
             ldap_unbind($this->connection);
         }
 

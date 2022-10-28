@@ -12,6 +12,7 @@
 namespace Symfony\Component\Form\Extension\Core\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToArrayTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToLocalizedStringTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
@@ -21,24 +22,25 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\ReversedTransformer;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use Symfony\Component\OptionsResolver\Exception\OptionDefinitionException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DateType extends AbstractType
 {
-    const DEFAULT_FORMAT = \IntlDateFormatter::MEDIUM;
-    const HTML5_FORMAT = 'yyyy-MM-dd';
+    public const DEFAULT_FORMAT = \IntlDateFormatter::MEDIUM;
+    public const HTML5_FORMAT = 'yyyy-MM-dd';
 
-    private static $acceptedFormats = [
+    private const ACCEPTED_FORMATS = [
         \IntlDateFormatter::FULL,
         \IntlDateFormatter::LONG,
         \IntlDateFormatter::MEDIUM,
         \IntlDateFormatter::SHORT,
     ];
 
-    private static $widgets = [
-        'text' => 'Symfony\Component\Form\Extension\Core\Type\TextType',
-        'choice' => 'Symfony\Component\Form\Extension\Core\Type\ChoiceType',
+    private const WIDGETS = [
+        'text' => TextType::class,
+        'choice' => ChoiceType::class,
     ];
 
     /**
@@ -49,14 +51,14 @@ class DateType extends AbstractType
         $dateFormat = \is_int($options['format']) ? $options['format'] : self::DEFAULT_FORMAT;
         $timeFormat = \IntlDateFormatter::NONE;
         $calendar = \IntlDateFormatter::GREGORIAN;
-        $pattern = \is_string($options['format']) ? $options['format'] : null;
+        $pattern = \is_string($options['format']) ? $options['format'] : '';
 
-        if (!\in_array($dateFormat, self::$acceptedFormats, true)) {
+        if (!\in_array($dateFormat, self::ACCEPTED_FORMATS, true)) {
             throw new InvalidOptionsException('The "format" option must be one of the IntlDateFormatter constants (FULL, LONG, MEDIUM, SHORT) or a string representing a custom format.');
         }
 
         if ('single_text' === $options['widget']) {
-            if (null !== $pattern && false === strpos($pattern, 'y') && false === strpos($pattern, 'M') && false === strpos($pattern, 'd')) {
+            if ('' !== $pattern && !str_contains($pattern, 'y') && !str_contains($pattern, 'M') && !str_contains($pattern, 'd')) {
                 throw new InvalidOptionsException(sprintf('The "format" option should contain the letters "y", "M" or "d". Its current value is "%s".', $pattern));
             }
 
@@ -69,7 +71,7 @@ class DateType extends AbstractType
                 $pattern
             ));
         } else {
-            if (null !== $pattern && (false === strpos($pattern, 'y') || false === strpos($pattern, 'M') || false === strpos($pattern, 'd'))) {
+            if ('' !== $pattern && (!str_contains($pattern, 'y') || !str_contains($pattern, 'M') || !str_contains($pattern, 'd'))) {
                 throw new InvalidOptionsException(sprintf('The "format" option should contain the letters "y", "M" and "d". Its current value is "%s".', $pattern));
             }
 
@@ -86,7 +88,7 @@ class DateType extends AbstractType
                     return static function (FormInterface $form) use ($emptyData, $option) {
                         $emptyData = $emptyData($form->getParent());
 
-                        return isset($emptyData[$option]) ? $emptyData[$option] : '';
+                        return $emptyData[$option] ?? '';
                     };
                 };
 
@@ -122,7 +124,7 @@ class DateType extends AbstractType
                 $dateFormat,
                 $timeFormat,
                 // see https://bugs.php.net/66323
-                class_exists('IntlTimeZone', false) ? \IntlTimeZone::createDefault() : null,
+                class_exists(\IntlTimeZone::class, false) ? \IntlTimeZone::createDefault() : null,
                 $calendar,
                 $pattern
             );
@@ -153,9 +155,9 @@ class DateType extends AbstractType
             }
 
             $builder
-                ->add('year', self::$widgets[$options['widget']], $yearOptions)
-                ->add('month', self::$widgets[$options['widget']], $monthOptions)
-                ->add('day', self::$widgets[$options['widget']], $dayOptions)
+                ->add('year', self::WIDGETS[$options['widget']], $yearOptions)
+                ->add('month', self::WIDGETS[$options['widget']], $monthOptions)
+                ->add('day', self::WIDGETS[$options['widget']], $dayOptions)
                 ->addViewTransformer(new DateTimeToArrayTransformer(
                     $options['model_timezone'], $options['view_timezone'], ['year', 'month', 'day']
                 ))
@@ -163,9 +165,11 @@ class DateType extends AbstractType
             ;
         }
 
-        if ('string' === $options['input']) {
+        if ('datetime_immutable' === $options['input']) {
+            $builder->addModelTransformer(new DateTimeImmutableToDateTimeTransformer());
+        } elseif ('string' === $options['input']) {
             $builder->addModelTransformer(new ReversedTransformer(
-                new DateTimeToStringTransformer($options['model_timezone'], $options['model_timezone'], 'Y-m-d')
+                new DateTimeToStringTransformer($options['model_timezone'], $options['model_timezone'], $options['input_format'])
             ));
         } elseif ('timestamp' === $options['input']) {
             $builder->addModelTransformer(new ReversedTransformer(
@@ -185,7 +189,7 @@ class DateType extends AbstractType
     {
         $view->vars['widget'] = $options['widget'];
 
-        // Change the input to a HTML5 date input if
+        // Change the input to an HTML5 date input if
         //  * the widget is set to "single_text"
         //  * the format matches the one expected by HTML5
         //  * the html5 is set to true
@@ -294,6 +298,7 @@ class DateType extends AbstractType
                 return $options['compound'] ? [] : '';
             },
             'choice_translation_domain' => false,
+            'input_format' => 'Y-m-d',
         ]);
 
         $resolver->setNormalizer('placeholder', $placeholderNormalizer);
@@ -301,6 +306,7 @@ class DateType extends AbstractType
 
         $resolver->setAllowedValues('input', [
             'datetime',
+            'datetime_immutable',
             'string',
             'timestamp',
             'array',
@@ -315,6 +321,26 @@ class DateType extends AbstractType
         $resolver->setAllowedTypes('years', 'array');
         $resolver->setAllowedTypes('months', 'array');
         $resolver->setAllowedTypes('days', 'array');
+        $resolver->setAllowedTypes('input_format', 'string');
+
+        foreach (['html5', 'widget', 'format'] as $option) {
+            $resolver->setDeprecated($option, static function (Options $options, $value) use ($option): string {
+                try {
+                    $html5 = 'html5' === $option ? $value : $options['html5'];
+                    $widget = 'widget' === $option ? $value : $options['widget'];
+                    $format = 'format' === $option ? $value : $options['format'];
+                } catch (OptionDefinitionException $e) {
+                    return '';
+                }
+
+                if ($html5 && 'single_text' === $widget && self::HTML5_FORMAT !== $format) {
+                    return sprintf('Using a custom format when the "html5" option of %s is enabled is deprecated since Symfony 4.3 and will lead to an exception in 5.0.', self::class);
+                    // throw new LogicException(sprintf('Cannot use the "format" option of "%s" when the "html5" option is disabled.', self::class));
+                }
+
+                return '';
+            });
+        }
     }
 
     /**
@@ -325,7 +351,7 @@ class DateType extends AbstractType
         return 'date';
     }
 
-    private function formatTimestamps(\IntlDateFormatter $formatter, $regex, array $timestamps)
+    private function formatTimestamps(\IntlDateFormatter $formatter, string $regex, array $timestamps)
     {
         $pattern = $formatter->getPattern();
         $timezone = $formatter->getTimeZoneId();
@@ -355,9 +381,7 @@ class DateType extends AbstractType
         $result = [];
 
         foreach ($years as $year) {
-            if (false !== $y = gmmktime(0, 0, 0, 6, 15, $year)) {
-                $result[$y] = $year;
-            }
+            $result[\PHP_INT_SIZE === 4 ? \DateTime::createFromFormat('Y e', $year.' UTC')->format('U') : gmmktime(0, 0, 0, 6, 15, $year)] = $year;
         }
 
         return $result;

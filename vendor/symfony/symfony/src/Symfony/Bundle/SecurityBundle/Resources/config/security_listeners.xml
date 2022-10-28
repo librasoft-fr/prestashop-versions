@@ -9,7 +9,7 @@
 
         <service id="security.authentication.listener.anonymous" class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener">
             <tag name="monolog.logger" channel="security" />
-            <argument type="service" id="security.token_storage" />
+            <argument type="service" id="security.untracked_token_storage" />
             <argument /> <!-- Key -->
             <argument type="service" id="logger" on-invalid="null" />
             <argument type="service" id="security.authentication.manager" />
@@ -26,8 +26,6 @@
 
         <service id="security.authentication.basic_entry_point" class="Symfony\Component\Security\Http\EntryPoint\BasicAuthenticationEntryPoint" />
 
-        <service id="security.authentication.digest_entry_point" class="Symfony\Component\Security\Http\EntryPoint\DigestAuthenticationEntryPoint" />
-
         <service id="security.channel_listener" class="Symfony\Component\Security\Http\Firewall\ChannelListener">
             <tag name="monolog.logger" channel="security" />
             <argument type="service" id="security.access_map" />
@@ -39,7 +37,7 @@
 
         <service id="security.context_listener" class="Symfony\Component\Security\Http\Firewall\ContextListener">
             <tag name="monolog.logger" channel="security" />
-            <argument type="service" id="security.token_storage" />
+            <argument type="service" id="security.untracked_token_storage" />
             <argument type="collection" />
             <argument /> <!-- Provider Key -->
             <argument type="service" id="logger" on-invalid="null" />
@@ -90,6 +88,7 @@
         <service id="security.authentication.success_handler" class="Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessHandler" abstract="true">
             <argument type="service" id="security.http_utils" />
             <argument type="collection" /> <!-- Options -->
+            <argument type="service" id="logger" on-invalid="null" />
         </service>
 
         <service id="security.authentication.custom_failure_handler" class="Symfony\Component\Security\Http\Authentication\CustomAuthenticationFailureHandler" abstract="true">
@@ -116,6 +115,7 @@
                  parent="security.authentication.listener.abstract"
                  public="false"
                  abstract="true">
+            <deprecated>The "%service_id%" service is deprecated since Symfony 4.2.</deprecated>
         </service>
 
         <service id="security.authentication.simple_success_failure_handler" class="Symfony\Component\Security\Http\Authentication\SimpleAuthenticationHandler" abstract="true">
@@ -124,16 +124,19 @@
             <argument type="service" id="security.authentication.success_handler" />
             <argument type="service" id="security.authentication.failure_handler" />
             <argument type="service" id="logger" on-invalid="null" />
+            <deprecated>The "%service_id%" service is deprecated since Symfony 4.2.</deprecated>
         </service>
 
         <service id="security.authentication.listener.simple_preauth" class="Symfony\Component\Security\Http\Firewall\SimplePreAuthenticationListener" abstract="true">
             <tag name="monolog.logger" channel="security" />
-            <argument type="service" id="security.token_storage" />
+            <argument type="service" id="security.untracked_token_storage" />
             <argument type="service" id="security.authentication.manager" />
             <argument /> <!-- Provider-shared Key -->
             <argument /> <!-- Authenticator -->
             <argument type="service" id="logger" on-invalid="null" />
             <argument type="service" id="event_dispatcher" on-invalid="null"/>
+            <argument type="service" id="security.authentication.trust_resolver" />
+            <deprecated>The "%service_id%" service is deprecated since Symfony 4.2.</deprecated>
         </service>
 
         <service id="security.authentication.listener.x509" class="Symfony\Component\Security\Http\Firewall\X509AuthenticationListener" abstract="true">
@@ -180,15 +183,6 @@
             <argument type="service" id="logger" on-invalid="null" />
         </service>
 
-        <service id="security.authentication.listener.digest" class="Symfony\Component\Security\Http\Firewall\DigestAuthenticationListener" abstract="true">
-            <tag name="monolog.logger" channel="security" />
-            <argument type="service" id="security.token_storage" />
-            <argument /> <!-- User Provider -->
-            <argument /> <!-- Provider-shared Key -->
-            <argument /> <!-- Entry Point -->
-            <argument type="service" id="logger" on-invalid="null" />
-        </service>
-
         <service id="security.authentication.provider.dao" class="Symfony\Component\Security\Core\Authentication\Provider\DaoAuthenticationProvider" abstract="true">
             <argument /> <!-- User Provider -->
             <argument /> <!-- User Checker -->
@@ -204,6 +198,8 @@
             <argument /> <!-- LDAP -->
             <argument /> <!-- Base DN -->
             <argument>%security.authentication.hide_user_not_found%</argument>
+            <argument /> <!-- search dn -->
+            <argument /> <!-- search password -->
         </service>
 
         <service id="security.authentication.provider.simple" class="Symfony\Component\Security\Core\Authentication\Provider\SimpleAuthenticationProvider" abstract="true">
@@ -211,6 +207,7 @@
             <argument /> <!-- User Provider -->
             <argument /> <!-- Provider-shared Key -->
             <argument>null</argument> <!-- UserChecker -->
+            <deprecated>The "%service_id%" service is deprecated since Symfony 4.2.</deprecated>
         </service>
 
         <service id="security.authentication.provider.pre_authenticated" class="Symfony\Component\Security\Core\Authentication\Provider\PreAuthenticatedAuthenticationProvider" abstract="true">

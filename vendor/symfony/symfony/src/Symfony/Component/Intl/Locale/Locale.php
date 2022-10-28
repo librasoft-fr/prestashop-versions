@@ -16,30 +16,30 @@ use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 /**
  * Replacement for PHP's native {@link \Locale} class.
  *
- * The only method supported in this class is {@link getDefault}. This method
- * will always return "en". All other methods will throw an exception when used.
+ * The only methods supported in this class are `getDefault` and `canonicalize`.
+ * All other methods will throw an exception when used.
  *
  * @author Eriksen Costa <eriksen.costa@infranology.com.br>
  * @author Bernhard Schussek <bschussek@gmail.com>
  *
  * @internal
  */
-class Locale
+abstract class Locale
 {
-    const DEFAULT_LOCALE = null;
+    public const DEFAULT_LOCALE = null;
 
     /* Locale method constants */
-    const ACTUAL_LOCALE = 0;
-    const VALID_LOCALE = 1;
+    public const ACTUAL_LOCALE = 0;
+    public const VALID_LOCALE = 1;
 
     /* Language tags constants */
-    const LANG_TAG = 'language';
-    const EXTLANG_TAG = 'extlang';
-    const SCRIPT_TAG = 'script';
-    const REGION_TAG = 'region';
-    const VARIANT_TAG = 'variant';
-    const GRANDFATHERED_LANG_TAG = 'grandfathered';
-    const PRIVATE_TAG = 'private';
+    public const LANG_TAG = 'language';
+    public const EXTLANG_TAG = 'extlang';
+    public const SCRIPT_TAG = 'script';
+    public const REGION_TAG = 'region';
+    public const VARIANT_TAG = 'variant';
+    public const GRANDFATHERED_LANG_TAG = 'grandfathered';
+    public const PRIVATE_TAG = 'private';
 
     /**
      * Not supported. Returns the best available locale based on HTTP "Accept-Language" header according to RFC 2616.
@@ -55,6 +55,39 @@ class Locale
     public static function acceptFromHttp($header)
     {
         throw new MethodNotImplementedException(__METHOD__);
+    }
+
+    /**
+     * Returns a canonicalized locale string.
+     *
+     * This polyfill doesn't implement the full-spec algorithm. It only
+     * canonicalizes locale strings handled by the `LocaleBundle` class.
+     *
+     * @param string $locale
+     *
+     * @return string
+     */
+    public static function canonicalize($locale)
+    {
+        $locale = (string) $locale;
+
+        if ('' === $locale || '.' === $locale[0]) {
+            return self::getDefault();
+        }
+
+        if (!preg_match('/^([a-z]{2})[-_]([a-z]{2})(?:([a-z]{2})(?:[-_]([a-z]{2}))?)?(?:\..*)?$/i', $locale, $m)) {
+            return $locale;
+        }
+
+        if (!empty($m[4])) {
+            return strtolower($m[1]).'_'.ucfirst(strtolower($m[2].$m[3])).'_'.strtoupper($m[4]);
+        }
+
+        if (!empty($m[3])) {
+            return strtolower($m[1]).'_'.ucfirst(strtolower($m[2].$m[3]));
+        }
+
+        return strtolower($m[1]).'_'.strtoupper($m[2]);
     }
 
     /**

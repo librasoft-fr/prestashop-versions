@@ -45,6 +45,8 @@ abstract class BaseType extends AbstractType
         $name = $form->getName();
         $blockName = $options['block_name'] ?: $form->getName();
         $translationDomain = $options['translation_domain'];
+        $labelTranslationParameters = $options['label_translation_parameters'];
+        $attrTranslationParameters = $options['attr_translation_parameters'];
         $labelFormat = $options['label_format'];
 
         if ($view->parent) {
@@ -61,6 +63,9 @@ abstract class BaseType extends AbstractType
             if (null === $translationDomain) {
                 $translationDomain = $view->parent->vars['translation_domain'];
             }
+
+            $labelTranslationParameters = array_merge($view->parent->vars['label_translation_parameters'], $labelTranslationParameters);
+            $attrTranslationParameters = array_merge($view->parent->vars['attr_translation_parameters'], $attrTranslationParameters);
 
             if (!$labelFormat) {
                 $labelFormat = $view->parent->vars['label_format'];
@@ -80,6 +85,9 @@ abstract class BaseType extends AbstractType
         for ($type = $form->getConfig()->getType(); null !== $type; $type = $type->getParent()) {
             array_unshift($blockPrefixes, $type->getBlockPrefix());
         }
+        if (null !== $options['block_prefix']) {
+            $blockPrefixes[] = $options['block_prefix'];
+        }
         $blockPrefixes[] = $uniqueBlockPrefix;
 
         $view->vars = array_replace($view->vars, [
@@ -94,7 +102,10 @@ abstract class BaseType extends AbstractType
             'attr' => $options['attr'],
             'block_prefixes' => $blockPrefixes,
             'unique_block_prefix' => $uniqueBlockPrefix,
+            'row_attr' => $options['row_attr'],
             'translation_domain' => $translationDomain,
+            'label_translation_parameters' => $labelTranslationParameters,
+            'attr_translation_parameters' => $attrTranslationParameters,
             // Using the block name here speeds up performance in collection
             // forms, where each entry has the same full block name.
             // Including the type is important too, because if rows of a
@@ -112,14 +123,20 @@ abstract class BaseType extends AbstractType
     {
         $resolver->setDefaults([
             'block_name' => null,
+            'block_prefix' => null,
             'disabled' => false,
             'label' => null,
             'label_format' => null,
+            'row_attr' => [],
+            'label_translation_parameters' => [],
+            'attr_translation_parameters' => [],
             'attr' => [],
             'translation_domain' => null,
             'auto_initialize' => true,
         ]);
 
+        $resolver->setAllowedTypes('block_prefix', ['null', 'string']);
         $resolver->setAllowedTypes('attr', 'array');
+        $resolver->setAllowedTypes('row_attr', 'array');
     }
 }

@@ -23,7 +23,7 @@ use Twig\Environment;
  */
 class FormRenderer implements FormRendererInterface
 {
-    const CACHE_KEY_VAR = 'unique_block_prefix';
+    public const CACHE_KEY_VAR = 'unique_block_prefix';
 
     private $engine;
     private $csrfTokenManager;
@@ -48,10 +48,9 @@ class FormRenderer implements FormRendererInterface
     /**
      * {@inheritdoc}
      */
-    public function setTheme(FormView $view, $themes /*, $useDefaultThemes = true */)
+    public function setTheme(FormView $view, $themes, $useDefaultThemes = true)
     {
-        $args = \func_get_args();
-        $this->engine->setTheme($view, $themes, isset($args[2]) ? (bool) $args[2] : true);
+        $this->engine->setTheme($view, $themes, $useDefaultThemes);
     }
 
     /**
@@ -60,7 +59,7 @@ class FormRenderer implements FormRendererInterface
     public function renderCsrfToken($tokenId)
     {
         if (null === $this->csrfTokenManager) {
-            throw new BadMethodCallException('CSRF tokens can only be generated if a CsrfTokenManagerInterface is injected in FormRenderer::__construct().');
+            throw new BadMethodCallException('CSRF tokens can only be generated if a CsrfTokenManagerInterface is injected in FormRenderer::__construct(). Try running "composer require symfony/security-csrf".');
         }
 
         return $this->csrfTokenManager->getToken($tokenId)->getValue();
@@ -133,6 +132,9 @@ class FormRenderer implements FormRendererInterface
         $renderOnlyOnce = 'row' === $blockNameSuffix || 'widget' === $blockNameSuffix;
 
         if ($renderOnlyOnce && $view->isRendered()) {
+            // This is not allowed, because it would result in rendering same IDs multiple times, which is not valid.
+            @trigger_error(sprintf('You are calling "form_%s" for field "%s" which has already been rendered before, trying to render fields which were already rendered is deprecated since Symfony 4.2 and will throw an exception in 5.0.', $blockNameSuffix, $view->vars['name']), \E_USER_DEPRECATED);
+            // throw new BadMethodCallException(sprintf('Field "%s" has already been rendered. Save result of previous  render call to variable and output that instead.', $view->vars['name']));
             return '';
         }
 
@@ -288,7 +290,7 @@ class FormRenderer implements FormRendererInterface
     /**
      * @internal
      */
-    public function encodeCurrency(Environment $environment, $text, $widget = '')
+    public function encodeCurrency(Environment $environment, string $text, string $widget = ''): string
     {
         if ('UTF-8' === $charset = $environment->getCharset()) {
             $text = htmlspecialchars($text, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');

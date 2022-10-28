@@ -35,7 +35,7 @@ class ChoiceView
      * @param string|false $label The label displayed to humans; pass false to discard the label
      * @param array        $attr  Additional attributes for the HTML tag
      */
-    public function __construct($data, $value, $label, array $attr = [])
+    public function __construct($data, string $value, $label, array $attr = [])
     {
         $this->data = $data;
         $this->value = $value;

@@ -26,7 +26,7 @@ class CustomUserMessageAuthenticationException extends AuthenticationException
 
     private $messageData = [];
 
-    public function __construct($message = '', array $messageData = [], $code = 0, \Exception $previous = null)
+    public function __construct(string $message = '', array $messageData = [], int $code = 0, \Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
@@ -58,20 +58,18 @@ class CustomUserMessageAuthenticationException extends AuthenticationException
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize(): array
     {
-        $serialized = [parent::serialize(true), $this->messageKey, $this->messageData];
-
-        return $this->doSerialize($serialized, \func_num_args() ? func_get_arg(0) : null);
+        return [parent::__serialize(), $this->messageKey, $this->messageData];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($str)
+    public function __unserialize(array $data): void
     {
-        list($parentData, $this->messageKey, $this->messageData) = \is_array($str) ? $str : unserialize($str);
-
-        parent::unserialize($parentData);
+        [$parentData, $this->messageKey, $this->messageData] = $data;
+        $parentData = \is_array($parentData) ? $parentData : unserialize($parentData);
+        parent::__unserialize($parentData);
     }
 }

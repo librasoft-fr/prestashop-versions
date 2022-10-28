@@ -46,7 +46,7 @@ use Symfony\Component\Intl\Locale\Locale;
  *
  * @internal
  */
-class IntlDateFormatter
+abstract class IntlDateFormatter
 {
     /**
      * The error code from the last operation.
@@ -63,24 +63,24 @@ class IntlDateFormatter
     protected $errorMessage = 'U_ZERO_ERROR';
 
     /* date/time format types */
-    const NONE = -1;
-    const FULL = 0;
-    const LONG = 1;
-    const MEDIUM = 2;
-    const SHORT = 3;
+    public const NONE = -1;
+    public const FULL = 0;
+    public const LONG = 1;
+    public const MEDIUM = 2;
+    public const SHORT = 3;
 
     /* calendar formats */
-    const TRADITIONAL = 0;
-    const GREGORIAN = 1;
+    public const TRADITIONAL = 0;
+    public const GREGORIAN = 1;
 
     /**
      * Patterns used to format the date when no pattern is provided.
      */
     private $defaultDateFormats = [
         self::NONE => '',
-        self::FULL => 'EEEE, LLLL d, y',
-        self::LONG => 'LLLL d, y',
-        self::MEDIUM => 'LLL d, y',
+        self::FULL => 'EEEE, MMMM d, y',
+        self::LONG => 'MMMM d, y',
+        self::MEDIUM => 'MMM d, y',
         self::SHORT => 'M/d/yy',
     ];
 
@@ -132,7 +132,7 @@ class IntlDateFormatter
      * @throws MethodArgumentValueNotImplementedException When $locale different than "en" or null is passed
      * @throws MethodArgumentValueNotImplementedException When $calendar different than GREGORIAN is passed
      */
-    public function __construct($locale, $datetype, $timetype, $timezone = null, $calendar = self::GREGORIAN, $pattern = null)
+    public function __construct(?string $locale, ?int $datetype, ?int $timetype, $timezone = null, ?int $calendar = self::GREGORIAN, string $pattern = null)
     {
         if ('en' !== $locale && null !== $locale) {
             throw new MethodArgumentValueNotImplementedException(__METHOD__, 'locale', $locale, 'Only the locale "en" is supported');
@@ -142,8 +142,12 @@ class IntlDateFormatter
             throw new MethodArgumentValueNotImplementedException(__METHOD__, 'calendar', $calendar, 'Only the GREGORIAN calendar is supported');
         }
 
-        $this->datetype = null !== $datetype ? $datetype : self::FULL;
-        $this->timetype = null !== $timetype ? $timetype : self::FULL;
+        $this->datetype = $datetype ?? self::FULL;
+        $this->timetype = $timetype ?? self::FULL;
+
+        if ('' === ($pattern ?? '')) {
+            $pattern = $this->getDefaultPattern();
+        }
 
         $this->setPattern($pattern);
         $this->setTimeZone($timezone);
@@ -160,7 +164,7 @@ class IntlDateFormatter
      *                                                          One of the calendar constants
      * @param string|null                             $pattern  Optional pattern to use when formatting
      *
-     * @return self
+     * @return static
      *
      * @see https://php.net/intldateformatter.create
      * @see http://userguide.icu-project.org/formatparse/datetime
@@ -170,13 +174,13 @@ class IntlDateFormatter
      */
     public static function create($locale, $datetype, $timetype, $timezone = null, $calendar = self::GREGORIAN, $pattern = null)
     {
-        return new self($locale, $datetype, $timetype, $timezone, $calendar, $pattern);
+        return new static($locale, $datetype, $timetype, $timezone, $calendar, $pattern);
     }
 
     /**
      * Format the date/time value (timestamp) as a string.
      *
-     * @param int|\DateTimeInterface $timestamp The timestamp to format
+     * @param int|string|\DateTimeInterface $timestamp The timestamp to format
      *
      * @return string|bool The formatted value or false if formatting failed
      *
@@ -188,9 +192,13 @@ class IntlDateFormatter
     {
         // intl allows timestamps to be passed as arrays - we don't
         if (\is_array($timestamp)) {
-            $message = 'Only integer Unix timestamps and DateTime objects are supported';
+            $message = 'Only Unix timestamps and DateTime objects are supported';
 
             throw new MethodArgumentValueNotImplementedException(__METHOD__, 'timestamp', $timestamp, $message);
+        }
+
+        if (\is_string($timestamp) && $dt = \DateTime::createFromFormat('U', $timestamp)) {
+            $timestamp = $dt;
         }
 
         // behave like the intl extension
@@ -208,7 +216,7 @@ class IntlDateFormatter
         }
 
         if ($timestamp instanceof \DateTimeInterface) {
-            $timestamp = $timestamp->getTimestamp();
+            $timestamp = $timestamp->format('U');
         }
 
         $transformer = new FullTransformer($this->getPattern(), $this->getTimeZoneId());
@@ -235,7 +243,7 @@ class IntlDateFormatter
      *
      * @throws MethodNotImplementedException
      */
-    public function formatObject($object, $format = null, $locale = null)
+    public static function formatObject($object, $format = null, $locale = null)
     {
         throw new MethodNotImplementedException(__METHOD__);
     }
@@ -485,7 +493,7 @@ class IntlDateFormatter
     /**
      * Set the formatter's pattern.
      *
-     * @param string|null $pattern A pattern string in conformance with the ICU IntlDateFormatter documentation
+     * @param string $pattern A pattern string in conformance with the ICU IntlDateFormatter documentation
      *
      * @return bool true on success or false on failure
      *
@@ -494,11 +502,7 @@ class IntlDateFormatter
      */
     public function setPattern($pattern)
     {
-        if (null === $pattern) {
-            $pattern = $this->getDefaultPattern();
-        }
-
-        $this->pattern = $pattern;
+        $this->pattern = (string) $pattern;
 
         return true;
     }
@@ -526,7 +530,7 @@ class IntlDateFormatter
         $timeZone = $timeZoneId;
 
         // Get an Etc/GMT time zone that is accepted for \DateTimeZone
-        if ('GMT' !== $timeZoneId && 0 === strpos($timeZoneId, 'GMT')) {
+        if ('GMT' !== $timeZoneId && str_starts_with($timeZoneId, 'GMT')) {
             try {
                 $timeZoneId = DateFormat\TimezoneTransformer::getEtcTimeZoneId($timeZoneId);
             } catch (\InvalidArgumentException $e) {
@@ -586,8 +590,7 @@ class IntlDateFormatter
      */
     protected function createDateTime($timestamp)
     {
-        $dateTime = new \DateTime();
-        $dateTime->setTimestamp($timestamp);
+        $dateTime = \DateTime::createFromFormat('U', $timestamp);
         $dateTime->setTimezone($this->dateTimeZone);
 
         return $dateTime;
@@ -600,14 +603,19 @@ class IntlDateFormatter
      */
     protected function getDefaultPattern()
     {
-        $patternParts = [];
+        $pattern = '';
         if (self::NONE !== $this->datetype) {
-            $patternParts[] = $this->defaultDateFormats[$this->datetype];
+            $pattern = $this->defaultDateFormats[$this->datetype];
         }
         if (self::NONE !== $this->timetype) {
-            $patternParts[] = $this->defaultTimeFormats[$this->timetype];
+            if (self::FULL === $this->datetype || self::LONG === $this->datetype) {
+                $pattern .= ' \'at\' ';
+            } elseif (self::NONE !== $this->datetype) {
+                $pattern .= ', ';
+            }
+            $pattern .= $this->defaultTimeFormats[$this->timetype];
         }
 
-        return implode(', ', $patternParts);
+        return $pattern;
     }
 }

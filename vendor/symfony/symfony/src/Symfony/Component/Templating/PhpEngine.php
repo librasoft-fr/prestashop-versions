@@ -43,9 +43,7 @@ class PhpEngine implements EngineInterface, \ArrayAccess
     private $evalParameters;
 
     /**
-     * @param TemplateNameParserInterface $parser  A TemplateNameParserInterface instance
-     * @param LoaderInterface             $loader  A loader instance
-     * @param HelperInterface[]           $helpers An array of helper instances
+     * @param HelperInterface[] $helpers An array of helper instances
      */
     public function __construct(TemplateNameParserInterface $parser, LoaderInterface $loader, array $helpers = [])
     {
@@ -120,8 +118,7 @@ class PhpEngine implements EngineInterface, \ArrayAccess
     /**
      * Evaluates a template.
      *
-     * @param Storage $template   The template to render
-     * @param array   $parameters An array of parameters to pass to the template
+     * @param array $parameters An array of parameters to pass to the template
      *
      * @return string|false The evaluated template, or false if the engine is unable to render the template
      *
@@ -176,6 +173,7 @@ class PhpEngine implements EngineInterface, \ArrayAccess
      *
      * @throws \InvalidArgumentException if the helper is not defined
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($name)
     {
         return $this->get($name);
@@ -188,6 +186,7 @@ class PhpEngine implements EngineInterface, \ArrayAccess
      *
      * @return bool true if the helper is defined, false otherwise
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($name)
     {
         return isset($this->helpers[$name]);
@@ -198,7 +197,10 @@ class PhpEngine implements EngineInterface, \ArrayAccess
      *
      * @param HelperInterface $name  The helper instance
      * @param string          $value An alias
+     *
+     * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($name, $value)
     {
         $this->set($name, $value);
@@ -209,8 +211,11 @@ class PhpEngine implements EngineInterface, \ArrayAccess
      *
      * @param string $name The helper name
      *
+     * @return void
+     *
      * @throws \LogicException
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($name)
     {
         throw new \LogicException(sprintf('You can\'t unset a helper (%s).', $name));
@@ -242,8 +247,7 @@ class PhpEngine implements EngineInterface, \ArrayAccess
     /**
      * Sets a helper.
      *
-     * @param HelperInterface $helper The helper instance
-     * @param string          $alias  An alias
+     * @param string $alias An alias
      */
     public function set(HelperInterface $helper, $alias = null)
     {
@@ -311,15 +315,15 @@ class PhpEngine implements EngineInterface, \ArrayAccess
 
         // If we deal with a scalar value, we can cache the result to increase
         // the performance when the same value is escaped multiple times (e.g. loops)
-        if (is_scalar($value)) {
+        if (\is_scalar($value)) {
             if (!isset(self::$escaperCache[$context][$value])) {
-                self::$escaperCache[$context][$value] = \call_user_func($this->getEscaper($context), $value);
+                self::$escaperCache[$context][$value] = $this->getEscaper($context)($value);
             }
 
             return self::$escaperCache[$context][$value];
         }
 
-        return \call_user_func($this->getEscaper($context), $value);
+        return $this->getEscaper($context)($value);
     }
 
     /**

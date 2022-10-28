@@ -18,9 +18,9 @@ use Psr\Cache\CacheItemPoolInterface;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  *
- * @final since version 3.3
+ * @final
  */
-class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
+class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface, PropertyInitializableExtractorInterface
 {
     private $propertyInfoExtractor;
     private $cacheItemPool;
@@ -35,7 +35,7 @@ class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function isReadable($class, $property, array $context = [])
+    public function isReadable($class, $property, array $context = []): ?bool
     {
         return $this->extract('isReadable', [$class, $property, $context]);
     }
@@ -43,7 +43,7 @@ class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function isWritable($class, $property, array $context = [])
+    public function isWritable($class, $property, array $context = []): ?bool
     {
         return $this->extract('isWritable', [$class, $property, $context]);
     }
@@ -51,7 +51,7 @@ class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function getShortDescription($class, $property, array $context = [])
+    public function getShortDescription($class, $property, array $context = []): ?string
     {
         return $this->extract('getShortDescription', [$class, $property, $context]);
     }
@@ -59,7 +59,7 @@ class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function getLongDescription($class, $property, array $context = [])
+    public function getLongDescription($class, $property, array $context = []): ?string
     {
         return $this->extract('getLongDescription', [$class, $property, $context]);
     }
@@ -67,7 +67,7 @@ class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function getProperties($class, array $context = [])
+    public function getProperties($class, array $context = []): ?array
     {
         return $this->extract('getProperties', [$class, $context]);
     }
@@ -75,25 +75,31 @@ class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function getTypes($class, $property, array $context = [])
+    public function getTypes($class, $property, array $context = []): ?array
     {
         return $this->extract('getTypes', [$class, $property, $context]);
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function isInitializable(string $class, string $property, array $context = []): ?bool
+    {
+        return $this->extract('isInitializable', [$class, $property, $context]);
+    }
+
+    /**
      * Retrieves the cached data if applicable or delegates to the decorated extractor.
-     *
-     * @param string $method
      *
      * @return mixed
      */
-    private function extract($method, array $arguments)
+    private function extract(string $method, array $arguments)
     {
         try {
             $serializedArguments = serialize($arguments);
         } catch (\Exception $exception) {
             // If arguments are not serializable, skip the cache
-            return \call_user_func_array([$this->propertyInfoExtractor, $method], $arguments);
+            return $this->propertyInfoExtractor->{$method}(...$arguments);
         }
 
         // Calling rawurlencode escapes special characters not allowed in PSR-6's keys
@@ -109,7 +115,7 @@ class PropertyInfoCacheExtractor implements PropertyInfoExtractorInterface
             return $this->arrayCache[$key] = $item->get();
         }
 
-        $value = \call_user_func_array([$this->propertyInfoExtractor, $method], $arguments);
+        $value = $this->propertyInfoExtractor->{$method}(...$arguments);
         $item->set($value);
         $this->cacheItemPool->save($item);
 

@@ -1,4 +1,28 @@
-(()=>{var t={4110:(t,e)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});
+(()=>{"use strict";var t={9567:t=>{t.exports=window.jQuery}},e={};function n(o){var i=e[o];if(void 0!==i)return i.exports;var s=e[o]={exports:{}};return t[o](s,s.exports,n),s.exports}n.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(t){if("object"==typeof window)return window}}(),n.r=t=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})};var o={};(()=>{n.r(o);
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */const t={deleteCategories:".js-delete-categories-bulk-action",deleteCategoriesModal:t=>`#${t}_grid_delete_categories_modal`,checkedCheckbox:".js-bulk-action-checkbox:checked",deleteCustomers:".js-delete-customers-bulk-action",deleteCustomerModal:t=>`#${t}_grid_delete_customers_modal`,submitDeleteCategories:".js-submit-delete-categories",submitDeleteCustomers:".js-submit-delete-customers",categoriesToDelete:"#delete_categories_categories_to_delete",customersToDelete:"#delete_customers_customers_to_delete",actionSelectAll:".js-bulk-action-select-all",bulkActionCheckbox:".js-bulk-action-checkbox",bulkActionBtn:".js-bulk-actions-btn",openTabsBtn:".js-bulk-action-btn.open_tabs",tableChoiceOptions:"table.table .js-choice-options",choiceOptions:".js-choice-options",modalFormSubmitBtn:".js-bulk-modal-form-submit-btn",submitAction:".js-bulk-action-submit-btn",ajaxAction:".js-bulk-action-ajax-btn",gridSubmitAction:".js-grid-action-submit-btn"},e={categoryDeleteAction:".js-delete-category-row-action",customerDeleteAction:".js-delete-customer-row-action",linkRowAction:".js-link-row-action",linkRowActionClickableFirst:".js-link-row-action[data-clickable-row=1]:first",clickableTd:"td.clickable"},i={showQuery:".js-common_show_query-grid-action",exportQuery:".js-common_export_sql_manager-grid-action",showModalForm:t=>`#${t}_common_show_query_modal_form`,showModalGrid:t=>`#${t}_grid_common_show_query_modal`,modalFormSubmitBtn:".js-bulk-modal-form-submit-btn",submitModalFormBtn:".js-submit-modal-form-btn",bulkInputsBlock:t=>`#${t}`,tokenInput:t=>`input[name="${t}[_token]"]`,ajaxBulkActionConfirmModal:(t,e)=>`${t}-ajax-${e}-confirm-modal`,ajaxBulkActionProgressModal:(t,e)=>`${t}-ajax-${e}-progress-modal`},s=t=>`${t}-grid-confirm-modal`,r=".js-grid-table",a=t=>`#${t}_grid`,c=".js-grid-panel",l=".js-grid-header",d=".ps-togglable-row",h="table.table",u=".header-toolbar",m=".breadcrumb-item",f=".js-reset-search",b=".column-filters",p=".grid-search-button",g=".grid-reset-button",w="input:not(.js-bulk-action-select-all), select",v=".js-common_refresh_list-grid-action",y=t=>`#${t}_filter_form`,_=".btn-sql-submit";
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -23,295 +47,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-var n=window.$;e.default=function(t,e){n.post(t).then((function(){return window.location.assign(e)}))}},61353:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(e){(0,r.default)(this,t),this.selector=".ps-sortable-column",this.columns=a(e).find(this.selector)}return(0,o.default)(t,[{key:"attach",value:function(){var t=this;this.columns.on("click",(function(e){var n=a(e.delegateTarget);t.sortByColumn(n,t.getToggledSortDirection(n))}))}},{key:"sortBy",value:function(t,e){var n=this.columns.is('[data-sort-col-name="'+t+'"]');if(!n)throw new Error('Cannot sort by "'+t+'": invalid column');this.sortByColumn(n,e)}},{key:"sortByColumn",value:function(t,e){window.location=this.getUrl(t.data("sortColName"),"desc"===e?"desc":"asc",t.data("sortPrefix"))}},{key:"getToggledSortDirection",value:function(t){return"asc"===t.data("sortDirection")?"desc":"asc"}},{key:"getUrl",value:function(t,e,n){var r=new URL(window.location.href),o=r.searchParams;return n?(o.set(n+"[orderBy]",t),o.set(n+"[sortOrder]",e)):(o.set("orderBy",t),o.set("sortOrder",e)),r.toString()}}]),t}();e.default=u},91781:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=a(n(99663)),o=a(n(22600)),i=a(n(68840));function a(t){return t&&t.__esModule?t:{default:t}}var u=window.$,c=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){var e=this;t.getContainer().on("click",".js-submit-row-action",(function(n){n.preventDefault();var r=u(n.currentTarget),o=r.data("confirmMessage"),i=r.data("title"),a=r.data("method");if(i)e.showConfirmModal(r,t,o,i,a);else{if(o.length&&!window.confirm(o))return;e.postForm(r,a)}}))}},{key:"postForm",value:function(t,e){var n=["GET","POST"].includes(e),r=u("<form>",{action:t.data("url"),method:n?e:"POST"}).appendTo("body");n||r.append(u("<input>",{type:"_hidden",name:"_method",value:e})),r.submit()}},{key:"showConfirmModal",value:function(t,e,n,r,o){var a=this,u=t.data("confirmButtonLabel"),c=t.data("closeButtonLabel"),l=t.data("confirmButtonClass");new i.default({id:e.getId()+"-grid-confirm-modal",confirmTitle:r,confirmMessage:n,confirmButtonLabel:u,closeButtonLabel:c,confirmButtonClass:l},(function(){return a.postForm(t,o)})).show()}}]),t}();
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */e.default=c},5595:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){this.handleBulkActionCheckboxSelect(t),this.handleBulkActionSelectAllCheckbox(t)}},{key:"handleBulkActionSelectAllCheckbox",value:function(t){var e=this;t.getContainer().on("change",".js-bulk-action-select-all",(function(n){var r=a(n.currentTarget).is(":checked");r?e.enableBulkActionsBtn(t):e.disableBulkActionsBtn(t),t.getContainer().find(".js-bulk-action-checkbox").prop("checked",r)}))}},{key:"handleBulkActionCheckboxSelect",value:function(t){var e=this;t.getContainer().on("change",".js-bulk-action-checkbox",(function(){t.getContainer().find(".js-bulk-action-checkbox:checked").length>0?e.enableBulkActionsBtn(t):e.disableBulkActionsBtn(t)}))}},{key:"enableBulkActionsBtn",value:function(t){t.getContainer().find(".js-bulk-actions-btn").prop("disabled",!1)}},{key:"disableBulkActionsBtn",value:function(t){t.getContainer().find(".js-bulk-actions-btn").prop("disabled",!0)}}]),t}();e.default=u},4499:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){var e=this;t.getContainer().find("table.table").find(".ps-togglable-row").on("click",(function(t){t.preventDefault(),e.toggleValue(a(t.delegateTarget))}))}},{key:"toggleValue",value:function(t){var e=t.data("toggleUrl");this.submitAsForm(e)}},{key:"submitAsForm",value:function(t){a("<form>",{action:t,method:"POST"}).appendTo("body").submit()}}]),t}();e.default=u},2573:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){var e=this;t.getHeaderContainer().on("click",".js-common_show_query-grid-action",(function(){return e.onShowSqlQueryClick(t)})),t.getHeaderContainer().on("click",".js-common_export_sql_manager-grid-action",(function(){return e.onExportSqlManagerClick(t)}))}},{key:"onShowSqlQueryClick",value:function(t){var e=a("#"+t.getId()+"_common_show_query_modal_form");this.fillExportForm(e,t);var n=a("#"+t.getId()+"_grid_common_show_query_modal");n.modal("show"),n.on("click",".btn-sql-submit",(function(){return e.submit()}))}},{key:"onExportSqlManagerClick",value:function(t){var e=a("#"+t.getId()+"_common_show_query_modal_form");this.fillExportForm(e,t),e.submit()}},{key:"fillExportForm",value:function(t,e){var n=e.getContainer().find(".js-grid-table").data("query");t.find('textarea[name="sql"]').val(n),t.find('input[name="name"]').val(this.getNameFromBreadcrumb())}},{key:"getNameFromBreadcrumb",value:function(){var t=a(".header-toolbar").find(".breadcrumb-item"),e="";return t.each((function(t,n){var r=a(n),o=r.find("a").length>0?r.find("a").text():r.text();e.length>0&&(e=e.concat(" > ")),e=e.concat(o)})),e}}]),t}();e.default=u},96803:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=a(n(99663)),o=a(n(22600)),i=a(n(4110));function a(t){return t&&t.__esModule?t:{default:t}}var u=window.$,c=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){t.getContainer().on("click",".js-reset-search",(function(t){(0,i.default)(u(t.currentTarget).data("url"),u(t.currentTarget).data("redirect"))}))}}]),t}();
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */e.default=c},91137:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){var e=t.getContainer().find(".column-filters");e.find(".grid-search-button").prop("disabled",!0),e.find("input:not(.js-bulk-action-select-all), select").on("input dp.change",(function(){e.find(".grid-search-button").prop("disabled",!1),e.find(".js-grid-reset-button").prop("hidden",!1)}))}}]),t}();e.default=a},58899:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){this.initRowLinks(t),this.initConfirmableActions(t)}},{key:"initConfirmableActions",value:function(t){t.getContainer().on("click",".js-link-row-action",(function(t){var e=a(t.currentTarget).data("confirm-message");e.length&&!window.confirm(e)&&t.preventDefault()}))}},{key:"initRowLinks",value:function(t){a("tr",t.getContainer()).each((function(){var t=a(this);a(".js-link-row-action[data-clickable-row=1]:first",t).each((function(){var e=a(this),n=e.closest("td"),r=a("td.clickable",t).not(n),o=!1;r.addClass("cursor-pointer").mousedown((function(){a(window).mousemove((function(){o=!0,a(window).unbind("mousemove")}))})),r.mouseup((function(){var t=o;if(o=!1,a(window).unbind("mousemove"),!t){var n=e.data("confirm-message");n.length&&!window.confirm(n)||(document.location=e.attr("href"))}}))}))}))}}]),t}();e.default=u},37758:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){t.getHeaderContainer().on("click",".js-common_refresh_list-grid-action",(function(){window.location.reload()}))}}]),t}();e.default=a},58630:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=a(n(99663)),o=a(n(22600)),i=a(n(61353));function a(t){return t&&t.__esModule?t:{default:t}}var u=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){var e=t.getContainer().find("table.table");new i.default(e).attach()}}]),t}();
-/**
-      * Copyright since 2007 PrestaShop SA and Contributors
-      * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
-      *
-      * NOTICE OF LICENSE
-      *
-      * This source file is subject to the Open Software License (OSL 3.0)
-      * that is bundled with this package in the file LICENSE.md.
-      * It is also available through the world-wide-web at this URL:
-      * https://opensource.org/licenses/OSL-3.0
-      * If you did not receive a copy of the license and are unable to
-      * obtain it through the world-wide-web, please send an email
-      * to license@prestashop.com so we can send you a copy immediately.
-      *
-      * DISCLAIMER
-      *
-      * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-      * versions in the future. If you wish to customize PrestaShop for your
-      * needs please refer to https://devdocs.prestashop.com/ for more information.
-      *
-      * @author    PrestaShop SA and Contributors <contact@prestashop.com>
-      * @copyright Since 2007 PrestaShop SA and Contributors
-      * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
-      */e.default=u},17868:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=a(n(99663)),o=a(n(22600)),i=a(n(68840));function a(t){return t&&t.__esModule?t:{default:t}}var u=window.$,c=function(){function t(){var e=this;return(0,r.default)(this,t),{extend:function(t){return e.extend(t)}}}return(0,o.default)(t,[{key:"extend",value:function(t){var e=this;t.getContainer().on("click",".js-bulk-action-submit-btn",(function(n){e.submit(n,t)}))}},{key:"submit",value:function(t,e){var n=u(t.currentTarget),r=n.data("confirm-message"),o=n.data("confirmTitle");void 0!==r&&r.length>0?void 0!==o?this.showConfirmModal(n,e,r,o):window.confirm(r)&&this.postForm(n,e):this.postForm(n,e)}},{key:"showConfirmModal",value:function(t,e,n,r){var o=this,a=t.data("confirmButtonLabel"),u=t.data("closeButtonLabel"),c=t.data("confirmButtonClass");new i.default({id:e.getId()+"-grid-confirm-modal",confirmTitle:r,confirmMessage:n,confirmButtonLabel:a,closeButtonLabel:u,confirmButtonClass:c},(function(){return o.postForm(t,e)})).show()}},{key:"postForm",value:function(t,e){var n=u("#"+e.getId()+"_filter_form");n.attr("action",t.data("form-url")),n.attr("method",t.data("form-method")),n.submit()}}]),t}();
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */e.default=c},53277:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(e){(0,r.default)(this,t),this.id=e,this.$container=a("#"+this.id+"_grid")}return(0,o.default)(t,[{key:"getId",value:function(){return this.id}},{key:"getContainer",value:function(){return this.$container}},{key:"getHeaderContainer",value:function(){return this.$container.closest(".js-grid-panel").find(".js-grid-header")}},{key:"addExtension",value:function(t){t.extend(this)}}]),t}();e.default=u},68840:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r,o=n(85315),i=(r=o)&&r.__esModule?r:{default:r};e.default=function(t,e,n){var r=this,o=t.id,u=t.closable;this.modal=function(t){var e,n=t.id,r=void 0===n?"confirm-modal":n,o=t.confirmTitle,a=t.confirmMessage,u=void 0===a?"":a,c=t.closeButtonLabel,l=void 0===c?"Close":c,s=t.confirmButtonLabel,d=void 0===s?"Accept":s,f=t.confirmButtonClass,v=void 0===f?"btn-primary":f,p=t.customButtons,m=void 0===p?[]:p,h={};h.container=document.createElement("div"),h.container.classList.add("modal","fade"),h.container.id=r,h.dialog=document.createElement("div"),h.dialog.classList.add("modal-dialog"),h.content=document.createElement("div"),h.content.classList.add("modal-content"),h.header=document.createElement("div"),h.header.classList.add("modal-header"),o&&(h.title=document.createElement("h4"),h.title.classList.add("modal-title"),h.title.innerHTML=o);h.closeIcon=document.createElement("button"),h.closeIcon.classList.add("close"),h.closeIcon.setAttribute("type","button"),h.closeIcon.dataset.dismiss="modal",h.closeIcon.innerHTML="×",h.body=document.createElement("div"),h.body.classList.add("modal-body","text-left","font-weight-normal"),h.message=document.createElement("p"),h.message.classList.add("confirm-message"),h.message.innerHTML=u,h.footer=document.createElement("div"),h.footer.classList.add("modal-footer"),h.closeButton=document.createElement("button"),h.closeButton.setAttribute("type","button"),h.closeButton.classList.add("btn","btn-outline-secondary","btn-lg"),h.closeButton.dataset.dismiss="modal",h.closeButton.innerHTML=l,h.confirmButton=document.createElement("button"),h.confirmButton.setAttribute("type","button"),h.confirmButton.classList.add("btn",v,"btn-lg","btn-confirm-submit"),h.confirmButton.dataset.dismiss="modal",h.confirmButton.innerHTML=d,o?h.header.append(h.title,h.closeIcon):h.header.appendChild(h.closeIcon);return h.body.appendChild(h.message),(e=h.footer).append.apply(e,[h.closeButton].concat((0,i.default)(m),[h.confirmButton])),h.content.append(h.header,h.body,h.footer),h.dialog.appendChild(h.content),h.container.appendChild(h.dialog),h}(t),this.$modal=a(this.modal.container),this.show=function(){r.$modal.modal()},this.modal.confirmButton.addEventListener("click",e),this.$modal.modal({backdrop:!!u||"static",keyboard:void 0===u||u,closable:void 0===u||u,show:!1}),this.$modal.on("hidden.bs.modal",(function(){document.querySelector("#"+o).remove(),n&&n()})),document.body.appendChild(this.modal.container)};
+class k{extend(t){const e=t.getContainer().find(b);e.find(p).prop("disabled",!0),e.find(w).on("input dp.change",(()=>{e.find(p).prop("disabled",!1),e.find(g).prop("hidden",!1)}))}}
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -336,7 +72,7 @@ var n=window.$;e.default=function(t,e){n.post(t).then((function(){return window.
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-var a=window.$},3010:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
+const{$:C}=window;class E{constructor(t){this.id=t,this.$container=C(a(this.id))}getId(){return this.id}getContainer(){return this.$container}getHeaderContainer(){return this.$container.closest(c).find(l)}addExtension(t){t.extend(this)}}
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -360,7 +96,8 @@ var a=window.$},3010:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule"
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(){(0,r.default)(this,t)}return(0,o.default)(t,[{key:"extend",value:function(t){var e=t.getContainer();e.on("click",".js-remove-helper-block",(function(t){e.remove();var n=a(t.target),r=n.data("closeUrl"),o=n.data("cardName");r&&a.post(r,{close:1,name:o})}))}}]),t}();e.default=u},50204:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=i(n(99663)),o=i(n(22600));function i(t){return t&&t.__esModule?t:{default:t}}
+ */
+class x{extend(t){t.getHeaderContainer().on("click",v,(()=>{window.location.reload()}))}}
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -384,29 +121,354 @@ var a=window.$},3010:(t,e,n)=>{"use strict";Object.defineProperty(e,"__esModule"
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */var a=window.$,u=function(){function t(e){(0,r.default)(this,t),this.id=e,this.$container=a("#"+this.id)}return(0,o.default)(t,[{key:"getContainer",value:function(){return this.$container}},{key:"addExtension",value:function(t){t.extend(this)}}]),t}();e.default=u},24043:(t,e,n)=>{t.exports={default:n(47185),__esModule:!0}},32242:(t,e,n)=>{t.exports={default:n(33391),__esModule:!0}},99663:(t,e)=>{"use strict";e.__esModule=!0,e.default=function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}},22600:(t,e,n)=>{"use strict";e.__esModule=!0;var r,o=n(32242),i=(r=o)&&r.__esModule?r:{default:r};e.default=function(){function t(t,e){for(var n=0;n<e.length;n++){var r=e[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),(0,i.default)(t,r.key,r)}}return function(e,n,r){return n&&t(e.prototype,n),r&&t(e,r),e}}()},85315:(t,e,n)=>{"use strict";e.__esModule=!0;var r,o=n(24043),i=(r=o)&&r.__esModule?r:{default:r};e.default=function(t){if(Array.isArray(t)){for(var e=0,n=Array(t.length);e<t.length;e++)n[e]=t[e];return n}return(0,i.default)(t)}},47185:(t,e,n)=>{n(91867),n(2586),t.exports=n(34579).Array.from},33391:(t,e,n)=>{n(31477);var r=n(34579).Object;t.exports=function(t,e,n){return r.defineProperty(t,e,n)}},85663:t=>{t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},12159:(t,e,n)=>{var r=n(36727);t.exports=function(t){if(!r(t))throw TypeError(t+" is not an object!");return t}},57428:(t,e,n)=>{var r=n(7932),o=n(78728),i=n(16531);t.exports=function(t){return function(e,n,a){var u,c=r(e),l=o(c.length),s=i(a,l);if(t&&n!=n){for(;l>s;)if((u=c[s++])!=u)return!0}else for(;l>s;s++)if((t||s in c)&&c[s]===n)return t||s||0;return!t&&-1}}},14677:(t,e,n)=>{var r=n(32894),o=n(22939)("toStringTag"),i="Arguments"==r(function(){return arguments}());t.exports=function(t){var e,n,a;return void 0===t?"Undefined":null===t?"Null":"string"==typeof(n=function(t,e){try{return t[e]}catch(t){}}(e=Object(t),o))?n:i?r(e):"Object"==(a=r(e))&&"function"==typeof e.callee?"Arguments":a}},32894:t=>{var e={}.toString;t.exports=function(t){return e.call(t).slice(8,-1)}},34579:t=>{var e=t.exports={version:"2.6.11"};"number"==typeof __e&&(__e=e)},52445:(t,e,n)=>{"use strict";var r=n(4743),o=n(83101);t.exports=function(t,e,n){e in t?r.f(t,e,o(0,n)):t[e]=n}},19216:(t,e,n)=>{var r=n(85663);t.exports=function(t,e,n){if(r(t),void 0===e)return t;switch(n){case 1:return function(n){return t.call(e,n)};case 2:return function(n,r){return t.call(e,n,r)};case 3:return function(n,r,o){return t.call(e,n,r,o)}}return function(){return t.apply(e,arguments)}}},8333:t=>{t.exports=function(t){if(null==t)throw TypeError("Can't call method on  "+t);return t}},89666:(t,e,n)=>{t.exports=!n(7929)((function(){return 7!=Object.defineProperty({},"a",{get:function(){return 7}}).a}))},97467:(t,e,n)=>{var r=n(36727),o=n(33938).document,i=r(o)&&r(o.createElement);t.exports=function(t){return i?o.createElement(t):{}}},73338:t=>{t.exports="constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf".split(",")},83856:(t,e,n)=>{var r=n(33938),o=n(34579),i=n(19216),a=n(41818),u=n(27069),c=function(t,e,n){var l,s,d,f=t&c.F,v=t&c.G,p=t&c.S,m=t&c.P,h=t&c.B,y=t&c.W,b=v?o:o[e]||(o[e]={}),g=b.prototype,w=v?r:p?r[e]:(r[e]||{}).prototype;for(l in v&&(n=e),n)(s=!f&&w&&void 0!==w[l])&&u(b,l)||(d=s?w[l]:n[l],b[l]=v&&"function"!=typeof w[l]?n[l]:h&&s?i(d,r):y&&w[l]==d?function(t){var e=function(e,n,r){if(this instanceof t){switch(arguments.length){case 0:return new t;case 1:return new t(e);case 2:return new t(e,n)}return new t(e,n,r)}return t.apply(this,arguments)};return e.prototype=t.prototype,e}(d):m&&"function"==typeof d?i(Function.call,d):d,m&&((b.virtual||(b.virtual={}))[l]=d,t&c.R&&g&&!g[l]&&a(g,l,d)))};c.F=1,c.G=2,c.S=4,c.P=8,c.B=16,c.W=32,c.U=64,c.R=128,t.exports=c},7929:t=>{t.exports=function(t){try{return!!t()}catch(t){return!0}}},33938:t=>{var e=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=e)},27069:t=>{var e={}.hasOwnProperty;t.exports=function(t,n){return e.call(t,n)}},41818:(t,e,n)=>{var r=n(4743),o=n(83101);t.exports=n(89666)?function(t,e,n){return r.f(t,e,o(1,n))}:function(t,e,n){return t[e]=n,t}},54881:(t,e,n)=>{var r=n(33938).document;t.exports=r&&r.documentElement},33758:(t,e,n)=>{t.exports=!n(89666)&&!n(7929)((function(){return 7!=Object.defineProperty(n(97467)("div"),"a",{get:function(){return 7}}).a}))},50799:(t,e,n)=>{var r=n(32894);t.exports=Object("z").propertyIsEnumerable(0)?Object:function(t){return"String"==r(t)?t.split(""):Object(t)}},45991:(t,e,n)=>{var r=n(15449),o=n(22939)("iterator"),i=Array.prototype;t.exports=function(t){return void 0!==t&&(r.Array===t||i[o]===t)}},36727:t=>{t.exports=function(t){return"object"==typeof t?null!==t:"function"==typeof t}},95602:(t,e,n)=>{var r=n(12159);t.exports=function(t,e,n,o){try{return o?e(r(n)[0],n[1]):e(n)}catch(e){var i=t.return;throw void 0!==i&&r(i.call(t)),e}}},33945:(t,e,n)=>{"use strict";var r=n(98989),o=n(83101),i=n(25378),a={};n(41818)(a,n(22939)("iterator"),(function(){return this})),t.exports=function(t,e,n){t.prototype=r(a,{next:o(1,n)}),i(t,e+" Iterator")}},45700:(t,e,n)=>{"use strict";var r=n(16227),o=n(83856),i=n(57470),a=n(41818),u=n(15449),c=n(33945),l=n(25378),s=n(95089),d=n(22939)("iterator"),f=!([].keys&&"next"in[].keys()),v="keys",p="values",m=function(){return this};t.exports=function(t,e,n,h,y,b,g){c(n,e,h);var w,_,x,k=function(t){if(!f&&t in B)return B[t];switch(t){case v:case p:return function(){return new n(this,t)}}return function(){return new n(this,t)}},M=e+" Iterator",j=y==p,C=!1,B=t.prototype,O=B[d]||B["@@iterator"]||y&&B[y],E=O||k(y),P=y?j?k("entries"):E:void 0,A="Array"==e&&B.entries||O;if(A&&(x=s(A.call(new t)))!==Object.prototype&&x.next&&(l(x,M,!0),r||"function"==typeof x[d]||a(x,d,m)),j&&O&&O.name!==p&&(C=!0,E=function(){return O.call(this)}),r&&!g||!f&&!C&&B[d]||a(B,d,E),u[e]=E,u[M]=m,y)if(w={values:j?E:k(p),keys:b?E:k(v),entries:P},g)for(_ in w)_ in B||i(B,_,w[_]);else o(o.P+o.F*(f||C),e,w);return w}},96630:(t,e,n)=>{var r=n(22939)("iterator"),o=!1;try{var i=[7][r]();i.return=function(){o=!0},Array.from(i,(function(){throw 2}))}catch(t){}t.exports=function(t,e){if(!e&&!o)return!1;var n=!1;try{var i=[7],a=i[r]();a.next=function(){return{done:n=!0}},i[r]=function(){return a},t(i)}catch(t){}return n}},15449:t=>{t.exports={}},16227:t=>{t.exports=!0},98989:(t,e,n)=>{var r=n(12159),o=n(57856),i=n(73338),a=n(58989)("IE_PROTO"),u=function(){},c=function(){var t,e=n(97467)("iframe"),r=i.length;for(e.style.display="none",n(54881).appendChild(e),e.src="javascript:",(t=e.contentWindow.document).open(),t.write("<script>document.F=Object<\/script>"),t.close(),c=t.F;r--;)delete c.prototype[i[r]];return c()};t.exports=Object.create||function(t,e){var n;return null!==t?(u.prototype=r(t),n=new u,u.prototype=null,n[a]=t):n=c(),void 0===e?n:o(n,e)}},4743:(t,e,n)=>{var r=n(12159),o=n(33758),i=n(33206),a=Object.defineProperty;e.f=n(89666)?Object.defineProperty:function(t,e,n){if(r(t),e=i(e,!0),r(n),o)try{return a(t,e,n)}catch(t){}if("get"in n||"set"in n)throw TypeError("Accessors not supported!");return"value"in n&&(t[e]=n.value),t}},57856:(t,e,n)=>{var r=n(4743),o=n(12159),i=n(46162);t.exports=n(89666)?Object.defineProperties:function(t,e){o(t);for(var n,a=i(e),u=a.length,c=0;u>c;)r.f(t,n=a[c++],e[n]);return t}},95089:(t,e,n)=>{var r=n(27069),o=n(66530),i=n(58989)("IE_PROTO"),a=Object.prototype;t.exports=Object.getPrototypeOf||function(t){return t=o(t),r(t,i)?t[i]:"function"==typeof t.constructor&&t instanceof t.constructor?t.constructor.prototype:t instanceof Object?a:null}},12963:(t,e,n)=>{var r=n(27069),o=n(7932),i=n(57428)(!1),a=n(58989)("IE_PROTO");t.exports=function(t,e){var n,u=o(t),c=0,l=[];for(n in u)n!=a&&r(u,n)&&l.push(n);for(;e.length>c;)r(u,n=e[c++])&&(~i(l,n)||l.push(n));return l}},46162:(t,e,n)=>{var r=n(12963),o=n(73338);t.exports=Object.keys||function(t){return r(t,o)}},83101:t=>{t.exports=function(t,e){return{enumerable:!(1&t),configurable:!(2&t),writable:!(4&t),value:e}}},57470:(t,e,n)=>{t.exports=n(41818)},25378:(t,e,n)=>{var r=n(4743).f,o=n(27069),i=n(22939)("toStringTag");t.exports=function(t,e,n){t&&!o(t=n?t:t.prototype,i)&&r(t,i,{configurable:!0,value:e})}},58989:(t,e,n)=>{var r=n(20250)("keys"),o=n(65730);t.exports=function(t){return r[t]||(r[t]=o(t))}},20250:(t,e,n)=>{var r=n(34579),o=n(33938),i="__core-js_shared__",a=o[i]||(o[i]={});(t.exports=function(t,e){return a[t]||(a[t]=void 0!==e?e:{})})("versions",[]).push({version:r.version,mode:n(16227)?"pure":"global",copyright:"© 2019 Denis Pushkarev (zloirock.ru)"})},90510:(t,e,n)=>{var r=n(11052),o=n(8333);t.exports=function(t){return function(e,n){var i,a,u=String(o(e)),c=r(n),l=u.length;return c<0||c>=l?t?"":void 0:(i=u.charCodeAt(c))<55296||i>56319||c+1===l||(a=u.charCodeAt(c+1))<56320||a>57343?t?u.charAt(c):i:t?u.slice(c,c+2):a-56320+(i-55296<<10)+65536}}},16531:(t,e,n)=>{var r=n(11052),o=Math.max,i=Math.min;t.exports=function(t,e){return(t=r(t))<0?o(t+e,0):i(t,e)}},11052:t=>{var e=Math.ceil,n=Math.floor;t.exports=function(t){return isNaN(t=+t)?0:(t>0?n:e)(t)}},7932:(t,e,n)=>{var r=n(50799),o=n(8333);t.exports=function(t){return r(o(t))}},78728:(t,e,n)=>{var r=n(11052),o=Math.min;t.exports=function(t){return t>0?o(r(t),9007199254740991):0}},66530:(t,e,n)=>{var r=n(8333);t.exports=function(t){return Object(r(t))}},33206:(t,e,n)=>{var r=n(36727);t.exports=function(t,e){if(!r(t))return t;var n,o;if(e&&"function"==typeof(n=t.toString)&&!r(o=n.call(t)))return o;if("function"==typeof(n=t.valueOf)&&!r(o=n.call(t)))return o;if(!e&&"function"==typeof(n=t.toString)&&!r(o=n.call(t)))return o;throw TypeError("Can't convert object to primitive value")}},65730:t=>{var e=0,n=Math.random();t.exports=function(t){return"Symbol(".concat(void 0===t?"":t,")_",(++e+n).toString(36))}},22939:(t,e,n)=>{var r=n(20250)("wks"),o=n(65730),i=n(33938).Symbol,a="function"==typeof i;(t.exports=function(t){return r[t]||(r[t]=a&&i[t]||(a?i:o)("Symbol."+t))}).store=r},83728:(t,e,n)=>{var r=n(14677),o=n(22939)("iterator"),i=n(15449);t.exports=n(34579).getIteratorMethod=function(t){if(null!=t)return t[o]||t["@@iterator"]||i[r(t)]}},2586:(t,e,n)=>{"use strict";var r=n(19216),o=n(83856),i=n(66530),a=n(95602),u=n(45991),c=n(78728),l=n(52445),s=n(83728);o(o.S+o.F*!n(96630)((function(t){Array.from(t)})),"Array",{from:function(t){var e,n,o,d,f=i(t),v="function"==typeof this?this:Array,p=arguments.length,m=p>1?arguments[1]:void 0,h=void 0!==m,y=0,b=s(f);if(h&&(m=r(m,p>2?arguments[2]:void 0,2)),null==b||v==Array&&u(b))for(n=new v(e=c(f.length));e>y;y++)l(n,y,h?m(f[y],y):f[y]);else for(d=b.call(f),n=new v;!(o=d.next()).done;y++)l(n,y,h?a(d,m,[o.value,y],!0):o.value);return n.length=y,n}})},31477:(t,e,n)=>{var r=n(83856);r(r.S+r.F*!n(89666),"Object",{defineProperty:n(4743).f})},91867:(t,e,n)=>{"use strict";var r=n(90510)(!0);n(45700)(String,"String",(function(t){this._t=String(t),this._i=0}),(function(){var t,e=this._t,n=this._i;return n>=e.length?{value:void 0,done:!0}:(t=r(e,n),this._i+=t.length,{value:t,done:!1})}))}},e={};function n(r){var o=e[r];if(void 0!==o)return o.exports;var i=e[r]={exports:{}};return t[r](i,i.exports,n),i.exports}(()=>{"use strict";var t=p(n(91137)),e=p(n(53277)),r=p(n(37758)),o=p(n(2573)),i=p(n(96803)),a=p(n(58630)),u=p(n(5595)),c=p(n(17868)),l=p(n(91781)),s=p(n(4499)),d=p(n(50204)),f=p(n(3010)),v=p(n(58899));function p(t){return t&&t.__esModule?t:{default:t}}
+ */
+const{$:B}=window;class O{extend(t){t.getHeaderContainer().on("click",i.showQuery,(()=>this.onShowSqlQueryClick(t))),t.getHeaderContainer().on("click",i.exportQuery,(()=>this.onExportSqlManagerClick(t)))}onShowSqlQueryClick(t){const e=B(i.showModalForm(t.getId()));this.fillExportForm(e,t);const n=B(i.showModalGrid(t.getId()));n.modal("show"),n.on("click",_,(()=>e.submit()))}onExportSqlManagerClick(t){const e=B(i.showModalForm(t.getId()));this.fillExportForm(e,t),e.submit()}fillExportForm(t,e){const n=e.getContainer().find(r).data("query");t.find('textarea[name="sql"]').val(n),t.find('input[name="name"]').val(this.getNameFromBreadcrumb())}getNameFromBreadcrumb(){const t=B(u).find(m);let e="";return t.each(((t,n)=>{const o=B(n),i=o.find("a").length>0?o.find("a").text():o.text();e.length>0&&(e=e.concat(" > ")),e=e.concat(i)})),e}}
 /**
-                    * Copyright since 2007 PrestaShop SA and Contributors
-                    * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
-                    *
-                    * NOTICE OF LICENSE
-                    *
-                    * This source file is subject to the Open Software License (OSL 3.0)
-                    * that is bundled with this package in the file LICENSE.md.
-                    * It is also available through the world-wide-web at this URL:
-                    * https://opensource.org/licenses/OSL-3.0
-                    * If you did not receive a copy of the license and are unable to
-                    * obtain it through the world-wide-web, please send an email
-                    * to license@prestashop.com so we can send you a copy immediately.
-                    *
-                    * DISCLAIMER
-                    *
-                    * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-                    * versions in the future. If you wish to customize PrestaShop for your
-                    * needs please refer to https://devdocs.prestashop.com/ for more information.
-                    *
-                    * @author    PrestaShop SA and Contributors <contact@prestashop.com>
-                    * @copyright Since 2007 PrestaShop SA and Contributors
-                    * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
-                    */
-(0,window.$)((function(){var n=new e.default("employee");n.addExtension(new r.default),n.addExtension(new o.default),n.addExtension(new i.default),n.addExtension(new a.default),n.addExtension(new u.default),n.addExtension(new c.default),n.addExtension(new l.default),n.addExtension(new s.default),n.addExtension(new t.default),n.addExtension(new v.default),new d.default("employeesShowcaseCard").addExtension(new f.default)}))})(),window.employee={}})();
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:j}=window,A=function(t,e){j.post(t).then((()=>window.location.assign(e)))},{$:M}=window;class T{extend(t){t.getContainer().on("click",f,(t=>{A(M(t.currentTarget).data("url"),M(t.currentTarget).data("redirect"))}))}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$}=window;const S=class{constructor(t){this.selector=".ps-sortable-column",this.columns=$(t).find(this.selector)}attach(){this.columns.on("click",(t=>{const e=$(t.delegateTarget);this.sortByColumn(e,this.getToggledSortDirection(e))}))}sortBy(t,e){if(!this.columns.is(`[data-sort-col-name="${t}"]`))throw new Error(`Cannot sort by "${t}": invalid column`);this.sortByColumn(this.columns,e)}sortByColumn(t,e){window.location.href=this.getUrl(t.data("sortColName"),"desc"===e?"desc":"asc",t.data("sortPrefix"))}getToggledSortDirection(t){return"asc"===t.data("sortDirection")?"desc":"asc"}getUrl(t,e,n){const o=new URL(window.location.href),i=o.searchParams;return n?(i.set(`${n}[orderBy]`,t),i.set(`${n}[sortOrder]`,e)):(i.set("orderBy",t),i.set("sortOrder",e)),o.toString()}};
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+class L{extend(t){const e=t.getContainer().find(h);new S(e).attach()}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:F}=window;class I{extend(t){this.handleBulkActionCheckboxSelect(t),this.handleBulkActionSelectAllCheckbox(t)}handleBulkActionSelectAllCheckbox(e){e.getContainer().on("change",t.actionSelectAll,(n=>{const o=F(n.currentTarget).is(":checked");o?this.enableBulkActionsBtn(e):this.disableBulkActionsBtn(e),e.getContainer().find(t.bulkActionCheckbox).prop("checked",o)}))}handleBulkActionCheckboxSelect(e){e.getContainer().on("change",t.bulkActionCheckbox,(()=>{e.getContainer().find(t.checkedCheckbox).length>0?this.enableBulkActionsBtn(e):this.disableBulkActionsBtn(e)}))}enableBulkActionsBtn(e){e.getContainer().find(t.bulkActionBtn).prop("disabled",!1)}disableBulkActionsBtn(e){e.getContainer().find(t.bulkActionBtn).prop("disabled",!0)}}var P=n(9567),D=Object.defineProperty,R=Object.getOwnPropertySymbols,q=Object.prototype.hasOwnProperty,H=Object.prototype.propertyIsEnumerable,z=(t,e,n)=>e in t?D(t,e,{enumerable:!0,configurable:!0,writable:!0,value:n}):t[e]=n,G=(t,e)=>{for(var n in e||(e={}))q.call(e,n)&&z(t,n,e[n]);if(R)for(var n of R(e))H.call(e,n)&&z(t,n,e[n]);return t};
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+class N{constructor(t){const e=G({id:"confirm-modal",closable:!1},t);this.buildModalContainer(e)}buildModalContainer(t){this.container=document.createElement("div"),this.container.classList.add("modal","fade"),this.container.id=t.id,this.dialog=document.createElement("div"),this.dialog.classList.add("modal-dialog"),t.dialogStyle&&Object.keys(t.dialogStyle).forEach((e=>{this.dialog.style[e]=t.dialogStyle[e]})),this.content=document.createElement("div"),this.content.classList.add("modal-content"),this.message=document.createElement("p"),this.message.classList.add("modal-message"),this.header=document.createElement("div"),this.header.classList.add("modal-header"),t.modalTitle&&(this.title=document.createElement("h4"),this.title.classList.add("modal-title"),this.title.innerHTML=t.modalTitle),this.closeIcon=document.createElement("button"),this.closeIcon.classList.add("close"),this.closeIcon.setAttribute("type","button"),this.closeIcon.dataset.dismiss="modal",this.closeIcon.innerHTML="×",this.body=document.createElement("div"),this.body.classList.add("modal-body","text-left","font-weight-normal"),this.title&&this.header.appendChild(this.title),this.header.appendChild(this.closeIcon),this.content.append(this.header,this.body),this.body.appendChild(this.message),this.dialog.appendChild(this.content),this.container.appendChild(this.dialog)}}class W{constructor(t){const e=G({id:"confirm-modal",closable:!1,dialogStyle:{}},t);this.initContainer(e)}initContainer(t){this.modal||(this.modal=new N(t)),this.$modal=P(this.modal.container);const{id:e,closable:n}=t;this.$modal.modal({backdrop:!!n||"static",keyboard:void 0===n||n,show:!1}),this.$modal.on("hidden.bs.modal",(()=>{const n=document.querySelector(`#${e}`);n&&n.remove(),t.closeCallback&&t.closeCallback()})),document.body.appendChild(this.modal.container)}setTitle(t){this.modal.title||(this.modal.title=document.createElement("h4"),this.modal.title.classList.add("modal-title"),this.modal.closeIcon?this.modal.header.insertBefore(this.modal.title,this.modal.closeIcon):this.modal.header.appendChild(this.modal.title)),this.modal.title.innerHTML=t}render(t){this.modal.message.innerHTML=t}show(){this.$modal.modal("show")}hide(){this.$modal.modal("hide"),this.$modal.on("shown.bs.modal",(()=>{this.$modal.modal("hide"),this.$modal.off("shown.bs.modal")}))}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+function Q(t){return void 0===t}var V=Object.defineProperty,U=Object.getOwnPropertySymbols,J=Object.prototype.hasOwnProperty,K=Object.prototype.propertyIsEnumerable,X=(t,e,n)=>e in t?V(t,e,{enumerable:!0,configurable:!0,writable:!0,value:n}):t[e]=n;
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+class Y extends N{constructor(t){super(t)}buildModalContainer(t){super.buildModalContainer(t),this.message.classList.add("confirm-message"),this.message.innerHTML=t.confirmMessage,this.footer=document.createElement("div"),this.footer.classList.add("modal-footer"),this.closeButton=document.createElement("button"),this.closeButton.setAttribute("type","button"),this.closeButton.classList.add("btn","btn-outline-secondary","btn-lg"),this.closeButton.dataset.dismiss="modal",this.closeButton.innerHTML=t.closeButtonLabel,this.confirmButton=document.createElement("button"),this.confirmButton.setAttribute("type","button"),this.confirmButton.classList.add("btn",t.confirmButtonClass,"btn-lg","btn-confirm-submit"),this.confirmButton.dataset.dismiss="modal",this.confirmButton.innerHTML=t.confirmButtonLabel,this.footer.append(this.closeButton,...t.customButtons,this.confirmButton),this.content.append(this.footer)}}class Z extends W{constructor(t,e,n){var o;let i;i=Q(t.confirmCallback)?Q(e)?()=>{console.error("No confirm callback provided for ConfirmModal component.")}:e:t.confirmCallback;super(((t,e)=>{for(var n in e||(e={}))J.call(e,n)&&X(t,n,e[n]);if(U)for(var n of U(e))K.call(e,n)&&X(t,n,e[n]);return t})({id:"confirm-modal",confirmMessage:"Are you sure?",closeButtonLabel:"Close",confirmButtonLabel:"Accept",confirmButtonClass:"btn-primary",customButtons:[],closable:!1,modalTitle:t.confirmTitle,dialogStyle:{},confirmCallback:i,closeCallback:null!=(o=t.closeCallback)?o:n},t))}initContainer(t){this.modal=new Y(t),this.modal.confirmButton.addEventListener("click",t.confirmCallback),super.initContainer(t)}}var tt=function(){if("undefined"!=typeof Map)return Map;function t(t,e){var n=-1;return t.some((function(t,o){return t[0]===e&&(n=o,!0)})),n}return function(){function e(){this.__entries__=[]}return Object.defineProperty(e.prototype,"size",{get:function(){return this.__entries__.length},enumerable:!0,configurable:!0}),e.prototype.get=function(e){var n=t(this.__entries__,e),o=this.__entries__[n];return o&&o[1]},e.prototype.set=function(e,n){var o=t(this.__entries__,e);~o?this.__entries__[o][1]=n:this.__entries__.push([e,n])},e.prototype.delete=function(e){var n=this.__entries__,o=t(n,e);~o&&n.splice(o,1)},e.prototype.has=function(e){return!!~t(this.__entries__,e)},e.prototype.clear=function(){this.__entries__.splice(0)},e.prototype.forEach=function(t,e){void 0===e&&(e=null);for(var n=0,o=this.__entries__;n<o.length;n++){var i=o[n];t.call(e,i[1],i[0])}},e}()}(),et="undefined"!=typeof window&&"undefined"!=typeof document&&window.document===document,nt=void 0!==n.g&&n.g.Math===Math?n.g:"undefined"!=typeof self&&self.Math===Math?self:"undefined"!=typeof window&&window.Math===Math?window:Function("return this")(),ot="function"==typeof requestAnimationFrame?requestAnimationFrame.bind(nt):function(t){return setTimeout((function(){return t(Date.now())}),1e3/60)};var it=["top","right","bottom","left","width","height","size","weight"],st="undefined"!=typeof MutationObserver,rt=function(){function t(){this.connected_=!1,this.mutationEventsAdded_=!1,this.mutationsObserver_=null,this.observers_=[],this.onTransitionEnd_=this.onTransitionEnd_.bind(this),this.refresh=function(t,e){var n=!1,o=!1,i=0;function s(){n&&(n=!1,t()),o&&a()}function r(){ot(s)}function a(){var t=Date.now();if(n){if(t-i<2)return;o=!0}else n=!0,o=!1,setTimeout(r,e);i=t}return a}(this.refresh.bind(this),20)}return t.prototype.addObserver=function(t){~this.observers_.indexOf(t)||this.observers_.push(t),this.connected_||this.connect_()},t.prototype.removeObserver=function(t){var e=this.observers_,n=e.indexOf(t);~n&&e.splice(n,1),!e.length&&this.connected_&&this.disconnect_()},t.prototype.refresh=function(){this.updateObservers_()&&this.refresh()},t.prototype.updateObservers_=function(){var t=this.observers_.filter((function(t){return t.gatherActive(),t.hasActive()}));return t.forEach((function(t){return t.broadcastActive()})),t.length>0},t.prototype.connect_=function(){et&&!this.connected_&&(document.addEventListener("transitionend",this.onTransitionEnd_),window.addEventListener("resize",this.refresh),st?(this.mutationsObserver_=new MutationObserver(this.refresh),this.mutationsObserver_.observe(document,{attributes:!0,childList:!0,characterData:!0,subtree:!0})):(document.addEventListener("DOMSubtreeModified",this.refresh),this.mutationEventsAdded_=!0),this.connected_=!0)},t.prototype.disconnect_=function(){et&&this.connected_&&(document.removeEventListener("transitionend",this.onTransitionEnd_),window.removeEventListener("resize",this.refresh),this.mutationsObserver_&&this.mutationsObserver_.disconnect(),this.mutationEventsAdded_&&document.removeEventListener("DOMSubtreeModified",this.refresh),this.mutationsObserver_=null,this.mutationEventsAdded_=!1,this.connected_=!1)},t.prototype.onTransitionEnd_=function(t){var e=t.propertyName,n=void 0===e?"":e;it.some((function(t){return!!~n.indexOf(t)}))&&this.refresh()},t.getInstance=function(){return this.instance_||(this.instance_=new t),this.instance_},t.instance_=null,t}(),at=function(t,e){for(var n=0,o=Object.keys(e);n<o.length;n++){var i=o[n];Object.defineProperty(t,i,{value:e[i],enumerable:!1,writable:!1,configurable:!0})}return t},ct=function(t){return t&&t.ownerDocument&&t.ownerDocument.defaultView||nt},lt=bt(0,0,0,0);function dt(t){return parseFloat(t)||0}function ht(t){for(var e=[],n=1;n<arguments.length;n++)e[n-1]=arguments[n];return e.reduce((function(e,n){return e+dt(t["border-"+n+"-width"])}),0)}function ut(t){var e=t.clientWidth,n=t.clientHeight;if(!e&&!n)return lt;var o=ct(t).getComputedStyle(t),i=function(t){for(var e={},n=0,o=["top","right","bottom","left"];n<o.length;n++){var i=o[n],s=t["padding-"+i];e[i]=dt(s)}return e}(o),s=i.left+i.right,r=i.top+i.bottom,a=dt(o.width),c=dt(o.height);if("border-box"===o.boxSizing&&(Math.round(a+s)!==e&&(a-=ht(o,"left","right")+s),Math.round(c+r)!==n&&(c-=ht(o,"top","bottom")+r)),!function(t){return t===ct(t).document.documentElement}(t)){var l=Math.round(a+s)-e,d=Math.round(c+r)-n;1!==Math.abs(l)&&(a-=l),1!==Math.abs(d)&&(c-=d)}return bt(i.left,i.top,a,c)}var mt="undefined"!=typeof SVGGraphicsElement?function(t){return t instanceof ct(t).SVGGraphicsElement}:function(t){return t instanceof ct(t).SVGElement&&"function"==typeof t.getBBox};function ft(t){return et?mt(t)?function(t){var e=t.getBBox();return bt(0,0,e.width,e.height)}(t):ut(t):lt}function bt(t,e,n,o){return{x:t,y:e,width:n,height:o}}var pt=function(){function t(t){this.broadcastWidth=0,this.broadcastHeight=0,this.contentRect_=bt(0,0,0,0),this.target=t}return t.prototype.isActive=function(){var t=ft(this.target);return this.contentRect_=t,t.width!==this.broadcastWidth||t.height!==this.broadcastHeight},t.prototype.broadcastRect=function(){var t=this.contentRect_;return this.broadcastWidth=t.width,this.broadcastHeight=t.height,t},t}(),gt=function(t,e){var n,o,i,s,r,a,c,l=(o=(n=e).x,i=n.y,s=n.width,r=n.height,a="undefined"!=typeof DOMRectReadOnly?DOMRectReadOnly:Object,c=Object.create(a.prototype),at(c,{x:o,y:i,width:s,height:r,top:i,right:o+s,bottom:r+i,left:o}),c);at(this,{target:t,contentRect:l})},wt=function(){function t(t,e,n){if(this.activeObservations_=[],this.observations_=new tt,"function"!=typeof t)throw new TypeError("The callback provided as parameter 1 is not a function.");this.callback_=t,this.controller_=e,this.callbackCtx_=n}return t.prototype.observe=function(t){if(!arguments.length)throw new TypeError("1 argument required, but only 0 present.");if("undefined"!=typeof Element&&Element instanceof Object){if(!(t instanceof ct(t).Element))throw new TypeError('parameter 1 is not of type "Element".');var e=this.observations_;e.has(t)||(e.set(t,new pt(t)),this.controller_.addObserver(this),this.controller_.refresh())}},t.prototype.unobserve=function(t){if(!arguments.length)throw new TypeError("1 argument required, but only 0 present.");if("undefined"!=typeof Element&&Element instanceof Object){if(!(t instanceof ct(t).Element))throw new TypeError('parameter 1 is not of type "Element".');var e=this.observations_;e.has(t)&&(e.delete(t),e.size||this.controller_.removeObserver(this))}},t.prototype.disconnect=function(){this.clearActive(),this.observations_.clear(),this.controller_.removeObserver(this)},t.prototype.gatherActive=function(){var t=this;this.clearActive(),this.observations_.forEach((function(e){e.isActive()&&t.activeObservations_.push(e)}))},t.prototype.broadcastActive=function(){if(this.hasActive()){var t=this.callbackCtx_,e=this.activeObservations_.map((function(t){return new gt(t.target,t.broadcastRect())}));this.callback_.call(t,e,t),this.clearActive()}},t.prototype.clearActive=function(){this.activeObservations_.splice(0)},t.prototype.hasActive=function(){return this.activeObservations_.length>0},t}(),vt="undefined"!=typeof WeakMap?new WeakMap:new tt,yt=function t(e){if(!(this instanceof t))throw new TypeError("Cannot call a class as a function.");if(!arguments.length)throw new TypeError("1 argument required, but only 0 present.");var n=rt.getInstance(),o=new wt(e,n,this);vt.set(this,o)};["observe","unobserve","disconnect"].forEach((function(t){yt.prototype[t]=function(){var e;return(e=vt.get(this))[t].apply(e,arguments)}}));void 0!==nt.ResizeObserver&&nt.ResizeObserver;const _t=class extends Event{constructor(t,e={}){super(_t.parentWindowEvent),this.eventName=t,this.eventParameters=e}get name(){return this.eventName}get parameters(){return this.eventParameters}};_t.parentWindowEvent="IframeClientEvent";Object.defineProperty,Object.getOwnPropertySymbols,Object.prototype.hasOwnProperty,Object.prototype.propertyIsEnumerable;Object.defineProperty,Object.getOwnPropertySymbols,Object.prototype.hasOwnProperty,Object.prototype.propertyIsEnumerable;
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */const kt=Z,{$:Ct}=window;class Et{extend(e){e.getContainer().on("click",t.submitAction,(t=>{this.submit(t,e)}))}submit(t,e){const n=Ct(t.currentTarget),o=n.data("confirm-message"),i=n.data("confirmTitle");void 0!==o&&o.length>0?void 0!==i?this.showConfirmModal(n,e,o,i):window.confirm(o)&&this.postForm(n,e):this.postForm(n,e)}showConfirmModal(t,e,n,o){const i=t.data("confirmButtonLabel"),r=t.data("closeButtonLabel"),a=t.data("confirmButtonClass");new kt({id:s(e.getId()),confirmTitle:o,confirmMessage:n,confirmButtonLabel:i,closeButtonLabel:r,confirmButtonClass:a},(()=>this.postForm(t,e))).show()}postForm(t,e){const n=Ct(y(e.getId()));n.attr("action",t.data("form-url")),n.attr("method",t.data("form-method")),n.submit()}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:xt}=window;class Bt{extend(t){t.getContainer().on("click",".js-submit-row-action",(e=>{e.preventDefault();const n=xt(e.currentTarget),o=n.data("confirmMessage"),i=n.data("title"),s=n.data("method");if(i)this.showConfirmModal(n,t,o,i,s);else{if(o.length&&!window.confirm(o))return;this.postForm(n,s)}}))}postForm(t,e){const n=["GET","POST"].includes(e),o=xt("<form>",{action:t.data("url"),method:n?e:"POST"}).appendTo("body");n||o.append(xt("<input>",{type:"_hidden",name:"_method",value:e})),o.submit()}showConfirmModal(t,e,n,o,i){const r=t.data("confirmButtonLabel"),a=t.data("closeButtonLabel"),c=t.data("confirmButtonClass");new Z({id:s(e.getId()),confirmTitle:o,confirmMessage:n,confirmButtonLabel:r,closeButtonLabel:a,confirmButtonClass:c},(()=>this.postForm(t,i))).show()}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:Ot}=window;class jt{extend(t){t.getContainer().find(h).find(d).on("click",(t=>{t.preventDefault(),this.toggleValue(Ot(t.delegateTarget))}))}toggleValue(t){const e=t.data("toggleUrl");this.submitAsForm(e)}submitAsForm(t){Ot("<form>",{action:t,method:"POST"}).appendTo("body").submit()}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:At}=window;class Mt{constructor(t){this.id=t,this.$container=At(`#${this.id}`)}getContainer(){return this.$container}addExtension(t){t.extend(this)}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:Tt}=window;class $t{extend(t){const e=t.getContainer();e.on("click",".js-remove-helper-block",(t=>{e.remove();const n=Tt(t.target),o=n.data("closeUrl"),i=n.data("cardName");o&&Tt.post(o,{close:1,name:i})}))}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:St}=window;class Lt{extend(t){this.initRowLinks(t),this.initConfirmableActions(t)}initConfirmableActions(t){t.getContainer().on("click",e.linkRowAction,(t=>{const e=St(t.currentTarget).data("confirm-message");e.length&&!window.confirm(e)&&t.preventDefault()}))}initRowLinks(t){St("tr",t.getContainer()).each((function(){const t=St(this);St(e.linkRowActionClickableFirst,t).each((function(){const n=St(this),o=n.closest("td"),i=St(e.clickableTd,t).not(o);let s=!1;i.addClass("cursor-pointer").mousedown((()=>{St(window).mousemove((()=>{s=!0,St(window).unbind("mousemove")}))})),i.mouseup((()=>{const t=s;if(s=!1,St(window).unbind("mousemove"),!t){const t=n.data("confirm-message");(!t.length||window.confirm(t)&&n.attr("href"))&&(document.location.href=n.attr("href"))}}))}))}))}}
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+const{$:Ft}=window;Ft((()=>{const t=new E("employee");t.addExtension(new x),t.addExtension(new O),t.addExtension(new T),t.addExtension(new L),t.addExtension(new I),t.addExtension(new Et),t.addExtension(new Bt),t.addExtension(new jt),t.addExtension(new k),t.addExtension(new Lt);new Mt("employeesShowcaseCard").addExtension(new $t)}))})(),window.employee=o})();

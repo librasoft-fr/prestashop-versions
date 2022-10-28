@@ -2,22 +2,36 @@
 
 namespace Doctrine\Bundle\DoctrineBundle\Twig;
 
-use SqlFormatter;
+use Doctrine\SqlFormatter\HtmlHighlighter;
+use Doctrine\SqlFormatter\NullHighlighter;
+use Doctrine\SqlFormatter\SqlFormatter;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+
+use function addslashes;
+use function array_key_exists;
+use function bin2hex;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_object;
+use function is_string;
+use function method_exists;
+use function preg_match;
+use function preg_replace_callback;
+use function sprintf;
+use function strtoupper;
+use function substr;
+use function trigger_deprecation;
 
 /**
  * This class contains the needed functions in order to do the query highlighting
  */
 class DoctrineExtension extends AbstractExtension
 {
-    /**
-     * Number of maximum characters that one single line can hold in the interface
-     *
-     * @var int
-     */
-    private $maxCharWidth = 100;
+    /** @var SqlFormatter */
+    private $sqlFormatter;
 
     /**
      * Define our functions
@@ -27,195 +41,11 @@ class DoctrineExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('doctrine_minify_query', [$this, 'minifyQuery'], ['deprecated' => true]),
-            new TwigFilter('doctrine_pretty_query', [$this, 'formatQuery'], ['is_safe' => ['html']]),
+            new TwigFilter('doctrine_pretty_query', [$this, 'formatQuery'], ['is_safe' => ['html'], 'deprecated' => true]),
+            new TwigFilter('doctrine_prettify_sql', [$this, 'prettifySql'], ['is_safe' => ['html']]),
+            new TwigFilter('doctrine_format_sql', [$this, 'formatSql'], ['is_safe' => ['html']]),
             new TwigFilter('doctrine_replace_query_parameters', [$this, 'replaceQueryParameters']),
         ];
-    }
-
-    /**
-     * Get the possible combinations of elements from the given array
-     *
-     * @param array $elements
-     * @param int   $combinationsLevel
-     *
-     * @return array
-     */
-    private function getPossibleCombinations(array $elements, $combinationsLevel)
-    {
-        $baseCount = count($elements);
-        $result    = [];
-
-        if ($combinationsLevel === 1) {
-            foreach ($elements as $element) {
-                $result[] = [$element];
-            }
-
-            return $result;
-        }
-
-        $nextLevelElements = $this->getPossibleCombinations($elements, $combinationsLevel - 1);
-
-        foreach ($nextLevelElements as $nextLevelElement) {
-            $lastElement = $nextLevelElement[$combinationsLevel - 2];
-            $found       = false;
-
-            foreach ($elements as $key => $element) {
-                if ($element === $lastElement) {
-                    $found = true;
-                    continue;
-                }
-
-                if ($found !== true || $key >= $baseCount) {
-                    continue;
-                }
-
-                $tmp              = $nextLevelElement;
-                $newCombination   = array_slice($tmp, 0);
-                $newCombination[] = $element;
-                $result[]         = array_slice($newCombination, 0);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Shrink the values of parameters from a combination
-     *
-     * @param array $parameters
-     * @param array $combination
-     *
-     * @return string
-     */
-    private function shrinkParameters(array $parameters, array $combination)
-    {
-        array_shift($parameters);
-        $result = '';
-
-        $maxLength  = $this->maxCharWidth;
-        $maxLength -= count($parameters) * 5;
-        $maxLength /= count($parameters);
-
-        foreach ($parameters as $key => $value) {
-            $isLarger = false;
-
-            if (strlen($value) > $maxLength) {
-                $value = wordwrap($value, $maxLength, "\n", true);
-                $value = explode("\n", $value);
-                $value = $value[0];
-
-                $isLarger = true;
-            }
-            $value = self::escapeFunction($value);
-
-            if (! is_numeric($value)) {
-                $value = substr($value, 1, -1);
-            }
-
-            if ($isLarger) {
-                $value .= ' [...]';
-            }
-
-            $result .= ' ' . $combination[$key] . ' ' . $value;
-        }
-
-        return trim($result);
-    }
-
-    /**
-     * Attempt to compose the best scenario minified query so that a user could find it without expanding it
-     *
-     * @param string $query
-     * @param array  $keywords
-     * @param int    $required
-     *
-     * @return string
-     */
-    private function composeMiniQuery($query, array $keywords, $required)
-    {
-        // Extract the mandatory keywords and consider the rest as optional keywords
-        $mandatoryKeywords = array_splice($keywords, 0, $required);
-
-        $combinations      = [];
-        $combinationsCount = count($keywords);
-
-        // Compute all the possible combinations of keywords to match the query for
-        while ($combinationsCount > 0) {
-            $combinations = array_merge($combinations, $this->getPossibleCombinations($keywords, $combinationsCount));
-            $combinationsCount--;
-        }
-
-        // Try and match the best case query pattern
-        foreach ($combinations as $combination) {
-            $combination = array_merge($mandatoryKeywords, $combination);
-
-            $regexp = implode('(.*) ', $combination) . ' (.*)';
-            $regexp = '/^' . $regexp . '/is';
-
-            if (preg_match($regexp, $query, $matches)) {
-                return $this->shrinkParameters($matches, $combination);
-            }
-        }
-
-        // Try and match the simplest query form that contains only the mandatory keywords
-        $regexp = implode(' (.*)', $mandatoryKeywords) . ' (.*)';
-        $regexp = '/^' . $regexp . '/is';
-
-        if (preg_match($regexp, $query, $matches)) {
-            return $this->shrinkParameters($matches, $mandatoryKeywords);
-        }
-
-        // Fallback in case we didn't managed to find any good match (can we actually have that happen?!)
-        return substr($query, 0, $this->maxCharWidth);
-    }
-
-    /**
-     * Minify the query
-     *
-     * @param string $query
-     *
-     * @return string
-     */
-    public function minifyQuery($query)
-    {
-        $result   = '';
-        $keywords = [];
-        $required = 1;
-
-        // Check if we can match the query against any of the major types
-        switch (true) {
-            case stripos($query, 'SELECT') !== false:
-                $keywords = ['SELECT', 'FROM', 'WHERE', 'HAVING', 'ORDER BY', 'LIMIT'];
-                $required = 2;
-                break;
-
-            case stripos($query, 'DELETE') !== false:
-                $keywords = ['DELETE', 'FROM', 'WHERE', 'ORDER BY', 'LIMIT'];
-                $required = 2;
-                break;
-
-            case stripos($query, 'UPDATE') !== false:
-                $keywords = ['UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'];
-                $required = 2;
-                break;
-
-            case stripos($query, 'INSERT') !== false:
-                $keywords = ['INSERT', 'INTO', 'VALUE', 'VALUES'];
-                $required = 2;
-                break;
-
-            // If there's no match so far just truncate it to the maximum allowed by the interface
-            default:
-                $result = substr($query, 0, $this->maxCharWidth);
-        }
-
-        // If we had a match then we should minify it
-        if ($result === '') {
-            $result = $this->composeMiniQuery($query, $keywords, $required);
-        }
-
-        return $result;
     }
 
     /**
@@ -247,11 +77,11 @@ class DoctrineExtension extends AbstractExtension
                     $value = static::escapeFunction($value);
                 }
 
-                $result = implode(', ', $result);
+                $result = implode(', ', $result) ?: 'NULL';
                 break;
 
-            case is_object($result):
-                $result = addslashes((string) $result);
+            case is_object($result) && method_exists($result, '__toString'):
+                $result = addslashes($result->__toString());
                 break;
 
             case $result === null:
@@ -269,8 +99,8 @@ class DoctrineExtension extends AbstractExtension
     /**
      * Return a query with the parameters replaced
      *
-     * @param string     $query
-     * @param array|Data $parameters
+     * @param string       $query
+     * @param mixed[]|Data $parameters
      *
      * @return string
      */
@@ -315,26 +145,53 @@ class DoctrineExtension extends AbstractExtension
      */
     public function formatQuery($sql, $highlightOnly = false)
     {
-        SqlFormatter::$pre_attributes            = 'class="highlight highlight-sql"';
-        SqlFormatter::$quote_attributes          = 'class="string"';
-        SqlFormatter::$backtick_quote_attributes = 'class="string"';
-        SqlFormatter::$reserved_attributes       = 'class="keyword"';
-        SqlFormatter::$boundary_attributes       = 'class="symbol"';
-        SqlFormatter::$number_attributes         = 'class="number"';
-        SqlFormatter::$word_attributes           = 'class="word"';
-        SqlFormatter::$error_attributes          = 'class="error"';
-        SqlFormatter::$comment_attributes        = 'class="comment"';
-        SqlFormatter::$variable_attributes       = 'class="variable"';
+        trigger_deprecation(
+            'doctrine/doctrine-bundle',
+            '2.1',
+            'The "%s()" method is deprecated and will be removed in doctrine-bundle 3.0.',
+            __METHOD__
+        );
+
+        $this->setUpSqlFormatter(true, true);
 
         if ($highlightOnly) {
-            $html = SqlFormatter::highlight($sql);
-            $html = preg_replace('/<pre class=".*">([^"]*+)<\/pre>/Us', '\1', $html);
-        } else {
-            $html = SqlFormatter::format($sql);
-            $html = preg_replace('/<pre class="(.*)">([^"]*+)<\/pre>/Us', '<div class="\1"><pre>\2</pre></div>', $html);
+            return $this->sqlFormatter->highlight($sql);
         }
 
-        return $html;
+        return sprintf(
+            '<div class="highlight highlight-sql"><pre>%s</pre></div>',
+            $this->sqlFormatter->format($sql)
+        );
+    }
+
+    public function prettifySql(string $sql): string
+    {
+        $this->setUpSqlFormatter();
+
+        return $this->sqlFormatter->highlight($sql);
+    }
+
+    public function formatSql(string $sql, bool $highlight): string
+    {
+        $this->setUpSqlFormatter($highlight);
+
+        return $this->sqlFormatter->format($sql);
+    }
+
+    private function setUpSqlFormatter(bool $highlight = true, bool $legacy = false): void
+    {
+        $this->sqlFormatter = new SqlFormatter($highlight ? new HtmlHighlighter([
+            HtmlHighlighter::HIGHLIGHT_PRE            => 'class="highlight highlight-sql"',
+            HtmlHighlighter::HIGHLIGHT_QUOTE          => 'class="string"',
+            HtmlHighlighter::HIGHLIGHT_BACKTICK_QUOTE => 'class="string"',
+            HtmlHighlighter::HIGHLIGHT_RESERVED       => 'class="keyword"',
+            HtmlHighlighter::HIGHLIGHT_BOUNDARY       => 'class="symbol"',
+            HtmlHighlighter::HIGHLIGHT_NUMBER         => 'class="number"',
+            HtmlHighlighter::HIGHLIGHT_WORD           => 'class="word"',
+            HtmlHighlighter::HIGHLIGHT_ERROR          => 'class="error"',
+            HtmlHighlighter::HIGHLIGHT_COMMENT        => 'class="comment"',
+            HtmlHighlighter::HIGHLIGHT_VARIABLE       => 'class="variable"',
+        ], ! $legacy) : new NullHighlighter());
     }
 
     /**

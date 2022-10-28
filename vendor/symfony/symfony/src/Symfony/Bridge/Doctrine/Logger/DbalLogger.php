@@ -20,8 +20,8 @@ use Symfony\Component\Stopwatch\Stopwatch;
  */
 class DbalLogger implements SQLLogger
 {
-    const MAX_STRING_LENGTH = 32;
-    const BINARY_DATA_VALUE = '(binary value)';
+    public const MAX_STRING_LENGTH = 32;
+    public const BINARY_DATA_VALUE = '(binary value)';
 
     protected $logger;
     protected $stopwatch;
@@ -34,6 +34,8 @@ class DbalLogger implements SQLLogger
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function startQuery($sql, array $params = null, array $types = null)
     {
@@ -48,6 +50,8 @@ class DbalLogger implements SQLLogger
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function stopQuery()
     {
@@ -67,7 +71,7 @@ class DbalLogger implements SQLLogger
         $this->logger->debug($message, $params);
     }
 
-    private function normalizeParams(array $params)
+    private function normalizeParams(array $params): array
     {
         foreach ($params as $index => $param) {
             // normalize recursively

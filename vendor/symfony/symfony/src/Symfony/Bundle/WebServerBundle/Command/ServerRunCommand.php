@@ -13,6 +13,7 @@ namespace Symfony\Bundle\WebServerBundle\Command;
 
 use Symfony\Bundle\WebServerBundle\WebServer;
 use Symfony\Bundle\WebServerBundle\WebServerConfig;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,18 +26,22 @@ use Symfony\Component\Process\Process;
  * Runs Symfony application using a local web server.
  *
  * @author Michał Pipa <michal.pipa.xsolve@gmail.com>
+ *
+ * @deprecated since Symfony 4.4, to be removed in 5.0; the new Symfony local server has more features, you can use it instead.
  */
-class ServerRunCommand extends ServerCommand
+class ServerRunCommand extends Command
 {
     private $documentRoot;
     private $environment;
+    private $pidFileDirectory;
 
     protected static $defaultName = 'server:run';
 
-    public function __construct($documentRoot = null, $environment = null)
+    public function __construct(string $documentRoot = null, string $environment = null, string $pidFileDirectory = null)
     {
         $this->documentRoot = $documentRoot;
         $this->environment = $environment;
+        $this->pidFileDirectory = $pidFileDirectory;
 
         parent::__construct();
     }
@@ -52,7 +57,7 @@ class ServerRunCommand extends ServerCommand
                 new InputOption('docroot', 'd', InputOption::VALUE_REQUIRED, 'Document root, usually where your front controllers are stored'),
                 new InputOption('router', 'r', InputOption::VALUE_REQUIRED, 'Path to custom router script'),
             ])
-            ->setDescription('Runs a local web server')
+            ->setDescription('Run a local web server')
             ->setHelp(<<<'EOF'
 <info>%command.name%</info> runs a local web server: By default, the server
 listens on <comment>127.0.0.1</> address and the port number is automatically selected
@@ -87,13 +92,9 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output);
+        @trigger_error('Using the WebserverBundle is deprecated since Symfony 4.4. The new Symfony local server has more features, you can use it instead.', \E_USER_DEPRECATED);
 
-        // deprecated, logic to be removed in 4.0
-        // this allows the commands to work out of the box with web/ and public/
-        if ($this->documentRoot && !is_dir($this->documentRoot) && is_dir(\dirname($this->documentRoot).'/web')) {
-            $this->documentRoot = \dirname($this->documentRoot).'/web';
-        }
+        $io = new SymfonyStyle($input, $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output);
 
         if (null === $documentRoot = $input->getOption('docroot')) {
             if (!$this->documentRoot) {
@@ -134,10 +135,17 @@ EOF
         }
 
         try {
-            $server = new WebServer();
+            $server = new WebServer($this->pidFileDirectory);
             $config = new WebServerConfig($documentRoot, $env, $input->getArgument('addressport'), $input->getOption('router'));
 
-            $io->success(sprintf('Server listening on http://%s', $config->getAddress()));
+            $message = sprintf('Server listening on http://%s', $config->getAddress());
+            if ('' !== $displayAddress = $config->getDisplayAddress()) {
+                $message = sprintf('Server listening on all interfaces, port %s -- see http://%s', $config->getPort(), $displayAddress);
+            }
+            $io->success($message);
+            if (\ini_get('xdebug.profiler_enable_trigger')) {
+                $io->comment('Xdebug profiler trigger enabled.');
+            }
             $io->comment('Quit the server with CONTROL-C.');
 
             $exitCode = $server->run($config, $disableOutput, $callback);

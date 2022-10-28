@@ -18,14 +18,30 @@ use Symfony\Component\HttpKernel\Controller\ContainerControllerResolver;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @final since Symfony 4.4
  */
 class ControllerResolver extends ContainerControllerResolver
 {
+    /**
+     * @deprecated since Symfony 4.4
+     */
     protected $parser;
 
-    public function __construct(ContainerInterface $container, ControllerNameParser $parser, LoggerInterface $logger = null)
+    /**
+     * @param LoggerInterface|null $logger
+     */
+    public function __construct(ContainerInterface $container, $logger = null)
     {
-        $this->parser = $parser;
+        if ($logger instanceof ControllerNameParser) {
+            @trigger_error(sprintf('Passing a "%s" instance as 2nd argument to "%s()" is deprecated since Symfony 4.4, pass a "%s" instance or null instead.', ControllerNameParser::class, __METHOD__, LoggerInterface::class), \E_USER_DEPRECATED);
+            $this->parser = $logger;
+            $logger = 2 < \func_num_args() ? func_get_arg(2) : null;
+        } elseif (2 < \func_num_args() && func_get_arg(2) instanceof ControllerNameParser) {
+            $this->parser = func_get_arg(2);
+        } elseif ($logger && !$logger instanceof LoggerInterface) {
+            throw new \TypeError(sprintf('Argument 2 of "%s()" must be an instance of "%s" or null, "%s" given.', __METHOD__, LoggerInterface::class, \is_object($logger) ? \get_class($logger) : \gettype($logger)), \E_USER_DEPRECATED);
+        }
 
         parent::__construct($container, $logger);
     }
@@ -35,18 +51,15 @@ class ControllerResolver extends ContainerControllerResolver
      */
     protected function createController($controller)
     {
-        if (false === strpos($controller, '::') && 2 === substr_count($controller, ':')) {
+        if ($this->parser && !str_contains($controller, '::') && 2 === substr_count($controller, ':')) {
             // controller in the a:b:c notation then
-            $controller = $this->parser->parse($controller);
+            $deprecatedNotation = $controller;
+            $controller = $this->parser->parse($deprecatedNotation, false);
+
+            @trigger_error(sprintf('Referencing controllers with %s is deprecated since Symfony 4.1. Use %s instead.', $deprecatedNotation, $controller), \E_USER_DEPRECATED);
         }
 
-        $resolvedController = parent::createController($controller);
-
-        if (1 === substr_count($controller, ':') && \is_array($resolvedController)) {
-            $resolvedController[0] = $this->configureController($resolvedController[0]);
-        }
-
-        return $resolvedController;
+        return parent::createController($controller);
     }
 
     /**
@@ -54,23 +67,19 @@ class ControllerResolver extends ContainerControllerResolver
      */
     protected function instantiateController($class)
     {
-        return $this->configureController(parent::instantiateController($class));
-    }
+        $controller = parent::instantiateController($class);
 
-    private function configureController($controller)
-    {
         if ($controller instanceof ContainerAwareInterface) {
-            // @deprecated switch, to be removed in 4.0 where these classes
-            // won't implement ContainerAwareInterface anymore
-            switch (\get_class($controller)) {
-                case RedirectController::class:
-                case TemplateController::class:
-                    return $controller;
-            }
             $controller->setContainer($this->container);
         }
-        if ($controller instanceof AbstractController && null !== $previousContainer = $controller->setContainer($this->container)) {
-            $controller->setContainer($previousContainer);
+        if ($controller instanceof AbstractController) {
+            if (null === $previousContainer = $controller->setContainer($this->container)) {
+                @trigger_error(sprintf('Auto-injection of the container for "%s" is deprecated since Symfony 4.2. Configure it as a service instead.', $class), \E_USER_DEPRECATED);
+            // To be uncommented on Symfony 5:
+                //throw new \LogicException(sprintf('"%s" has no container set, did you forget to define it as a service subscriber?', $class));
+            } else {
+                $controller->setContainer($previousContainer);
+            }
         }
 
         return $controller;

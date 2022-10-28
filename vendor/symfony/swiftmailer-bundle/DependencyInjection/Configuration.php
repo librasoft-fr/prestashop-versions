@@ -92,7 +92,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('url')->defaultNull()->end()
                 ->scalarNode('transport')->defaultValue('smtp')->end()
-                ->scalarNode('command')->defaultValue('/usr/sbin/sendmail -bs')->end()
+                ->scalarNode('command')->defaultValue(@ini_get('sendmail_path') ?: '/usr/sbin/sendmail -bs')->end()
                 ->scalarNode('username')->defaultNull()->end()
                 ->scalarNode('password')->defaultNull()->end()
                 ->scalarNode('host')->defaultValue('localhost')->end()
@@ -101,6 +101,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('source_ip')->defaultNull()->end()
                 ->scalarNode('local_domain')->defaultNull()->end()
                 ->arrayNode('stream_options')
+                    ->addDefaultsIfNotSet()
                     ->ignoreExtraKeys(false)
                     ->normalizeKeys(false)
                     ->beforeNormalization()
@@ -127,12 +128,6 @@ class Configuration implements ConfigurationInterface
 
                             return $recurse($v['stream-option']);
                         })
-                    ->end()
-                    ->validate()
-                        ->ifTrue(function ($v) {
-                            return !method_exists('Swift_Transport_EsmtpTransport', 'setStreamOptions');
-                        })
-                        ->thenInvalid('stream_options is only available in Swiftmailer 5.4.2 or later.')
                     ->end()
                 ->end()
                 ->scalarNode('encryption')

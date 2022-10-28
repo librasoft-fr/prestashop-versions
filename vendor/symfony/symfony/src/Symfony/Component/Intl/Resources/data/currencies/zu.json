@@ -120,6 +120,10 @@
             "CLP",
             "i-Chilean Peso"
         ],
+        "CNH": [
+            "CNH",
+            "i-CNH"
+        ],
         "CNY": [
             "CN¥",
             "i-Chinese Yuan"
@@ -625,7 +629,7 @@
             "i-East Caribbean Dollar"
         ],
         "XOF": [
-            "CFA",
+            "F CFA",
             "i-West African CFA Franc"
         ],
         "XPF": [

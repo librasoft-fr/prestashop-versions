@@ -28,8 +28,10 @@ declare(strict_types=1);
 
 namespace PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters;
 
+use PrestaShop\PrestaShop\Core\Exception\InvalidArgumentException;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,13 +47,17 @@ class FeatureFlagController extends FrameworkBundleAdminController
      */
     public function indexAction(Request $request): Response
     {
-        $featureFlagsFormHandler = $this->get('prestashop.admin.feature_flags.form_handler');
-        $featureFlagsForm = $featureFlagsFormHandler->getForm();
+        $stableFormHandler = $this->get('prestashop.admin.feature_flags.stable_form_handler');
+        $stableFeatureFlagsForm = $stableFormHandler->getForm();
 
-        $featureFlagsForm->handleRequest($request);
+        $stableFeatureFlagsForm->handleRequest($request);
 
-        if ($featureFlagsForm->isSubmitted() && $featureFlagsForm->isValid()) {
-            $errors = $featureFlagsFormHandler->save($featureFlagsForm->getData());
+        if ($stableFeatureFlagsForm->isSubmitted() && $stableFeatureFlagsForm->isValid()) {
+            try {
+                $errors = $stableFormHandler->save($stableFeatureFlagsForm->getData());
+            } catch (InvalidArgumentException $e) {
+                $errors[] = $e->getMessage();
+            }
 
             if (empty($errors)) {
                 $this->addFlash('success', $this->trans('Update successful', 'Admin.Notifications.Success'));
@@ -59,23 +65,54 @@ class FeatureFlagController extends FrameworkBundleAdminController
                 $this->flashErrors($errors);
             }
 
-            return $this->redirectToRoute('admin_feature_flags_index');
+            $this->redirectToRoute('admin_feature_flags_index');
+        }
+
+        $betaFormHandler = $this->get('prestashop.admin.feature_flags.beta_form_handler');
+        $betaFeatureFlagsForm = $betaFormHandler->getForm();
+
+        $betaFeatureFlagsForm->handleRequest($request);
+
+        if ($betaFeatureFlagsForm->isSubmitted() && $betaFeatureFlagsForm->isValid()) {
+            try {
+                $errors = $betaFormHandler->save($betaFeatureFlagsForm->getData());
+            } catch (InvalidArgumentException $e) {
+                $errors[] = $e->getMessage();
+            }
+
+            if (empty($errors)) {
+                $this->addFlash('success', $this->trans('Update successful', 'Admin.Notifications.Success'));
+            } else {
+                $this->flashErrors($errors);
+            }
+
+            $this->redirectToRoute('admin_feature_flags_index');
         }
 
         return $this->render('@PrestaShop/Admin/Configure/AdvancedParameters/FeatureFlag/index.html.twig', [
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'enableSidebar' => true,
             'layoutHeaderToolbarBtn' => [],
-            'layoutTitle' => $this->trans('Experimental Features', 'Admin.Advparameters.Feature'),
+            'layoutTitle' => $this->trans('New & Experimental Features', 'Admin.Advparameters.Feature'),
             'requireBulkActions' => false,
             'showContentHeader' => true,
-            'featureFlagsForm' => $featureFlagsForm->createView(),
-            'multistoreForcedContextInfoTip' => $this->trans(
+            'stableFeatureFlagsForm' => $this->isFormEmpty($stableFeatureFlagsForm)
+                ? null
+                : $stableFeatureFlagsForm->createView(),
+            'betaFeatureFlagsForm' => $this->isFormEmpty($betaFeatureFlagsForm)
+                ? null
+                : $betaFeatureFlagsForm->createView(),
+            'multistoreInfoTip' => $this->trans(
                 'Note that this page is available in all shops context only, this is why your context has just switched.',
                 'Admin.Notifications.Info'
             ),
-            'displayAllShopsContextForced' => ($this->get('prestashop.adapter.multistore_feature')->isUsed()
+            'multistoreIsUsed' => ($this->get('prestashop.adapter.multistore_feature')->isUsed()
                 && $this->get('prestashop.adapter.shop.context')->isShopContext()),
         ]);
+    }
+
+    private function isFormEmpty(FormInterface $form): bool
+    {
+        return $form->get('feature_flags')->count() === 0;
     }
 }

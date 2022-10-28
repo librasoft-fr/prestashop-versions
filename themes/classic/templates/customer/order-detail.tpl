@@ -53,7 +53,9 @@
 
       <div class="box">
           <ul>
-            <li><strong>{l s='Carrier' d='Shop.Theme.Checkout'}</strong> {$order.carrier.name}</li>
+            {if $order.carrier.name}
+              <li><strong>{l s='Carrier' d='Shop.Theme.Checkout'}</strong> {$order.carrier.name}</li>
+            {/if}
             <li><strong>{l s='Payment method' d='Shop.Theme.Checkout'}</strong> {$order.details.payment}</li>
 
             {if $order.details.invoice_url}
@@ -148,7 +150,7 @@
   {$HOOK_DISPLAYORDERDETAIL nofilter}
 
   {block name='order_detail'}
-    {if $order.details.is_returnable}
+    {if $order.details.is_returnable && !$orderIsVirtual}
       {include file='customer/_partials/order-detail-return.tpl'}
     {else}
       {include file='customer/_partials/order-detail-no-return.tpl'}

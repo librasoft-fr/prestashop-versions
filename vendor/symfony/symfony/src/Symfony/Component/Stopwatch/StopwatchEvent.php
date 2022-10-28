@@ -50,7 +50,7 @@ class StopwatchEvent
      *
      * @throws \InvalidArgumentException When the raw time is not valid
      */
-    public function __construct($origin, $category = null, $morePrecision = false)
+    public function __construct(float $origin, string $category = null, bool $morePrecision = false)
     {
         $this->origin = $this->formatTime($origin);
         $this->category = \is_string($category) ? $category : 'default';
@@ -229,18 +229,10 @@ class StopwatchEvent
     /**
      * Formats a time.
      *
-     * @param int|float $time A raw time
-     *
-     * @return float The formatted time
-     *
      * @throws \InvalidArgumentException When the raw time is not valid
      */
-    private function formatTime($time)
+    private function formatTime(float $time): float
     {
-        if (!is_numeric($time)) {
-            throw new \InvalidArgumentException('The time must be a numerical value.');
-        }
-
         return round($time, 1);
     }
 

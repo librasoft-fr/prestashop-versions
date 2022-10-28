@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is authored by PrestaShop SA and Contributors <contact@prestashop.com>
+ *
+ * It is distributed under MIT license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace PrestaShop\TranslationToolsBundle\Translation\Extractor\Visitor\Translation\FormType;
 
@@ -23,19 +31,19 @@ use PrestaShop\TranslationToolsBundle\Translation\Extractor\Util\TranslationColl
  */
 class ChoiceExtractor
 {
-    const METHOD_NAME = 'add';
+    public const METHOD_NAME = 'add';
 
-    const EXPECTED_ARG_COUNT = 3;
+    public const EXPECTED_ARG_COUNT = 3;
 
-    const CLASS_ARG_INDEX = 1;
+    public const CLASS_ARG_INDEX = 1;
 
-    const OPTIONS_ARG_INDEX = 2;
+    public const OPTIONS_ARG_INDEX = 2;
 
-    const OPTION_NAME_CHOICES = 'choices';
+    public const OPTION_NAME_CHOICES = 'choices';
 
-    const OPTION_NAME_TRANSLATION_DOMAIN = 'choice_translation_domain';
+    public const OPTION_NAME_TRANSLATION_DOMAIN = 'choice_translation_domain';
 
-    const CHOICE_CLASS_NAME = 'ChoiceType';
+    public const CHOICE_CLASS_NAME = 'ChoiceType';
 
     /**
      * @var Node|Node\Expr\MethodCall

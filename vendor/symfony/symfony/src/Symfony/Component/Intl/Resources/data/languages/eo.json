@@ -97,8 +97,6 @@
         "pl": "pola",
         "ps": "paŝtoa",
         "pt": "portugala",
-        "pt_BR": "brazilportugala",
-        "pt_PT": "eŭropportugala",
         "qu": "keĉua",
         "rm": "romanĉa",
         "rn": "burunda",
@@ -137,7 +135,6 @@
         "tt": "tatara",
         "ug": "ujgura",
         "uk": "ukraina",
-        "und": "nekonata lingvo",
         "ur": "urduo",
         "uz": "uzbeka",
         "vi": "vjetnama",
@@ -148,9 +145,12 @@
         "yo": "joruba",
         "za": "ĝuanga",
         "zh": "ĉina",
+        "zu": "zulua"
+    },
+    "LocalizedNames": {
+        "pt_BR": "brazilportugala",
+        "pt_PT": "eŭropportugala",
         "zh_Hans": "ĉina simpligita",
-        "zh_Hant": "ĉina tradicia",
-        "zu": "zulua",
-        "zxx": "nelingvaĵo"
+        "zh_Hant": "ĉina tradicia"
     }
 }

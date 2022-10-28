@@ -24,12 +24,11 @@ class RememberMeToken extends AbstractToken
     private $providerKey;
 
     /**
-     * @param string $providerKey
-     * @param string $secret      A secret used to make sure the token is created by the app and not by a malicious client
+     * @param string $secret A secret used to make sure the token is created by the app and not by a malicious client
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(UserInterface $user, $providerKey, $secret)
+    public function __construct(UserInterface $user, string $providerKey, string $secret)
     {
         parent::__construct($user->getRoles());
 
@@ -91,19 +90,18 @@ class RememberMeToken extends AbstractToken
     /**
      * {@inheritdoc}
      */
-    public function serialize()
+    public function __serialize(): array
     {
-        $serialized = [$this->secret, $this->providerKey, parent::serialize(true)];
-
-        return $this->doSerialize($serialized, \func_num_args() ? func_get_arg(0) : null);
+        return [$this->secret, $this->providerKey, parent::__serialize()];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function __unserialize(array $data): void
     {
-        list($this->secret, $this->providerKey, $parentStr) = \is_array($serialized) ? $serialized : unserialize($serialized);
-        parent::unserialize($parentStr);
+        [$this->secret, $this->providerKey, $parentData] = $data;
+        $parentData = \is_array($parentData) ? $parentData : unserialize($parentData);
+        parent::__unserialize($parentData);
     }
 }

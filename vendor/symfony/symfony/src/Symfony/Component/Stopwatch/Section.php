@@ -47,9 +47,9 @@ class Section
      * @param float|null $origin        Set the origin of the events in this section, use null to set their origin to their start time
      * @param bool       $morePrecision If true, time is stored as float to keep the original microsecond precision
      */
-    public function __construct($origin = null, $morePrecision = false)
+    public function __construct(float $origin = null, bool $morePrecision = false)
     {
-        $this->origin = is_numeric($origin) ? $origin : null;
+        $this->origin = $origin;
         $this->morePrecision = $morePrecision;
     }
 
@@ -62,6 +62,10 @@ class Section
      */
     public function get($id)
     {
+        if (null === $id) {
+            @trigger_error(sprintf('Passing "null" as the first argument of the "%s()" method is deprecated since Symfony 4.4, pass a valid child section identifier instead.', __METHOD__), \E_USER_DEPRECATED);
+        }
+
         foreach ($this->children as $child) {
             if ($id === $child->getId()) {
                 return $child;
@@ -80,7 +84,7 @@ class Section
      */
     public function open($id)
     {
-        if (null === $session = $this->get($id)) {
+        if (null === $id || null === $session = $this->get($id)) {
             $session = $this->children[] = new self(microtime(true) * 1000, $this->morePrecision);
         }
 

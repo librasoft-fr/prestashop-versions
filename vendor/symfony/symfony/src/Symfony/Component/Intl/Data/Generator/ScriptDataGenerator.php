@@ -24,6 +24,10 @@ use Symfony\Component\Intl\Data\Util\LocaleScanner;
  */
 class ScriptDataGenerator extends AbstractDataGenerator
 {
+    private const DENYLIST = [
+        'Zzzz' => true, // Unknown Script
+    ];
+
     /**
      * Collects all available language codes.
      *
@@ -34,7 +38,7 @@ class ScriptDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function scanLocales(LocaleScanner $scanner, $sourceDir)
+    protected function scanLocales(LocaleScanner $scanner, string $sourceDir): array
     {
         return $scanner->scanLocales($sourceDir.'/lang');
     }
@@ -42,7 +46,7 @@ class ScriptDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function compileTemporaryBundles(BundleCompilerInterface $compiler, $sourceDir, $tempDir)
+    protected function compileTemporaryBundles(BundleCompilerInterface $compiler, string $sourceDir, string $tempDir)
     {
         $compiler->compile($sourceDir.'/lang', $tempDir);
     }
@@ -58,14 +62,14 @@ class ScriptDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForLocale(BundleEntryReaderInterface $reader, $tempDir, $displayLocale)
+    protected function generateDataForLocale(BundleEntryReaderInterface $reader, string $tempDir, string $displayLocale): ?array
     {
         $localeBundle = $reader->read($tempDir, $displayLocale);
 
         // isset() on \ResourceBundle returns true even if the value is null
         if (isset($localeBundle['Scripts']) && null !== $localeBundle['Scripts']) {
             $data = [
-                'Names' => iterator_to_array($localeBundle['Scripts']),
+                'Names' => array_diff_key(iterator_to_array($localeBundle['Scripts']), self::DENYLIST),
             ];
 
             $this->scriptCodes = array_merge($this->scriptCodes, array_keys($data['Names']));
@@ -79,14 +83,15 @@ class ScriptDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForRoot(BundleEntryReaderInterface $reader, $tempDir)
+    protected function generateDataForRoot(BundleEntryReaderInterface $reader, string $tempDir): ?array
     {
+        return null;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForMeta(BundleEntryReaderInterface $reader, $tempDir)
+    protected function generateDataForMeta(BundleEntryReaderInterface $reader, string $tempDir): ?array
     {
         $this->scriptCodes = array_unique($this->scriptCodes);
 

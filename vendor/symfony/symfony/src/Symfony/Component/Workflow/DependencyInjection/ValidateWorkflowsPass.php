@@ -19,12 +19,14 @@ use Symfony\Component\Workflow\Validator\WorkflowValidator;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
+ *
+ * @deprecated since Symfony 4.3
  */
 class ValidateWorkflowsPass implements CompilerPassInterface
 {
     private $definitionTag;
 
-    public function __construct($definitionTag = 'workflow.definition')
+    public function __construct(string $definitionTag = 'workflow.definition')
     {
         $this->definitionTag = $definitionTag;
     }
@@ -49,7 +51,7 @@ class ValidateWorkflowsPass implements CompilerPassInterface
         }
     }
 
-    private function createValidator($tag)
+    private function createValidator(array $tag)
     {
         if ('state_machine' === $tag['type']) {
             return new StateMachineValidator();
@@ -59,6 +61,10 @@ class ValidateWorkflowsPass implements CompilerPassInterface
             return new WorkflowValidator(true);
         }
 
-        return new WorkflowValidator();
+        if ('multiple_state' === $tag['marking_store']) {
+            return new WorkflowValidator(false);
+        }
+
+        return new WorkflowValidator($tag['single_state'] ?? false);
     }
 }

@@ -15,23 +15,33 @@ use Symfony\Bridge\Twig\Node\TransNode;
 use Twig\Error\SyntaxError;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ArrayExpression;
+use Twig\Node\Node;
 use Twig\Node\TextNode;
 use Twig\Token;
+use Twig\TokenParser\AbstractTokenParser;
 
 /**
  * Token Parser for the 'transchoice' tag.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since Symfony 4.2, use the "trans" tag with a "%count%" parameter instead
+ *
+ * @final since Symfony 4.4
  */
-class TransChoiceTokenParser extends TransTokenParser
+class TransChoiceTokenParser extends AbstractTokenParser
 {
     /**
      * {@inheritdoc}
+     *
+     * @return Node
      */
     public function parse(Token $token)
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
+
+        @trigger_error(sprintf('The "transchoice" tag is deprecated since Symfony 4.2, use the "trans" one instead with a "%%count%%" parameter in %s line %d.', $stream->getSourceContext()->getName(), $lineno), \E_USER_DEPRECATED);
 
         $vars = new ArrayExpression([], $lineno);
 
@@ -78,6 +88,8 @@ class TransChoiceTokenParser extends TransTokenParser
 
     /**
      * {@inheritdoc}
+     *
+     * @return string
      */
     public function getTag()
     {

@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,9 +25,9 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @author Roland Franssen <franssen.roland@gmail.com>
  *
- * @final since version 3.4
+ * @final
  */
-class AboutCommand extends ContainerAwareCommand
+class AboutCommand extends Command
 {
     protected static $defaultName = 'about';
 
@@ -36,7 +37,7 @@ class AboutCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setDescription('Displays information about the current project')
+            ->setDescription('Display information about the current project')
             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command displays information about the current Symfony project.
 
@@ -53,28 +54,27 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        /** @var $kernel KernelInterface */
+        /** @var KernelInterface $kernel */
         $kernel = $this->getApplication()->getKernel();
 
         $rows = [
             ['<info>Symfony</>'],
             new TableSeparator(),
             ['Version', Kernel::VERSION],
+            ['Long-Term Support', 4 === Kernel::MINOR_VERSION ? 'Yes' : 'No'],
             ['End of maintenance', Kernel::END_OF_MAINTENANCE.(self::isExpired(Kernel::END_OF_MAINTENANCE) ? ' <error>Expired</>' : '')],
             ['End of life', Kernel::END_OF_LIFE.(self::isExpired(Kernel::END_OF_LIFE) ? ' <error>Expired</>' : '')],
             new TableSeparator(),
             ['<info>Kernel</>'],
             new TableSeparator(),
             ['Type', \get_class($kernel)],
-            ['Name', $kernel->getName()],
             ['Environment', $kernel->getEnvironment()],
             ['Debug', $kernel->isDebug() ? 'true' : 'false'],
             ['Charset', $kernel->getCharset()],
-            ['Root directory', self::formatPath($kernel->getRootDir(), $kernel->getProjectDir())],
             ['Cache directory', self::formatPath($kernel->getCacheDir(), $kernel->getProjectDir()).' (<comment>'.self::formatFileSize($kernel->getCacheDir()).'</>)'],
             ['Log directory', self::formatPath($kernel->getLogDir(), $kernel->getProjectDir()).' (<comment>'.self::formatFileSize($kernel->getLogDir()).'</>)'],
             new TableSeparator(),
@@ -82,10 +82,10 @@ EOT
             new TableSeparator(),
             ['Version', \PHP_VERSION],
             ['Architecture', (\PHP_INT_SIZE * 8).' bits'],
-            ['Intl locale', class_exists('Locale', false) && \Locale::getDefault() ? \Locale::getDefault() : 'n/a'],
+            ['Intl locale', class_exists(\Locale::class, false) && \Locale::getDefault() ? \Locale::getDefault() : 'n/a'],
             ['Timezone', date_default_timezone_get().' (<comment>'.(new \DateTime())->format(\DateTime::W3C).'</>)'],
-            ['OPcache', \extension_loaded('Zend OPcache') && filter_var(ini_get('opcache.enable'), \FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false'],
-            ['APCu', \extension_loaded('apcu') && filter_var(ini_get('apc.enabled'), \FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false'],
+            ['OPcache', \extension_loaded('Zend OPcache') && filter_var(\ini_get('opcache.enable'), \FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false'],
+            ['APCu', \extension_loaded('apcu') && filter_var(\ini_get('apc.enabled'), \FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false'],
             ['Xdebug', \extension_loaded('xdebug') ? 'true' : 'false'],
         ];
 
@@ -100,40 +100,44 @@ EOT
         }
 
         $io->table([], $rows);
+
+        return 0;
     }
 
-    private static function formatPath($path, $baseDir = null)
+    private static function formatPath(string $path, string $baseDir): string
     {
-        return null !== $baseDir ? preg_replace('~^'.preg_quote($baseDir, '~').'~', '.', $path) : $path;
+        return preg_replace('~^'.preg_quote($baseDir, '~').'~', '.', $path);
     }
 
-    private static function formatFileSize($path)
+    private static function formatFileSize(string $path): string
     {
         if (is_file($path)) {
             $size = filesize($path) ?: 0;
         } else {
             $size = 0;
             foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS | \RecursiveDirectoryIterator::FOLLOW_SYMLINKS)) as $file) {
-                $size += $file->getSize();
+                if ($file->isReadable()) {
+                    $size += $file->getSize();
+                }
             }
         }
 
         return Helper::formatMemory($size);
     }
 
-    private static function isExpired($date)
+    private static function isExpired(string $date): bool
     {
         $date = \DateTime::createFromFormat('d/m/Y', '01/'.$date);
 
         return false !== $date && new \DateTime() > $date->modify('last day of this month 23:59:59');
     }
 
-    private static function getDotenvVars()
+    private static function getDotenvVars(): array
     {
         $vars = [];
-        foreach (explode(',', getenv('SYMFONY_DOTENV_VARS')) as $name) {
-            if ('' !== $name && false !== $value = getenv($name)) {
-                $vars[$name] = $value;
+        foreach (explode(',', $_SERVER['SYMFONY_DOTENV_VARS'] ?? $_ENV['SYMFONY_DOTENV_VARS'] ?? '') as $name) {
+            if ('' !== $name && isset($_ENV[$name])) {
+                $vars[$name] = $_ENV[$name];
             }
         }
 

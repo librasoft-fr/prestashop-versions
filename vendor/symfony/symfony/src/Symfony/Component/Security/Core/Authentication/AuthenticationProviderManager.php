@@ -12,14 +12,20 @@
 namespace Symfony\Component\Security\Core\Authentication;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\AuthenticationEvents;
-use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
+use Symfony\Component\Security\Core\Event\AuthenticationSuccessEvent;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\ProviderNotFoundException;
+
+// Help opcache.preload discover always-needed symbols
+class_exists(AuthenticationEvents::class);
+class_exists(AuthenticationFailureEvent::class);
+class_exists(AuthenticationSuccessEvent::class);
 
 /**
  * AuthenticationProviderManager uses a list of AuthenticationProviderInterface
@@ -40,19 +46,22 @@ class AuthenticationProviderManager implements AuthenticationManagerInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct($providers, $eraseCredentials = true)
+    public function __construct(iterable $providers, bool $eraseCredentials = true)
     {
         if (!$providers) {
             throw new \InvalidArgumentException('You must at least add one authentication provider.');
         }
 
         $this->providers = $providers;
-        $this->eraseCredentials = (bool) $eraseCredentials;
+        $this->eraseCredentials = $eraseCredentials;
     }
 
+    /**
+     * @final since Symfony 4.3, the type-hint will be updated to the interface from symfony/contracts in 5.0
+     */
     public function setEventDispatcher(EventDispatcherInterface $dispatcher)
     {
-        $this->eventDispatcher = $dispatcher;
+        $this->eventDispatcher = LegacyEventDispatcherProxy::decorate($dispatcher);
     }
 
     /**
@@ -93,7 +102,7 @@ class AuthenticationProviderManager implements AuthenticationManagerInterface
             }
 
             if (null !== $this->eventDispatcher) {
-                $this->eventDispatcher->dispatch(AuthenticationEvents::AUTHENTICATION_SUCCESS, new AuthenticationEvent($result));
+                $this->eventDispatcher->dispatch(new AuthenticationSuccessEvent($result), AuthenticationEvents::AUTHENTICATION_SUCCESS);
             }
 
             return $result;
@@ -104,7 +113,7 @@ class AuthenticationProviderManager implements AuthenticationManagerInterface
         }
 
         if (null !== $this->eventDispatcher) {
-            $this->eventDispatcher->dispatch(AuthenticationEvents::AUTHENTICATION_FAILURE, new AuthenticationFailureEvent($token, $lastException));
+            $this->eventDispatcher->dispatch(new AuthenticationFailureEvent($token, $lastException), AuthenticationEvents::AUTHENTICATION_FAILURE);
         }
 
         $lastException->setToken($token);

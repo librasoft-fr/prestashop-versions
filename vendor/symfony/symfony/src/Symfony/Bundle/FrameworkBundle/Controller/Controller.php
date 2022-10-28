@@ -19,6 +19,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  *
  * It provides methods to common features needed in controllers.
  *
+ * @deprecated since Symfony 4.2, use "Symfony\Bundle\FrameworkBundle\Controller\AbstractController" instead.
+ *
  * @author Fabien Potencier <fabien@symfony.com>
  */
 abstract class Controller implements ContainerAwareInterface
@@ -29,13 +31,11 @@ abstract class Controller implements ContainerAwareInterface
     /**
      * Gets a container configuration parameter by its name.
      *
-     * @param string $name The parameter name
+     * @return array|bool|float|int|string|\UnitEnum|null
      *
-     * @return mixed
-     *
-     * @final since version 3.4
+     * @final
      */
-    protected function getParameter($name)
+    protected function getParameter(string $name)
     {
         return $this->container->getParameter($name);
     }

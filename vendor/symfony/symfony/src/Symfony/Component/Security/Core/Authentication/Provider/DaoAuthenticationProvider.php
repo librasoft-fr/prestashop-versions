@@ -16,6 +16,7 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -31,14 +32,7 @@ class DaoAuthenticationProvider extends UserAuthenticationProvider
     private $encoderFactory;
     private $userProvider;
 
-    /**
-     * @param UserProviderInterface   $userProvider               An UserProviderInterface instance
-     * @param UserCheckerInterface    $userChecker                An UserCheckerInterface instance
-     * @param string                  $providerKey                The provider key
-     * @param EncoderFactoryInterface $encoderFactory             An EncoderFactoryInterface instance
-     * @param bool                    $hideUserNotFoundExceptions Whether to hide user not found exception or not
-     */
-    public function __construct(UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, EncoderFactoryInterface $encoderFactory, $hideUserNotFoundExceptions = true)
+    public function __construct(UserProviderInterface $userProvider, UserCheckerInterface $userChecker, string $providerKey, EncoderFactoryInterface $encoderFactory, bool $hideUserNotFoundExceptions = true)
     {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
 
@@ -61,8 +55,18 @@ class DaoAuthenticationProvider extends UserAuthenticationProvider
                 throw new BadCredentialsException('The presented password cannot be empty.');
             }
 
-            if (null === $user->getPassword() || !$this->encoderFactory->getEncoder($user)->isPasswordValid($user->getPassword(), $presentedPassword, $user->getSalt())) {
+            if (null === $user->getPassword()) {
                 throw new BadCredentialsException('The presented password is invalid.');
+            }
+
+            $encoder = $this->encoderFactory->getEncoder($user);
+
+            if (!$encoder->isPasswordValid($user->getPassword(), $presentedPassword, $user->getSalt())) {
+                throw new BadCredentialsException('The presented password is invalid.');
+            }
+
+            if ($this->userProvider instanceof PasswordUpgraderInterface && method_exists($encoder, 'needsRehash') && $encoder->needsRehash($user->getPassword())) {
+                $this->userProvider->upgradePassword($user, $encoder->encodePassword($presentedPassword, $user->getSalt()));
             }
         }
     }

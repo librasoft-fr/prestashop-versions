@@ -32,11 +32,6 @@ class ORMQueryBuilderLoader implements EntityLoaderInterface
      */
     private $queryBuilder;
 
-    /**
-     * Construct an ORM Query Builder Loader.
-     *
-     * @param QueryBuilder $queryBuilder The query builder for creating the query builder
-     */
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
@@ -55,7 +50,7 @@ class ORMQueryBuilderLoader implements EntityLoaderInterface
      */
     public function getEntitiesByIds($identifier, array $values)
     {
-        if (null !== $this->queryBuilder->getMaxResults() || null !== $this->queryBuilder->getFirstResult()) {
+        if (null !== $this->queryBuilder->getMaxResults() || 0 < (int) $this->queryBuilder->getFirstResult()) {
             // an offset or a limit would apply on results including the where clause with submitted id values
             // that could make invalid choices valid
             $choices = [];

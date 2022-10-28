@@ -13,6 +13,7 @@ namespace Symfony\Component\Form;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
+use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -42,11 +43,14 @@ class ResolvedFormType implements ResolvedFormTypeInterface
      */
     private $optionsResolver;
 
+    /**
+     * @param FormTypeExtensionInterface[] $typeExtensions
+     */
     public function __construct(FormTypeInterface $innerType, array $typeExtensions = [], ResolvedFormTypeInterface $parent = null)
     {
         foreach ($typeExtensions as $extension) {
             if (!$extension instanceof FormTypeExtensionInterface) {
-                throw new UnexpectedTypeException($extension, 'Symfony\Component\Form\FormTypeExtensionInterface');
+                throw new UnexpectedTypeException($extension, FormTypeExtensionInterface::class);
             }
         }
 
@@ -92,10 +96,14 @@ class ResolvedFormType implements ResolvedFormTypeInterface
      */
     public function createBuilder(FormFactoryInterface $factory, $name, array $options = [])
     {
-        $options = $this->getOptionsResolver()->resolve($options);
+        try {
+            $options = $this->getOptionsResolver()->resolve($options);
+        } catch (ExceptionInterface $e) {
+            throw new $e(sprintf('An error has occurred resolving the options of the form "%s": ', \get_class($this->getInnerType())).$e->getMessage(), $e->getCode(), $e);
+        }
 
         // Should be decoupled from the specific option at some point
-        $dataClass = isset($options['data_class']) ? $options['data_class'] : null;
+        $dataClass = $options['data_class'] ?? null;
 
         $builder = $this->newBuilder($name, $dataClass, $factory, $options);
         $builder->setType($this);
@@ -112,10 +120,7 @@ class ResolvedFormType implements ResolvedFormTypeInterface
     }
 
     /**
-     * Configures a form builder for the type hierarchy.
-     *
-     * @param FormBuilderInterface $builder The builder to configure
-     * @param array                $options The options used for the configuration
+     * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -131,13 +136,7 @@ class ResolvedFormType implements ResolvedFormTypeInterface
     }
 
     /**
-     * Configures a form view for the type hierarchy.
-     *
-     * This method is called before the children of the view are built.
-     *
-     * @param FormView      $view    The form view to configure
-     * @param FormInterface $form    The form corresponding to the view
-     * @param array         $options The options used for the configuration
+     * {@inheritdoc}
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
@@ -153,13 +152,7 @@ class ResolvedFormType implements ResolvedFormTypeInterface
     }
 
     /**
-     * Finishes a form view for the type hierarchy.
-     *
-     * This method is called after the children of the view have been built.
-     *
-     * @param FormView      $view    The form view to configure
-     * @param FormInterface $form    The form corresponding to the view
-     * @param array         $options The options used for the configuration
+     * {@inheritdoc}
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
@@ -176,9 +169,7 @@ class ResolvedFormType implements ResolvedFormTypeInterface
     }
 
     /**
-     * Returns the configured options resolver used for this type.
-     *
-     * @return \Symfony\Component\OptionsResolver\OptionsResolver The options resolver
+     * {@inheritdoc}
      */
     public function getOptionsResolver()
     {
@@ -204,10 +195,8 @@ class ResolvedFormType implements ResolvedFormTypeInterface
      *
      * Override this method if you want to customize the builder class.
      *
-     * @param string               $name      The name of the builder
-     * @param string|null          $dataClass The data class
-     * @param FormFactoryInterface $factory   The current form factory
-     * @param array                $options   The builder options
+     * @param string      $name      The name of the builder
+     * @param string|null $dataClass The data class
      *
      * @return FormBuilderInterface The new builder instance
      */
@@ -228,8 +217,6 @@ class ResolvedFormType implements ResolvedFormTypeInterface
      * Creates a new view instance.
      *
      * Override this method if you want to customize the view class.
-     *
-     * @param FormView|null $parent The parent view, if available
      *
      * @return FormView A new view instance
      */

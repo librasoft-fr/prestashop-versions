@@ -35,15 +35,24 @@ use Symfony\Component\HttpFoundation\Response;
 class UpdatesController extends ModuleAbstractController
 {
     /**
-     * @AdminSecurity("is_granted(['read'], request.get('_legacy_controller'))")
+     * @AdminSecurity("is_granted('read', request.get('_legacy_controller'))")
      *
      * @return Response
      */
     public function indexAction()
     {
-        return $this->render(
-            '@PrestaShop/Admin/Module/updates.html.twig',
-            $this->getNotificationPageData('to_update')
-        );
+        $moduleList = $this->getModuleRepository()->getUpgradableModules();
+        $pageData = $this->getNotificationPageData($moduleList);
+
+        // In update view, the only available action for module is update.
+        // Can't use AdminModuleDataProvider::setActionUrls $specific_action attribute while abstract definition isn't clear.
+        foreach ($pageData['modules'] as $key => $module) {
+            if (isset($module['attributes']['urls']['upgrade'])) {
+                $pageData['modules'][$key]['attributes']['urls'] = ['upgrade' => $module['attributes']['urls']['upgrade']];
+                $pageData['modules'][$key]['attributes']['url_active'] = 'upgrade';
+            }
+        }
+
+        return $this->render('@PrestaShop/Admin/Module/updates.html.twig', $pageData);
     }
 }

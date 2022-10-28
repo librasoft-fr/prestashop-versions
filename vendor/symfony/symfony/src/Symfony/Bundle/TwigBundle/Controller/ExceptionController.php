@@ -20,12 +20,16 @@ use Twig\Error\LoaderError;
 use Twig\Loader\ExistsLoaderInterface;
 use Twig\Loader\SourceContextLoaderInterface;
 
+@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.4, use "%s" instead.', ExceptionController::class, \Symfony\Component\HttpKernel\Controller\ErrorController::class), \E_USER_DEPRECATED);
+
 /**
  * ExceptionController renders error or exception pages for a given
  * FlattenException.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Matthias Pigulla <mp@webfactory.de>
+ *
+ * @deprecated since Symfony 4.4, use Symfony\Component\HttpKernel\Controller\ErrorController instead.
  */
 class ExceptionController
 {
@@ -35,7 +39,7 @@ class ExceptionController
     /**
      * @param bool $debug Show error (false) or exception (true) pages by default
      */
-    public function __construct(Environment $twig, $debug)
+    public function __construct(Environment $twig, bool $debug)
     {
         $this->twig = $twig;
         $this->debug = $debug;
@@ -60,10 +64,10 @@ class ExceptionController
         $code = $exception->getStatusCode();
 
         return new Response($this->twig->render(
-            (string) $this->findTemplate($request, $request->getRequestFormat(), $code, $showException),
+            $this->findTemplate($request, $request->getRequestFormat(), $code, $showException),
             [
                 'status_code' => $code,
-                'status_text' => isset(Response::$statusTexts[$code]) ? Response::$statusTexts[$code] : '',
+                'status_text' => Response::$statusTexts[$code] ?? '',
                 'exception' => $exception,
                 'logger' => $logger,
                 'currentContent' => $currentContent,

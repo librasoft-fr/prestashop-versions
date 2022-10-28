@@ -256,6 +256,10 @@
             "CLP",
             "peso Chile"
         ],
+        "CNH": [
+            "CNH",
+            "yuan Sina (diavaez)"
+        ],
         "CNX": [
             "CNX",
             "dollar Bank poblel Sina"
@@ -1077,7 +1081,7 @@
             "lur Unaniezh etrebroadel an hentoù-houarn"
         ],
         "XOF": [
-            "CFA",
+            "F CFA",
             "lur CFA Afrika ar Cʼhornôg"
         ],
         "XPF": [

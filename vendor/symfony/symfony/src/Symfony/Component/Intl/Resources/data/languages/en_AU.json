@@ -1,7 +1,9 @@
 {
     "Names": {
+        "bn": "Bengali"
+    },
+    "LocalizedNames": {
         "ar_001": "Modern Standard Arabic",
-        "bn": "Bengali",
         "de_AT": "Austrian German",
         "de_CH": "Swiss High German",
         "en_AU": "Australian English",
@@ -13,8 +15,6 @@
         "es_MX": "Mexican Spanish",
         "fr_CA": "Canadian French",
         "fr_CH": "Swiss French",
-        "frc": "frc",
-        "lou": "lou",
         "pt_BR": "Brazilian Portuguese",
         "pt_PT": "European Portuguese",
         "ro_MD": "Moldovan",

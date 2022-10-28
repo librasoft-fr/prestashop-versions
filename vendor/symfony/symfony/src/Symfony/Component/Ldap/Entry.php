@@ -19,7 +19,7 @@ class Entry
     private $dn;
     private $attributes;
 
-    public function __construct($dn, array $attributes = [])
+    public function __construct(string $dn, array $attributes = [])
     {
         $this->dn = $dn;
         $this->attributes = $attributes;
@@ -59,7 +59,7 @@ class Entry
      */
     public function getAttribute($name)
     {
-        return isset($this->attributes[$name]) ? $this->attributes[$name] : null;
+        return $this->attributes[$name] ?? null;
     }
 
     /**

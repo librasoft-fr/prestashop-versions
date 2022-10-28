@@ -22,19 +22,14 @@ use Symfony\Component\Intl\Exception\MissingResourceException;
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  *
- * @internal
+ * @internal to be removed in 5.0.
  */
 class LanguageBundle extends LanguageDataProvider implements LanguageBundleInterface
 {
     private $localeProvider;
     private $scriptProvider;
 
-    /**
-     * Creates a new language bundle.
-     *
-     * @param string $path
-     */
-    public function __construct($path, BundleEntryReaderInterface $reader, LocaleDataProvider $localeProvider, ScriptDataProvider $scriptProvider)
+    public function __construct(string $path, BundleEntryReaderInterface $reader, LocaleDataProvider $localeProvider, ScriptDataProvider $scriptProvider)
     {
         parent::__construct($path, $reader);
 

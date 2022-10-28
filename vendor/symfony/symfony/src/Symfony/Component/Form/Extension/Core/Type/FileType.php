@@ -12,22 +12,23 @@
 namespace Symfony\Component\Form\Extension\Core\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FileUploadError;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface as LegacyTranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FileType extends AbstractType
 {
-    const KIB_BYTES = 1024;
-    const MIB_BYTES = 1048576;
+    public const KIB_BYTES = 1024;
+    public const MIB_BYTES = 1048576;
 
-    private static $suffixes = [
+    private const SUFFIXES = [
         1 => 'bytes',
         self::KIB_BYTES => 'KiB',
         self::MIB_BYTES => 'MiB',
@@ -35,8 +36,14 @@ class FileType extends AbstractType
 
     private $translator;
 
-    public function __construct(TranslatorInterface $translator = null)
+    /**
+     * @param TranslatorInterface|null $translator
+     */
+    public function __construct($translator = null)
     {
+        if (null !== $translator && !$translator instanceof LegacyTranslatorInterface && !$translator instanceof TranslatorInterface) {
+            throw new \TypeError(sprintf('Argument 1 passed to "%s()" must be an instance of "%s", "%s" given.', __METHOD__, TranslatorInterface::class, \is_object($translator) ? \get_class($translator) : \gettype($translator)));
+        }
         $this->translator = $translator;
     }
 
@@ -114,7 +121,7 @@ class FileType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $dataClass = null;
-        if (class_exists('Symfony\Component\HttpFoundation\File\File')) {
+        if (class_exists(\Symfony\Component\HttpFoundation\File\File::class)) {
             $dataClass = function (Options $options) {
                 return $options['multiple'] ? null : 'Symfony\Component\HttpFoundation\File\File';
             };
@@ -141,12 +148,12 @@ class FileType extends AbstractType
         return 'file';
     }
 
-    private function getFileUploadError($errorCode)
+    private function getFileUploadError(int $errorCode)
     {
         $messageParameters = [];
 
         if (\UPLOAD_ERR_INI_SIZE === $errorCode) {
-            list($limitAsString, $suffix) = $this->factorizeSizes(0, self::getMaxFilesize());
+            [$limitAsString, $suffix] = $this->factorizeSizes(0, self::getMaxFilesize());
             $messageTemplate = 'The file is too large. Allowed maximum size is {{ limit }} {{ suffix }}.';
             $messageParameters = [
                 '{{ limit }}' => $limitAsString,
@@ -164,7 +171,7 @@ class FileType extends AbstractType
             $message = strtr($messageTemplate, $messageParameters);
         }
 
-        return new FormError($message, $messageTemplate, $messageParameters);
+        return new FileUploadError($message, $messageTemplate, $messageParameters);
     }
 
     /**
@@ -172,20 +179,20 @@ class FileType extends AbstractType
      *
      * This method should be kept in sync with Symfony\Component\HttpFoundation\File\UploadedFile::getMaxFilesize().
      *
-     * @return int The maximum size of an uploaded file in bytes
+     * @return int|float The maximum size of an uploaded file in bytes (returns float if size > PHP_INT_MAX)
      */
     private static function getMaxFilesize()
     {
-        $iniMax = strtolower(ini_get('upload_max_filesize'));
+        $iniMax = strtolower(\ini_get('upload_max_filesize'));
 
         if ('' === $iniMax) {
             return \PHP_INT_MAX;
         }
 
         $max = ltrim($iniMax, '+');
-        if (0 === strpos($max, '0x')) {
+        if (str_starts_with($max, '0x')) {
             $max = \intval($max, 16);
-        } elseif (0 === strpos($max, '0')) {
+        } elseif (str_starts_with($max, '0')) {
             $max = \intval($max, 8);
         } else {
             $max = (int) $max;
@@ -209,8 +216,10 @@ class FileType extends AbstractType
      * (i.e. try "MB", then "kB", then "bytes").
      *
      * This method should be kept in sync with Symfony\Component\Validator\Constraints\FileValidator::factorizeSizes().
+     *
+     * @param int|float $limit
      */
-    private function factorizeSizes($size, $limit)
+    private function factorizeSizes(int $size, $limit)
     {
         $coef = self::MIB_BYTES;
         $coefFactor = self::KIB_BYTES;
@@ -235,14 +244,14 @@ class FileType extends AbstractType
             $sizeAsString = (string) round($size / $coef, 2);
         }
 
-        return [$limitAsString, self::$suffixes[$coef]];
+        return [$limitAsString, self::SUFFIXES[$coef]];
     }
 
     /**
      * This method should be kept in sync with Symfony\Component\Validator\Constraints\FileValidator::moreDecimalsThan().
      */
-    private static function moreDecimalsThan($double, $numberOfDecimals)
+    private static function moreDecimalsThan(string $double, int $numberOfDecimals): bool
     {
-        return \strlen((string) $double) > \strlen(round($double, $numberOfDecimals));
+        return \strlen($double) > \strlen(round($double, $numberOfDecimals));
     }
 }

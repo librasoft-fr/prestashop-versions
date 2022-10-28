@@ -12,6 +12,8 @@
 namespace Symfony\Bundle\DebugBundle;
 
 use Symfony\Bundle\DebugBundle\DependencyInjection\Compiler\DumpDataCollectorPass;
+use Symfony\Bundle\DebugBundle\DependencyInjection\Compiler\RemoveWebServerBundleLoggerPass;
+use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\VarDumper\VarDumper;
@@ -51,5 +53,11 @@ class DebugBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new DumpDataCollectorPass());
+        $container->addCompilerPass(new RemoveWebServerBundleLoggerPass());
+    }
+
+    public function registerCommands(Application $application)
+    {
+        // noop
     }
 }

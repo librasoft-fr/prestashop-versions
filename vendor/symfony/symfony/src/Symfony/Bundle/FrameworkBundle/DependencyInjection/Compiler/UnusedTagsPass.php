@@ -28,9 +28,13 @@ class UnusedTagsPass implements CompilerPassInterface
         'cache.pool.clearer',
         'config_cache.resource_checker',
         'console.command',
+        'container.do_not_inline',
+        'container.env_var_loader',
         'container.env_var_processor',
         'container.hot_path',
+        'container.reversible',
         'container.service_locator',
+        'container.service_locator_context',
         'container.service_subscriber',
         'controller.argument_value_resolver',
         'controller.service_arguments',
@@ -38,19 +42,29 @@ class UnusedTagsPass implements CompilerPassInterface
         'form.type',
         'form.type_extension',
         'form.type_guesser',
+        'http_client.client',
         'kernel.cache_clearer',
         'kernel.cache_warmer',
         'kernel.event_listener',
         'kernel.event_subscriber',
         'kernel.fragment_renderer',
+        'kernel.locale_aware',
         'kernel.reset',
+        'mailer.transport_factory',
+        'messenger.bus',
+        'messenger.message_handler',
+        'messenger.receiver',
+        'messenger.transport_factory',
+        'mime.mime_type_guesser',
         'monolog.logger',
         'property_info.access_extractor',
+        'property_info.initializable_extractor',
         'property_info.list_extractor',
         'property_info.type_extractor',
         'proxy',
         'routing.expression_language_provider',
         'routing.loader',
+        'routing.route_loader',
         'security.expression_language_provider',
         'security.remember_me_aware',
         'security.voter',
@@ -63,6 +77,7 @@ class UnusedTagsPass implements CompilerPassInterface
         'twig.extension',
         'twig.loader',
         'twig.runtime',
+        'validator.auto_mapper',
         'validator.constraint_validator',
         'validator.initializer',
         'workflow.definition',
@@ -85,7 +100,7 @@ class UnusedTagsPass implements CompilerPassInterface
                     continue;
                 }
 
-                if (false !== strpos($definedTag, $tag) || levenshtein($tag, $definedTag) <= \strlen($tag) / 3) {
+                if (str_contains($definedTag, $tag) || levenshtein($tag, $definedTag) <= \strlen($tag) / 3) {
                     $candidates[] = $definedTag;
                 }
             }

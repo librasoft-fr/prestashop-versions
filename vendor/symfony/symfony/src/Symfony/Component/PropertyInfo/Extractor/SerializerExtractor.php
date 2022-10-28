@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  *
- * @final since version 3.3
+ * @final
  */
 class SerializerExtractor implements PropertyListExtractorInterface
 {
@@ -33,7 +33,7 @@ class SerializerExtractor implements PropertyListExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function getProperties($class, array $context = [])
+    public function getProperties($class, array $context = []): ?array
     {
         if (!isset($context['serializer_groups']) || !\is_array($context['serializer_groups'])) {
             return null;

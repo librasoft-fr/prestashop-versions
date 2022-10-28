@@ -11,15 +11,13 @@
 
 namespace Symfony\Bridge\Doctrine\Form;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
-use Doctrine\Common\Persistence\Mapping\MappingException as LegacyCommonMappingException;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException as LegacyMappingException;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\MappingException;
+use Doctrine\Persistence\Proxy;
 use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
@@ -33,10 +31,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
 
     private static $useDeprecatedConstants;
 
-    /**
-     * @param ManagerRegistry|LegacyManagerRegistry $registry
-     */
-    public function __construct($registry)
+    public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
 
@@ -54,7 +49,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
             return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', [], Guess::LOW_CONFIDENCE);
         }
 
-        list($metadata, $name) = $ret;
+        [$metadata, $name] = $ret;
 
         if ($metadata->hasAssociation($property)) {
             $multiple = $metadata->isCollectionValuedAssociation($property);
@@ -64,7 +59,9 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
         }
 
         switch ($metadata->getTypeOfField($property)) {
-            case self::$useDeprecatedConstants ? Type::TARRAY : 'array':
+            case self::$useDeprecatedConstants ? Type::TARRAY : Types::ARRAY:
+            // no break
+            case self::$useDeprecatedConstants ? Type::SIMPLE_ARRAY : Types::SIMPLE_ARRAY:
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\CollectionType', [], Guess::MEDIUM_CONFIDENCE);
             case self::$useDeprecatedConstants ? Type::BOOLEAN : Types::BOOLEAN:
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\CheckboxType', [], Guess::HIGH_CONFIDENCE);
@@ -74,14 +71,21 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
             // no break
             case 'vardatetime':
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateTimeType', [], Guess::HIGH_CONFIDENCE);
+            case 'datetime_immutable':
+            case 'datetimetz_immutable':
+                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateTimeType', ['input' => 'datetime_immutable'], Guess::HIGH_CONFIDENCE);
             case 'dateinterval':
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateIntervalType', [], Guess::HIGH_CONFIDENCE);
             case self::$useDeprecatedConstants ? Type::DATE : Types::DATE_MUTABLE:
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', [], Guess::HIGH_CONFIDENCE);
+            case 'date_immutable':
+                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', ['input' => 'datetime_immutable'], Guess::HIGH_CONFIDENCE);
             case self::$useDeprecatedConstants ? Type::TIME : Types::TIME_MUTABLE:
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TimeType', [], Guess::HIGH_CONFIDENCE);
+            case 'time_immutable':
+                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TimeType', ['input' => 'datetime_immutable'], Guess::HIGH_CONFIDENCE);
             case self::$useDeprecatedConstants ? Type::DECIMAL : Types::DECIMAL:
-            // no break
+                return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\NumberType', ['input' => 'string'], Guess::MEDIUM_CONFIDENCE);
             case self::$useDeprecatedConstants ? Type::FLOAT : Types::FLOAT:
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\NumberType', [], Guess::MEDIUM_CONFIDENCE);
             case self::$useDeprecatedConstants ? Type::INTEGER : Types::INTEGER:
@@ -178,7 +182,7 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
     protected function getMetadata($class)
     {
         // normalize class name
-        $class = ClassUtils::getRealClass(ltrim($class, '\\'));
+        $class = self::getRealClass(ltrim($class, '\\'));
 
         if (\array_key_exists($class, $this->cache)) {
             return $this->cache[$class];
@@ -190,13 +194,20 @@ class DoctrineOrmTypeGuesser implements FormTypeGuesserInterface
                 return $this->cache[$class] = [$em->getClassMetadata($class), $name];
             } catch (MappingException $e) {
                 // not an entity or mapped super class
-            } catch (LegacyCommonMappingException $e) {
-                // not an entity or mapped super class
             } catch (LegacyMappingException $e) {
                 // not an entity or mapped super class, using Doctrine ORM 2.2
             }
         }
 
         return null;
+    }
+
+    private static function getRealClass(string $class): string
+    {
+        if (false === $pos = strrpos($class, '\\'.Proxy::MARKER.'\\')) {
+            return $class;
+        }
+
+        return substr($class, $pos + Proxy::MARKER_LENGTH + 2);
     }
 }

@@ -3,11 +3,16 @@
 namespace Doctrine\Bundle\DoctrineBundle\Command;
 
 use Doctrine\DBAL\DriverManager;
-use Exception;
+use Doctrine\DBAL\Sharding\PoolingShardConnection;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
+
+use function array_merge;
+use function in_array;
+use function sprintf;
 
 /**
  * Database tool allows you to easily create your configured databases.
@@ -16,16 +21,13 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateDatabaseDoctrineCommand extends DoctrineCommand
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('doctrine:database:create')
             ->setDescription('Creates the configured database')
-            ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command')
-            ->addOption('connection', null, InputOption::VALUE_OPTIONAL, 'The connection to use for this command')
+            ->addOption('shard', 's', InputOption::VALUE_REQUIRED, 'The shard connection to use for this command')
+            ->addOption('connection', 'c', InputOption::VALUE_OPTIONAL, 'The connection to use for this command')
             ->addOption('if-not-exists', null, InputOption::VALUE_NONE, 'Don\'t trigger an error, when the database already exists')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command creates the default connections database:
@@ -39,22 +41,21 @@ EOT
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $connectionName = $input->getOption('connection');
         if (empty($connectionName)) {
             $connectionName = $this->getDoctrine()->getDefaultConnectionName();
         }
+
         $connection = $this->getDoctrineConnection($connectionName);
 
         $ifNotExists = $input->getOption('if-not-exists');
 
         $params = $connection->getParams();
-        if (isset($params['master'])) {
-            $params = $params['master'];
+
+        if (isset($params['primary'])) {
+            $params = $params['primary'];
         }
 
         // Cannot inject `shard` option in parent::getDoctrineConnection
@@ -62,7 +63,7 @@ EOT
         if (isset($params['shards'])) {
             $shards = $params['shards'];
             // Default select global
-            $params = array_merge($params, $params['global']);
+            $params = array_merge($params, $params['global'] ?? []);
             unset($params['global']['dbname'], $params['global']['path'], $params['global']['url']);
             if ($input->getOption('shard')) {
                 foreach ($shards as $i => $shard) {
@@ -77,15 +78,21 @@ EOT
         }
 
         $hasPath = isset($params['path']);
-        $name    = $hasPath ? $params['path'] : (isset($params['dbname']) ? $params['dbname'] : false);
+        $name    = $hasPath ? $params['path'] : ($params['dbname'] ?? false);
         if (! $name) {
             throw new InvalidArgumentException("Connection does not contain a 'path' or 'dbname' parameter and cannot be created.");
         }
+
         // Need to get rid of _every_ occurrence of dbname from connection configuration and we have already extracted all relevant info from url
         unset($params['dbname'], $params['path'], $params['url']);
 
         $tmpConnection = DriverManager::getConnection($params);
-        $tmpConnection->connect($input->getOption('shard'));
+        if ($tmpConnection instanceof PoolingShardConnection) {
+            $tmpConnection->connect($input->getOption('shard'));
+        } else {
+            $tmpConnection->connect();
+        }
+
         $shouldNotCreateDatabase = $ifNotExists && in_array($name, $tmpConnection->getSchemaManager()->listDatabases());
 
         // Only quote if we don't have a path
@@ -101,7 +108,7 @@ EOT
                 $tmpConnection->getSchemaManager()->createDatabase($name);
                 $output->writeln(sprintf('<info>Created database <comment>%s</comment> for connection named <comment>%s</comment></info>', $name, $connectionName));
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $output->writeln(sprintf('<error>Could not create database <comment>%s</comment> for connection named <comment>%s</comment></error>', $name, $connectionName));
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
             $error = true;

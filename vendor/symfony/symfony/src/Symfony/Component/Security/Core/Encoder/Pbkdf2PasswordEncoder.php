@@ -30,8 +30,9 @@ class Pbkdf2PasswordEncoder extends BasePasswordEncoder
 {
     private $algorithm;
     private $encodeHashAsBase64;
-    private $iterations;
+    private $iterations = 1;
     private $length;
+    private $encodedLength = -1;
 
     /**
      * @param string $algorithm          The digest algorithm to use
@@ -39,12 +40,19 @@ class Pbkdf2PasswordEncoder extends BasePasswordEncoder
      * @param int    $iterations         The number of iterations to use to stretch the password hash
      * @param int    $length             Length of derived key to create
      */
-    public function __construct($algorithm = 'sha512', $encodeHashAsBase64 = true, $iterations = 1000, $length = 40)
+    public function __construct(string $algorithm = 'sha512', bool $encodeHashAsBase64 = true, int $iterations = 1000, int $length = 40)
     {
         $this->algorithm = $algorithm;
         $this->encodeHashAsBase64 = $encodeHashAsBase64;
-        $this->iterations = $iterations;
         $this->length = $length;
+
+        try {
+            $this->encodedLength = \strlen($this->encodePassword('', 'salt'));
+        } catch (\LogicException $e) {
+            // ignore algorithm not supported
+        }
+
+        $this->iterations = $iterations;
     }
 
     /**
@@ -72,6 +80,10 @@ class Pbkdf2PasswordEncoder extends BasePasswordEncoder
      */
     public function isPasswordValid($encoded, $raw, $salt)
     {
+        if (\strlen($encoded) !== $this->encodedLength || str_contains($encoded, '$')) {
+            return false;
+        }
+
         return !$this->isPasswordTooLong($raw) && $this->comparePasswords($encoded, $this->encodePassword($raw, $salt));
     }
 }

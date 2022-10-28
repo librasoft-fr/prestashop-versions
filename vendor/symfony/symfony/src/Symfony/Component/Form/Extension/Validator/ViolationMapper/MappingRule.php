@@ -23,11 +23,7 @@ class MappingRule
     private $propertyPath;
     private $targetPath;
 
-    /**
-     * @param string $propertyPath
-     * @param string $targetPath
-     */
-    public function __construct(FormInterface $origin, $propertyPath, $targetPath)
+    public function __construct(FormInterface $origin, string $propertyPath, string $targetPath)
     {
         $this->origin = $origin;
         $this->propertyPath = $propertyPath;
@@ -68,7 +64,7 @@ class MappingRule
     {
         $length = \strlen($propertyPath);
         $prefix = substr($this->propertyPath, 0, $length);
-        $next = isset($this->propertyPath[$length]) ? $this->propertyPath[$length] : null;
+        $next = $this->propertyPath[$length] ?? null;
 
         return $prefix === $propertyPath && ('[' === $next || '.' === $next);
     }

@@ -30,11 +30,7 @@ class GeneratorConfig
      */
     private $bundleWriters = [];
 
-    /**
-     * @param string $sourceDir
-     * @param string $icuVersion
-     */
-    public function __construct($sourceDir, $icuVersion)
+    public function __construct(string $sourceDir, string $icuVersion)
     {
         $this->sourceDir = $sourceDir;
         $this->icuVersion = $icuVersion;
@@ -42,11 +38,8 @@ class GeneratorConfig
 
     /**
      * Adds a writer to be used during the data conversion.
-     *
-     * @param string                $targetDir The output directory
-     * @param BundleWriterInterface $writer    The writer instance
      */
-    public function addBundleWriter($targetDir, BundleWriterInterface $writer)
+    public function addBundleWriter(string $targetDir, BundleWriterInterface $writer)
     {
         $this->bundleWriters[$targetDir] = $writer;
     }
@@ -56,7 +49,7 @@ class GeneratorConfig
      *
      * @return BundleWriterInterface[]
      */
-    public function getBundleWriters()
+    public function getBundleWriters(): array
     {
         return $this->bundleWriters;
     }
@@ -67,7 +60,7 @@ class GeneratorConfig
      *
      * @return string An absolute path to a directory
      */
-    public function getSourceDir()
+    public function getSourceDir(): string
     {
         return $this->sourceDir;
     }
@@ -77,7 +70,7 @@ class GeneratorConfig
      *
      * @return string The ICU version string
      */
-    public function getIcuVersion()
+    public function getIcuVersion(): string
     {
         return $this->icuVersion;
     }

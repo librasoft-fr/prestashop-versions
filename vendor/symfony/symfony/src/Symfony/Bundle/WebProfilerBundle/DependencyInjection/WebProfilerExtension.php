@@ -37,8 +37,7 @@ class WebProfilerExtension extends Extension
     /**
      * Loads the web profiler configuration.
      *
-     * @param array            $configs   An array of configuration settings
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param array $configs An array of configuration settings
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -47,12 +46,10 @@ class WebProfilerExtension extends Extension
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('profiler.xml');
-        $container->setParameter('web_profiler.debug_toolbar.position', $config['position']);
 
         if ($config['toolbar'] || $config['intercept_redirects']) {
             $loader->load('toolbar.xml');
-            $container->getDefinition('web_profiler.debug_toolbar')->setPrivate(true);
-            $container->getDefinition('web_profiler.debug_toolbar')->replaceArgument(5, $config['excluded_ajax_paths']);
+            $container->getDefinition('web_profiler.debug_toolbar')->replaceArgument(4, $config['excluded_ajax_paths']);
             $container->setParameter('web_profiler.debug_toolbar.intercept_redirects', $config['intercept_redirects']);
             $container->setParameter('web_profiler.debug_toolbar.mode', $config['toolbar'] ? WebDebugToolbarListener::ENABLED : WebDebugToolbarListener::DISABLED);
         }

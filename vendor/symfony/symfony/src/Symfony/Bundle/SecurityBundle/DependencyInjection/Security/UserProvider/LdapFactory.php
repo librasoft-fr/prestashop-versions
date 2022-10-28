@@ -36,6 +36,7 @@ class LdapFactory implements UserProviderFactoryInterface
             ->replaceArgument(5, $config['uid_key'])
             ->replaceArgument(6, $config['filter'])
             ->replaceArgument(7, $config['password_attribute'])
+            ->replaceArgument(8, $config['extra_fields'])
         ;
     }
 
@@ -47,12 +48,16 @@ class LdapFactory implements UserProviderFactoryInterface
     public function addConfiguration(NodeDefinition $node)
     {
         $node
+            ->fixXmlConfig('extra_field')
             ->fixXmlConfig('default_role')
             ->children()
                 ->scalarNode('service')->isRequired()->cannotBeEmpty()->defaultValue('ldap')->end()
                 ->scalarNode('base_dn')->isRequired()->cannotBeEmpty()->end()
                 ->scalarNode('search_dn')->defaultNull()->end()
                 ->scalarNode('search_password')->defaultNull()->end()
+                ->arrayNode('extra_fields')
+                    ->prototype('scalar')->end()
+                ->end()
                 ->arrayNode('default_roles')
                     ->beforeNormalization()->ifString()->then(function ($v) { return preg_split('/\s*,\s*/', $v); })->end()
                     ->requiresAtLeastOneElement()

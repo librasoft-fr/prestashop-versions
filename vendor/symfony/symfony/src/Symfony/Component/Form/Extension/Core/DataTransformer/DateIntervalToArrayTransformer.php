@@ -22,15 +22,15 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
  */
 class DateIntervalToArrayTransformer implements DataTransformerInterface
 {
-    const YEARS = 'years';
-    const MONTHS = 'months';
-    const DAYS = 'days';
-    const HOURS = 'hours';
-    const MINUTES = 'minutes';
-    const SECONDS = 'seconds';
-    const INVERT = 'invert';
+    public const YEARS = 'years';
+    public const MONTHS = 'months';
+    public const DAYS = 'days';
+    public const HOURS = 'hours';
+    public const MINUTES = 'minutes';
+    public const SECONDS = 'seconds';
+    public const INVERT = 'invert';
 
-    private static $availableFields = [
+    private const AVAILABLE_FIELDS = [
         self::YEARS => 'y',
         self::MONTHS => 'm',
         self::DAYS => 'd',
@@ -43,16 +43,13 @@ class DateIntervalToArrayTransformer implements DataTransformerInterface
     private $pad;
 
     /**
-     * @param string[] $fields The date fields
-     * @param bool     $pad    Whether to use padding
+     * @param string[]|null $fields The date fields
+     * @param bool          $pad    Whether to use padding
      */
-    public function __construct(array $fields = null, $pad = false)
+    public function __construct(array $fields = null, bool $pad = false)
     {
-        if (null === $fields) {
-            $fields = ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'invert'];
-        }
-        $this->fields = $fields;
-        $this->pad = (bool) $pad;
+        $this->fields = $fields ?? ['years', 'months', 'days', 'hours', 'minutes', 'seconds', 'invert'];
+        $this->pad = $pad;
     }
 
     /**
@@ -82,10 +79,10 @@ class DateIntervalToArrayTransformer implements DataTransformerInterface
             );
         }
         if (!$dateInterval instanceof \DateInterval) {
-            throw new UnexpectedTypeException($dateInterval, '\DateInterval');
+            throw new UnexpectedTypeException($dateInterval, \DateInterval::class);
         }
         $result = [];
-        foreach (self::$availableFields as $field => $char) {
+        foreach (self::AVAILABLE_FIELDS as $field => $char) {
             $result[$field] = $dateInterval->format('%'.($this->pad ? strtoupper($char) : $char));
         }
         if (\in_array('weeks', $this->fields, true)) {
@@ -134,7 +131,7 @@ class DateIntervalToArrayTransformer implements DataTransformerInterface
         if (isset($value['invert']) && !\is_bool($value['invert'])) {
             throw new TransformationFailedException('The value of "invert" must be boolean.');
         }
-        foreach (self::$availableFields as $field => $char) {
+        foreach (self::AVAILABLE_FIELDS as $field => $char) {
             if ('invert' !== $field && isset($value[$field]) && !ctype_digit((string) $value[$field])) {
                 throw new TransformationFailedException(sprintf('This amount of "%s" is invalid.', $field));
             }

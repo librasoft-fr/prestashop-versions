@@ -18,6 +18,8 @@ use Symfony\Component\Security\Core\Authentication\SimpleAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
+@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.2, use Guard instead.', SimpleAuthenticationHandler::class), \E_USER_DEPRECATED);
+
 /**
  * Class to proxy authentication success/failure handlers.
  *
@@ -26,6 +28,8 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
  * the default handlers are triggered.
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
+ *
+ * @deprecated since Symfony 4.2, use Guard instead.
  */
 class SimpleAuthenticationHandler implements AuthenticationFailureHandlerInterface, AuthenticationSuccessHandlerInterface
 {
@@ -34,12 +38,6 @@ class SimpleAuthenticationHandler implements AuthenticationFailureHandlerInterfa
     protected $simpleAuthenticator;
     protected $logger;
 
-    /**
-     * @param SimpleAuthenticatorInterface          $authenticator  SimpleAuthenticatorInterface instance
-     * @param AuthenticationSuccessHandlerInterface $successHandler Default success handler
-     * @param AuthenticationFailureHandlerInterface $failureHandler Default failure handler
-     * @param LoggerInterface                       $logger         Optional logger
-     */
     public function __construct(SimpleAuthenticatorInterface $authenticator, AuthenticationSuccessHandlerInterface $successHandler, AuthenticationFailureHandlerInterface $failureHandler, LoggerInterface $logger = null)
     {
         $this->simpleAuthenticator = $authenticator;

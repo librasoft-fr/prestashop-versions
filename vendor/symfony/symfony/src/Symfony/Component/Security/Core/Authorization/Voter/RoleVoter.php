@@ -12,7 +12,7 @@
 namespace Symfony\Component\Security\Core\Authorization\Voter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Role\RoleInterface;
+use Symfony\Component\Security\Core\Role\Role;
 
 /**
  * RoleVoter votes if any attribute starts with a given prefix.
@@ -23,10 +23,7 @@ class RoleVoter implements VoterInterface
 {
     private $prefix;
 
-    /**
-     * @param string $prefix The role prefix
-     */
-    public function __construct($prefix = 'ROLE_')
+    public function __construct(string $prefix = 'ROLE_')
     {
         $this->prefix = $prefix;
     }
@@ -40,17 +37,17 @@ class RoleVoter implements VoterInterface
         $roles = $this->extractRoles($token);
 
         foreach ($attributes as $attribute) {
-            if ($attribute instanceof RoleInterface) {
+            if ($attribute instanceof Role) {
                 $attribute = $attribute->getRole();
             }
 
-            if (!\is_string($attribute) || 0 !== strpos($attribute, $this->prefix)) {
+            if (!\is_string($attribute) || !str_starts_with($attribute, $this->prefix)) {
                 continue;
             }
 
             $result = VoterInterface::ACCESS_DENIED;
             foreach ($roles as $role) {
-                if ($attribute === $role->getRole()) {
+                if ($attribute === $role) {
                     return VoterInterface::ACCESS_GRANTED;
                 }
             }
@@ -61,6 +58,12 @@ class RoleVoter implements VoterInterface
 
     protected function extractRoles(TokenInterface $token)
     {
-        return $token->getRoles();
+        if (method_exists($token, 'getRoleNames')) {
+            return $token->getRoleNames();
+        }
+
+        @trigger_error(sprintf('Not implementing the "%s::getRoleNames()" method in "%s" is deprecated since Symfony 4.3.', TokenInterface::class, \get_class($token)), \E_USER_DEPRECATED);
+
+        return array_map(function (Role $role) { return $role->getRole(); }, $token->getRoles(false));
     }
 }

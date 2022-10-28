@@ -2,19 +2,51 @@
 
 namespace Doctrine\Bundle\DoctrineBundle\DataCollector;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Logging\CacheLoggerChain;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Persistence\ManagerRegistry;
-use Exception;
+use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector as BaseCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
+use function array_map;
+use function array_sum;
+use function assert;
+use function count;
+use function usort;
+
+/**
+ * @psalm-type QueryType = array{
+ *    executionMS: float,
+ *    explainable: bool,
+ *    sql: string,
+ *    params: ?array<array-key, mixed>,
+ *    runnable: bool,
+ *    types: ?array<array-key, Type|int|string|null>,
+ * }
+ * @psalm-type DataType = array{
+ *    caches: array{
+ *       enabled: bool,
+ *       counts: array<"puts"|"hits"|"misses", int>,
+ *       log_enabled: bool,
+ *       regions: array<"puts"|"hits"|"misses", array<string, int>>,
+ *    },
+ *    connections: list<string>,
+ *    entities: array<string, array<class-string, class-string>>,
+ *    errors: array<string, array<class-string, list<string>>>,
+ *    managers: list<string>,
+ *    queries: array<string, list<QueryType>>,
+ * }
+ * @psalm-property DataType $data
+ */
 class DoctrineDataCollector extends BaseCollector
 {
     /** @var ManagerRegistry */
@@ -23,12 +55,19 @@ class DoctrineDataCollector extends BaseCollector
     /** @var int|null */
     private $invalidEntityCount;
 
-    /** @var string[] */
+    /**
+     * @var mixed[][]
+     * @psalm-var ?array<string, list<QueryType&array{count: int, index: int, executionPercent: float}>>
+     */
     private $groupedQueries;
 
-    public function __construct(ManagerRegistry $registry)
+    /** @var bool */
+    private $shouldValidateSchema;
+
+    public function __construct(ManagerRegistry $registry, bool $shouldValidateSchema = true)
     {
-        $this->registry = $registry;
+        $this->registry             = $registry;
+        $this->shouldValidateSchema = $shouldValidateSchema;
 
         parent::__construct($registry);
     }
@@ -36,7 +75,7 @@ class DoctrineDataCollector extends BaseCollector
     /**
      * {@inheritdoc}
      */
-    public function collect(Request $request, Response $response, Exception $exception = null)
+    public function collect(Request $request, Response $response, ?Throwable $exception = null)
     {
         parent::collect($request, $response, $exception);
 
@@ -57,31 +96,35 @@ class DoctrineDataCollector extends BaseCollector
             ],
         ];
 
-        /** @var EntityManager $em */
         foreach ($this->registry->getManagers() as $name => $em) {
-            $entities[$name] = [];
-            /** @var ClassMetadataFactory $factory */
-            $factory   = $em->getMetadataFactory();
-            $validator = new SchemaValidator($em);
+            assert($em instanceof EntityManagerInterface);
+            if ($this->shouldValidateSchema) {
+                $entities[$name] = [];
 
-            /** @var ClassMetadataInfo $class */
-            foreach ($factory->getLoadedMetadata() as $class) {
-                if (isset($entities[$name][$class->getName()])) {
-                    continue;
+                $factory   = $em->getMetadataFactory();
+                $validator = new SchemaValidator($em);
+
+                assert($factory instanceof AbstractClassMetadataFactory);
+
+                foreach ($factory->getLoadedMetadata() as $class) {
+                    assert($class instanceof ClassMetadataInfo);
+                    if (isset($entities[$name][$class->getName()])) {
+                        continue;
+                    }
+
+                    $classErrors                        = $validator->validateClass($class);
+                    $entities[$name][$class->getName()] = $class->getName();
+
+                    if (empty($classErrors)) {
+                        continue;
+                    }
+
+                    $errors[$name][$class->getName()] = $classErrors;
                 }
-
-                $classErrors                        = $validator->validateClass($class);
-                $entities[$name][$class->getName()] = $class->getName();
-
-                if (empty($classErrors)) {
-                    continue;
-                }
-
-                $errors[$name][$class->getName()] = $classErrors;
             }
 
-            /** @var Configuration $emConfig */
-            $emConfig   = $em->getConfiguration();
+            $emConfig = $em->getConfiguration();
+            assert($emConfig instanceof Configuration);
             $slcEnabled = $emConfig->isSecondLevelCacheEnabled();
 
             if (! $slcEnabled) {
@@ -90,17 +133,17 @@ class DoctrineDataCollector extends BaseCollector
 
             $caches['enabled'] = true;
 
-            /** @var $cacheConfiguration \Doctrine\ORM\Cache\CacheConfiguration */
-            /** @var CacheLoggerChain $cacheLoggerChain */
             $cacheConfiguration = $emConfig->getSecondLevelCacheConfiguration();
-            $cacheLoggerChain   = $cacheConfiguration->getCacheLogger();
+            assert($cacheConfiguration instanceof CacheConfiguration);
+            $cacheLoggerChain = $cacheConfiguration->getCacheLogger();
+            assert($cacheLoggerChain instanceof CacheLoggerChain || $cacheLoggerChain === null);
 
             if (! $cacheLoggerChain || ! $cacheLoggerChain->getLogger('statistics')) {
                 continue;
             }
 
-            /** @var StatisticsCacheLogger $cacheLoggerStats */
-            $cacheLoggerStats      = $cacheLoggerChain->getLogger('statistics');
+            $cacheLoggerStats = $cacheLoggerChain->getLogger('statistics');
+            assert($cacheLoggerStats instanceof StatisticsCacheLogger);
             $caches['log_enabled'] = true;
 
             $caches['counts']['puts']   += $cacheLoggerStats->getPutCount();
@@ -132,62 +175,64 @@ class DoctrineDataCollector extends BaseCollector
             }
         }
 
-        // Might be good idea to replicate this block in doctrine bridge so we can drop this from here after some time.
-        // This code is compatible with such change, because cloneVar is supposed to check if input is already cloned.
-        foreach ($this->data['queries'] as &$queries) {
-            foreach ($queries as &$query) {
-                $query['params'] = $this->cloneVar($query['params']);
-                // To be removed when the required minimum version of symfony/doctrine-bridge is >= 4.4
-                $query['runnable'] = $query['runnable'] ?? true;
-            }
-        }
-
         $this->data['entities'] = $entities;
         $this->data['errors']   = $errors;
         $this->data['caches']   = $caches;
         $this->groupedQueries   = null;
     }
 
+    /** @return array<string, array<string, string>> */
     public function getEntities()
     {
         return $this->data['entities'];
     }
 
+    /** @return array<string, array<string, list<string>>> */
     public function getMappingErrors()
     {
         return $this->data['errors'];
     }
 
+    /** @return int */
     public function getCacheHitsCount()
     {
         return $this->data['caches']['counts']['hits'];
     }
 
+    /** @return int */
     public function getCachePutsCount()
     {
         return $this->data['caches']['counts']['puts'];
     }
 
+    /** @return int */
     public function getCacheMissesCount()
     {
         return $this->data['caches']['counts']['misses'];
     }
 
+    /** @return bool */
     public function getCacheEnabled()
     {
         return $this->data['caches']['enabled'];
     }
 
+    /**
+     * @return array<string, array<string, int>>
+     * @psalm-return array<"puts"|"hits"|"misses", array<string, int>>
+     */
     public function getCacheRegions()
     {
         return $this->data['caches']['regions'];
     }
 
+    /** @return array<string, int> */
     public function getCacheCounts()
     {
         return $this->data['caches']['counts'];
     }
 
+    /** @return int */
     public function getInvalidEntityCount()
     {
         if ($this->invalidEntityCount === null) {
@@ -197,6 +242,10 @@ class DoctrineDataCollector extends BaseCollector
         return $this->invalidEntityCount;
     }
 
+    /**
+     * @return string[][]
+     * @psalm-return array<string, list<QueryType&array{count: int, index: int, executionPercent: float}>>
+     */
     public function getGroupedQueries()
     {
         if ($this->groupedQueries !== null) {
@@ -215,10 +264,12 @@ class DoctrineDataCollector extends BaseCollector
                     $connectionGroupedQueries[$key]['count']       = 0;
                     $connectionGroupedQueries[$key]['index']       = $i; // "Explain query" relies on query index in 'queries'.
                 }
+
                 $connectionGroupedQueries[$key]['executionMS'] += $query['executionMS'];
                 $connectionGroupedQueries[$key]['count']++;
                 $totalExecutionMS += $query['executionMS'];
             }
+
             usort($connectionGroupedQueries, static function ($a, $b) {
                 if ($a['executionMS'] === $b['executionMS']) {
                     return 0;
@@ -239,15 +290,16 @@ class DoctrineDataCollector extends BaseCollector
         return $this->groupedQueries;
     }
 
-    private function executionTimePercentage($executionTimeMS, $totalExecutionTimeMS)
+    private function executionTimePercentage(float $executionTimeMS, float $totalExecutionTimeMS): float
     {
-        if ($totalExecutionTimeMS === 0.0 || $totalExecutionTimeMS === 0) {
+        if (! $totalExecutionTimeMS) {
             return 0;
         }
 
         return $executionTimeMS / $totalExecutionTimeMS * 100;
     }
 
+    /** @return int */
     public function getGroupedQueryCount()
     {
         $count = 0;

@@ -1,12 +1,20 @@
 <?php
+/**
+ * This file is authored by PrestaShop SA and Contributors <contact@prestashop.com>
+ *
+ * It is distributed under MIT license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace PrestaShop\TranslationToolsBundle\Twig\Extension;
 
 use Symfony\Component\Translation\TranslatorInterface;
-use Twig_Environment;
-use Twig_Extension_InitRuntimeInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class AppExtension extends \Twig_Extension implements Twig_Extension_InitRuntimeInterface
+class AppExtension extends AbstractExtension
 {
     /**
      * @var TranslatorInterface
@@ -21,17 +29,6 @@ class AppExtension extends \Twig_Extension implements Twig_Extension_InitRuntime
         $this->translation = $translation;
     }
 
-    public function initRuntime(Twig_Environment $environment)
-    {
-        $environment->registerUndefinedFunctionCallback(function () {
-            return;
-        });
-
-        $environment->registerUndefinedFilterCallback(function () {
-            return;
-        });
-    }
-
     /**
      * We need to define and reset each twig function as the definition
      * of theses function is stored in PrestaShop codebase.
@@ -39,7 +36,7 @@ class AppExtension extends \Twig_Extension implements Twig_Extension_InitRuntime
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('renderhooksarray', [$this, 'transChoice']),
+            new TwigFunction('renderhooksarray', [$this, 'transChoice']),
         ];
     }
 

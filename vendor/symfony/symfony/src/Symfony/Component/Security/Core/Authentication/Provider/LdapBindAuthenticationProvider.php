@@ -34,22 +34,18 @@ class LdapBindAuthenticationProvider extends UserAuthenticationProvider
     private $ldap;
     private $dnString;
     private $queryString;
+    private $searchDn;
+    private $searchPassword;
 
-    /**
-     * @param UserProviderInterface $userProvider               A UserProvider
-     * @param UserCheckerInterface  $userChecker                A UserChecker
-     * @param string                $providerKey                The provider key
-     * @param LdapInterface         $ldap                       A Ldap client
-     * @param string                $dnString                   A string used to create the bind DN
-     * @param bool                  $hideUserNotFoundExceptions Whether to hide user not found exception or not
-     */
-    public function __construct(UserProviderInterface $userProvider, UserCheckerInterface $userChecker, $providerKey, LdapInterface $ldap, $dnString = '{username}', $hideUserNotFoundExceptions = true)
+    public function __construct(UserProviderInterface $userProvider, UserCheckerInterface $userChecker, string $providerKey, LdapInterface $ldap, string $dnString = '{username}', bool $hideUserNotFoundExceptions = true, string $searchDn = '', string $searchPassword = '')
     {
         parent::__construct($userChecker, $providerKey, $hideUserNotFoundExceptions);
 
         $this->userProvider = $userProvider;
         $this->ldap = $ldap;
         $this->dnString = $dnString;
+        $this->searchDn = $searchDn;
+        $this->searchPassword = $searchPassword;
     }
 
     /**
@@ -88,6 +84,11 @@ class LdapBindAuthenticationProvider extends UserAuthenticationProvider
 
         try {
             if ($this->queryString) {
+                if ('' !== $this->searchDn && '' !== $this->searchPassword) {
+                    $this->ldap->bind($this->searchDn, $this->searchPassword);
+                } else {
+                    @trigger_error('Using the "query_string" config without using a "search_dn" and a "search_password" is deprecated since Symfony 4.4 and will throw an exception in Symfony 5.0.', \E_USER_DEPRECATED);
+                }
                 $username = $this->ldap->escape($username, '', LdapInterface::ESCAPE_FILTER);
                 $query = str_replace('{username}', $username, $this->queryString);
                 $result = $this->ldap->query($this->dnString, $query)->execute();

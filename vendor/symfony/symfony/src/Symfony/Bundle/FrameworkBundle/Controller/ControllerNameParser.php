@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Controller;
 
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -19,14 +20,20 @@ use Symfony\Component\HttpKernel\KernelInterface;
  * (Bundle\BlogBundle\Controller\PostController::indexAction).
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since Symfony 4.1
  */
 class ControllerNameParser
 {
     protected $kernel;
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(KernelInterface $kernel, bool $triggerDeprecation = true)
     {
         $this->kernel = $kernel;
+
+        if ($triggerDeprecation) {
+            @trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.1.', __CLASS__), \E_USER_DEPRECATED);
+        }
     }
 
     /**
@@ -41,53 +48,42 @@ class ControllerNameParser
      */
     public function parse($controller)
     {
+        if (2 > \func_num_args() || func_get_arg(1)) {
+            @trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.1.', __CLASS__), \E_USER_DEPRECATED);
+        }
+
         $parts = explode(':', $controller);
         if (3 !== \count($parts) || \in_array('', $parts, true)) {
             throw new \InvalidArgumentException(sprintf('The "%s" controller is not a valid "a:b:c" controller string.', $controller));
         }
 
         $originalController = $controller;
-        list($bundle, $controller, $action) = $parts;
+        [$bundleName, $controller, $action] = $parts;
         $controller = str_replace('/', '\\', $controller);
-        $bundles = [];
 
         try {
             // this throws an exception if there is no such bundle
-            $allBundles = $this->kernel->getBundle($bundle, false, true);
+            $bundle = $this->kernel->getBundle($bundleName);
         } catch (\InvalidArgumentException $e) {
             $message = sprintf(
                 'The "%s" (from the _controller value "%s") does not exist or is not enabled in your kernel!',
-                $bundle,
+                $bundleName,
                 $originalController
             );
 
-            if ($alternative = $this->findAlternative($bundle)) {
+            if ($alternative = $this->findAlternative($bundleName)) {
                 $message .= sprintf(' Did you mean "%s:%s:%s"?', $alternative, $controller, $action);
             }
 
             throw new \InvalidArgumentException($message, 0, $e);
         }
 
-        if (!\is_array($allBundles)) {
-            // happens when HttpKernel is version 4+
-            $allBundles = [$allBundles];
+        $try = $bundle->getNamespace().'\\Controller\\'.$controller.'Controller';
+        if (class_exists($try)) {
+            return $try.'::'.$action.'Action';
         }
 
-        foreach ($allBundles as $b) {
-            $try = $b->getNamespace().'\\Controller\\'.$controller.'Controller';
-            if (class_exists($try)) {
-                return $try.'::'.$action.'Action';
-            }
-
-            $bundles[] = $b->getName();
-            $msg = sprintf('The _controller value "%s:%s:%s" maps to a "%s" class, but this class was not found. Create this class or check the spelling of the class and its namespace.', $bundle, $controller, $action, $try);
-        }
-
-        if (\count($bundles) > 1) {
-            $msg = sprintf('Unable to find controller "%s:%s" in bundles %s.', $bundle, $controller, implode(', ', $bundles));
-        }
-
-        throw new \InvalidArgumentException($msg);
+        throw new \InvalidArgumentException(sprintf('The _controller value "%s:%s:%s" maps to a "%s" class, but this class was not found. Create this class or check the spelling of the class and its namespace.', $bundleName, $controller, $action, $try));
     }
 
     /**
@@ -101,6 +97,8 @@ class ControllerNameParser
      */
     public function build($controller)
     {
+        @trigger_error(sprintf('The %s class is deprecated since Symfony 4.1.', __CLASS__), \E_USER_DEPRECATED);
+
         if (0 === preg_match('#^(.*?\\\\Controller\\\\(.+)Controller)::(.+)Action$#', $controller, $match)) {
             throw new \InvalidArgumentException(sprintf('The "%s" controller is not a valid "class::method" string.', $controller));
         }
@@ -109,7 +107,7 @@ class ControllerNameParser
         $controllerName = $match[2];
         $actionName = $match[3];
         foreach ($this->kernel->getBundles() as $name => $bundle) {
-            if (0 !== strpos($className, $bundle->getNamespace())) {
+            if (!str_starts_with($className, $bundle->getNamespace())) {
                 continue;
             }
 
@@ -121,14 +119,10 @@ class ControllerNameParser
 
     /**
      * Attempts to find a bundle that is *similar* to the given bundle name.
-     *
-     * @param string $nonExistentBundleName
-     *
-     * @return string
      */
-    private function findAlternative($nonExistentBundleName)
+    private function findAlternative(string $nonExistentBundleName): ?string
     {
-        $bundleNames = array_map(function ($b) {
+        $bundleNames = array_map(function (BundleInterface $b) {
             return $b->getName();
         }, $this->kernel->getBundles());
 
@@ -136,7 +130,7 @@ class ControllerNameParser
         $shortest = null;
         foreach ($bundleNames as $bundleName) {
             // if there's a partial match, return it immediately
-            if (false !== strpos($bundleName, $nonExistentBundleName)) {
+            if (str_contains($bundleName, $nonExistentBundleName)) {
                 return $bundleName;
             }
 

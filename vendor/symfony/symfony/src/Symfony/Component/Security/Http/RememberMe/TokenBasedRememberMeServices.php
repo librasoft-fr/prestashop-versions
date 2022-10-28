@@ -35,7 +35,7 @@ class TokenBasedRememberMeServices extends AbstractRememberMeServices
             throw new AuthenticationException('The cookie is invalid.');
         }
 
-        list($class, $username, $expires, $hash) = $cookieParts;
+        [$class, $username, $expires, $hash] = $cookieParts;
         if (false === $username = base64_decode($username, true)) {
             throw new AuthenticationException('$username contains a character from outside the base64 alphabet.');
         }
@@ -80,7 +80,7 @@ class TokenBasedRememberMeServices extends AbstractRememberMeServices
                 $expires,
                 $this->options['path'],
                 $this->options['domain'],
-                $this->options['secure'],
+                $this->options['secure'] ?? $request->isSecure(),
                 $this->options['httponly'],
                 false,
                 $this->options['samesite']

@@ -13,7 +13,6 @@ namespace Symfony\Component\Form\Extension\DataCollector;
 
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\HttpKernel\DataCollector\Util\ValueExporter;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
@@ -23,16 +22,6 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
  */
 class FormDataExtractor implements FormDataExtractorInterface
 {
-    /**
-     * Constructs a new data extractor.
-     */
-    public function __construct(ValueExporter $valueExporter = null, $triggerDeprecationNotice = true)
-    {
-        if (null !== $valueExporter && $triggerDeprecationNotice) {
-            @trigger_error('Passing a ValueExporter instance to '.__METHOD__.'() is deprecated in version 3.2 and will be removed in 4.0.', \E_USER_DEPRECATED);
-        }
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -149,8 +138,8 @@ class FormDataExtractor implements FormDataExtractorInterface
     public function extractViewVariables(FormView $view)
     {
         $data = [
-            'id' => isset($view->vars['id']) ? $view->vars['id'] : null,
-            'name' => isset($view->vars['name']) ? $view->vars['name'] : null,
+            'id' => $view->vars['id'] ?? null,
+            'name' => $view->vars['name'] ?? null,
             'view_vars' => [],
         ];
 
@@ -165,10 +154,8 @@ class FormDataExtractor implements FormDataExtractorInterface
 
     /**
      * Recursively builds an HTML ID for a form.
-     *
-     * @return string The HTML ID
      */
-    private function buildId(FormInterface $form)
+    private function buildId(FormInterface $form): string
     {
         $id = $form->getName();
 

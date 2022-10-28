@@ -11,14 +11,15 @@
 
 namespace Symfony\Bridge\Doctrine\PropertyInfo;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as LegacyClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\MappingException as LegacyMappingException;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException as OrmMappingException;
 use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Persistence\Mapping\MappingException;
+use Symfony\Component\PropertyInfo\PropertyAccessExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyListExtractorInterface;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
 use Symfony\Component\PropertyInfo\Type;
@@ -28,18 +29,26 @@ use Symfony\Component\PropertyInfo\Type;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeExtractorInterface
+class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeExtractorInterface, PropertyAccessExtractorInterface
 {
+    private $entityManager;
     private $classMetadataFactory;
 
     private static $useDeprecatedConstants;
 
     /**
-     * @param ClassMetadataFactory|LegacyClassMetadataFactory $classMetadataFactory
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct($classMetadataFactory)
+    public function __construct($entityManager)
     {
-        $this->classMetadataFactory = $classMetadataFactory;
+        if ($entityManager instanceof EntityManagerInterface) {
+            $this->entityManager = $entityManager;
+        } elseif ($entityManager instanceof ClassMetadataFactory) {
+            @trigger_error(sprintf('Injecting an instance of "%s" in "%s" is deprecated since Symfony 4.2, inject an instance of "%s" instead.', ClassMetadataFactory::class, __CLASS__, EntityManagerInterface::class), \E_USER_DEPRECATED);
+            $this->classMetadataFactory = $entityManager;
+        } else {
+            throw new \TypeError(sprintf('$entityManager must be an instance of "%s", "%s" given.', EntityManagerInterface::class, \is_object($entityManager) ? \get_class($entityManager) : \gettype($entityManager)));
+        }
 
         if (null === self::$useDeprecatedConstants) {
             self::$useDeprecatedConstants = !class_exists(Types::class);
@@ -51,21 +60,15 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
      */
     public function getProperties($class, array $context = [])
     {
-        try {
-            $metadata = $this->classMetadataFactory->getMetadataFor($class);
-        } catch (MappingException $exception) {
-            return null;
-        } catch (OrmMappingException $exception) {
-            return null;
-        } catch (LegacyMappingException $exception) {
+        if (null === $metadata = $this->getMetadata($class)) {
             return null;
         }
 
         $properties = array_merge($metadata->getFieldNames(), $metadata->getAssociationNames());
 
-        if ($metadata instanceof ClassMetadataInfo && class_exists('Doctrine\ORM\Mapping\Embedded') && $metadata->embeddedClasses) {
+        if ($metadata instanceof ClassMetadataInfo && class_exists(\Doctrine\ORM\Mapping\Embedded::class) && $metadata->embeddedClasses) {
             $properties = array_filter($properties, function ($property) {
-                return false === strpos($property, '.');
+                return !str_contains($property, '.');
             });
 
             $properties = array_merge($properties, array_keys($metadata->embeddedClasses));
@@ -79,13 +82,7 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
      */
     public function getTypes($class, $property, array $context = [])
     {
-        try {
-            $metadata = $this->classMetadataFactory->getMetadataFor($class);
-        } catch (MappingException $exception) {
-            return null;
-        } catch (OrmMappingException $exception) {
-            return null;
-        } catch (LegacyMappingException $exception) {
+        if (null === $metadata = $this->getMetadata($class)) {
             return null;
         }
 
@@ -111,21 +108,26 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
 
                 if (isset($associationMapping['indexBy'])) {
                     /** @var ClassMetadataInfo $subMetadata */
-                    $subMetadata = $this->classMetadataFactory->getMetadataFor($associationMapping['targetEntity']);
+                    $subMetadata = $this->entityManager ? $this->entityManager->getClassMetadata($associationMapping['targetEntity']) : $this->classMetadataFactory->getMetadataFor($associationMapping['targetEntity']);
 
                     // Check if indexBy value is a property
                     $fieldName = $associationMapping['indexBy'];
                     if (null === ($typeOfField = $subMetadata->getTypeOfField($fieldName))) {
                         $fieldName = $subMetadata->getFieldForColumn($associationMapping['indexBy']);
-                        //Not a property, maybe a column name?
+                        // Not a property, maybe a column name?
                         if (null === ($typeOfField = $subMetadata->getTypeOfField($fieldName))) {
-                            //Maybe the column name is the association join column?
+                            // Maybe the column name is the association join column?
                             $associationMapping = $subMetadata->getAssociationMapping($fieldName);
 
                             /** @var ClassMetadataInfo $subMetadata */
                             $indexProperty = $subMetadata->getSingleAssociationReferencedJoinColumnName($fieldName);
-                            $subMetadata = $this->classMetadataFactory->getMetadataFor($associationMapping['targetEntity']);
-                            $typeOfField = $subMetadata->getTypeOfField($indexProperty);
+                            $subMetadata = $this->entityManager ? $this->entityManager->getClassMetadata($associationMapping['targetEntity']) : $this->classMetadataFactory->getMetadataFor($associationMapping['targetEntity']);
+
+                            // Not a property, maybe a column name?
+                            if (null === ($typeOfField = $subMetadata->getTypeOfField($indexProperty))) {
+                                $fieldName = $subMetadata->getFieldForColumn($indexProperty);
+                                $typeOfField = $subMetadata->getTypeOfField($fieldName);
+                            }
                         }
                     }
 
@@ -145,7 +147,7 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
             )];
         }
 
-        if ($metadata instanceof ClassMetadataInfo && class_exists('Doctrine\ORM\Mapping\Embedded') && isset($metadata->embeddedClasses[$property])) {
+        if ($metadata instanceof ClassMetadataInfo && class_exists(\Doctrine\ORM\Mapping\Embedded::class) && isset($metadata->embeddedClasses[$property])) {
             return [new Type(Type::BUILTIN_TYPE_OBJECT, false, $metadata->embeddedClasses[$property]['class'])];
         }
 
@@ -157,6 +159,10 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
             }
 
             $nullable = $metadata instanceof ClassMetadataInfo && $metadata->isNullable($property);
+            $enumType = null;
+            if (null !== $enumClass = $metadata->getFieldMapping($property)['enumType'] ?? null) {
+                $enumType = new Type(Type::BUILTIN_TYPE_OBJECT, $nullable, $enumClass);
+            }
 
             switch ($builtinType) {
                 case Type::BUILTIN_TYPE_OBJECT:
@@ -184,14 +190,26 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
                     break;
                 case Type::BUILTIN_TYPE_ARRAY:
                     switch ($typeOfField) {
-                        case self::$useDeprecatedConstants ? DBALType::TARRAY : 'array':
+                        case self::$useDeprecatedConstants ? DBALType::TARRAY : Types::ARRAY:
                         // no break
                         case 'json_array':
+                            // return null if $enumType is set, because we can't determine if collectionKeyType is string or int
+                            if ($enumType) {
+                                return null;
+                            }
+
                             return [new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true)];
 
                         case self::$useDeprecatedConstants ? DBALType::SIMPLE_ARRAY : Types::SIMPLE_ARRAY:
-                            return [new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true, new Type(Type::BUILTIN_TYPE_INT), new Type(Type::BUILTIN_TYPE_STRING))];
+                            return [new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true, new Type(Type::BUILTIN_TYPE_INT), $enumType ?? new Type(Type::BUILTIN_TYPE_STRING))];
                     }
+                    break;
+                case Type::BUILTIN_TYPE_INT:
+                case Type::BUILTIN_TYPE_STRING:
+                    if ($enumType) {
+                        return [$enumType];
+                    }
+                    break;
             }
 
             return [new Type($builtinType, $nullable)];
@@ -201,13 +219,44 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function isReadable($class, $property, array $context = [])
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isWritable($class, $property, array $context = [])
+    {
+        if (
+            null === ($metadata = $this->getMetadata($class))
+            || ClassMetadata::GENERATOR_TYPE_NONE === $metadata->generatorType
+            || !\in_array($property, $metadata->getIdentifierFieldNames(), true)
+        ) {
+            return null;
+        }
+
+        return false;
+    }
+
+    private function getMetadata(string $class): ?ClassMetadata
+    {
+        try {
+            return $this->entityManager ? $this->entityManager->getClassMetadata($class) : $this->classMetadataFactory->getMetadataFor($class);
+        } catch (MappingException|OrmMappingException $exception) {
+            return null;
+        }
+    }
+
+    /**
      * Determines whether an association is nullable.
-     *
-     * @return bool
      *
      * @see https://github.com/doctrine/doctrine2/blob/v2.5.4/lib/Doctrine/ORM/Tools/EntityGenerator.php#L1221-L1246
      */
-    private function isAssociationNullable(array $associationMapping)
+    private function isAssociationNullable(array $associationMapping): bool
     {
         if (isset($associationMapping['id']) && $associationMapping['id']) {
             return false;
@@ -229,12 +278,8 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
 
     /**
      * Gets the corresponding built-in PHP type.
-     *
-     * @param string $doctrineType
-     *
-     * @return string|null
      */
-    private function getPhpType($doctrineType)
+    private function getPhpType(string $doctrineType): ?string
     {
         switch ($doctrineType) {
             case self::$useDeprecatedConstants ? DBALType::SMALLINT : Types::SMALLINT:
@@ -282,7 +327,7 @@ class DoctrineExtractor implements PropertyListExtractorInterface, PropertyTypeE
             case 'dateinterval':
                 return Type::BUILTIN_TYPE_OBJECT;
 
-            case self::$useDeprecatedConstants ? DBALType::TARRAY : 'array':
+            case self::$useDeprecatedConstants ? DBALType::TARRAY : Types::ARRAY:
             // no break
             case self::$useDeprecatedConstants ? DBALType::SIMPLE_ARRAY : Types::SIMPLE_ARRAY:
             // no break

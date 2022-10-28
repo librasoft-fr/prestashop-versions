@@ -26,6 +26,8 @@
 
 declare(strict_types=1);
 
+use PrestaShop\PrestaShop\Core\File\Exception\FileUploadException;
+use PrestaShop\PrestaShop\Core\File\Exception\MaximumSizeExceededException;
 use PrestaShop\PrestaShop\Core\File\FileUploader;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,7 +75,7 @@ class WebserviceSpecificManagementAttachmentsCore implements WebserviceSpecificM
      *
      * @return WebserviceSpecificManagementInterface
      */
-    public function setObjectOutput(WebserviceOutputBuilderCore $obj)
+    public function setObjectOutput(WebserviceOutputBuilder $obj)
     {
         $this->objOutput = $obj;
 
@@ -91,9 +93,9 @@ class WebserviceSpecificManagementAttachmentsCore implements WebserviceSpecificM
     /**
      * Set Webservice Object
      *
-     * @param WebserviceRequestCore $obj
+     * @param WebserviceRequest $obj
      */
-    public function setWsObject(WebserviceRequestCore $obj)
+    public function setWsObject(WebserviceRequest $obj)
     {
         $this->wsObject = $obj;
 
@@ -207,6 +209,7 @@ class WebserviceSpecificManagementAttachmentsCore implements WebserviceSpecificM
                     break;
                 case 'POST':
                 case 'PUT':
+                case 'PATCH':
                     $this->executeFileAddAndEdit();
 
                     // Emulate get/head to return output
@@ -229,6 +232,9 @@ class WebserviceSpecificManagementAttachmentsCore implements WebserviceSpecificM
                     break;
                 case 'PUT':
                     $this->getWsObject()->executeEntityPut();
+                    break;
+                case 'PATCH':
+                    $this->getWsObject()->executeEntityPatch();
                     break;
                 case 'DELETE':
                     $this->getWsObject()->executeEntityDelete();
@@ -296,7 +302,7 @@ class WebserviceSpecificManagementAttachmentsCore implements WebserviceSpecificM
      * Handles file upload
      *
      * Creates new attachment or replaces existing with a new file.
-     * [PUT] update existing attachment file
+     * [PUT] and [PATCH] update existing attachment file
      * [POST] create new attachment
      */
     public function executeFileAddAndEdit(): void
@@ -330,10 +336,14 @@ class WebserviceSpecificManagementAttachmentsCore implements WebserviceSpecificM
                 unlink(_PS_DOWNLOAD_DIR_ . $attachment->file);
             }
 
+            $defaultLanguage = Configuration::get('PS_LANG_DEFAULT');
+
             $attachment->file = $file['id'];
             $attachment->file_name = $file['file_name'];
             $attachment->mime = $file['mime_type'];
-            $attachment->name[Configuration::get('PS_LANG_DEFAULT')] = $_POST['name'] ?? $file['file_name'];
+            if ($attachment->name[$defaultLanguage] === null) {
+                $attachment->name[$defaultLanguage] = $_POST['name'] ?? $file['file_name'];
+            }
 
             if (!empty($attachment->id)) {
                 $attachment->update();
@@ -342,13 +352,13 @@ class WebserviceSpecificManagementAttachmentsCore implements WebserviceSpecificM
             }
             // Remember affected entity
             $this->attachmentId = $attachment->id;
-        } catch (MaximumSizeExceeded $e) {
+        } catch (MaximumSizeExceededException $e) {
             $this->getWsObject()->errors[] = $this->trans(
                 'The file you are trying to upload is %2$d KB, which is larger than the maximum size allowed of %1$d KB.',
                 [$maximumSize, $e->getMessage()],
                 'Admin.Notifications.Error'
             );
-        } catch (FailedToCopyException $e) {
+        } catch (FileUploadException $e) {
             $this->getWsObject()->errors[] = $this->trans(
                 'Failed to copy the file.',
                 [],

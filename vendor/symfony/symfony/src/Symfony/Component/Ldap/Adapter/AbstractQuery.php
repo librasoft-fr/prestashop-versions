@@ -24,7 +24,7 @@ abstract class AbstractQuery implements QueryInterface
     protected $query;
     protected $options;
 
-    public function __construct(ConnectionInterface $connection, $dn, $query, array $options = [])
+    public function __construct(ConnectionInterface $connection, string $dn, string $query, array $options = [])
     {
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
@@ -35,6 +35,7 @@ abstract class AbstractQuery implements QueryInterface
             'deref' => static::DEREF_NEVER,
             'attrsOnly' => 0,
             'scope' => static::SCOPE_SUB,
+            'pageSize' => 0,
         ]);
         $resolver->setAllowedValues('deref', [static::DEREF_ALWAYS, static::DEREF_NEVER, static::DEREF_FINDING, static::DEREF_SEARCHING]);
         $resolver->setAllowedValues('scope', [static::SCOPE_BASE, static::SCOPE_ONE, static::SCOPE_SUB]);

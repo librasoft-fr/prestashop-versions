@@ -35,6 +35,7 @@ class Profiler
 
     /** @var array */
     protected $profiler = [];
+
     /** @var array */
     protected $globalVarSize = [];
 
@@ -221,9 +222,10 @@ class Profiler
         $this->totalCacheSize = $this->getVarSize($cache);
 
         // Sum querying time
+        /* @phpstan-ignore-next-line */
         $queries = Db::getInstance()->queries;
         uasort($queries, [$this, 'sortByQueryTime']);
-        foreach ($queries as $data) {
+        foreach ($queries as $id => $data) {
             $this->totalQueryTime += $data['time'];
 
             $queryRow = [
@@ -234,6 +236,7 @@ class Profiler
                 'rows' => 1,
                 'group_by' => false,
                 'stack' => [],
+                'id' => $id,
             ];
 
             if (preg_match('/^\s*select\s+/i', $data['query'])) {
@@ -242,8 +245,12 @@ class Profiler
                     $queryRow['filesort'] = true;
                 }
 
-                foreach ($explain as $row) {
-                    $queryRow['rows'] *= (int) $row['rows'];
+                if (is_array($explain)) {
+                    foreach ($explain as $row) {
+                        $queryRow['rows'] *= (int) $row['rows'];
+                    }
+                } else {
+                    $queryRow['rows'] = 'N/A';
                 }
 
                 if (stristr($data['query'], 'group by') && !preg_match('/(avg|count|min|max|group_concat|sum)\s*\(/i', $data['query'])) {
@@ -253,14 +260,17 @@ class Profiler
 
             array_shift($data['stack']);
             foreach ($data['stack'] as $call) {
-                $queryRow['stack'][] = str_replace('\\', '/', substr($call['file'], strlen(_PS_ROOT_DIR_))) . ':' . $call['line'];
+                $queryRow['stack'][] = str_replace('\\', '/', substr($call['file'], strlen(_PS_ROOT_DIR_))) . ':' . $call['line'] . ' (' . $call['function'] . ')';
             }
 
             $this->queries[] = $queryRow;
         }
 
+        /* @phpstan-ignore-next-line */
         uasort(ObjectModel::$debug_list, function ($a, $b) { return (count($a) < count($b)) ? 1 : -1; });
+        /* @phpstan-ignore-next-line */
         arsort(Db::getInstance()->tables);
+        /* @phpstan-ignore-next-line */
         arsort(Db::getInstance()->uniqQueries);
         uasort($this->hooksPerfs, [$this, 'sortByQueryTime']);
     }
@@ -277,14 +287,14 @@ class Profiler
             $formattedOutput[$moduleName] = [
                 'total_time' => array_reduce(
                     $perfs,
-                    function (&$res, $item) {
+                    function ($res, $item) {
                         return $res + $item['time'];
                     },
                     0
                 ),
                 'total_memory' => array_reduce(
                     $perfs,
-                    function (&$res, $item) {
+                    function ($res, $item) {
                         return $res + $item['memory'];
                     },
                     0
@@ -303,6 +313,11 @@ class Profiler
      */
     public function getSmartyVariables(): array
     {
+        /* @phpstan-ignore-next-line */
+        $doublesQueries = Db::getInstance()->uniqQueries;
+        /* @phpstan-ignore-next-line */
+        $tableStress = Db::getInstance()->tables;
+
         return [
             'summary' => [
                 'loadTime' => $this->profiler[count($this->profiler) - 1]['time'] - $this->startTime,
@@ -339,8 +354,8 @@ class Profiler
                 'totalHooksMemory' => $this->totalModulesMemory,
             ],
             'stopwatchQueries' => $this->queries,
-            'doublesQueries' => Db::getInstance()->uniqQueries,
-            'tableStress' => Db::getInstance()->tables,
+            'doublesQueries' => $doublesQueries,
+            'tableStress' => $tableStress,
             'objectmodel' => ObjectModel::$debug_list,
             'files' => get_included_files(),
         ];

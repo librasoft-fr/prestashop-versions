@@ -12,27 +12,18 @@
 namespace Symfony\Component\Form\Extension\Core\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
 use Symfony\Component\Form\ChoiceList\Loader\CallbackChoiceLoader;
-use Symfony\Component\Form\ChoiceList\Loader\ChoiceLoaderInterface;
+use Symfony\Component\Form\ChoiceList\Loader\IntlCallbackChoiceLoader;
+use Symfony\Component\Form\Exception\LogicException;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeZoneToStringTransformer;
+use Symfony\Component\Form\Extension\Core\DataTransformer\IntlTimeZoneToStringTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Intl\Timezones;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TimezoneType extends AbstractType implements ChoiceLoaderInterface
+class TimezoneType extends AbstractType
 {
-    /**
-     * Timezone loaded choice list.
-     *
-     * The choices are generated from the ICU function \DateTimeZone::listIdentifiers().
-     *
-     * @var ArrayChoiceList
-     *
-     * @deprecated since version 3.4, to be removed in 4.0
-     */
-    private $choiceList;
-
     /**
      * {@inheritdoc}
      */
@@ -40,6 +31,8 @@ class TimezoneType extends AbstractType implements ChoiceLoaderInterface
     {
         if ('datetimezone' === $options['input']) {
             $builder->addModelTransformer(new DateTimeZoneToStringTransformer($options['multiple']));
+        } elseif ('intltimezone' === $options['input']) {
+            $builder->addModelTransformer(new IntlTimeZoneToStringTransformer($options['multiple']));
         }
     }
 
@@ -49,27 +42,59 @@ class TimezoneType extends AbstractType implements ChoiceLoaderInterface
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'intl' => false,
             'choice_loader' => function (Options $options) {
-                if ($options['choices']) {
-                    @trigger_error(sprintf('Using the "choices" option in %s has been deprecated since Symfony 3.3 and will be ignored in 4.0. Override the "choice_loader" option instead or set it to null.', __CLASS__), \E_USER_DEPRECATED);
+                $input = $options['input'];
 
-                    return null;
+                if ($options['intl']) {
+                    $choiceTranslationLocale = $options['choice_translation_locale'];
+
+                    return new IntlCallbackChoiceLoader(function () use ($input, $choiceTranslationLocale) {
+                        return self::getIntlTimezones($input, $choiceTranslationLocale);
+                    });
                 }
 
-                $regions = $options['regions'];
+                $regions = $options->offsetGet('regions', false);
 
-                return new CallbackChoiceLoader(function () use ($regions) {
-                    return self::getTimezones($regions);
+                return new CallbackChoiceLoader(function () use ($regions, $input) {
+                    return self::getPhpTimezones($regions, $input);
                 });
             },
             'choice_translation_domain' => false,
+            'choice_translation_locale' => null,
             'input' => 'string',
             'regions' => \DateTimeZone::ALL,
         ]);
 
-        $resolver->setAllowedValues('input', ['string', 'datetimezone']);
+        $resolver->setAllowedTypes('intl', ['bool']);
+
+        $resolver->setAllowedTypes('choice_translation_locale', ['null', 'string']);
+        $resolver->setNormalizer('choice_translation_locale', function (Options $options, $value) {
+            if (null !== $value && !$options['intl']) {
+                throw new LogicException('The "choice_translation_locale" option can only be used if the "intl" option is set to true.');
+            }
+
+            return $value;
+        });
+
+        $resolver->setAllowedValues('input', ['string', 'datetimezone', 'intltimezone']);
+        $resolver->setNormalizer('input', function (Options $options, $value) {
+            if ('intltimezone' === $value && !class_exists(\IntlTimeZone::class)) {
+                throw new LogicException('Cannot use "intltimezone" input because the PHP intl extension is not available.');
+            }
+
+            return $value;
+        });
 
         $resolver->setAllowedTypes('regions', 'int');
+        $resolver->setDeprecated('regions', 'The option "%name%" is deprecated since Symfony 4.2.');
+        $resolver->setNormalizer('regions', function (Options $options, $value) {
+            if ($options['intl'] && \DateTimeZone::ALL !== (\DateTimeZone::ALL & $value)) {
+                throw new LogicException('The "regions" option can only be used if the "intl" option is set to false.');
+            }
+
+            return $value;
+        });
     }
 
     /**
@@ -88,96 +113,33 @@ class TimezoneType extends AbstractType implements ChoiceLoaderInterface
         return 'timezone';
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @deprecated since version 3.4, to be removed in 4.0
-     */
-    public function loadChoiceList($value = null)
-    {
-        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 3.4 and will be removed in 4.0.', __METHOD__), \E_USER_DEPRECATED);
-
-        if (null !== $this->choiceList) {
-            return $this->choiceList;
-        }
-
-        return $this->choiceList = new ArrayChoiceList(self::getTimezones(\DateTimeZone::ALL), $value);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @deprecated since version 3.4, to be removed in 4.0
-     */
-    public function loadChoicesForValues(array $values, $value = null)
-    {
-        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 3.4 and will be removed in 4.0.', __METHOD__), \E_USER_DEPRECATED);
-
-        // Optimize
-        $values = array_filter($values);
-        if (empty($values)) {
-            return [];
-        }
-
-        // If no callable is set, values are the same as choices
-        if (null === $value) {
-            return $values;
-        }
-
-        return $this->loadChoiceList($value)->getChoicesForValues($values);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @deprecated since version 3.4, to be removed in 4.0
-     */
-    public function loadValuesForChoices(array $choices, $value = null)
-    {
-        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 3.4 and will be removed in 4.0.', __METHOD__), \E_USER_DEPRECATED);
-
-        // Optimize
-        $choices = array_filter($choices);
-        if (empty($choices)) {
-            return [];
-        }
-
-        // If no callable is set, choices are the same as values
-        if (null === $value) {
-            return $choices;
-        }
-
-        return $this->loadChoiceList($value)->getValuesForChoices($choices);
-    }
-
-    /**
-     * Returns a normalized array of timezone choices.
-     *
-     * @param int $regions
-     *
-     * @return array The timezone choices
-     */
-    private static function getTimezones($regions)
+    private static function getPhpTimezones(int $regions, string $input): array
     {
         $timezones = [];
 
         foreach (\DateTimeZone::listIdentifiers($regions) as $timezone) {
-            $parts = explode('/', $timezone);
-
-            if (\count($parts) > 2) {
-                $region = $parts[0];
-                $name = $parts[1].' - '.$parts[2];
-            } elseif (\count($parts) > 1) {
-                $region = $parts[0];
-                $name = $parts[1];
-            } else {
-                $region = 'Other';
-                $name = $parts[0];
+            if ('intltimezone' === $input && 'Etc/Unknown' === \IntlTimeZone::createTimeZone($timezone)->getID()) {
+                continue;
             }
 
-            $timezones[$region][str_replace('_', ' ', $name)] = $timezone;
+            $timezones[str_replace(['/', '_'], [' / ', ' '], $timezone)] = $timezone;
         }
 
-        return 1 === \count($timezones) ? reset($timezones) : $timezones;
+        return $timezones;
+    }
+
+    private static function getIntlTimezones(string $input, string $locale = null): array
+    {
+        $timezones = array_flip(Timezones::getNames($locale));
+
+        if ('intltimezone' === $input) {
+            foreach ($timezones as $name => $timezone) {
+                if ('Etc/Unknown' === \IntlTimeZone::createTimeZone($timezone)->getID()) {
+                    unset($timezones[$name]);
+                }
+            }
+        }
+
+        return $timezones;
     }
 }

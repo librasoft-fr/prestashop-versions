@@ -19,14 +19,19 @@ use Twig\Node\Node;
  * Represents a stopwatch node.
  *
  * @author Wouter J <wouter@wouterj.nl>
+ *
+ * @final since Symfony 4.4
  */
 class StopwatchNode extends Node
 {
-    public function __construct(Node $name, Node $body, AssignNameExpression $var, $lineno = 0, $tag = null)
+    public function __construct(Node $name, Node $body, AssignNameExpression $var, int $lineno = 0, string $tag = null)
     {
         parent::__construct(['body' => $body, 'name' => $name, 'var' => $var], [], $lineno, $tag);
     }
 
+    /**
+     * @return void
+     */
     public function compile(Compiler $compiler)
     {
         $compiler

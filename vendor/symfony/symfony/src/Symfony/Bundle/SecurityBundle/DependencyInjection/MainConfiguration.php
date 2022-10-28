@@ -12,6 +12,8 @@
 namespace Symfony\Bundle\SecurityBundle\DependencyInjection;
 
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AbstractFactory;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SimpleFormFactory;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SimplePreAuthenticationFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -19,15 +21,7 @@ use Symfony\Component\Security\Core\Authorization\AccessDecisionManager;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategy;
 
 /**
- * This class contains the configuration information.
- *
- * This information is for the following tags:
- *
- *   * security.config
- *   * security.acl
- *
- * This information is solely responsible for how the different configuration
- * sections are normalized, and merged.
+ * SecurityExtension configuration structure.
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
@@ -49,28 +43,10 @@ class MainConfiguration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $tb = new TreeBuilder();
-        $rootNode = $tb->root('security');
+        $tb = new TreeBuilder('security');
+        $rootNode = $tb->getRootNode();
 
         $rootNode
-            ->beforeNormalization()
-                ->ifTrue(function ($v) {
-                    if (!isset($v['access_decision_manager'])) {
-                        return true;
-                    }
-
-                    if (!isset($v['access_decision_manager']['strategy']) && !isset($v['access_decision_manager']['service'])) {
-                        return true;
-                    }
-
-                    return false;
-                })
-                ->then(function ($v) {
-                    $v['access_decision_manager']['strategy'] = AccessDecisionManager::STRATEGY_AFFIRMATIVE;
-
-                    return $v;
-                })
-            ->end()
             ->children()
                 ->scalarNode('access_denied_url')->defaultNull()->example('/foo/error403')->end()
                 ->enumNode('session_fixation_strategy')
@@ -98,7 +74,6 @@ class MainConfiguration implements ConfigurationInterface
             ->end()
         ;
 
-        $this->addAclSection($rootNode);
         $this->addEncodersSection($rootNode);
         $this->addProvidersSection($rootNode);
         $this->addFirewallsSection($rootNode, $this->factories);
@@ -106,47 +81,6 @@ class MainConfiguration implements ConfigurationInterface
         $this->addRoleHierarchySection($rootNode);
 
         return $tb;
-    }
-
-    private function addAclSection(ArrayNodeDefinition $rootNode)
-    {
-        $rootNode
-            ->children()
-                ->arrayNode('acl')
-                    ->setDeprecated('The "security.acl" configuration key is deprecated since Symfony 3.4 and will be removed in 4.0. Install symfony/acl-bundle and use the "acl" key instead.')
-                    ->children()
-                        ->scalarNode('connection')
-                            ->defaultNull()
-                            ->info('any name configured in doctrine.dbal section')
-                        ->end()
-                        ->arrayNode('cache')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->scalarNode('id')->end()
-                                ->scalarNode('prefix')->defaultValue('sf2_acl_')->end()
-                            ->end()
-                        ->end()
-                        ->scalarNode('provider')->end()
-                        ->arrayNode('tables')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->scalarNode('class')->defaultValue('acl_classes')->end()
-                                ->scalarNode('entry')->defaultValue('acl_entries')->end()
-                                ->scalarNode('object_identity')->defaultValue('acl_object_identities')->end()
-                                ->scalarNode('object_identity_ancestors')->defaultValue('acl_object_identity_ancestors')->end()
-                                ->scalarNode('security_identity')->defaultValue('acl_security_identities')->end()
-                            ->end()
-                        ->end()
-                        ->arrayNode('voter')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->booleanNode('allow_if_object_identity_unavailable')->defaultTrue()->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
-            ->end()
-        ;
     }
 
     private function addRoleHierarchySection(ArrayNodeDefinition $rootNode)
@@ -188,6 +122,7 @@ class MainConfiguration implements ConfigurationInterface
                                 ->example('^/path to resource/')
                             ->end()
                             ->scalarNode('host')->defaultNull()->end()
+                            ->integerNode('port')->defaultNull()->end()
                             ->arrayNode('ips')
                                 ->beforeNormalization()->ifString()->then(function ($v) { return [$v]; })->end()
                                 ->prototype('scalar')->end()
@@ -246,8 +181,9 @@ class MainConfiguration implements ConfigurationInterface
             ->booleanNode('stateless')->defaultFalse()->end()
             ->scalarNode('context')->cannotBeEmpty()->end()
             ->booleanNode('logout_on_user_change')
-                ->defaultFalse()
-                ->info('When true, it will trigger a logout for the user if something has changed. This will be the default behavior as of Syfmony 4.0.')
+                ->defaultTrue()
+                ->info('When true, it will trigger a logout for the user if something has changed. Note: No-Op option since 4.0. Will always be true.')
+                ->setDeprecated('The "%path%.%node%" configuration key has been deprecated in Symfony 4.1.')
             ->end()
             ->arrayNode('logout')
                 ->treatTrueLike([])
@@ -264,9 +200,26 @@ class MainConfiguration implements ConfigurationInterface
                 ->fixXmlConfig('delete_cookie')
                 ->children()
                     ->arrayNode('delete_cookies')
+                        ->normalizeKeys(false)
                         ->beforeNormalization()
                             ->ifTrue(function ($v) { return \is_array($v) && \is_int(key($v)); })
                             ->then(function ($v) { return array_map(function ($v) { return ['name' => $v]; }, $v); })
+                        ->end()
+                        ->beforeNormalization()
+                            ->ifArray()->then(function ($v) {
+                                foreach ($v as $originalName => $cookieConfig) {
+                                    if (str_contains($originalName, '-')) {
+                                        $normalizedName = str_replace('-', '_', $originalName);
+                                        @trigger_error(sprintf('Normalization of cookie names is deprecated since Symfony 4.3. Starting from Symfony 5.0, the "%s" cookie configured in "logout.delete_cookies" will delete the "%s" cookie instead of the "%s" cookie.', $originalName, $originalName, $normalizedName), \E_USER_DEPRECATED);
+
+                                        // normalize cookie names manually for BC reasons. Remove it in Symfony 5.0.
+                                        $v[$normalizedName] = $cookieConfig;
+                                        unset($v[$originalName]);
+                                    }
+                                }
+
+                                return $v;
+                            })
                         ->end()
                         ->useAttributeAsKey('name')
                         ->prototype('array')
@@ -286,19 +239,16 @@ class MainConfiguration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end()
-            ->arrayNode('anonymous')
-                ->canBeUnset()
-                ->children()
-                    ->scalarNode('secret')->defaultNull()->end()
-                ->end()
-            ->end()
             ->arrayNode('switch_user')
                 ->canBeUnset()
                 ->children()
                     ->scalarNode('provider')->end()
                     ->scalarNode('parameter')->defaultValue('_switch_user')->end()
                     ->scalarNode('role')->defaultValue('ROLE_ALLOWED_TO_SWITCH')->end()
-                    ->booleanNode('stateless')->defaultFalse()->end()
+                    ->booleanNode('stateless')
+                        ->setDeprecated('The "%path%.%node%" configuration key has been deprecated in Symfony 4.1.')
+                        ->defaultValue(false)
+                    ->end()
                 ->end()
             ->end()
         ;
@@ -310,6 +260,10 @@ class MainConfiguration implements ConfigurationInterface
                 $factoryNode = $firewallNodeBuilder->arrayNode($name)
                     ->canBeUnset()
                 ;
+
+                if ($factory instanceof SimplePreAuthenticationFactory || $factory instanceof SimpleFormFactory) {
+                    $factoryNode->setDeprecated(sprintf('The "%s" security listener is deprecated Symfony 4.2, use Guard instead.', $name));
+                }
 
                 if ($factory instanceof AbstractFactory) {
                     $abstractFactoryKeys[] = $name;
@@ -332,7 +286,7 @@ class MainConfiguration implements ConfigurationInterface
                             continue;
                         }
 
-                        if (false !== strpos($firewall[$k]['check_path'], '/') && !preg_match('#'.$firewall['pattern'].'#', $firewall[$k]['check_path'])) {
+                        if (str_contains($firewall[$k]['check_path'], '/') && !preg_match('#'.$firewall['pattern'].'#', $firewall[$k]['check_path'])) {
                             throw new \LogicException(sprintf('The check_path "%s" for login method "%s" is not matched by the firewall pattern "%s".', $firewall[$k]['check_path'], $k, $firewall['pattern']));
                         }
                     }
@@ -360,7 +314,6 @@ class MainConfiguration implements ConfigurationInterface
                         ],
                         'my_entity_provider' => ['entity' => ['class' => 'SecurityBundle:User', 'property' => 'username']],
                     ])
-                    ->isRequired()
                     ->requiresAtLeastOneElement()
                     ->useAttributeAsKey('name')
                     ->prototype('array')
@@ -410,9 +363,10 @@ class MainConfiguration implements ConfigurationInterface
             ->children()
                 ->arrayNode('encoders')
                     ->example([
-                        'App\Entity\User1' => 'bcrypt',
+                        'App\Entity\User1' => 'auto',
                         'App\Entity\User2' => [
-                            'algorithm' => 'bcrypt',
+                            'algorithm' => 'auto',
+                            'time_cost' => 8,
                             'cost' => 13,
                         ],
                     ])
@@ -430,6 +384,10 @@ class MainConfiguration implements ConfigurationInterface
                                     ->thenInvalid('You must provide a string value.')
                                 ->end()
                             ->end()
+                            ->arrayNode('migrate_from')
+                                ->prototype('scalar')->end()
+                                ->beforeNormalization()->castToArray()->end()
+                            ->end()
                             ->scalarNode('hash_algorithm')->info('Name of hashing algorithm for PBKDF2 (i.e. sha256, sha512, etc..) See hash_algos() for a list of supported algorithms.')->defaultValue('sha512')->end()
                             ->scalarNode('key_length')->defaultValue(40)->end()
                             ->booleanNode('ignore_case')->defaultFalse()->end()
@@ -438,7 +396,13 @@ class MainConfiguration implements ConfigurationInterface
                             ->integerNode('cost')
                                 ->min(4)
                                 ->max(31)
-                                ->defaultValue(13)
+                                ->defaultNull()
+                            ->end()
+                            ->scalarNode('memory_cost')->defaultNull()->end()
+                            ->scalarNode('time_cost')->defaultNull()->end()
+                            ->scalarNode('threads')
+                                ->defaultNull()
+                                ->setDeprecated('The "%path%.%node%" configuration key has no effect since Symfony 4.3 and will be removed in 5.0.')
                             ->end()
                             ->scalarNode('id')->end()
                         ->end()

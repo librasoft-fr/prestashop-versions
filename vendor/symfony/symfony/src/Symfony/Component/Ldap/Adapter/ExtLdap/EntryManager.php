@@ -12,16 +12,16 @@
 namespace Symfony\Component\Ldap\Adapter\ExtLdap;
 
 use Symfony\Component\Ldap\Adapter\EntryManagerInterface;
-use Symfony\Component\Ldap\Adapter\RenameEntryInterface;
 use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Exception\LdapException;
 use Symfony\Component\Ldap\Exception\NotBoundException;
+use Symfony\Component\Ldap\Exception\UpdateOperationException;
 
 /**
  * @author Charles Sarrazin <charles@sarraz.in>
  * @author Bob van de Vijver <bobvandevijver@hotmail.com>
  */
-class EntryManager implements EntryManagerInterface, RenameEntryInterface
+class EntryManager implements EntryManagerInterface
 {
     private $connection;
 
@@ -69,14 +69,60 @@ class EntryManager implements EntryManagerInterface, RenameEntryInterface
     }
 
     /**
+     * Adds values to an entry's multi-valued attribute from the LDAP server.
+     *
+     * @throws NotBoundException
+     * @throws LdapException
+     */
+    public function addAttributeValues(Entry $entry, string $attribute, array $values)
+    {
+        $con = $this->getConnectionResource();
+
+        if (!@ldap_mod_add($con, $entry->getDn(), [$attribute => $values])) {
+            throw new LdapException(sprintf('Could not add values to entry "%s", attribute "%s": ', $entry->getDn(), $attribute).ldap_error($con));
+        }
+    }
+
+    /**
+     * Removes values from an entry's multi-valued attribute from the LDAP server.
+     *
+     * @throws NotBoundException
+     * @throws LdapException
+     */
+    public function removeAttributeValues(Entry $entry, string $attribute, array $values)
+    {
+        $con = $this->getConnectionResource();
+
+        if (!@ldap_mod_del($con, $entry->getDn(), [$attribute => $values])) {
+            throw new LdapException(sprintf('Could not remove values from entry "%s", attribute "%s": ', $entry->getDn(), $attribute).ldap_error($con));
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rename(Entry $entry, $newRdn, $removeOldRdn = true)
     {
         $con = $this->getConnectionResource();
 
-        if (!@ldap_rename($con, $entry->getDn(), $newRdn, null, $removeOldRdn)) {
+        if (!@ldap_rename($con, $entry->getDn(), $newRdn, '', $removeOldRdn)) {
             throw new LdapException(sprintf('Could not rename entry "%s" to "%s": ', $entry->getDn(), $newRdn).ldap_error($con));
+        }
+    }
+
+    /**
+     * Moves an entry on the Ldap server.
+     *
+     * @throws NotBoundException if the connection has not been previously bound
+     * @throws LdapException     if an error is thrown during the rename operation
+     */
+    public function move(Entry $entry, string $newParent)
+    {
+        $con = $this->getConnectionResource();
+        $rdn = $this->parseRdnFromEntry($entry);
+        // deleteOldRdn does not matter here, since the Rdn will not be changing in the move.
+        if (!@ldap_rename($con, $entry->getDn(), $rdn, $newParent, true)) {
+            throw new LdapException(sprintf('Could not move entry "%s" to "%s": ', $entry->getDn(), $newParent).ldap_error($con));
         }
     }
 
@@ -91,5 +137,32 @@ class EntryManager implements EntryManagerInterface, RenameEntryInterface
         }
 
         return $this->connection->getResource();
+    }
+
+    /**
+     * @param iterable|UpdateOperation[] $operations An array or iterable of UpdateOperation instances
+     *
+     * @throws UpdateOperationException in case of an error
+     */
+    public function applyOperations(string $dn, iterable $operations): void
+    {
+        $operationsMapped = [];
+        foreach ($operations as $modification) {
+            $operationsMapped[] = $modification->toArray();
+        }
+
+        $con = $this->getConnectionResource();
+        if (!@ldap_modify_batch($con, $dn, $operationsMapped)) {
+            throw new UpdateOperationException(sprintf('Error executing UpdateOperation on "%s": "%s".', $dn, ldap_error($con)));
+        }
+    }
+
+    private function parseRdnFromEntry(Entry $entry): string
+    {
+        if (!preg_match('/(^[^,\\\\]*(?:\\\\.[^,\\\\]*)*),/', $entry->getDn(), $matches)) {
+            throw new LdapException(sprintf('Entry "%s" malformed, could not parse RDN.', $entry->getDn()));
+        }
+
+        return $matches[1];
     }
 }

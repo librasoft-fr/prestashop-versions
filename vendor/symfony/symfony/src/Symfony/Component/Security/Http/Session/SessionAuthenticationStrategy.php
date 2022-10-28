@@ -26,13 +26,13 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
  */
 class SessionAuthenticationStrategy implements SessionAuthenticationStrategyInterface
 {
-    const NONE = 'none';
-    const MIGRATE = 'migrate';
-    const INVALIDATE = 'invalidate';
+    public const NONE = 'none';
+    public const MIGRATE = 'migrate';
+    public const INVALIDATE = 'invalidate';
 
     private $strategy;
 
-    public function __construct($strategy)
+    public function __construct(string $strategy)
     {
         $this->strategy = $strategy;
     }

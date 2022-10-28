@@ -50,7 +50,7 @@ class ViolationPath implements \IteratorAggregate, PropertyPathInterface
      *
      * @param string $violationPath The property path of a {@link \Symfony\Component\Validator\ConstraintViolation} object
      */
-    public function __construct($violationPath)
+    public function __construct(string $violationPath)
     {
         $path = new PropertyPath($violationPath);
         $elements = $path->getElements();
@@ -223,6 +223,7 @@ class ViolationPath implements \IteratorAggregate, PropertyPathInterface
      *
      * @return ViolationPathIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ViolationPathIterator($this);

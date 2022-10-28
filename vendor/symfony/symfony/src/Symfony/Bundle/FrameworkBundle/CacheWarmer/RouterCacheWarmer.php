@@ -12,7 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\CacheWarmer;
 
 use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
+use Symfony\Bundle\FrameworkBundle\DependencyInjection\CompatibilityServiceSubscriberInterface as ServiceSubscriberInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -22,26 +22,16 @@ use Symfony\Component\Routing\RouterInterface;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  *
- * @final since version 3.4
+ * @final
  */
 class RouterCacheWarmer implements CacheWarmerInterface, ServiceSubscriberInterface
 {
-    protected $router;
+    private $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
-    public function __construct($container)
+    public function __construct(ContainerInterface $container)
     {
         // As this cache warmer is optional, dependencies should be lazy-loaded, that's why a container should be injected.
-        if ($container instanceof ContainerInterface) {
-            $this->router = $container->get('router'); // For BC, the $router property must be populated in the constructor
-        } elseif ($container instanceof RouterInterface) {
-            $this->router = $container;
-            @trigger_error(sprintf('Using a "%s" as first argument of %s is deprecated since Symfony 3.4 and will be unsupported in version 4.0. Use a %s instead.', RouterInterface::class, __CLASS__, ContainerInterface::class), \E_USER_DEPRECATED);
-        } else {
-            throw new \InvalidArgumentException(sprintf('"%s" only accepts instance of Psr\Container\ContainerInterface as first argument.', __CLASS__));
-        }
+        $this->container = $container;
     }
 
     /**
@@ -51,9 +41,15 @@ class RouterCacheWarmer implements CacheWarmerInterface, ServiceSubscriberInterf
      */
     public function warmUp($cacheDir)
     {
-        if ($this->router instanceof WarmableInterface) {
-            $this->router->warmUp($cacheDir);
+        $router = $this->container->get('router');
+
+        if ($router instanceof WarmableInterface) {
+            $router->warmUp($cacheDir);
+
+            return;
         }
+
+        @trigger_error(sprintf('Passing a %s without implementing %s is deprecated since Symfony 4.1.', RouterInterface::class, WarmableInterface::class), \E_USER_DEPRECATED);
     }
 
     /**
@@ -61,7 +57,7 @@ class RouterCacheWarmer implements CacheWarmerInterface, ServiceSubscriberInterf
      *
      * @return bool always true
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return true;
     }
@@ -69,7 +65,7 @@ class RouterCacheWarmer implements CacheWarmerInterface, ServiceSubscriberInterf
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return [
             'router' => RouterInterface::class,

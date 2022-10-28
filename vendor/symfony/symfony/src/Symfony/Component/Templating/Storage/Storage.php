@@ -23,7 +23,7 @@ abstract class Storage
     /**
      * @param string $template The template name
      */
-    public function __construct($template)
+    public function __construct(string $template)
     {
         $this->template = $template;
     }
@@ -35,7 +35,7 @@ abstract class Storage
      */
     public function __toString()
     {
-        return (string) $this->template;
+        return $this->template;
     }
 
     /**

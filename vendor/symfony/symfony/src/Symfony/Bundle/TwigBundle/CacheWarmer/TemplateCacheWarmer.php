@@ -12,7 +12,7 @@
 namespace Symfony\Bundle\TwigBundle\CacheWarmer;
 
 use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
+use Symfony\Bundle\TwigBundle\DependencyInjection\CompatibilityServiceSubscriberInterface as ServiceSubscriberInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Twig\Environment;
 use Twig\Error\Error;
@@ -28,23 +28,10 @@ class TemplateCacheWarmer implements CacheWarmerInterface, ServiceSubscriberInte
     private $twig;
     private $iterator;
 
-    /**
-     * TemplateCacheWarmer constructor.
-     *
-     * @param ContainerInterface $container
-     */
-    public function __construct($container, \Traversable $iterator)
+    public function __construct(ContainerInterface $container, iterable $iterator)
     {
         // As this cache warmer is optional, dependencies should be lazy-loaded, that's why a container should be injected.
-        if ($container instanceof ContainerInterface) {
-            $this->container = $container;
-        } elseif ($container instanceof Environment) {
-            $this->twig = $container;
-            @trigger_error(sprintf('Using a "%s" as first argument of %s is deprecated since Symfony 3.4 and will be unsupported in version 4.0. Use a %s instead.', Environment::class, __CLASS__, ContainerInterface::class), \E_USER_DEPRECATED);
-        } else {
-            throw new \InvalidArgumentException(sprintf('"%s" only accepts instance of Psr\Container\ContainerInterface as first argument.', __CLASS__));
-        }
-
+        $this->container = $container;
         $this->iterator = $iterator;
     }
 
@@ -59,7 +46,7 @@ class TemplateCacheWarmer implements CacheWarmerInterface, ServiceSubscriberInte
 
         foreach ($this->iterator as $template) {
             try {
-                $this->twig->loadTemplate($template);
+                $this->twig->load($template);
             } catch (Error $e) {
                 // problem during compilation, give up
                 // might be a syntax error or a non-Twig template

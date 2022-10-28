@@ -13,11 +13,15 @@ namespace Symfony\Component\Security\Http\Firewall;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\LegacyEventDispatcherProxy;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
+use Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolver;
+use Symfony\Component\Security\Core\Authentication\AuthenticationTrustResolverInterface;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
+use Symfony\Component\Security\Core\Authentication\Token\RememberMeToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -28,13 +32,19 @@ use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 
+@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.2, use Guard instead.', SimplePreAuthenticationListener::class), \E_USER_DEPRECATED);
+
 /**
  * SimplePreAuthenticationListener implements simple proxying to an authenticator.
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
+ *
+ * @deprecated since Symfony 4.2, use Guard instead.
  */
-class SimplePreAuthenticationListener implements ListenerInterface
+class SimplePreAuthenticationListener extends AbstractListener implements ListenerInterface
 {
+    use LegacyListenerTrait;
+
     private $tokenStorage;
     private $authenticationManager;
     private $providerKey;
@@ -42,16 +52,9 @@ class SimplePreAuthenticationListener implements ListenerInterface
     private $logger;
     private $dispatcher;
     private $sessionStrategy;
+    private $trustResolver;
 
-    /**
-     * @param TokenStorageInterface           $tokenStorage          A TokenStorageInterface instance
-     * @param AuthenticationManagerInterface  $authenticationManager An AuthenticationManagerInterface instance
-     * @param string                          $providerKey
-     * @param SimplePreAuthenticatorInterface $simpleAuthenticator   A SimplePreAuthenticatorInterface instance
-     * @param LoggerInterface|null            $logger                A LoggerInterface instance
-     * @param EventDispatcherInterface|null   $dispatcher            An EventDispatcherInterface instance
-     */
-    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, $providerKey, SimplePreAuthenticatorInterface $simpleAuthenticator, LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
+    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, string $providerKey, SimplePreAuthenticatorInterface $simpleAuthenticator, LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, AuthenticationTrustResolverInterface $trustResolver = null)
     {
         if (empty($providerKey)) {
             throw new \InvalidArgumentException('$providerKey must not be empty.');
@@ -62,7 +65,14 @@ class SimplePreAuthenticationListener implements ListenerInterface
         $this->providerKey = $providerKey;
         $this->simpleAuthenticator = $simpleAuthenticator;
         $this->logger = $logger;
-        $this->dispatcher = $dispatcher;
+
+        if (null !== $dispatcher && class_exists(LegacyEventDispatcherProxy::class)) {
+            $this->dispatcher = LegacyEventDispatcherProxy::decorate($dispatcher);
+        } else {
+            $this->dispatcher = $dispatcher;
+        }
+
+        $this->trustResolver = $trustResolver ?? new AuthenticationTrustResolver(AnonymousToken::class, RememberMeToken::class);
     }
 
     /**
@@ -75,10 +85,28 @@ class SimplePreAuthenticationListener implements ListenerInterface
         $this->sessionStrategy = $sessionStrategy;
     }
 
+    public function supports(Request $request): ?bool
+    {
+        if ((null !== $token = $this->tokenStorage->getToken()) && !$this->trustResolver->isAnonymous($token)) {
+            return false;
+        }
+
+        $token = $this->simpleAuthenticator->createToken($request, $this->providerKey);
+
+        // allow null to be returned to skip authentication
+        if (null === $token) {
+            return false;
+        }
+
+        $request->attributes->set('_simple_pre_authenticator_token', $token);
+
+        return true;
+    }
+
     /**
      * Handles basic authentication.
      */
-    public function handle(GetResponseEvent $event)
+    public function authenticate(RequestEvent $event)
     {
         $request = $event->getRequest();
 
@@ -86,17 +114,15 @@ class SimplePreAuthenticationListener implements ListenerInterface
             $this->logger->info('Attempting SimplePreAuthentication.', ['key' => $this->providerKey, 'authenticator' => \get_class($this->simpleAuthenticator)]);
         }
 
-        if (null !== $this->tokenStorage->getToken() && !$this->tokenStorage->getToken() instanceof AnonymousToken) {
+        if ((null !== $token = $this->tokenStorage->getToken()) && !$this->trustResolver->isAnonymous($token)) {
+            $request->attributes->remove('_simple_pre_authenticator_token');
+
             return;
         }
 
         try {
-            $token = $this->simpleAuthenticator->createToken($request, $this->providerKey);
-
-            // allow null to be returned to skip authentication
-            if (null === $token) {
-                return;
-            }
+            $token = $request->attributes->get('_simple_pre_authenticator_token');
+            $request->attributes->remove('_simple_pre_authenticator_token');
 
             $token = $this->authenticationManager->authenticate($token);
 
@@ -106,7 +132,7 @@ class SimplePreAuthenticationListener implements ListenerInterface
 
             if (null !== $this->dispatcher) {
                 $loginEvent = new InteractiveLoginEvent($request, $token);
-                $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
+                $this->dispatcher->dispatch($loginEvent, SecurityEvents::INTERACTIVE_LOGIN);
             }
         } catch (AuthenticationException $e) {
             $this->tokenStorage->setToken(null);

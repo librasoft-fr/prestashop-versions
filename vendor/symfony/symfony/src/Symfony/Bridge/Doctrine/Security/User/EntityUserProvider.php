@@ -11,10 +11,13 @@
 
 namespace Symfony\Bridge\Doctrine\Security\User;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -26,7 +29,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
-class EntityUserProvider implements UserProviderInterface
+class EntityUserProvider implements UserProviderInterface, PasswordUpgraderInterface
 {
     private $registry;
     private $managerName;
@@ -34,10 +37,7 @@ class EntityUserProvider implements UserProviderInterface
     private $class;
     private $property;
 
-    /**
-     * @param ManagerRegistry|LegacyManagerRegistry $registry
-     */
-    public function __construct($registry, $classOrAlias, $property = null, $managerName = null)
+    public function __construct(ManagerRegistry $registry, string $classOrAlias, string $property = null, string $managerName = null)
     {
         $this->registry = $registry;
         $this->managerName = $managerName;
@@ -62,7 +62,10 @@ class EntityUserProvider implements UserProviderInterface
         }
 
         if (null === $user) {
-            throw new UsernameNotFoundException(sprintf('User "%s" not found.', $username));
+            $e = new UsernameNotFoundException(sprintf('User "%s" not found.', $username));
+            $e->setUsername($username);
+
+            throw $e;
         }
 
         return $user;
@@ -92,7 +95,10 @@ class EntityUserProvider implements UserProviderInterface
 
             $refreshedUser = $repository->find($id);
             if (null === $refreshedUser) {
-                throw new UsernameNotFoundException('User with id '.json_encode($id).' not found.');
+                $e = new UsernameNotFoundException('User with id '.json_encode($id).' not found.');
+                $e->setUsername(json_encode($id));
+
+                throw $e;
             }
         }
 
@@ -107,22 +113,38 @@ class EntityUserProvider implements UserProviderInterface
         return $class === $this->getClass() || is_subclass_of($class, $this->getClass());
     }
 
-    private function getObjectManager()
+    /**
+     * {@inheritdoc}
+     */
+    public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
+    {
+        $class = $this->getClass();
+        if (!$user instanceof $class) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
+        }
+
+        $repository = $this->getRepository();
+        if ($repository instanceof PasswordUpgraderInterface) {
+            $repository->upgradePassword($user, $newEncodedPassword);
+        }
+    }
+
+    private function getObjectManager(): ObjectManager
     {
         return $this->registry->getManager($this->managerName);
     }
 
-    private function getRepository()
+    private function getRepository(): ObjectRepository
     {
         return $this->getObjectManager()->getRepository($this->classOrAlias);
     }
 
-    private function getClass()
+    private function getClass(): string
     {
         if (null === $this->class) {
             $class = $this->classOrAlias;
 
-            if (false !== strpos($class, ':')) {
+            if (str_contains($class, ':')) {
                 $class = $this->getClassMetadata()->getName();
             }
 
@@ -132,8 +154,11 @@ class EntityUserProvider implements UserProviderInterface
         return $this->class;
     }
 
-    private function getClassMetadata()
+    private function getClassMetadata(): ClassMetadata
     {
         return $this->getObjectManager()->getClassMetadata($this->classOrAlias);
     }
 }
+
+interface_exists(ObjectManager::class);
+interface_exists(ObjectRepository::class);

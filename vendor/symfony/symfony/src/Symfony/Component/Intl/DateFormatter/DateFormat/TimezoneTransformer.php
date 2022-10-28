@@ -27,7 +27,7 @@ class TimezoneTransformer extends Transformer
      *
      * @throws NotImplementedException When time zone is different than UTC or GMT (Etc/GMT)
      */
-    public function format(\DateTime $dateTime, $length)
+    public function format(\DateTime $dateTime, int $length): string
     {
         $timeZone = substr($dateTime->getTimezone()->getName(), 0, 3);
 
@@ -57,13 +57,13 @@ class TimezoneTransformer extends Transformer
             return $dateTime->format('\G\M\TP');
         }
 
-        return sprintf('GMT%s%d', ($offset >= 0 ? '+' : ''), $offset / 100);
+        return sprintf('GMT%s%d', $offset >= 0 ? '+' : '', $offset / 100);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getReverseMatchingRegExp($length)
+    public function getReverseMatchingRegExp(int $length): string
     {
         return 'GMT[+-]\d{2}:?\d{2}';
     }
@@ -71,7 +71,7 @@ class TimezoneTransformer extends Transformer
     /**
      * {@inheritdoc}
      */
-    public function extractDateOptions($matched, $length)
+    public function extractDateOptions(string $matched, int $length): array
     {
         return [
             'timezone' => self::getEtcTimeZoneId($matched),
@@ -97,7 +97,7 @@ class TimezoneTransformer extends Transformer
      * @throws NotImplementedException   When the GMT time zone have minutes offset different than zero
      * @throws \InvalidArgumentException When the value can not be matched with pattern
      */
-    public static function getEtcTimeZoneId($formattedTimeZone)
+    public static function getEtcTimeZoneId(string $formattedTimeZone): string
     {
         if (preg_match('/GMT(?P<signal>[+-])(?P<hours>\d{2}):?(?P<minutes>\d{2})/', $formattedTimeZone, $matches)) {
             $hours = (int) $matches['hours'];

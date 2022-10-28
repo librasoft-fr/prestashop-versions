@@ -1,4 +1,4 @@
-(()=>{"use strict";var r=window.$;
+(()=>{var r={9567:r=>{"use strict";r.exports=window.jQuery}},o={};function t(e){var n=o[e];if(void 0!==n)return n.exports;var s=o[e]={exports:{}};return r[e](s,s.exports,t),s.exports}var e;
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -22,4 +22,5 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */r((function(){r('[data-toggle="form-popover-error"]').popover({html:!0,content:function(){return t(this)}});var o=function(r,o){return r.offset().left-o.offset().left},t=function(o){var t=r(o).data("id");return r('.js-popover-error-content[data-id="'+t+'"]').html()};r(document).on("shown.bs.popover",'[data-toggle="form-popover-error"]',(function(t){return function(t){var e=r(t.currentTarget).closest(".form-group"),n=e.find(".invalid-feedback-container"),f=e.find(".form-popover-error"),i=n.width();f.css("width",i);var a=o(n,f);f.css("left",a+"px")}(t)}))})),window.form_popover_error={}})();
+ */
+(e=t(9567))((()=>{e('[data-toggle="form-popover-error"]').popover({html:!0,content(){return o(this)}});const r=(r,o)=>{const t=r.offset(),e=o.offset();return t&&e?t.left-e.left:null},o=r=>{const o=e(r).data("id");return e(`.js-popover-error-content[data-id="${o}"]`).html()};e(document).on("shown.bs.popover",'[data-toggle="form-popover-error"]',(o=>(o=>{const t=e(o.currentTarget).closest(".form-group"),n=t.find(".invalid-feedback-container"),s=t.find(".form-popover-error"),p=n.width();s.css("width",p);const f=r(n,s);s.css("left",`${f}px`)})(o)))})),window.form_popover_error={}})();
