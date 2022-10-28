@@ -48,14 +48,14 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.4';
+        $this->version = '1.1.0';
         $this->need_instance = 0;
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->getTranslator()->trans('Link List', array(), 'Modules.LinkList');
-        $this->description = $this->getTranslator()->trans('Adds a block with several links.', array(), 'Modules.LinkList');
+        $this->displayName = $this->trans('Link List', array(), 'Modules.LinkList');
+        $this->description = $this->trans('Adds a block with several links.', array(), 'Modules.LinkList');
         $this->secure_key = Tools::encrypt($this->name);
 
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);

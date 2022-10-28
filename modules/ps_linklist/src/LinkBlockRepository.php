@@ -31,6 +31,7 @@ class LinkBlockRepository
     			`id_link_block` int(10) unsigned NOT NULL,
     			`id_lang` int(10) unsigned NOT NULL,
     			`name` varchar(40) NOT NULL default '',
+    			`custom_content` text default NULL,
     			PRIMARY KEY (`id_link_block`, `id_lang`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
             "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}link_block_shop` (
@@ -54,7 +55,7 @@ class LinkBlockRepository
 			`{$this->db_prefix}link_block_lang`,
 			`{$this->db_prefix}link_block_shop`";
 
-        return Db::getInstance()->execute($sql);
+        return $this->db->execute($sql);
     }
 
     public function getCMSBlocksSortedByHook($id_shop = null, $id_lang = null)
@@ -70,15 +71,15 @@ class LinkBlockRepository
                 h.`title` as hook_title,
                 h.`description` as hook_description,
                 bc.`position`
-            FROM `'._DB_PREFIX_.'link_block` bc
-                INNER JOIN `'._DB_PREFIX_.'link_block_lang` bcl
+            FROM `'.$this->db_prefix.'link_block` bc
+                INNER JOIN `'.$this->db_prefix.'link_block_lang` bcl
                     ON (bc.`id_link_block` = bcl.`id_link_block`)
-                LEFT JOIN `'._DB_PREFIX_.'hook` h
+                LEFT JOIN `'.$this->db_prefix.'hook` h
                     ON (bc.`id_hook` = h.`id_hook`)
             WHERE bcl.`id_lang` = '.$id_lang.'
             ORDER BY bc.`position`';
 
-        $blocks = Db::getInstance()->executeS($sql);
+        $blocks = $this->db->executeS($sql);
 
         $orderedBlocks = array();
         foreach ($blocks as $block) {
@@ -234,6 +235,15 @@ class LinkBlockRepository
         return $pages;
     }
 
+    public function getCustomPages(LinkBlock $block, $id_lang = null)
+    {
+        if (!$id_lang) {
+            $id_lang = Context::getContext()->language->id;
+        }
+
+        return $block->custom_content;
+    }
+
     public function getCountByIdHook($id_hook)
     {
         $id_hook = (int) $id_hook;
@@ -241,7 +251,7 @@ class LinkBlockRepository
         $sql = "SELECT COUNT(*) FROM {$this->db_prefix}link_block
                     WHERE `id_hook` = $id_hook";
 
-        return Db::getInstance()->getValue($sql);
+        return $this->db->getValue($sql);
     }
 
     public function installFixtures()
@@ -250,13 +260,13 @@ class LinkBlockRepository
         $id_hook = (int)Hook::getIdByName('displayFooter');
 
         $queries = [
-            'INSERT INTO `'._DB_PREFIX_.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
+            'INSERT INTO `'.$this->db_prefix.'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
                 (1, '.$id_hook.', 1, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
                 (2, '.$id_hook.', 2, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');'
         ];
 
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
-            $queries[] = 'INSERT INTO `'._DB_PREFIX_.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
+            $queries[] = 'INSERT INTO `'.$this->db_prefix.'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
                 (1,'.$lang['id_lang'].', \'Products\'),
                 (2, '.$lang['id_lang'].', \'Our company\')'
             ;
@@ -264,6 +274,54 @@ class LinkBlockRepository
 
         foreach ($queries as $query) {
             $success &= $this->db->execute($query);
+        }
+
+        return $success;
+    }
+
+    public function createOrUpdateLinkList(&$id_link_block, $id_hook, $content, $custom_content)
+    {
+        $success = true;
+
+        if (empty($id_link_block)) {
+            $query = 'INSERT INTO `'.$this->db_prefix.'link_block` (`id_hook`, `position`, `content`) VALUES
+                (' . $id_hook.', 1, \''.$content. '\')';
+
+            $success &= $this->db->execute($query);
+            $id_link_block = (int)$this->db->Insert_ID();
+
+            if (!empty($success) && !empty($id_link_block)) {
+                $languages = Language::getLanguages(true, Context::getContext()->shop->id);
+
+                if (!empty($languages)) {
+                    $query = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`, `custom_content`) VALUES ';
+
+                    foreach ($languages as $lang) {
+                        $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])) . '\', \'' . bqSQL($custom_content[(int)$lang['id_lang']]) . '\'),';
+                    }
+
+                    $success &= $this->db->execute(rtrim($query, ','));
+                }
+            }
+        } else {
+            $query = 'UPDATE `'.$this->db_prefix.'link_block` 
+                    SET `content` = \''.$content.'\', `id_hook` = '.$id_hook.' 
+                    WHERE `id_link_block` = '.$id_link_block;
+            $success &= $this->db->execute($query);
+
+            if (!empty($success) && !empty($id_link_block)) {
+                $languages = Language::getLanguages(true, Context::getContext()->shop->id);
+
+                if (!empty($languages)) {
+                    foreach ($languages as $lang) {
+                        $query = 'UPDATE `' . $this->db_prefix . 'link_block_lang` 
+                                SET `name` = \''.bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])).'\',
+                                `custom_content` = \''.bqSQL($custom_content[$lang['id_lang']]).'\'
+                                WHERE `id_link_block` = '.$id_link_block.' AND `id_lang` = '.(int)$lang['id_lang'];
+                        $success &= $this->db->execute($query);
+                    }
+                }
+            }
         }
 
         return $success;

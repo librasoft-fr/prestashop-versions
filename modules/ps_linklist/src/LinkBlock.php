@@ -31,6 +31,7 @@ class LinkBlock extends ObjectModel
     public $id_hook;
     public $position;
     public $content;
+    public $custom_content;
 
     /**
      * @see ObjectModel::$definition
@@ -44,6 +45,7 @@ class LinkBlock extends ObjectModel
             'id_hook' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
             'position' =>   array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
             'content' =>    array('type' => self::TYPE_STRING, 'validate' => 'isJson'),
+            'custom_content' =>    array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isJson'),
         ),
     );
 
@@ -53,6 +55,14 @@ class LinkBlock extends ObjectModel
 
         if ($this->id) {
             $this->content = json_decode($this->content, true);
+            if ($this->custom_content) {
+                $this->custom_content = array_map(
+                    function ($el) {
+                        return json_decode($el, true);
+                    },
+                    $this->custom_content
+                );
+            }
         }
 
         if (is_null($this->content)) {

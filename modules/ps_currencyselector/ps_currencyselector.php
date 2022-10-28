@@ -39,7 +39,7 @@ class Ps_Currencyselector extends Module implements WidgetInterface
     {
         $this->name = 'ps_currencyselector';
         $this->author = 'PrestaShop';
-        $this->version = '1.0.3';
+        $this->version = '1.0.4';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -112,10 +112,8 @@ class Ps_Currencyselector extends Module implements WidgetInterface
             return false;
         }
 
-        if (!$this->isCached($this->templateFile, $this->getCacheId('ps_currencyselector'))) {
-            $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
-        }
+        $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
 
-        return $this->fetch($this->templateFile, $this->getCacheId('ps_currencyselector'));
+        return $this->fetch($this->templateFile);
     }
 }

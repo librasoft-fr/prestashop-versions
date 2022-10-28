@@ -1761,26 +1761,27 @@
     },
     {
         "name": "swiftmailer/swiftmailer",
-        "version": "v5.4.4",
-        "version_normalized": "5.4.4.0",
+        "version": "v5.4.5",
+        "version_normalized": "5.4.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756"
+            "reference": "cd142238a339459b10da3d8234220963f392540c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/545ce9136690cea74f98f86fbb9c92dd9ab1a756",
-            "reference": "545ce9136690cea74f98f86fbb9c92dd9ab1a756",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/cd142238a339459b10da3d8234220963f392540c",
+            "reference": "cd142238a339459b10da3d8234220963f392540c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
         "require-dev": {
-            "mockery/mockery": "~0.9.1"
+            "mockery/mockery": "~0.9.1",
+            "symfony/phpunit-bridge": "~3.2"
         },
-        "time": "2016-11-24 01:01:23",
+        "time": "2016-12-29 10:02:40",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -3217,18 +3218,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_banner.git",
-            "reference": "97d5690dc0cf5b7fdeac15b87b62ef2b6506072e"
+            "reference": "6efbbfeabf05eef37399b36c1121c97e1cd8f0f1"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_banner/zipball/97d5690dc0cf5b7fdeac15b87b62ef2b6506072e",
-            "reference": "97d5690dc0cf5b7fdeac15b87b62ef2b6506072e",
+            "url": "https://api.github.com/repos/PrestaShop/ps_banner/zipball/6efbbfeabf05eef37399b36c1121c97e1cd8f0f1",
+            "reference": "6efbbfeabf05eef37399b36c1121c97e1cd8f0f1",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2016-11-04 16:17:23",
+        "time": "2016-12-21 13:25:06",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3285,18 +3286,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_checkpayment.git",
-            "reference": "6a31c44612d37e312b92aa79569c5033f845ed3a"
+            "reference": "1e68129430aea8704369b1414240a707661781ef"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_checkpayment/zipball/6a31c44612d37e312b92aa79569c5033f845ed3a",
-            "reference": "6a31c44612d37e312b92aa79569c5033f845ed3a",
+            "url": "https://api.github.com/repos/PrestaShop/ps_checkpayment/zipball/1e68129430aea8704369b1414240a707661781ef",
+            "reference": "1e68129430aea8704369b1414240a707661781ef",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2016-11-04 09:16:16",
+        "time": "2016-12-21 13:45:58",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3353,18 +3354,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_currencyselector.git",
-            "reference": "14309021b968b7c739b5056cd7578e4951d93c04"
+            "reference": "b85dc9ae57fd9a6fb6abdfa826a4dc4e86ae2dd7"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_currencyselector/zipball/14309021b968b7c739b5056cd7578e4951d93c04",
-            "reference": "14309021b968b7c739b5056cd7578e4951d93c04",
+            "url": "https://api.github.com/repos/PrestaShop/ps_currencyselector/zipball/b85dc9ae57fd9a6fb6abdfa826a4dc4e86ae2dd7",
+            "reference": "b85dc9ae57fd9a6fb6abdfa826a4dc4e86ae2dd7",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2016-11-04 09:18:31",
+        "time": "2016-12-21 13:46:17",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3594,18 +3595,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_imageslider.git",
-            "reference": "c23dee7e8b00da8058d753c99b49e2de5fea21e5"
+            "reference": "779188bc797d3767b1ed1531789f0af05450084c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_imageslider/zipball/c23dee7e8b00da8058d753c99b49e2de5fea21e5",
-            "reference": "c23dee7e8b00da8058d753c99b49e2de5fea21e5",
+            "url": "https://api.github.com/repos/PrestaShop/ps_imageslider/zipball/779188bc797d3767b1ed1531789f0af05450084c",
+            "reference": "779188bc797d3767b1ed1531789f0af05450084c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2016-10-28 15:34:07",
+        "time": "2016-12-21 13:28:06",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3696,18 +3697,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_linklist.git",
-            "reference": "0efc97a0c8bb9875c74c71217173255ad9c70b80"
+            "reference": "15c2469557fe79d406fca520e0e6ea7b6af4d805"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_linklist/zipball/0efc97a0c8bb9875c74c71217173255ad9c70b80",
-            "reference": "0efc97a0c8bb9875c74c71217173255ad9c70b80",
+            "url": "https://api.github.com/repos/PrestaShop/ps_linklist/zipball/15c2469557fe79d406fca520e0e6ea7b6af4d805",
+            "reference": "15c2469557fe79d406fca520e0e6ea7b6af4d805",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2016-11-07 15:08:15",
+        "time": "2017-01-02 16:37:17",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3730,18 +3731,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_mainmenu.git",
-            "reference": "383b51ef899a42a0010544e34ce99e1185cd581b"
+            "reference": "8d9cd84ccabda6f1ba7e24a05a415174ead52adc"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_mainmenu/zipball/383b51ef899a42a0010544e34ce99e1185cd581b",
-            "reference": "383b51ef899a42a0010544e34ce99e1185cd581b",
+            "url": "https://api.github.com/repos/PrestaShop/ps_mainmenu/zipball/8d9cd84ccabda6f1ba7e24a05a415174ead52adc",
+            "reference": "8d9cd84ccabda6f1ba7e24a05a415174ead52adc",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2016-11-04 09:17:33",
+        "time": "2016-12-21 13:46:37",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3832,18 +3833,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_shoppingcart.git",
-            "reference": "c0a4dd768179510115f7f9ecec3de1110b8c833b"
+            "reference": "e75e847303d529bcaf72d34f6ad90e5c8b2599f0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_shoppingcart/zipball/c0a4dd768179510115f7f9ecec3de1110b8c833b",
-            "reference": "c0a4dd768179510115f7f9ecec3de1110b8c833b",
+            "url": "https://api.github.com/repos/PrestaShop/ps_shoppingcart/zipball/e75e847303d529bcaf72d34f6ad90e5c8b2599f0",
+            "reference": "e75e847303d529bcaf72d34f6ad90e5c8b2599f0",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2016-11-15 10:59:40",
+        "time": "2017-01-02 16:37:36",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -3900,18 +3901,18 @@
         "source": {
             "type": "git",
             "url": "https://github.com/PrestaShop/ps_wirepayment.git",
-            "reference": "ae1823f3c12cae6c0634892c280e05c04e92ff23"
+            "reference": "c37847ad8e9131107eea2157837ba28883094fcf"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PrestaShop/ps_wirepayment/zipball/ae1823f3c12cae6c0634892c280e05c04e92ff23",
-            "reference": "ae1823f3c12cae6c0634892c280e05c04e92ff23",
+            "url": "https://api.github.com/repos/PrestaShop/ps_wirepayment/zipball/c37847ad8e9131107eea2157837ba28883094fcf",
+            "reference": "c37847ad8e9131107eea2157837ba28883094fcf",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2016-10-28 15:34:17",
+        "time": "2016-12-21 13:06:00",
         "type": "prestashop-module",
         "installation-source": "source",
         "notification-url": "https://packagist.org/downloads/",
@@ -4936,23 +4937,23 @@
     },
     {
         "name": "doctrine/orm",
-        "version": "v2.5.5",
-        "version_normalized": "2.5.5.0",
+        "version": "v2.5.6",
+        "version_normalized": "2.5.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/doctrine/doctrine2.git",
-            "reference": "73e4be7c7b3ba26f96b781a40b33feba4dfa6d45"
+            "reference": "e6c434196c8ef058239aaa0724b4aadb0107940b"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/73e4be7c7b3ba26f96b781a40b33feba4dfa6d45",
-            "reference": "73e4be7c7b3ba26f96b781a40b33feba4dfa6d45",
+            "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/e6c434196c8ef058239aaa0724b4aadb0107940b",
+            "reference": "e6c434196c8ef058239aaa0724b4aadb0107940b",
             "shasum": ""
         },
         "require": {
             "doctrine/cache": "~1.4",
             "doctrine/collections": "~1.2",
-            "doctrine/common": ">=2.5-dev,<2.7-dev",
+            "doctrine/common": ">=2.5-dev,<2.8-dev",
             "doctrine/dbal": ">=2.5-dev,<2.6-dev",
             "doctrine/instantiator": "~1.0.1",
             "ext-pdo": "*",
@@ -4966,7 +4967,7 @@
         "suggest": {
             "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
         },
-        "time": "2016-09-10 18:51:13",
+        "time": "2016-12-18 15:42:34",
         "bin": [
             "bin/doctrine",
             "bin/doctrine.php"
@@ -5554,29 +5555,24 @@
     },
     {
         "name": "react/promise",
-        "version": "v2.4.1",
-        "version_normalized": "2.4.1.0",
+        "version": "v2.5.0",
+        "version_normalized": "2.5.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/reactphp/promise.git",
-            "reference": "8025426794f1944de806618671d4fa476dc7626f"
+            "reference": "2760f3898b7e931aa71153852dcd48a75c9b95db"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/reactphp/promise/zipball/8025426794f1944de806618671d4fa476dc7626f",
-            "reference": "8025426794f1944de806618671d4fa476dc7626f",
+            "url": "https://api.github.com/repos/reactphp/promise/zipball/2760f3898b7e931aa71153852dcd48a75c9b95db",
+            "reference": "2760f3898b7e931aa71153852dcd48a75c9b95db",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2016-05-03 17:50:52",
+        "time": "2016-12-22 14:09:01",
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
@@ -5596,7 +5592,11 @@
                 "email": "jsorgalla@gmail.com"
             }
         ],
-        "description": "A lightweight implementation of CommonJS Promises/A for PHP"
+        "description": "A lightweight implementation of CommonJS Promises/A for PHP",
+        "keywords": [
+            "promise",
+            "promises"
+        ]
     },
     {
         "name": "guzzlehttp/streams",

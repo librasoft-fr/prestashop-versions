@@ -29,13 +29,15 @@
     <ul class="rslides">
       {foreach from=$homeslider.slides item=slide}
         <li class="slide">
-          <img src="{$slide.image_url}" alt="{$slide.legend|escape}" />
-          {if $slide.title || $slide.description }
-            <span class="caption">
-              <h2>{$slide.title}</h2>
-              <div>{$slide.description nofilter}</div>
-            </span>
-          {/if}
+          <a href="{$slide.url}">
+            <img src="{$slide.image_url}" alt="{$slide.legend|escape}" />
+            {if $slide.title || $slide.description }
+              <span class="caption">
+                <h2>{$slide.title}</h2>
+                <div>{$slide.description nofilter}</div>
+              </span>
+            {/if}
+          </a>
         </li>
       {/foreach}
     </ul>

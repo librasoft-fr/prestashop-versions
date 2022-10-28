@@ -37,7 +37,7 @@ class Ps_Banner extends Module implements WidgetInterface
 	public function __construct()
 	{
 		$this->name = 'ps_banner';
-		$this->version = '1.0.4';
+		$this->version = '1.0.5';
 		$this->author = 'PrestaShop';
 		$this->need_instance = 0;
 
@@ -164,7 +164,7 @@ class Ps_Banner extends Module implements WidgetInterface
                 'input' => array(
                     array(
                         'type' => 'file_lang',
-                        'label' => $this->trans('Top banner image', array(), 'Modules.Banner'),
+                        'label' => $this->trans('Banner image', array(), 'Modules.Banner'),
                         'name' => 'BANNER_IMG',
                         'desc' => $this->trans('Upload an image for your top banner. The recommended dimensions are 1110 x 214px if you are using the default theme.', array(), 'Modules.Banner'),
                         'lang' => true,

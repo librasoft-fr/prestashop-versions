@@ -28,7 +28,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 var plugins = [];
 
-var production = false;
+var production = true;
 
 if (production) {
   plugins.push(
@@ -79,7 +79,9 @@ module.exports = {
     return [require('postcss-flexibility')];
   },
   externals: {
-    prestashop: 'prestashop'
+    prestashop: 'prestashop',
+    $: '$',
+    jquery: 'jQuery'
   },
   devtool: 'source-map',
   plugins: plugins,

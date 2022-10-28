@@ -70,9 +70,9 @@
                         <table class="table tableDnD cms" id="link_block_{$key%2}">
                             <thead>
                                 <tr class="nodrag nodrop">
-                                    <th>{l s='ID' mod='ps_linklist'}</th>
-                                    <th>{l s='Position' mod='ps_linklist'}</th>
-                                    <th>{l s='Name of the block' mod='ps_linklist'}</th>
+                                    <th>{l s='ID' d='Modules.Linklist.Admin'}</th>
+                                    <th>{l s='Position' d='Modules.Linklist.Admin'}</th>
+                                    <th>{l s='Name of the block' d='Modules.Linklist.Admin'}</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -91,16 +91,16 @@
                                         <td>
                                             <div class="btn-group-action">
                                                 <div class="btn-group pull-right">
-                                                    <a class="btn btn-default" href="{$current}&amp;edit{$identifier}&amp;id_link_block={(int)$link_block['id_link_block']}" title="{l s='Edit' mod='ps_linklist'}">
-                                                        <i class="icon-edit"></i> {l s='Edit' mod='ps_linklist'}
+                                                    <a class="btn btn-default" href="{$current}&amp;edit{$identifier}&amp;id_link_block={(int)$link_block['id_link_block']}" title="{l s='Edit' d='Modules.Linklist.Admin'}">
+                                                        <i class="icon-edit"></i> {l s='Edit' d='Modules.Linklist.Admin'}
                                                     </a>
                                                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                                         <i class="icon-caret-down"></i>&nbsp;
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                     <li>
-                                                        <a href="{$current}&amp;delete{$identifier}&amp;id_link_block={(int)$link_block['id_link_block']}" title="{l s='Delete' mod='ps_linklist'}">
-                                                            <i class="icon-trash"></i> {l s='Delete' mod='ps_linklist'}
+                                                        <a href="{$current}&amp;delete{$identifier}&amp;id_link_block={(int)$link_block['id_link_block']}" title="{l s='Delete' d='Modules.Linklist.Admin'}">
+                                                            <i class="icon-trash"></i> {l s='Delete' d='Modules.Linklist.Admin'}
                                                         </a>
                                                     </li>
                                                     </ul>
@@ -132,8 +132,8 @@
                   <th>
                     <input type="checkbox" name="checkme" id="checkme" class="noborder" onclick="checkDelBoxes(this.form, '{$input.name}', this.checked)" />
                   </th>
-                  <th>{l s='ID' mod='ps_linklist'}</th>
-                  <th>{l s='Name' mod='ps_linklist'}</th>
+                  <th>{l s='ID' d='Modules.Linklist.Admin'}</th>
+                  <th>{l s='Name' d='Modules.Linklist.Admin'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -174,7 +174,7 @@
                     <th>
                       <input type="checkbox" name="checkme" id="checkme" class="noborder" onclick="checkDelBoxes(this.form, '{$input.name}', this.checked)" />
                     </th>
-                    <th>{l s='Name' mod='ps_linklist'}</th>
+                    <th>{l s='Name' d='Modules.Linklist.Admin'}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -201,6 +201,100 @@
         </div>
       {/foreach}
 
+    {elseif $input.type == 'custom_pages'}
+
+      {foreach $languages as $lang}
+        <div class="row">
+          <div class="col-lg-9 col-lg-offset-3">
+            <div class="panel">
+              <div class="panel-heading">
+                {$input.label} - {$lang['name']}
+              </div>
+              <table class="table js-custom-links-table-{$lang['id_lang']}">
+                <thead>
+                <tr>
+                  <th></th>
+                  <th>{l s='Name' d='Modules.Linklist.Admin'}</th>
+                  <th>{l s='URL' d='Modules.Linklist.Admin'}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="js-custom-link-row-template-{$lang['id_lang']}" data-item="0" style="display: none">
+                  <td><a href="#" class="js-clear-custom-link" style="display: none"><i class="material-icons action-disabled">clear</i></a></td>
+                  <td>
+                    <label class="control-label">
+                      <input type="text" name="custom[{$lang['id_lang']}][0][title]"/>
+                    </label>
+                  </td>
+                  <td>
+                    <label class="control-label">
+                      <input type="text" name="custom[{$lang['id_lang']}][0][url]"/>
+                    </label>
+                  </td>
+                </tr>
+                {foreach $input.values[$lang['id_lang']] as $key => $page}
+                  <tr {if $key%2}class="alt_row"{/if} data-item="{$key}">
+                    <td><a href="#" class="js-clear-custom-link"><i class="material-icons action-disabled">clear</i></a></td>
+                    <td>
+                      <label class="control-label">
+                        <input type="text" name="custom[{$lang['id_lang']}][{$key}][title]" value="{$page.title}"/>
+                      </label>
+                    </td>
+                    <td>
+                      <label class="control-label">
+                        <input type="text" name="custom[{$lang['id_lang']}][{$key}][url]" value="{$page.url}"/>
+                      </label>
+                    </td>
+                  </tr>
+                {/foreach}
+                </tbody>
+              </table>
+              <a href="#" class="js-add-custom-link-{$lang['id_lang']}">Add</a>
+            </div>
+          </div>
+        </div>
+
+        <script type="application/javascript">
+          $(document).ready(function() {
+            function clearCustomLink () {
+              $(this).closest('tbody').find('tr:last-of-type > td > a.js-clear-custom-link').hide();
+              $(this).closest('tr').remove();
+
+              return false;
+            }
+
+            $('a.js-clear-custom-link').click(clearCustomLink);
+
+            function addCustomLinkRow() {
+              var tbody = $('table.js-custom-links-table-{$lang['id_lang']} > tbody');
+              var lastTr = tbody.find('tr:last-of-type');
+              var i = lastTr ? lastTr.data('item') + 1 : 0;
+
+              tbody.find('tr:nth-last-of-type(2) > td > a').show();
+
+              var tpl = $('tr.js-custom-link-row-template-{$lang['id_lang']}').clone();
+              tpl.removeClass('js-custom-link-row-template-{$lang['id_lang']}');
+              tpl.data('item', i);
+              tpl.find('td:nth-of-type(2) input').attr('name', 'custom[{$lang['id_lang']}][' + i + '][title]');
+              tpl.find('td:nth-of-type(3) input').attr('name', 'custom[{$lang['id_lang']}][' + i + '][url]');
+              tpl.find('a.js-clear-custom-link').click(clearCustomLink);
+              tpl.show();
+              tbody.append(tpl);
+
+              tbody.find('tr > td > a.js-clear-custom-link').show();
+              tbody.find('tr:last-of-type > td > a.js-clear-custom-link').hide();
+            }
+
+            addCustomLinkRow();
+
+            $('a.js-add-custom-link-{$lang['id_lang']}').click(function () {
+              addCustomLinkRow();
+
+              return false;
+            });
+          });
+        </script>
+      {/foreach}
     {else}
         {$smarty.block.parent}
     {/if}

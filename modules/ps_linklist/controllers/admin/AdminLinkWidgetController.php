@@ -12,7 +12,7 @@ class AdminLinkWidgetController extends ModuleAdminController
         $this->display = 'view';
 
         parent::__construct();
-        $this->meta_title = $this->module->getTranslator()->trans('Link Widget', array(), 'Modules.LinkList');
+        $this->meta_title = $this->trans('Link Widget', array(), 'Modules.LinkList');
 
         if (!$this->module->active) {
             Tools::redirectAdmin($this->context->link->getAdminLink('AdminHome'));
@@ -40,7 +40,6 @@ class AdminLinkWidgetController extends ModuleAdminController
     public function postProcess()
     {
         if (Tools::isSubmit('submit'.$this->className)) {
-
             if (!$this->manageLinkList()) {
                 return false;
             }
@@ -54,7 +53,6 @@ class AdminLinkWidgetController extends ModuleAdminController
 
             Tools::redirectAdmin($this->context->link->getAdminLink('Admin'.$this->name));
         } elseif (Tools::isSubmit('delete'.$this->className)) {
-
             if (!$this->deleteLinkList()) {
                 return false;
             }
@@ -69,7 +67,7 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     public function renderView()
     {
-        $title = $this->module->getTranslator()->trans('Link block configuration', array(), 'Modules.LinkList');
+        $title = $this->trans('Link block configuration', array(), 'Modules.LinkList');
 
         $this->fields_form[]['form'] = array(
             'legend' => array(
@@ -79,14 +77,14 @@ class AdminLinkWidgetController extends ModuleAdminController
             'input' => array(
                 array(
                     'type' => 'link_blocks',
-                    'label' => $this->module->getTranslator()->trans('Link Blocks', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Link Blocks', array(), 'Modules.LinkList'),
                     'name' => 'link_blocks',
                     'values' => $this->repository->getCMSBlocksSortedByHook(),
                 ),
             ),
             'buttons' => array(
                 'newBlock' => array(
-                    'title' => $this->module->getTranslator()->trans('New block', array(), 'Modules.LinkList'),
+                    'title' => $this->trans('New block', array(), 'Modules.LinkList'),
                     'href' => $this->context->link->getAdminLink('Admin'.$this->name).'&amp;addLinkBlock',
                     'class' => 'pull-right',
                     'icon' => 'process-icon-new'
@@ -113,7 +111,7 @@ class AdminLinkWidgetController extends ModuleAdminController
         $this->fields_form[0]['form'] = array(
             'tinymce' => true,
             'legend' => array(
-                'title' => isset($block) ? $this->module->getTranslator()->trans('Edit the link block.', array(), 'Modules.LinkList') : $this->module->getTranslator()->trans('New link block', array(), 'Modules.LinkList'),
+                'title' => isset($block) ? $this->trans('Edit the link block.', array(), 'Modules.LinkList') : $this->trans('New link block', array(), 'Modules.LinkList'),
                 'icon' => isset($block) ? 'icon-edit' : 'icon-plus-square'
             ),
             'input' => array(
@@ -123,14 +121,14 @@ class AdminLinkWidgetController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'text',
-                    'label' => $this->module->getTranslator()->trans('Name of the link block', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Name of the link block', array(), 'Modules.LinkList'),
                     'name' => 'name',
                     'lang' => true,
                     'required' => true,
                 ),
                 array(
                     'type' => 'select',
-                    'label' => $this->module->getTranslator()->trans('Hook', array(), 'Admin.Global'),
+                    'label' => $this->trans('Hook', array(), 'Admin.Global'),
                     'name' => 'id_hook',
                     'class' => 'input-lg',
                     'options' => array(
@@ -141,29 +139,36 @@ class AdminLinkWidgetController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'cms_pages',
-                    'label' => $this->module->getTranslator()->trans('Content pages', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Content pages', array(), 'Modules.LinkList'),
                     'name' => 'cms[]',
                     'values' => $this->repository->getCmsPages(),
-                    'desc' => $this->module->getTranslator()->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
                 ),
                 array(
                     'type' => 'product_pages',
-                    'label' => $this->module->getTranslator()->trans('Product pages', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Product pages', array(), 'Modules.LinkList'),
                     'name' => 'product[]',
                     'values' => $this->repository->getProductPages(),
-                    'desc' => $this->module->getTranslator()->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
                 ),
                 array(
                     'type' => 'static_pages',
-                    'label' => $this->module->getTranslator()->trans('Static content', array(), 'Modules.LinkList'),
+                    'label' => $this->trans('Static content', array(), 'Modules.LinkList'),
                     'name' => 'static[]',
                     'values' => $this->repository->getStaticPages(),
-                    'desc' => $this->module->getTranslator()->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
+                    'desc' => $this->trans('Please mark every page that you want to display in this block.', array(), 'Modules.LinkList')
+                ),
+                array(
+                    'type' => 'custom_pages',
+                    'label' => $this->trans('Custom content', array(), 'Modules.LinkList'),
+                    'name' => 'custom[]',
+                    'values' => $this->repository->getCustomPages($block),
+                    'desc' => $this->trans('Please add every page that you want to display in this block.', array(), 'Modules.LinkList')
                 ),
             ),
             'buttons' => array(
                 'cancelBlock' => array(
-                    'title' => $this->module->getTranslator()->trans('Cancel', array(), 'Admin.Actions'),
+                    'title' => $this->trans('Cancel', array(), 'Admin.Actions'),
                     'href' => (Tools::safeOutput(Tools::getValue('back', false)))
                                 ?: $this->context->link->getAdminLink('Admin'.$this->name),
                     'icon' => 'process-icon-cancel'
@@ -171,7 +176,7 @@ class AdminLinkWidgetController extends ModuleAdminController
             ),
             'submit' => array(
                 'name' => 'submit'.$this->className,
-                'title' => $this->module->getTranslator()->trans('Save', array(), 'Admin.Actions'),
+                'title' => $this->trans('Save', array(), 'Admin.Actions'),
             )
         );
 
@@ -216,8 +221,8 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     public function initToolBarTitle()
     {
-        $this->toolbar_title[] = $this->module->getTranslator()->trans('Themes', array(), 'Modules.LinkList');
-        $this->toolbar_title[] = $this->module->getTranslator()->trans('Link Widget', array(), 'Modules.LinkList');
+        $this->toolbar_title[] = $this->trans('Themes', array(), 'Modules.LinkList');
+        $this->toolbar_title[] = $this->trans('Link Widget', array(), 'Modules.LinkList');
     }
 
     public function setMedia()
@@ -236,7 +241,6 @@ class AdminLinkWidgetController extends ModuleAdminController
         $id_hook = (int) Tools::getValue('id_hook');
 
         if (!empty($id_hook)) {
-
             $content = '';
 
             $cms = Tools::getValue('cms');
@@ -248,50 +252,22 @@ class AdminLinkWidgetController extends ModuleAdminController
             $static = Tools::getValue('static');
             $content .= '"static":[' . (empty($static) ? 'false': '"' . implode('","', array_map('bqSQL', $static)) . '"') . ']}';
 
-            if (empty($id_link_block)) {
-                $query = 'INSERT INTO `'._DB_PREFIX_.'link_block` (`id_hook`, `position`, `content`) VALUES
-                (' . $id_hook.', 1, \''.$content. '\')';
-
-                $success &= Db::getInstance()->execute($query);
-                $id_link_block = (int) Db::getInstance()->Insert_ID();
-
-                if (!empty($success) && !empty($id_link_block)) {
-
-                    $languages = Language::getLanguages(true, Context::getContext()->shop->id);
-
-                    if (!empty($languages)) {
-                        $query = 'INSERT INTO `' . _DB_PREFIX_ . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES ';
-
-                        foreach ($languages as $lang) {
-                            $query .= '(' . $id_link_block . ',' . (int)$lang['id_lang'] . ',\'' . bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])) . '\'),';
-                        }
-
-                        $success &= Db::getInstance()->execute(rtrim($query, ','));
+            $customs = Tools::getValue('custom');
+            foreach ($customs as &$custom) {
+                $custom = json_encode(array_filter($custom, function ($el) {
+                    if (empty($el['title']) || empty($el['url'])) {
+                        return false;
                     }
-                }
-
-            } else {
-                $query = 'UPDATE `'._DB_PREFIX_.'link_block` 
-                    SET `content` = \''.$content.'\', `id_hook` = '.$id_hook.' 
-                    WHERE `id_link_block` = '.$id_link_block;
-                $success &= Db::getInstance()->execute($query);
-
-                if (!empty($success) && !empty($id_link_block)) {
-
-                    $languages = Language::getLanguages(true, Context::getContext()->shop->id);
-
-                    if (!empty($languages)) {
-                        foreach ($languages as $lang) {
-                            $query = 'UPDATE `' . _DB_PREFIX_ . 'link_block_lang` 
-                                SET `name` = \''.bqSQL(Tools::getValue('name_'.(int)$lang['id_lang'])).'\' 
-                                WHERE `id_link_block` = '.$id_link_block.' AND `id_lang` = '.(int)$lang['id_lang'];
-                            $success &= Db::getInstance()->execute($query);
-                        }
-                    }
-                }
+                    return true;
+                }));
             }
-        } else {
-            $success = false;
+
+            return $this->repository->createOrUpdateLinkList(
+                $id_link_block,
+                $id_hook,
+                $content,
+                $customs
+            );
         }
 
         return $success;
@@ -299,7 +275,7 @@ class AdminLinkWidgetController extends ModuleAdminController
 
     private function deleteLinkList()
     {
-        $success = false;
+        $success = true;
 
         $id_link_block = (int) Tools::getValue('id_link_block');
 
