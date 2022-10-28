@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e
+class ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
@@ -3870,6 +3870,7 @@ class ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e
         'PrestaShop\\PrestaShop\\Core\\Domain\\Address\\Exception\\AddressException' => __DIR__ . '/../..' . '/src/Core/Domain/Address/Exception/AddressException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Address\\Exception\\AddressNotFoundException' => __DIR__ . '/../..' . '/src/Core/Domain/Address/Exception/AddressNotFoundException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Address\\Exception\\DeleteAddressException' => __DIR__ . '/../..' . '/src/Core/Domain/Address/Exception/DeleteAddressException.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\Address\\Exception\\InvalidAddressFieldException' => __DIR__ . '/../..' . '/src/Core/Domain/Address/Exception/InvalidAddressFieldException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Address\\QueryHandler\\GetManufacturerAddressForEditingHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/Address/QueryHandler/GetManufacturerAddressForEditingHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Address\\QueryResult\\EditableManufacturerAddress' => __DIR__ . '/../..' . '/src/Core/Domain/Address/QueryResult/EditableManufacturerAddress.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\Address\\Query\\GetManufacturerAddressForEditing' => __DIR__ . '/../..' . '/src/Core/Domain/Address/Query/GetManufacturerAddressForEditing.php',
@@ -4438,6 +4439,7 @@ class ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e
         'PrestaShop\\PrestaShop\\Core\\Form\\ConfigurableFormChoiceProviderInterface' => __DIR__ . '/../..' . '/src/Core/Form/ConfigurableFormChoiceProviderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Form\\DTO\\ShopRestriction' => __DIR__ . '/../..' . '/src/Core/Form/DTO/ShopRestriction.php',
         'PrestaShop\\PrestaShop\\Core\\Form\\DTO\\ShopRestrictionField' => __DIR__ . '/../..' . '/src/Core/Form/DTO/ShopRestrictionField.php',
+        'PrestaShop\\PrestaShop\\Core\\Form\\FormChoiceAttributeProviderInterface' => __DIR__ . '/../..' . '/src/Core/Form/FormChoiceAttributeProviderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Form\\FormChoiceProviderInterface' => __DIR__ . '/../..' . '/src/Core/Form/FormChoiceProviderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Form\\FormDataProviderInterface' => __DIR__ . '/../..' . '/src/Core/Form/FormDataProviderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Form\\FormHandler' => __DIR__ . '/../..' . '/src/Core/Form/FormHandler.php',
@@ -7658,11 +7660,11 @@ class ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitdd1afd7647c6348b95bedf78d5c0043e::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit467ffe7f2d4c3c270761a4a8155dd543::$classMap;
 
         }, null, ClassLoader::class);
     }

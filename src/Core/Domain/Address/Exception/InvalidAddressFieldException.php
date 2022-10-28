@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 PrestaShop and Contributors
+ * 2007-2019 PrestaShop SA and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -24,30 +24,11 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\PrestaShop\Core\Search\Filters;
-
-use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\CustomerGridDefinitionFactory;
-use PrestaShop\PrestaShop\Core\Search\Filters;
+namespace PrestaShop\PrestaShop\Core\Domain\Address\Exception;
 
 /**
- * Class CustomerFilters provides default filters for customers grid.
+ * Is thrown when address has invalid fields on saving/updating
  */
-final class CustomerFilters extends Filters
+class InvalidAddressFieldException extends AddressException
 {
-    /** @var string */
-    protected $filterId = CustomerGridDefinitionFactory::GRID_ID;
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getDefaults()
-    {
-        return [
-            'limit' => 50,
-            'offset' => 0,
-            'orderBy' => 'date_add',
-            'sortOrder' => 'DESC',
-            'filters' => [],
-        ];
-    }
 }

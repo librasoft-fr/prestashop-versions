@@ -24,30 +24,18 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
-namespace PrestaShop\PrestaShop\Core\Search\Filters;
-
-use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\CustomerGridDefinitionFactory;
-use PrestaShop\PrestaShop\Core\Search\Filters;
+namespace PrestaShop\PrestaShop\Core\Form;
 
 /**
- * Class CustomerFilters provides default filters for customers grid.
+ * Interface FormChoiceProviderInterface defines contract for choice attribute providers.
  */
-final class CustomerFilters extends Filters
+interface FormChoiceAttributeProviderInterface
 {
-    /** @var string */
-    protected $filterId = CustomerGridDefinitionFactory::GRID_ID;
-
     /**
-     * {@inheritdoc}
+     * Get choices attributes.
+     *  return [{choice_value} => [...$attributes]]
+     *
+     * @return array
      */
-    public static function getDefaults()
-    {
-        return [
-            'limit' => 50,
-            'offset' => 0,
-            'orderBy' => 'date_add',
-            'sortOrder' => 'DESC',
-            'filters' => [],
-        ];
-    }
+    public function getChoicesAttributes();
 }
