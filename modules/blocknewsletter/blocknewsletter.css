@@ -54,3 +54,6 @@
 }
 *:first-child+html #newsletter_block_left input.button_mini {padding-left:24px !important;}/* hack ie 7 */
 
+#gdpr_consent {
+    margin-top:20px;
+}

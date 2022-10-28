@@ -50,7 +50,7 @@ class Blocknewsletter extends Module
 		$this->confirmUninstall = $this->l('Are you sure that you want to delete all of your contacts?');
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 
-		$this->version = '2.3.2';
+		$this->version = '2.4.0';
 		$this->author = 'PrestaShop';
 		$this->error = false;
 		$this->valid = false;
@@ -115,7 +115,7 @@ class Blocknewsletter extends Module
 
 	public function install()
 	{
-		if (!parent::install() || !Configuration::updateValue('PS_NEWSLETTER_RAND', rand().rand()) || !$this->registerHook(array('header', 'footer', 'actionCustomerAccountAdd')))
+		if (!parent::install() || !Configuration::updateValue('PS_NEWSLETTER_RAND', rand().rand()) || !$this->registerHook(array('header', 'footer', 'actionCustomerAccountAdd', 'registerGDPRConsent', 'actionExportGDPRData', 'actionDeleteGDPRCustomer')))
 			return false;
 
 		Configuration::updateValue('NW_SALT', Tools::passwdGen(16));
@@ -730,6 +730,7 @@ class Blocknewsletter extends Module
 		if (!isset($this->prepared) || !$this->prepared)
 			$this->_prepareHook($params);
 		$this->prepared = true;
+		$this->smarty->assign(array('id_module' => $this->id));
 		return $this->display(__FILE__, 'blocknewsletter.tpl');
 	}
 
@@ -748,6 +749,29 @@ class Blocknewsletter extends Module
 		$this->context->controller->addCSS($this->_path.'blocknewsletter.css', 'all');
 		$this->context->controller->addJS($this->_path.'blocknewsletter.js');
 	}
+
+	public function hookActionDeleteGDPRCustomer($customer)
+	{
+		if (!empty($customer['email']) && Validate::isEmail($customer['email'])) {
+			$sql = "DELETE FROM "._DB_PREFIX_."newsletter WHERE email = '".pSQL($customer['email'])."'";
+			if (Db::getInstance()->execute($sql)) {
+				return json_encode(true);
+			}
+			return json_encode($this->l('Newsletter block : Unable to delete customer using email.'));
+		}
+	}
+
+	public function hookActionExportGDPRData($customer)
+	{
+		if (!Tools::isEmpty($customer['email']) && Validate::isEmail($customer['email'])) {
+			$sql = "SELECT * FROM "._DB_PREFIX_."newsletter WHERE email = '".pSQL($customer['email'])."'";
+			if ($res = Db::getInstance()->ExecuteS($sql)) {
+				return json_encode($res);
+			}
+			return json_encode($this->l('Newsletter block : Unable to export customer using email.'));
+		}
+	}
+
 
 	/**
 	 * Deletes duplicates email in newsletter table

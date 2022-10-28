@@ -37,7 +37,7 @@ class ThemeConfigurator extends Module
 	{
 		$this->name = 'themeconfigurator';
 		$this->tab = 'front_office_features';
-		$this->version = '2.1.2';
+		$this->version = '2.1.3';
 		$this->bootstrap = true;
 		$this->secure_key = Tools::encrypt($this->name);
 		$this->default_language = Language::getLanguage(Configuration::get('PS_LANG_DEFAULT'));
@@ -394,7 +394,7 @@ class ThemeConfigurator extends Module
 		if ($image = Db::getInstance()->getValue('SELECT image FROM `'._DB_PREFIX_.'themeconfigurator` WHERE id_item = '.(int)$id_item))
 			$this->deleteImage($image);
 
-		Db::getInstance()->delete(_DB_PREFIX_.'themeconfigurator', 'id_item = '.(int)$id_item);
+		Db::getInstance()->delete('themeconfigurator', 'id_item = '.(int)$id_item);
 
 		if (Db::getInstance()->Affected_Rows() == 1)
 		{
