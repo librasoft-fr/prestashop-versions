@@ -8,7 +8,7 @@ function sc_configure($instance)
     $instance->configure();
 }
 
-class BarClass extends BazClass
+class BarClass
 {
     protected $baz;
     public $foo = 'foo';

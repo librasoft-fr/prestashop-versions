@@ -25,6 +25,7 @@
  */
 use PrestaShop\PrestaShop\Core\Addon\Theme\ThemeManagerBuilder;
 use PrestaShop\PrestaShop\Core\Cldr\Repository as cldrRepository;
+use PrestaShop\PrestaShop\Core\Localization\RTL\Processor as RtlStylesheetProcessor;
 
 class LanguageCore extends ObjectModel
 {
@@ -105,7 +106,8 @@ class LanguageCore extends ObjectModel
         parent::__construct($id);
     }
 
-    static public function resetCache() {
+    public static function resetCache()
+    {
         self::$_checkedLangs = null;
         self::$_LANGUAGES = null;
         self::$countActiveLanguages = null;
@@ -185,12 +187,37 @@ class LanguageCore extends ObjectModel
             return false;
         }
 
+        if ($this->is_rtl) {
+            self::getRtlStylesheetProcessor()
+                ->setIsInstall(defined('PS_INSTALLATION_IN_PROGRESS'))
+                ->setProcessBOTheme(true)
+                ->setProcessDefaultModules(true)
+                ->process();
+        }
+
         if ($only_add) {
             return true;
         }
 
         // @todo Since a lot of modules are not in right format with their primary keys name, just get true ...
         $this->loadUpdateSQL();
+
+        return true;
+    }
+
+    public function update($nullValues = false)
+    {
+        if (!parent::update($nullValues)) {
+            return false;
+        }
+
+        // Generate RTL stylesheets if language is_rtl parameter changes
+		if ($this->is_rtl) {
+            self::getRtlStylesheetProcessor()
+                ->setProcessBOTheme(true)
+                ->setProcessDefaultModules(true)
+                ->process();
+        }
 
         return true;
     }
@@ -697,23 +724,47 @@ class LanguageCore extends ObjectModel
     }
 
     /**
+     * Returns locale with iso parameter
+     *
      * @param string $isoCode
      *
-     * @return string|false|null
+     * @return string|false
      *
      * @throws Exception
      */
     public static function getLocaleByIso($isoCode)
     {
         if (!Validate::isLanguageIsoCode($isoCode)) {
-            throw new Exception(sprintf('The ISO code %s is invalid'));
+            throw new Exception('The ISO code ' . $isoCode . ' is invalid');
         }
 
         if ($details = self::getLangDetails($isoCode)) {
             return $details['locale'];
-        } else {
-            return false;
         }
+
+        return false;
+    }
+
+    /**
+     * Returns iso with locale parameter
+     *
+     * @param string $locale
+     *
+     * @return string|false
+     *
+     * @throws Exception
+     */
+    public static function getIsoByLocale($locale)
+    {
+        if (!Validate::isLanguageCode($locale)) {
+            throw new Exception('The locale ' . $locale . ' is invalid');
+        }
+
+        if ($details = self::getJsonLanguageDetails($locale)) {
+            return $details['iso_code'];
+        }
+
+        return false;
     }
 
     public static function getLanguageCodeByIso($iso_code)
@@ -1292,5 +1343,34 @@ class LanguageCore extends ObjectModel
                 }
             }
         }
+    }
+
+    /**
+     * Returns an RTL stylesheet processor instance
+     *
+     * @return RtlStylesheetProcessor
+     */
+    public static function getRtlStylesheetProcessor()
+    {
+        if (defined('_PS_ADMIN_DIR_')) {
+            $adminDir = _PS_ADMIN_DIR_;
+        } else {
+            $adminDir = _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'admin';
+            $adminDir = (is_dir($adminDir)) ? $adminDir : ($adminDir.'-dev');
+        }
+
+        $themesDir = _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'themes';
+
+        $processor = new RtlStylesheetProcessor(
+            $adminDir,
+            $themesDir,
+            array(
+                _PS_MODULE_DIR_.'gamification',
+                _PS_MODULE_DIR_.'welcome',
+                _PS_MODULE_DIR_.'cronjobs',
+            )
+        );
+
+        return $processor;
     }
 }

@@ -116,10 +116,11 @@ class Application
             $e = null;
             $exitCode = $this->doRun($input, $output);
         } catch (\Exception $e) {
+        } catch (\Throwable $e) {
         }
 
         if (null !== $e) {
-            if (!$this->catchExceptions) {
+            if (!$this->catchExceptions || !$e instanceof \Exception) {
                 throw $e;
             }
 
@@ -1025,8 +1026,8 @@ class Application
      * Finds alternative of $name among $collection,
      * if nothing is found in $collection, try in $abbrevs.
      *
-     * @param string   $name       The string
-     * @param iterable $collection The collection
+     * @param string             $name       The string
+     * @param array|\Traversable $collection The collection
      *
      * @return string[] A sorted array of similar string
      */

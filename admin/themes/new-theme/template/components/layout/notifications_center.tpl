@@ -22,8 +22,8 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  *}
-<div id="notif" class="notification-center dropdown">
-  <div class="notification js-notification dropdown-toggle">
+<div id="notif" class="notification-center dropdown dropdown-clickable">
+  <div class="notification js-notification dropdown-toggle" data-toggle="dropdown">
     <i class="material-icons">notifications_none</i>
     <span id="notifications-total" class="count hide">0</span>
   </div>
@@ -121,7 +121,7 @@
     <a class="notif" href='order_url'>
       #_id_order_ -
       {l s='from' d='Admin.Navigation.Notification'} <strong>_customer_name_</strong> (_iso_code_)_carrier_
-      <strong class="pull-xs-right">_total_paid_</strong>
+      <strong class="float-sm-right">_total_paid_</strong>
     </a>
   </script>
 {/if}

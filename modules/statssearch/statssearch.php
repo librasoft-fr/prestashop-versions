@@ -38,7 +38,7 @@ class statssearch extends ModuleGraph
     {
         $this->name = 'statssearch';
         $this->tab = 'analytics_stats';
-        $this->version = '2.0.0';
+        $this->version = '2.0.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -61,7 +61,7 @@ class statssearch extends ModuleGraph
 
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('search') || !$this->registerHook('AdminStatsModules')) {
+        if (!parent::install() || !$this->registerHook('actionSearch') || !$this->registerHook('AdminStatsModules')) {
             return false;
         }
 
@@ -89,7 +89,7 @@ class statssearch extends ModuleGraph
     /**
      * Insert keywords in statssearch table when a search is launched on FO
      */
-    public function hookSearch($params)
+    public function hookActionSearch($params)
     {
         $sql = 'INSERT INTO `'._DB_PREFIX_.'statssearch` (`id_shop`, `id_shop_group`, `keywords`, `results`, `date_add`)
 				VALUES ('.(int)$this->context->shop->id.', '.(int)$this->context->shop->id_shop_group.', \''.pSQL($params['expr']).'\', '.(int)$params['total'].', NOW())';

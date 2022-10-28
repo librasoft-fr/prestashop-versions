@@ -22,10 +22,14 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  *#}
-{% extends 'PrestaShopBundle:Admin:layout.html.twig' %}
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
 
 {% block content %}
     <div class="col-md-12">
-        <div class="alert alert-danger" role="alert">{{ 'You can\'t add or edit a product in this shop context: select a shop instead of a group of shops.'|trans({}, 'Admin.Catalog.Notification') }}</div>
+        <div class="alert alert-danger" role="alert">
+            <p class="alert-text">
+                {{ 'You can\'t add or edit a product in this shop context: select a shop instead of a group of shops.'|trans({}, 'Admin.Catalog.Notification') }}
+            </p>
+        </div>
     </div>
 {% endblock %}

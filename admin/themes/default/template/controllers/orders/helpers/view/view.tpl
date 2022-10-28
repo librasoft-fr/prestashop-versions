@@ -246,7 +246,7 @@
                   <input type="hidden" name="id_order" value="{$order->id}" />
                 </div>
                 <div class="col-lg-3">
-                  <button type="submit" name="submitState" class="btn btn-primary">
+                  <button type="submit" name="submitState" id="submit_state" class="btn btn-primary">
                     {l s='Update status' d='Admin.Orderscustomers.Feature'}
                   </button>
                 </div>
@@ -505,7 +505,7 @@
                     </div>
                   </td>
                   <td>
-                    <input name="payment_method" list="payment_method" class="payment_method">
+                    <input name="payment_method" list="payment_method" class="payment_method form-control fixed-width-sm">
                     <datalist id="payment_method">
                     {foreach from=$payment_methods item=payment_method}
                       <option value="{$payment_method}">

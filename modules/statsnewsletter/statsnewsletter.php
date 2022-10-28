@@ -43,7 +43,7 @@ class statsnewsletter extends ModuleGraph
     {
         $this->name = 'statsnewsletter';
         $this->tab = 'analytics_stats';
-        $this->version = '2.0.1';
+        $this->version = '2.0.2';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 

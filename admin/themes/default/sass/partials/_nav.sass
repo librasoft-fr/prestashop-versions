@@ -1,0 +1,622 @@
+$widthSidebarNav: 210px
+$widthSidebarSubmenu: 200px
+$menu-item-size: 34px
+$min-height: 950px
+
+#nav-sidebar
+	position: fixed
+	width: $widthSidebarNav
+	height: 100%
+	z-index: 500
+	background-color: $main-color
+	@include left(0)
+	ul.menu
+		.categorytab
+			padding-top:    15px
+			margin-bottom:  5px
+			position:       relative
+			height:         39px
+			line-height:    24px
+			vertical-align: middle
+			font-weight:    bold
+			text-transform: uppercase
+			.line
+				border-bottom: 1px solid #bbcdd2
+				position:      absolute
+				top:           26px
+				left:          5px
+				right:         5px
+			span
+				background: $main-color
+				padding:    0 10px
+				color:      #bbcdd2
+				position:   relative
+		margin: 15px 0 0 0
+		padding: 0
+		list-style: none !important
+		li.maintab
+			position: relative
+			ul.submenu
+				display: none
+				padding: 0px
+				background-color: #363A41
+				&.list-group
+					margin-bottom: 0
+				li
+					list-style: none !important
+					a
+						color: $sidebar-menu-color
+						display: block
+						padding: 4px 8px
+						background-color: $main-color
+						&:hover
+							color: $sidebar-menu-hover-color
+							text-decoration: none
+							background-color: $sidebar-menu-bg-hover-color
+			a
+				white-space: nowrap
+				text-overflow: ellipsis
+				overflow: hidden
+				span
+					padding-left: 15px
+			> a.title
+				display: block
+				position: relative
+				padding: 0 .35em
+				height: $menu-item-size
+				background-color: $main-color
+				color: $sidebar-menu-color
+				line-height: $menu-item-size
+				text-decoration: none
+				@include transition-property(background-color)
+				@include transition-duration(0.2s)
+				@include transition-timing-function(ease-out)
+				i
+					display: none
+					vertical-align: middle
+					margin-top: -5px
+					color: $sidebar-menu-color
+					@include transition-property(color)
+					@include transition-duration(0.4s)
+					@include transition-timing-function(ease-out)
+			&.hover, &:hover:not(.hover)
+				> a.title
+					color: $sidebar-menu-hover-color
+					background-color: $sidebar-menu-bg-hover-color
+					i
+						color: $sidebar-menu-hover-color
+			&.hover:not(.active)
+				&:before
+					content: ''
+					width: 0
+					height: 0
+					border-style: solid
+					border-width: 8px 10px 8px 0
+					border-color: transparent $main-color transparent transparent
+					background-color: transparent
+					margin-top: 6px
+					@media (min-height: $min-height)
+						margin-top: 10px
+					position: absolute
+					z-index: 1
+					right: 0
+			&.hover
+				ul.submenu
+					position: absolute
+					display: block
+					width: $widthSidebarSubmenu
+					top: 0
+					z-index: 600
+					@include left($widthSidebarNav)
+			&:last-child > a.title
+				border-bottom: none
+			&.active
+				a, li.active a
+					color: $sidebar-menu-active-color
+					&.title
+						border-right: 3px solid #fff
+						background-color: $sidebar-menu-bg-hover-color
+					i
+						color: $sidebar-menu-active-color
+				@media (min-height: $min-height)
+					ul.submenu
+						body:not(.page-sidebar-closed) &
+							display: block
+							@include border-left(1px solid $sidebar-menu-bg-hover-color)
+							a
+								color: $sidebar-menu-color
+								padding: 5px 8px
+								padding-left: 38px
+								&:hover
+									color: $sidebar-menu-hover-color
+									background-color: $sidebar-menu-bg-hover-color
+									text-decoration: none
+							li.active a
+								color: $sidebar-menu-active-color
+								position: relative
+
+	@media (max-width: $screen-phone)
+		display: none
+
+@media (max-height: $min-height)
+	body:not(.page-sidebar-closed)
+		#nav-sidebar ul.menu li.maintab > a.title
+			font-size: 12px
+			height: 28px
+			line-height: 28px
+			i
+				vertical-align: baseline
+				width: 18px
+				font-size: $icon-size-base
+				@include text-align(right)
+		#nav-sidebar ul.menu li.maintab ul.submenu
+			@include padding(1px, 1px, 0, 1px)
+			li a
+				padding: 0 6px
+				height: 27px
+				line-height: 27px
+		#nav-sidebar ul.menu li.maintab.active ul.submenu
+			display: none
+		#nav-sidebar ul.menu li.maintab.active.hover ul.submenu
+			position: absolute
+			display: block
+			width: 200px
+			z-index: 600
+			@include left($widthSidebarNav)
+			top: 0
+
+.page-sidebar
+	#content
+		@include margin-left($widthSidebarNav)
+
+.page-sidebar-closed
+	.categorytab
+		span
+			display: none
+	#nav-sidebar
+		overflow: visible
+		width: 50px
+		ul.submenu
+			display: none!important
+			position: relative
+			top: $menu-item-size
+			padding-top: 0!important
+		li.searchtab
+			color: rgba(white,.5)
+			&:hover
+				cursor: pointer
+				color: white
+			&.search-expanded
+				width: 400px
+				background-color: darken($main-color,5%)
+				@include padding(14px, 13px, 0, 7px)
+				&:before
+					display: none
+				form .form-group
+					display: block
+		li.maintab.active ul.submenu
+			border: none!important
+		.maintab
+			> a
+				> i
+					display: inline-block !important
+					font-size: 1.25rem
+				> span
+					display: none
+					& + i
+						display: none !important
+				&:hover
+					> span
+						display: inline-block
+		a.title
+			text-align: center
+			> span
+				display: none
+		@media (max-height: 870px)
+			> ul > li.maintab:hover#subtab-ShopParameters,
+			> ul > li.maintab:hover#subtab-AdminAdvancedParameters
+				ul.submenu
+					display: flex!important
+					flex-direction: column-reverse
+					top: 0!important
+					transform: rotate(180deg)
+					transform-origin: top
+					li
+						transform: rotate(180deg)
+		> ul > li.maintab:hover
+			width: 250px!important
+			position: relative
+			z-index: 500
+			a.title
+				@include text-align(left)
+				> span
+					display: inline-block
+			ul.submenu
+				position: absolute!important
+				display: block!important
+				top: $menu-item-size!important
+				width: 200px!important
+				@include rtl
+					right: 50px
+				@include ltr
+					left: 50px
+	#content
+		@include margin-left(55px)
+		@media (max-width: $screen-phone)
+			@include margin-left(0)
+	.submenu_expand
+		display: none
+
+#nav-topbar
+	position: fixed
+	height: 30px
+	top: 36px
+	width: 100%
+	z-index: 600
+	background-color: white
+	border: solid 1px white
+	@include padding(0, 40px, 0, 0)
+	ul.menu
+		margin: 0
+		padding: 0
+		display: block
+		list-style: none
+		li.maintab
+			border-right: solid 1px #E6E6E6
+		li.maintab:last-child
+			border: none
+		li.searchtab
+			width: 200px
+			@include margin-right(5px)
+			@include float(right)
+		li.maintab, li.subtab
+			height: 28px
+			padding: 0
+			margin: 0
+			list-style: none
+			position: relative
+			@include float(left)
+			> a
+				display: block
+				line-height: 27px
+				color: lighten($main-color,20%)
+				padding: 0 6px
+				margin: 0
+				font-size: 12px
+				i
+					margin: 0
+					width: 15px
+					color: lighten($main-color,10%)
+					background-color: transparent
+					font-size: 14px
+			&.active, &:hover
+				background-color: $brand-primary
+				> a
+					text-decoration: none
+					color: contrast-color($main-color, white, #333)
+					i
+						color: white
+
+		li.expanded > ul.submenu
+			display: block
+		ul.submenu
+			background-color: white
+			display: none
+			position: absolute
+			margin: 0
+			padding: 0
+			@include left(0)
+			top: 28px
+			width: 200px!important
+			@include box-shadow(rgba(black,0.3) 0 2px 4px)
+			> li
+				width: 200px
+				padding: 0
+				list-style: none
+				&:last-child > a
+					border: none
+				> a
+					display: block
+					@include padding(4px, 5px, 4px, 10px)
+					border-bottom: solid 1px #E6E6E6
+					&:hover
+						color: white
+						background-color: $brand-primary
+						text-decoration: none
+				&.active a
+					color: contrast-color($brand-primary, white, #333)
+					background-color: $brand-primary
+					border-bottom: solid 1px darken($brand-primary,10%)
+	#ellipsistab
+		display: block
+		width: 40px
+		height: 28px
+		padding: 0
+		margin: 0
+		position: absolute
+		@include right(0)
+		> a
+			text-align: center
+			font-size: 14px
+			line-height: 30px
+			color: $main-color
+			cursor: pointer
+		ul#ellipsis_submenu
+			@include right(0)
+			left: inherit
+			a.title
+				padding: 0 8px
+				@include text-align(left)
+			li.subtab.expanded > ul
+				top: 0
+				@include left(-200px)
+	.menu-collapse
+		display: none
+
+#header_infos .mobile-notifs
+	background-color: rgba(0,0,0,.8)
+	.notifications
+		background-color: white
+		height: 100%
+		margin-left: 40px
+	.nav-link::before
+		font-family: 'Material Icons'
+		display: block
+		font-size: 30px
+	#orders-tab::before
+		content: "\E8CB"
+	#customers-tab::before
+		content: "\E7FE"
+	#messages-tab::before
+		content: "\E0BE"
+	span[data-nb]
+		font-size: 0
+		&::before
+			position: absolute
+			display: inline-block
+			line-height: .875rem
+			height: .875rem
+			vertical-align: middle
+			position: absolute
+			top: 20px
+			right: 40px
+			color: #fff
+			background: #fb0
+			font-size: .5625rem
+			padding: 0 .25rem
+			border-radius: .625rem
+			content: attr(data-nb)
+#nav-mobile
+	position: fixed
+	top: 0
+	width: 35px
+	height: 35px
+	z-index: 1100
+	@include left(0)
+	&.expanded
+		width: 100%
+		height: 100%
+		background: rgba(0,0,0,.7)
+		top: 60px
+		.menu-collapse
+			top: -60px
+			position: absolute
+			z-index: 1200
+			@include left(0)
+	#header_employee_box, .admin-link
+		display: none
+	#header_shop
+		float: none
+		.shop-list-title
+			width: 100%
+			text-transform: uppercase
+			font-size: 16px
+			text-align: center
+			font-weight: normal
+			.icon-caret-down
+				display: none
+			> a::after
+				font-family: 'Material Icons'
+				content: "\E313"
+				font-size: 20px
+				margin-left: 10px
+				vertical-align: bottom
+		#shop-list-collapse
+			background-color: white
+			list-style-type: none
+			text-align: left
+			padding-left: 0
+			margin-top: 10px
+			li
+				border-bottom: #BBCDD2 1px solid
+				height: 30px
+				padding-left: 30px
+				line-height: 50px
+				height: 50px
+				&.group
+					padding-left: 50px
+					a
+						color: #363A41
+						font-weight: bold
+						text-transform: none
+				&.shop
+					padding-left: 70px
+					text-transform: none
+					&.disabled a
+						color: #BBCDD2
+					a
+						color: #363A41
+					.link-shop
+						position: absolute
+						right: 20px
+						.material-icons
+							color: #6C868E
+							font-size: 20px
+	#header_shopname
+		.bootstrap &
+			float: none
+	#header_logout
+		border-bottom: 0
+		color: #bbcdd2
+	.onboarding-navbar.displayed
+		display: none
+	.icon-signout::before
+		font-family: 'Material Icons'
+		content: "\E8AC"
+		color: #bbcdd2
+		font-size: 25px
+	.shopname
+		text-align: center
+		margin: 15px 0
+		font-weight: bold
+	.username a
+		color: white
+	.employee_avatar
+		width: 60px
+		height: 60px
+	ul.menu
+		position: fixed
+		display: none
+		width: 90%
+		overflow: scroll
+		top: 60px
+		bottom: 0
+		background-color: #363A41
+		padding: 0
+		border-top: 1px black solid
+		list-style: none
+		margin-bottom: 0
+		@include transition(all 0.35s ease-out)
+		@include animate(fadeInLeft, 0.3s)
+		.img-thumbnail
+			padding: 0
+			border: 0
+		.username
+			font-size: 16px
+		> li.searchtab
+			padding: 15px
+			position: relative
+			@include box-shadow(rgba(black,0.1) 0 -3px 0 0 inset)
+			#bo_query
+				color: $main-color
+				background-color: lighten($main-color,60%)
+			.form-group
+				margin: 0
+			.clear_search
+				position: absolute
+				top: 5px
+				@include right(5px)
+		> li.maintab
+			background: $main-color
+			position: relative
+			.submenu
+				a
+					background-color: #282b30
+					padding-left: 40px
+				&.list-group
+					margin-bottom: 0
+			&#tab-SELL, &#tab-IMPROVE, &#tab-CONFIGURE
+				display: none
+			a
+				display: block
+				height: 50px
+				position: relative
+				border-bottom: 1px solid #6c868e
+				font-size: 16px
+				color: mix($main-color, contrast-color($main-color, white, #333), 30%)
+				background-color: $main-color
+				text-decoration: none
+				@include padding(15px, 0, 0, 15px)
+				@include transition-property(background-color)
+				@include transition-duration(0.4s)
+				@include transition-timing-function(ease-out)
+				i
+					color: rgba(white,.6)
+					vertical-align: middle
+					@include transition-property(color)
+					@include transition-duration(0.4s)
+					@include transition-timing-function(ease-out)
+				&:hover
+					background-color: lighten($main-color,10%)
+					color: white
+					i
+						color: white
+			> a > i
+				display: inline-block
+				height: $menu-item-size
+				width: $menu-item-size
+				font-size: 30px
+				line-height: $menu-item-size
+				color: white
+				text-align: center
+				margin-top: -5px
+	#nav-mobile-submenu
+		a:not(#nav-mobile-submenu-back)
+			font-size: 1.2em
+			text-transform: none
+			@include padding-left(50px)
+	a#nav-mobile-submenu-back
+		background-color: darken($main-color,5%)
+		font-size: 1.5em
+	ul.menu.menu-close
+		@include animate(fadeOutLeft, 0.2s)
+	.menu-collapse
+		color: #6C868E
+		width: 35px
+		height: 35px
+		text-align: center
+		line-height: 2.3em
+
+.menu-collapse
+	cursor: pointer
+	height: 54px
+	width: 100%
+	font-size: 2em
+	text-align: center
+	line-height: 55px
+	display: block
+	color: #BEBEBE
+
+.mobile-nav
+	#header_infos
+		@include box-shadow(rgba(black,0.7) 0 0 10px)
+	#content
+		h2.page-title
+			@include padding-left(10px!important)
+		h4.page-subtitle
+			@include left(10px!important)
+		ul.page-breadcrumb
+			@include left(10px!important)
+	.no-notification
+		top: 220px
+		left: 20px
+
+.page-topbar:not(.mobile-nav)
+	#main
+		padding-top: 64px
+	#content
+		@include margin-left(0)
+		.page-head
+			top: 66px
+		.page-title
+			@include padding-left(75px)
+		.page-subtitle
+			@include left(75px)
+		.page-breadcrumb
+			@include left(75px)
+
+.page-sidebar-closed:not(.nav-topbar):not(.mobile-nav)
+	.searchtab
+		&:before
+			z-index: 1000
+			position: absolute
+			top: 16px
+			display: block
+			width: 28px
+			height: 28px
+			@include left(14px)
+			@extend .icon
+			@extend .icon-2x
+			@extend .icon-search
+		.form-group
+			display: none

@@ -40,7 +40,7 @@
 
         {if $level1.icon != ''}
 
-          <li class="link-levelone {if $level1.current}-active{/if}" data-submenu="{$level1.id_tab}">
+          <li class="link-levelone {if $level1.current}-active{/if}" data-submenu="{$level1.id_tab}" id="tab-{$level1.class_name}">
             <a href="{$level1Href}" class="link" >
               <i class="material-icons">{$level1.icon}</i> <span>{$level1Name}</span>
             </a>
@@ -48,7 +48,7 @@
 
         {else}
 
-          <li class="category-title hidden-sm-down {if $level1.current}-active{/if}" data-submenu="{$level1.id_tab}">
+          <li class="category-title d-none d-sm-block {if $level1.current}-active{/if}" data-submenu="{$level1.id_tab}" id="tab-{$level1.class_name}">
               <span class="title">{$level1Name}</span>
           </li>
 
@@ -62,13 +62,13 @@
                   {$level2Name = $level2.class_name|escape:'html':'UTF-8'}
                 {/if}
 
-                <li class="link-levelone {if $level2.current}-active{/if}" data-submenu="{$level2.id_tab}">
+                <li class="link-levelone {if $level2.current}-active{/if}" data-submenu="{$level2.id_tab}" id="subtab-{$level2.class_name}">
                   <a href="{$level2Href}" class="link">
                     <i class="material-icons">{$level2.icon}</i>
                     <span>
                     {$level2Name}
                     {if $level2.sub_tabs|@count}
-                      <i class="material-icons pull-right hidden-md-up">keyboard_arrow_down</i>
+                      <i class="material-icons float-right d-md-none">keyboard_arrow_down</i>
                     {/if}
                     </span>
 
@@ -85,7 +85,7 @@
                               {$level3Name = $level3.class_name|escape:'html':'UTF-8'}
                             {/if}
 
-                            <li class="link-leveltwo {if $level3.current}-active{/if}" data-submenu="{$level3.id_tab}">
+                            <li class="link-leveltwo {if $level3.current}-active{/if}" data-submenu="{$level3.id_tab}" id="subtab-{$level3.class_name}">
                               <a href="{$level3Href}" class="link"> {$level3Name}
                               </a>
                             </li>
@@ -104,7 +104,7 @@
     {/foreach}
   </ul>
 
-  <span class="menu-collapse hidden-md-down">
+  <span class="menu-collapse d-none d-md-block">
     <i class="material-icons">&#xE8EE;</i>
   </span>
 

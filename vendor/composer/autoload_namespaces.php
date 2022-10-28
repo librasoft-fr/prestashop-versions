@@ -25,5 +25,5 @@ return array(
     'Console' => array($vendorDir . '/pear/console_getopt'),
     'Composer\\Installers\\' => array($vendorDir . '/composer/installers/src'),
     'Archive_Tar' => array($vendorDir . '/pear/archive_tar'),
-    '' => array($vendorDir . '/pear/pear-core-minimal/src'),
+    '' => array($vendorDir . '/cssjanus/cssjanus/src', $vendorDir . '/pear/pear-core-minimal/src'),
 );

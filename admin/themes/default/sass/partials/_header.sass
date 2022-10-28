@@ -1,0 +1,365 @@
+$header-height: 36px
+
+.material-icons
+	line-height: inherit
+
+#header
+	z-index: 20
+#header_infos
+	@extend .navbar
+	@extend .navbar-inverse
+	@extend .navbar-fixed-top
+	height: $header-height
+	@media (max-width: $screen-sm)
+		height: auto
+	.navbar-header
+		width: 100%
+		@media (max-width: $screen-sm)
+			padding: 10px 0
+
+#header_logo
+	@extend .navbar-brand
+	font-size: 1.3em !important
+	position: relative
+	height: 36px
+	background: url('#{$img-path}/prestashop-avatar-header_shopname.png') no-repeat top left
+	background-size: auto 36px
+	padding-left: 205px !important
+	@include margin(0, 5px, 0, 0)
+	#shop_version
+		font-size: 10px
+	@media (max-width: $screen-sm)
+		margin-left: 25px
+#header_shopname
+	@extend .navbar-brand
+	text-decoration: none
+
+#header_notifs_icon_wrapper
+	@extend .nav
+	@extend .navbar-nav
+	@extend .hidden-xs
+	min-width: 170px
+	> li > a
+		height: 36px
+		display: block
+		color: $main-color
+		&:hover
+			color: $toolbar-buttons-hover-color
+		> i
+			font-size: $icon-size-base
+			vertical-align: middle
+	.notifs
+		width: 40px
+		position: relative
+	.notifs_badge
+		@extend .badge
+		position: absolute
+		font-size: 10px !important
+		top: 2px
+		padding: 0 5px !important
+		display: none
+		z-index: 10
+		@include right(-3px)
+	.notifs_dropdown
+		background-color: white
+		border: none
+		@include box-shadow(rgba(black,0.7) 0 0 10px)
+		.notifs_panel
+			width: 300px
+			.notifs_panel_header
+				h3
+					padding: 10px
+					font-size: 1.3em
+					margin: 0
+					border-bottom: solid 1px #CCCCCC
+			.notifs_panel_footer
+				padding: 10px
+				text-align: center
+			.list_notif
+				a
+					display: block
+					text-decoration: none
+					padding: 5px
+					border-bottom: solid 1px #CCCCCC
+				.no_notifs
+					@extend .text-muted
+					display: block
+					padding: 15px
+					border-bottom: solid 1px #CCCCCC
+#header_nav_toggle
+	background-color: black
+	border: none
+	color: white
+	display: none
+
+#header_employee_box
+	@extend .nav
+	@extend .navbar-nav
+	margin: 0 !important
+	@include ltr
+		@extend .navbar-right
+	@include rtl
+		@extend .navbar-left
+	@media (max-width: $screen-sm)
+		@include float(right)
+		> li
+			display: inline-block
+			@include float(left)
+	span.string-long
+		@media (max-width: $screen-lg)
+			display: none
+	span.string-short
+		display: none
+		@media (max-width: $screen-lg)
+			display: inline-block
+	a img
+		@include margin-right(5px)
+	#header_foaccess
+		display: inline-block
+		i
+			font-size: 1.2em
+	.maintenance-mode
+		color: $contrasted-light-default
+		cursor: default
+		display: inline-block
+		margin-left: -13px
+		.label-tooltip
+			padding: 9px 0
+			color: $brand-warning
+	.debug-mode
+		color: $contrasted-light-default
+		cursor: default
+		display: inline-block
+		margin-left: -13px
+		.label-tooltip
+			padding: 9px 0
+			color: $brand-warning
+	.maintenance-mode + .debug-mode
+		margin-left: 0
+#employee_infos
+	width: $header-height
+	box-sizing: border-box
+	.employee_name
+		position: relative
+		height: $header-height
+	.employee_avatar_small
+		.img-thumbnail
+			@include border-radius($header-height)
+		@include avatar($header-height, 0px)
+		position: absolute
+		top: 0
+		@include right(0)
+	img
+		border: none
+		padding: 0
+#employee_links
+	i
+		font-size: $icon-size-base
+	@media (max-width: $screen-sm)
+		@include ltr
+			left: 0 !important
+		@include rtl
+			right: 0 !important
+		li
+			color: white
+			font-size: 1.2em
+			text-transform: uppercase
+			i
+				font-size: 1.3em
+				color: $brand-primary
+	.version
+		color: darken(white,40%)
+		text-align: center
+		font-size: 0.9em
+		padding: 0 0 3px 0
+		sup
+			font-size: 0.7em
+
+.bo_search_form
+	float: left
+	width: 250px
+	margin: 4px 0 0 0
+	@extend .hidden-xs
+	#bo_query
+		@include border-radius(0, 55px, 55px, 0)
+		color:       $main-color
+		background:  white
+		border:      1px solid $bg-content-color
+		border-left: none
+		@include box-shadow(none)
+		@include transition(none)
+	.input-group
+		margin: 0 !important
+	.input-group-btn
+		@include border-radius(55px, 0, 0, 55px)
+		border:       1px solid $bg-content-color
+		border-right: none
+		.btn
+			@include border-radius(55px, 0, 0, 55px)
+			@include box-shadow(none)
+			height: 29px
+			outline: none
+		.btn-default
+			@include box-shadow(none)
+			border: 1px solid transparent !important
+	.clear_search
+		position: absolute
+		top: 6px
+		z-index: 10
+		@include right(8px)
+	i
+		font-size: $icon-size-base
+
+#header_quick
+	font-size: 15px
+	a
+		color: $main-color
+		&:hover
+			color: $toolbar-buttons-hover-color
+	@extend .nav
+	@extend .navbar-nav
+	@include ltr
+		@extend .navbar-left
+	@include rtl
+		@extend .navbar-right
+	@extend .hidden-xs
+	@extend .hidden-sm
+
+.header-list
+	@extend .nav
+	@extend .navbar-nav
+	@include ltr
+		@extend .navbar-left
+	@include rtl
+		@extend .navbar-right
+	@extend .hidden-sm
+	height:     $header-height
+	box-sizing: border-box
+	margin: 0 10px !important
+	li
+		> a
+			&.notifs
+				display:        block
+				height:         $header-height
+				min-width:      $header-height
+				line-height:    $header-height
+				box-sizing:     border-box
+				padding:        0 5px !important
+				vertical-align: middle
+
+#header_shop
+	@extend .nav
+	@extend .navbar-nav
+	@include ltr
+	@include rtl
+		@extend .navbar-right
+
+#ajax_running
+	position: absolute
+	height: 35px
+	width: 35px
+	top: 0
+	background-color: rgba(black,.4)
+	text-align: center
+	@include left(0)
+	i
+		font-size: 20px
+		color: rgba(white,.6)
+		line-height: 35px
+
+#notification
+	&.open
+		background: none
+	.notifs .material-icons
+		color: #6c868e
+	>.material-icons
+		font-size: 1.5rem
+		line-height: 1.375rem
+		vertical-align: middle
+	#total_notif_number_wrapper
+		display: inline-block
+		line-height: .875rem
+		height: .875rem
+		vertical-align: middle
+		position: absolute
+		top: .125rem
+		right: .125rem
+		color: #fff
+		background: #fb0
+		font-size: .5625rem
+		padding: 0 .25rem
+		border-radius: .625rem
+	.dropdown-menu
+		margin: 0
+		padding: 0
+		border-radius: 0
+		min-width: 25rem
+		box-shadow: none
+		.notifications
+			.nav-tabs
+				border-bottom: 1px solid #fff
+				.nav-item
+					margin-left: 0
+					width: 33%
+					text-align: center
+					margin-bottom: -1px
+					&.active a
+						border-top: 0
+						border-bottom: 2px solid #25b9d7
+						color: #363a41
+					&:hover a
+						color: #25b9d7
+					.nav-link
+						color: #6c868e
+						font-weight: 400
+						padding: .9375rem .9375rem .625rem
+						font-family: Open Sans,sans-serif
+						font-size: 0.75rem
+						text-transform: none
+						border: 0
+			.tab-content
+				border-top: .125rem solid #bbcdd2
+				padding: 0
+				margin-top: -.0625rem
+				.tab-pane
+					height: 11.875rem
+					overflow-y: auto
+					.no-notification
+						display: none
+					&.empty
+						color: #6c868e
+						text-align: center
+						&::after
+							content: "\E7F5"
+							font-family: "Material Icons"
+							opacity: 0.7
+							font-size: 5.625rem
+							color: #bbcdd2
+						> .no-notification
+							position: absolute
+							bottom: 0
+							width: 100%
+							display: block
+				.notif
+					display: block
+					padding: .625rem .9375rem
+					color: #6c868e
+					.material-icons
+						vertical-align: top
+						font-size: 16px
+						line-height: 16px
+					.message-notification-status
+						&.open
+							color: #5cb85c
+						&.closed
+							color: #d9534f
+						&.pending1, &.pending2
+							color: #FFBB00
+					strong
+						color: #363a41
+					&:hover
+						background-color: #3ed2f0
+						color: #fff
+						text-decoration: none
+						strong
+							color: #fff

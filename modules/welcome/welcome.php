@@ -30,6 +30,7 @@ if (!defined('_PS_VERSION_'))
 require_once __DIR__.'/vendor/autoload.php';
 
 use \OnBoarding\OnBoarding;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 
 /**
  * OnBoarding module entry class.
@@ -48,7 +49,7 @@ class Welcome extends Module
     public function __construct()
     {
         $this->name = 'welcome';
-        $this->version = '3.0.0';
+        $this->version = '4.0.2';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -56,12 +57,23 @@ class Welcome extends Module
         $this->displayName = $this->trans('Welcome', array(), 'Modules.Welcome.Admin');
         $this->description = $this->trans('Help the user to create his first product.', array(), 'Modules.Welcome.Admin');
         $this->ps_versions_compliancy = [
-            'min' => '1.7.2.0',
+            'min' => '1.7.3.0',
             'max' => _PS_VERSION_,
         ];
 
+        // If the symfony container is not available this constructor will fail
+        // This can happen during the upgrade process
+        if (null == SymfonyContainer::getInstance()) {
+            return;
+        }
+
         if (Module::isInstalled($this->name)) {
-            $this->onBoarding = new OnBoarding($this->getTranslator(), $this->smarty, $this);
+            $this->onBoarding = new OnBoarding(
+                $this->getTranslator(),
+                $this->smarty,
+                $this,
+                SymfonyContainer::getInstance()->get('router')
+            );
 
             if (Tools::getIsset('resetonboarding')) {
                 $this->onBoarding->setShutDown(false);

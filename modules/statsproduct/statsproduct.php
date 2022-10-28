@@ -39,7 +39,7 @@ class statsproduct extends ModuleGraph
     {
         $this->name = 'statsproduct';
         $this->tab = 'analytics_stats';
-        $this->version = '2.0.1';
+        $this->version = '2.0.3';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -110,15 +110,18 @@ class statsproduct extends ModuleGraph
 				'.Shop::addSqlAssociation('product', 'p').'
 				'.(Tools::getValue('id_category') ? 'LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON p.`id_product` = cp.`id_product`' : '').'
 				WHERE pl.`id_lang` = '.(int)$id_lang.'
-					'.(Tools::getValue('id_category') ? 'AND cp.id_category = '.(int)Tools::getValue('id_category') : '').'
-				ORDER BY pl.`name`';
+					'.(Tools::getValue('id_category') ? 'AND cp.id_category = '.(int)Tools::getValue('id_category') : '');
+		if (version_compare(_PS_VERSION_, '1.7.0.0', '>=')) {
+			$sql .= ' AND p.state = ' . Product::STATE_SAVED;
+		}
+		$sql .= ' ORDER BY pl.`name`';
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-    }
+		return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+	}
 
-    private function getSales($id_product)
-    {
-        $sql = 'SELECT o.date_add, o.id_order, o.id_customer, od.product_quantity, (od.product_price * od.product_quantity) as total, od.tax_name, od.product_name
+	private function getSales($id_product)
+	{
+		$sql = 'SELECT o.date_add, o.id_order, o.id_customer, od.product_quantity, (od.product_price * od.product_quantity) as total, od.tax_name, od.product_name
 				FROM `'._DB_PREFIX_.'orders` o
 				LEFT JOIN `'._DB_PREFIX_.'order_detail` od ON o.id_order = od.id_order
 				WHERE o.date_add BETWEEN '.$this->getDate().'

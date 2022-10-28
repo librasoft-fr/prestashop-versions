@@ -25,9 +25,11 @@
 {% if warehouses|length > 0 %}
     <h4>{{ 'Product location in warehouses'|trans({}, 'Admin.Catalog.Feature') }}</h4>
 
-    <div class="alert alert-info" style="display:block; position: 'auto';">
-        <p>{{ 'This interface allows you to specify the warehouse in which the product is stocked.'|trans({}, 'Admin.Catalog.Help') }}</p>
-        <p>{{ 'It is also possible to specify the location within the warehouse for each product or combination.'|trans({}, 'Admin.Catalog.Help') }}</p>
+    <div class="alert alert-info" style="display:block; position: 'auto';" role="alert">
+        <div class="alert-text">
+            <p>{{ 'This interface allows you to specify the warehouse in which the product is stocked.'|trans({}, 'Admin.Catalog.Help') }}</p>
+            <p>{{ 'It is also possible to specify the location within the warehouse for each product or combination.'|trans({}, 'Admin.Catalog.Help') }}</p>
+        </div>
     </div>
     <p>{{ 'Please choose the warehouses associated with this product.'|trans({}, 'Admin.Catalog.Feature') }}</p>
 
@@ -49,9 +51,9 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">{{ warehouse_combination.vars.value.label }}</label>
                             <div class="col-sm-10">
-                                <div class="pull-left col-lg-1">{{ form_widget(warehouse_combination.activated) }}</div>
+                                <div class="float-left col-lg-1">{{ form_widget(warehouse_combination.activated) }}</div>
                                 {{ form_label(warehouse_combination.location) }}
-                                <div class="pull-left col-lg-3">{{ form_widget(warehouse_combination.location) }}</div>
+                                <div class="float-left col-lg-3">{{ form_widget(warehouse_combination.location) }}</div>
                                 {{ form_widget(warehouse_combination.id_product_attribute) }}
                                 {{ form_widget(warehouse_combination.warehouse_id) }}
                                 {{ form_widget(warehouse_combination.product_id) }}

@@ -38,7 +38,7 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
     {
         $this->name = 'ps_customeraccountlinks';
         $this->author = 'PrestaShop';
-        $this->version = '3.0.0';
+        $this->version = '3.1.0';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -99,19 +99,19 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
         $link = $this->context->link;
 
         $my_account_urls = array(
-            0 => array(
+            2 => array(
                 'title' => $this->trans('Orders', array(), 'Admin.Global'),
                 'url' => $link->getPageLink('history', true),
             ),
-            2 => array(
+            3 => array(
                 'title' => $this->trans('Credit slips', array(), 'Modules.Customeraccountlinks.Admin'),
                 'url' => $link->getPageLink('order-slip', true),
             ),
-            3 => array(
+            4 => array(
                 'title' => $this->trans('Addresses', array(), 'Shop.Theme.Global'),
                 'url' => $link->getPageLink('addresses', true),
             ),
-            4 => array(
+            0 => array(
                 'title' => $this->trans('Personal info', array(), 'Modules.Customeraccountlinks.Admin'),
                 'url' => $link->getPageLink('identity', true),
             ),
@@ -131,8 +131,8 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
             );
         }
 
-        // Sort Account links base in his title, keeping the keys
-        asort($my_account_urls);
+        // Sort Account links base in his index
+        ksort($my_account_urls);
 
         return array(
             'my_account_urls' => $my_account_urls,

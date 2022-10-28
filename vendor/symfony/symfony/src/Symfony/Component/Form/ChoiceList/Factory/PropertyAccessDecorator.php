@@ -63,7 +63,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
     /**
      * {@inheritdoc}
      *
-     * @param iterable                          $choices The choices
+     * @param array|\Traversable                $choices The choices
      * @param null|callable|string|PropertyPath $value   The callable or path for
      *                                                   generating the choice values
      *

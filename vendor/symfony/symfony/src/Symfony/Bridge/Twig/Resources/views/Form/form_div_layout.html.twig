@@ -15,7 +15,7 @@
 
 {%- block form_widget_compound -%}
     <div {{ block('widget_container_attributes') }}>
-        {%- if form is rootform -%}
+        {%- if form.parent is empty -%}
             {{ form_errors(form) }}
         {%- endif -%}
         {{- block('form_rows') -}}
@@ -306,9 +306,9 @@
         {% if not child.rendered %}
             {{- form_row(child) -}}
         {% endif %}
-    {%- endfor -%}
+    {%- endfor %}
 
-    {% if not form.methodRendered and form is rootform %}
+    {% if not form.methodRendered and form.parent is null %}
         {%- do form.setMethodRendered() -%}
         {% set method = method|upper %}
         {%- if method in ["GET", "POST"] -%}
@@ -320,7 +320,7 @@
         {%- if form_method != method -%}
             <input type="hidden" name="_method" value="{{ method }}" />
         {%- endif -%}
-    {% endif -%}
+    {% endif %}
 {% endblock form_rest %}
 
 {# Support #}

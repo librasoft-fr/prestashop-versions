@@ -106,7 +106,7 @@ class AutoExpireFlashBag implements FlashBagInterface
     public function all()
     {
         $return = $this->flashes['display'];
-        $this->flashes['display'] = array();
+        $this->flashes = array('new' => array(), 'display' => array());
 
         return $return;
     }

@@ -42,7 +42,7 @@ class statsbestcustomers extends ModuleGrid
     {
         $this->name = 'statsbestcustomers';
         $this->tab = 'analytics_stats';
-        $this->version = '2.0.1';
+        $this->version = '2.0.2';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -172,7 +172,7 @@ class statsbestcustomers extends ModuleGrid
 		LEFT JOIN `'._DB_PREFIX_.'connections` co ON g.`id_guest` = co.`id_guest`
 		WHERE co.date_add BETWEEN '.$this->getDate()
             .Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'c').
-            'GROUP BY c.`id_customer`, c.`lastname`, c.`firstname`, c.`email`';
+            ' GROUP BY c.`id_customer`, c.`lastname`, c.`firstname`, c.`email`';
 
         if (Validate::IsName($this->_sort)) {
             $this->query .= ' ORDER BY `'.bqSQL($this->_sort).'`';

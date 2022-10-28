@@ -32,7 +32,7 @@ class FormConfigBuilder implements FormConfigBuilderInterface
      *
      * @var NativeRequestHandler
      */
-    private static $nativeRequestHandler;
+    private static $nativeRequestProcessor;
 
     /**
      * The accepted request methods.
@@ -511,10 +511,10 @@ class FormConfigBuilder implements FormConfigBuilderInterface
     public function getRequestHandler()
     {
         if (null === $this->requestHandler) {
-            if (null === self::$nativeRequestHandler) {
-                self::$nativeRequestHandler = new NativeRequestHandler();
+            if (null === self::$nativeRequestProcessor) {
+                self::$nativeRequestProcessor = new NativeRequestHandler();
             }
-            $this->requestHandler = self::$nativeRequestHandler;
+            $this->requestHandler = self::$nativeRequestProcessor;
         }
 
         return $this->requestHandler;

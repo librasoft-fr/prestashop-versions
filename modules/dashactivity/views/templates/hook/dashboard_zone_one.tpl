@@ -130,7 +130,7 @@
 				</span>
 			</li>
 			<li>
-				<span class="data_label"><a href="{$link->getAdminLink('AdminModules')|escape:'html':'UTF-8'}&amp;configure=blocknewsletter&amp;module_name=blocknewsletter">{l s='Total Subscribers' d='Modules.Dashactivity.Admin'}</a></span>
+				<span class="data_label"><a href="{$link->getAdminLink('AdminModules')|escape:'html':'UTF-8'}&amp;configure=ps_emailsubscription&amp;module_name=ps_emailsubscription">{l s='Total Subscribers' d='Modules.Dashactivity.Admin'}</a></span>
 				<span class="data_value size_md">
 					<span id="total_suscribers"></span>
 				</span>
