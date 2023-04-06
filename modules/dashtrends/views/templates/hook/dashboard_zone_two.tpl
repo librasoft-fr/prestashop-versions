@@ -29,7 +29,7 @@
 	var priceDisplayPrecision = {$_PS_PRICE_DISPLAY_PRECISION_|intval};
 </script>
 <div class="clearfix"></div>
-<section id="dashtrends" class="panel widget{if $allow_push} allow_push{/if}">
+<section id="dashtrends" class="panel widget">
 	<header class="panel-heading">
 		<i class="icon-bar-chart"></i> {l s='Dashboard' d='Modules.Dashtrends.Admin'}
 		<span class="panel-heading-action">

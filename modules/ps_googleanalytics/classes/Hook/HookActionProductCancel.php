@@ -1,11 +1,11 @@
 <?php
 /**
- * 2007-2020 PrestaShop and Contributors
+ * Copyright since 2007 PrestaShop SA and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -13,20 +13,28 @@
  * to license@prestashop.com so we can send you a copy immediately.
  *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA and Contributors
+ * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\Module\Ps_Googleanalytics\Hooks;
 
+use Configuration;
 use Context;
 use OrderDetail;
 use Ps_Googleanalytics;
+use Validate;
 
 class HookActionProductCancel implements HookInterface
 {
+    /**
+     * @var Ps_Googleanalytics
+     */
     private $module;
+    /**
+     * @var Context
+     */
     private $context;
     private $params;
 
@@ -49,17 +57,29 @@ class HookActionProductCancel implements HookInterface
 
         // Display GA refund product
         $orderDetail = new OrderDetail($this->params['id_order_detail']);
-        $gaScripts = 'MBG.add(' . json_encode(
-            [
-                'id' => empty($orderDetail->product_attribute_id) ? $orderDetail->product_id : $orderDetail->product_id . '-' . $orderDetail->product_attribute_id,
-                'quantity' => $this->params['cancel_quantity'],
-            ])
-            . ');';
 
-        $this->context->cookie->__set(
-            'ga_admin_refund',
-            $gaScripts . 'MBG.refundByProduct(' . json_encode(['id' => $this->params['order']->id]) . ');'
-        );
+        // Check if the hook provided us with a valid existing ID of order detail.
+        // An example are automatic tests, which do not provide it unfortunately.
+        if (!Validate::isLoadedObject($orderDetail)) {
+            return;
+        }
+
+        $idProduct = empty($orderDetail->product_attribute_id) ? $orderDetail->product_id : $orderDetail->product_id . '-' . $orderDetail->product_attribute_id;
+        if ((bool) Configuration::get('GA_V4_ENABLED')) {
+            $js = $this->getGoogleAnalytics4(
+                (int) $this->params['order']->id,
+                $idProduct,
+                (float) $this->params['cancel_quantity'],
+                $orderDetail->product_name
+            );
+        } else {
+            $js = $this->getUniversalAnalytics(
+                (int) $this->params['order']->id,
+                $idProduct,
+                (float) $this->params['cancel_quantity']
+            );
+        }
+        $this->context->cookie->__set('ga_admin_refund', $js);
         $this->context->cookie->write();
     }
 
@@ -71,5 +91,48 @@ class HookActionProductCancel implements HookInterface
     public function setParams($params)
     {
         $this->params = $params;
+    }
+
+    /**
+     * @param int $idOrder
+     * @param string $idProduct
+     * @param float $quantity
+     */
+    protected function getUniversalAnalytics($idOrder, $idProduct, $quantity)
+    {
+        $js = 'MBG.add(' . json_encode(
+            [
+                'id' => $idProduct,
+                'quantity' => $quantity,
+            ])
+        . ');';
+        $js .= 'MBG.refundByProduct(' . json_encode(['id' => $idOrder]) . ');';
+
+        return $js;
+    }
+
+    /**
+     * @param int $idOrder
+     * @param string $idProduct
+     * @param float $quantity
+     * @param string $nameProduct
+     */
+    protected function getGoogleAnalytics4($idOrder, $idProduct, $quantity, $nameProduct)
+    {
+        $eventData = [
+            'transaction_id' => (int) $idOrder,
+            'items' => [
+                [
+                    'item_id' => (int) $idProduct,
+                    'item_name' => $nameProduct,
+                    'quantity' => (int) $quantity,
+                ],
+            ],
+        ];
+
+        return $this->module->getTools()->renderEvent(
+            'refund',
+            $eventData
+        );
     }
 }

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit722257398ed85eaa39d12bc29012c839
+class ComposerStaticInit75809dde56e3fe2c2fb740f1b55807ac
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -278,8 +278,8 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -607,6 +607,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
     public static $classMap = array (
         'AdminAjaxPsgdprController' => __DIR__ . '/../..' . '/modules/psgdpr/controllers/admin/AdminAjaxPsgdprController.php',
         'AdminConfigureFaviconBoController' => __DIR__ . '/../..' . '/modules/ps_faviconnotificationbo/controllers/admin/AdminConfigureFaviconBoController.php',
+        'AdminDashgoalsController' => __DIR__ . '/../..' . '/modules/dashgoals/controllers/admin/AdminDashgoalsController.php',
         'AdminDownloadInvoicesPsgdprController' => __DIR__ . '/../..' . '/modules/psgdpr/controllers/admin/AdminDownloadInvoicesPsgdprController.php',
         'AdminGanalyticsAjaxController' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/controllers/admin/AdminGanalyticsAjax.php',
         'AdminPsThemeCustoAdvancedController' => __DIR__ . '/../..' . '/modules/ps_themecusto/controllers/admin/AdminPsThemeCustoAdvanced.php',
@@ -2020,6 +2021,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'GeoIp2\\Record\\Subdivision' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Subdivision.php',
         'GeoIp2\\Record\\Traits' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Traits.php',
         'GeoIp2\\WebService\\Client' => __DIR__ . '/..' . '/geoip2/geoip2/src/WebService/Client.php',
+        'Gsitemap' => __DIR__ . '/../..' . '/modules/gsitemap/gsitemap.php',
         'GuzzleHttp\\BodySummarizer' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/BodySummarizer.php',
         'GuzzleHttp\\BodySummarizerInterface' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/BodySummarizerInterface.php',
         'GuzzleHttp\\Client' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Client.php',
@@ -4415,6 +4417,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'PrestaShop\\Module\\DistributionApiClient\\DistributionApi' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/DistributionApi.php',
         'PrestaShop\\Module\\DistributionApiClient\\Middleware\\Cache' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Middleware/Cache.php',
         'PrestaShop\\Module\\DistributionApiClient\\Middleware\\CachedResponse' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Middleware/CachedResponse.php',
+        'PrestaShop\\Module\\DistributionApiClient\\ShopDataProvider' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/ShopDataProvider.php',
         'PrestaShop\\Module\\FacetedSearch\\Adapter\\AbstractAdapter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Adapter/AbstractAdapter.php',
         'PrestaShop\\Module\\FacetedSearch\\Adapter\\InterfaceAdapter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Adapter/InterfaceAdapter.php',
         'PrestaShop\\Module\\FacetedSearch\\Adapter\\MySQL' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Adapter/MySQL.php',
@@ -4424,6 +4427,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Converter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Converter.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\DataAccessor' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/DataAccessor.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Products' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Products.php',
+        'PrestaShop\\Module\\FacetedSearch\\Filters\\Provider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Provider.php',
         'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormDataProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormDataProvider.php',
         'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormModifier' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormModifier.php',
         'PrestaShop\\Module\\FacetedSearch\\HookDispatcher' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/HookDispatcher.php',
@@ -4438,6 +4442,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'PrestaShop\\Module\\FacetedSearch\\Hook\\Product' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/Product.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\ProductSearch' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/ProductSearch.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\SpecificPrice' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/SpecificPrice.php',
+        'PrestaShop\\Module\\FacetedSearch\\Product\\CoreSearchBackport' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/CoreSearchBackport.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\Search' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/Search.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\SearchFactory' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/SearchFactory.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\SearchProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/SearchProvider.php',
@@ -4498,7 +4503,6 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'PrestaShop\\Module\\Ps_Googleanalytics\\Hooks\\HookDisplayFooter' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Hook/HookDisplayFooter.php',
         'PrestaShop\\Module\\Ps_Googleanalytics\\Hooks\\HookDisplayFooterProduct' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Hook/HookDisplayFooterProduct.php',
         'PrestaShop\\Module\\Ps_Googleanalytics\\Hooks\\HookDisplayHeader' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Hook/HookDisplayHeader.php',
-        'PrestaShop\\Module\\Ps_Googleanalytics\\Hooks\\HookDisplayHome' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Hook/HookDisplayHome.php',
         'PrestaShop\\Module\\Ps_Googleanalytics\\Hooks\\HookDisplayOrderConfirmation' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Hook/HookDisplayOrderConfirmation.php',
         'PrestaShop\\Module\\Ps_Googleanalytics\\Hooks\\HookInterface' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Hook/HookInterface.php',
         'PrestaShop\\Module\\Ps_Googleanalytics\\Hooks\\WrapperInterface' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Wrapper/WrapperInterface.php',
@@ -8160,6 +8164,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'Ps_CheckpaymentPaymentModuleFrontController' => __DIR__ . '/../..' . '/modules/ps_checkpayment/controllers/front/payment.php',
         'Ps_CheckpaymentValidationModuleFrontController' => __DIR__ . '/../..' . '/modules/ps_checkpayment/controllers/front/validation.php',
         'Ps_Crossselling' => __DIR__ . '/../..' . '/modules/ps_crossselling/ps_crossselling.php',
+        'Ps_Currencyselector' => __DIR__ . '/../..' . '/modules/ps_currencyselector/ps_currencyselector.php',
         'Ps_CustomerSignIn' => __DIR__ . '/../..' . '/modules/ps_customersignin/ps_customersignin.php',
         'Ps_Customeraccountlinks' => __DIR__ . '/../..' . '/modules/ps_customeraccountlinks/ps_customeraccountlinks.php',
         'Ps_Customtext' => __DIR__ . '/../..' . '/modules/ps_customtext/ps_customtext.php',
@@ -8169,6 +8174,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'Ps_FeaturedProducts' => __DIR__ . '/../..' . '/modules/ps_featuredproducts/ps_featuredproducts.php',
         'Ps_Googleanalytics' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/ps_googleanalytics.php',
         'Ps_ImageSlider' => __DIR__ . '/../..' . '/modules/ps_imageslider/ps_imageslider.php',
+        'Ps_Languageselector' => __DIR__ . '/../..' . '/modules/ps_languageselector/ps_languageselector.php',
         'Ps_Linklist' => __DIR__ . '/../..' . '/modules/ps_linklist/ps_linklist.php',
         'Ps_MainMenu' => __DIR__ . '/../..' . '/modules/ps_mainmenu/ps_mainmenu.php',
         'Ps_Shoppingcart' => __DIR__ . '/../..' . '/modules/ps_shoppingcart/ps_shoppingcart.php',
@@ -11382,6 +11388,7 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
         'ZxcvbnPhp\\TimeEstimator' => __DIR__ . '/..' . '/bjeavons/zxcvbn-php/src/TimeEstimator.php',
         'ZxcvbnPhp\\Zxcvbn' => __DIR__ . '/..' . '/bjeavons/zxcvbn-php/src/Zxcvbn.php',
         'blockreassurance' => __DIR__ . '/../..' . '/modules/blockreassurance/blockreassurance.php',
+        'dashgoals' => __DIR__ . '/../..' . '/modules/dashgoals/dashgoals.php',
         'dashtrends' => __DIR__ . '/../..' . '/modules/dashtrends/dashtrends.php',
         'lessc' => __DIR__ . '/..' . '/marcusschwarz/lesserphp/lessc.inc.php',
         'lessc_formatter_classic' => __DIR__ . '/..' . '/marcusschwarz/lesserphp/lessc.inc.php',
@@ -11403,11 +11410,11 @@ class ComposerStaticInit722257398ed85eaa39d12bc29012c839
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit75809dde56e3fe2c2fb740f1b55807ac::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit75809dde56e3fe2c2fb740f1b55807ac::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit75809dde56e3fe2c2fb740f1b55807ac::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit75809dde56e3fe2c2fb740f1b55807ac::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit75809dde56e3fe2c2fb740f1b55807ac::$classMap;
 
         }, null, ClassLoader::class);
     }

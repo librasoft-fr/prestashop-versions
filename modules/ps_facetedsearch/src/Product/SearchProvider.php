@@ -61,24 +61,33 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
      */
     private $searchFactory;
 
+    /**
+     * @var Filters\Provider
+     */
+    private $provider;
+
     public function __construct(
         Ps_Facetedsearch $module,
         Filters\Converter $converter,
         URLSerializer $serializer,
         Filters\DataAccessor $dataAccessor,
-        SearchFactory $searchFactory = null
+        SearchFactory $searchFactory = null,
+        Filters\Provider $provider
     ) {
         $this->module = $module;
         $this->filtersConverter = $converter;
         $this->urlSerializer = $serializer;
         $this->dataAccessor = $dataAccessor;
         $this->searchFactory = $searchFactory === null ? new SearchFactory() : $searchFactory;
+        $this->provider = $provider;
     }
 
     /**
+     * @param ProductSearchQuery $query
+     *
      * @return array
      */
-    private function getAvailableSortOrders()
+    private function getAvailableSortOrders($query)
     {
         $sortSalesDesc = new SortOrder('product', 'sales', 'desc');
         $sortPosAsc = new SortOrder('product', 'position', 'asc');
@@ -86,14 +95,16 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
         $sortNameDesc = new SortOrder('product', 'name', 'desc');
         $sortPriceAsc = new SortOrder('product', 'price', 'asc');
         $sortPriceDesc = new SortOrder('product', 'price', 'desc');
+        $sortDateAsc = new SortOrder('product', 'date_add', 'asc');
+        $sortDateDesc = new SortOrder('product', 'date_add', 'desc');
         $translator = $this->module->getTranslator();
 
-        return [
+        $sortOrders = [
             $sortSalesDesc->setLabel(
-                $translator->trans('Best sellers', [], 'Modules.Facetedsearch.Shop')
+                $translator->trans('Sales, highest to lowest', [], 'Shop.Theme.Catalog')
             ),
             $sortPosAsc->setLabel(
-                $translator->trans('Relevance', [], 'Modules.Facetedsearch.Shop')
+                $translator->trans('Relevance', [], 'Shop.Theme.Catalog')
             ),
             $sortNameAsc->setLabel(
                 $translator->trans('Name, A to Z', [], 'Shop.Theme.Catalog')
@@ -108,9 +119,24 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
                 $translator->trans('Price, high to low', [], 'Shop.Theme.Catalog')
             ),
         ];
+
+        if ($query->getQueryType() == 'new-products') {
+            $sortOrders[] = $sortDateAsc->setLabel(
+                $translator->trans('Date added, oldest to newest', [], 'Shop.Theme.Catalog')
+            );
+            $sortOrders[] = $sortDateDesc->setLabel(
+                $translator->trans('Date added, newest to oldest', [], 'Shop.Theme.Catalog')
+            );
+        }
+
+        return $sortOrders;
     }
 
     /**
+     * Instance of this class was previously passed to frontend controller, so we are now
+     * ready to accept runQuery requests. The query object contains all the important information
+     * about what we should get.
+     *
      * @param ProductSearchContext $context
      * @param ProductSearchQuery $query
      *
@@ -121,63 +147,60 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
         ProductSearchQuery $query
     ) {
         $result = new ProductSearchResult();
-        // extract the filter array from the Search query
+
+        /**
+         * Get currently selected filters. In the query, it's passed as encoded URL string,
+         * we make it an array. All filters in the URL that are no longer valid are removed.
+         */
         $facetedSearchFilters = $this->filtersConverter->createFacetedSearchFiltersFromQuery($query);
 
+        // Initialize the search mechanism
         $context = $this->module->getContext();
         $facetedSearch = $this->searchFactory->build($context);
-        // init the search with the initial population associated with the current filters
+
+        // Add query information into Search
+        $facetedSearch->setQuery($query);
+
+        // Init the search with the initial population associated with the current filters
         $facetedSearch->initSearch($facetedSearchFilters);
 
-        $orderBy = $query->getSortOrder()->toLegacyOrderBy(false);
-        $orderWay = $query->getSortOrder()->toLegacyOrderWay();
-
+        // Load the product searcher, it gets the Adapter through Search object
         $filterProductSearch = new Filters\Products($facetedSearch);
 
-        // get the product associated with the current filter
+        // Get the product associated with the current filter
         $productsAndCount = $filterProductSearch->getProductByFilters(
-            $query->getResultsPerPage(),
-            $query->getPage(),
-            $orderBy,
-            $orderWay,
+            $query,
             $facetedSearchFilters
         );
 
         $result
             ->setProducts($productsAndCount['products'])
             ->setTotalProductsCount($productsAndCount['count'])
-            ->setAvailableSortOrders($this->getAvailableSortOrders());
+            ->setAvailableSortOrders($this->getAvailableSortOrders($query));
 
-        // now get the filter blocks associated with the current search
+        // Now let's get the filter blocks associated with the current search.
+        // This will allow user to further filter this list we found.
         $filterBlockSearch = new Filters\Block(
             $facetedSearch->getSearchAdapter(),
             $context,
             $this->module->getDatabase(),
-            $this->dataAccessor
+            $this->dataAccessor,
+            $query,
+            $this->provider
         );
 
-        $idShop = (int) $context->shop->id;
-        $idLang = (int) $context->language->id;
-        $idCurrency = (int) $context->currency->id;
-        $idCountry = (int) $context->country->id;
-        $idCategory = (int) $query->getIdCategory();
+        // Let's try to get filters from cache, if the controller is supported
+        $filterHash = $this->generateCacheKeyForQuery($query, $facetedSearchFilters);
+        if ($this->module->shouldCacheController($query->getQueryType())) {
+            $filterBlock = $filterBlockSearch->getFromCache($filterHash);
+        }
 
-        $filterHash = md5(
-            sprintf(
-                '%d-%d-%d-%d-%d-%s',
-                $idShop,
-                $idCurrency,
-                $idLang,
-                $idCategory,
-                $idCountry,
-                serialize($facetedSearchFilters)
-            )
-        );
-
-        $filterBlock = $filterBlockSearch->getFromCache($filterHash);
+        // If not, we regenerate it and cache it
         if (empty($filterBlock)) {
             $filterBlock = $filterBlockSearch->getFilterBlock($productsAndCount['count'], $facetedSearchFilters);
-            $filterBlockSearch->insertIntoCache($filterHash, $filterBlock);
+            if ($this->module->shouldCacheController($query->getQueryType())) {
+                $filterBlockSearch->insertIntoCache($filterHash, $filterBlock);
+            }
         }
 
         $facets = $this->filtersConverter->getFacetsFromFilterBlocks(
@@ -196,6 +219,42 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
         $result->setEncodedFacets($this->urlSerializer->serialize($facetFilters));
 
         return $result;
+    }
+
+    /**
+     * Generate unique cache hash to store blocks in cache
+     *
+     * @param ProductSearchQuery $query
+     * @param array $facetedSearchFilters
+     *
+     * @return string
+     */
+    private function generateCacheKeyForQuery(ProductSearchQuery $query, array $facetedSearchFilters)
+    {
+        $context = $this->module->getContext();
+
+        $filterKey = $query->getQueryType();
+        if ($query->getQueryType() == 'category') {
+            $filterKey .= $query->getIdCategory();
+        } elseif ($query->getQueryType() == 'manufacturer') {
+            $filterKey .= $query->getIdManufacturer();
+        } elseif ($query->getQueryType() == 'supplier') {
+            $filterKey .= $query->getIdSupplier();
+        }
+
+        $filterHash = md5(
+            sprintf(
+                '%d-%d-%d-%s-%d-%s',
+                (int) $context->shop->id,
+                (int) $context->currency->id,
+                (int) $context->language->id,
+                $filterKey,
+                (int) $context->country->id,
+                serialize($facetedSearchFilters)
+            )
+        );
+
+        return $filterHash;
     }
 
     /**
@@ -362,10 +421,10 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
                     $unit = Configuration::get('PS_WEIGHT_UNIT');
                     $filter->setLabel(
                         sprintf(
-                            '%1$s%2$s - %3$s%4$s',
-                            Tools::displayNumber($min),
+                            '%1$s %2$s - %3$s %4$s',
+                            $context->getCurrentLocale()->formatNumber($min),
                             $unit,
-                            Tools::displayNumber($max),
+                            $context->getCurrentLocale()->formatNumber($max),
                             $unit
                         )
                     );

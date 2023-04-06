@@ -1,28 +1,28 @@
-{*
-* 2007-2016 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-* @author    PrestaShop SA <contact@prestashop.com>
-* @copyright 2007-2016 PrestaShop SA
-* @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-* International Registered Trademark & Property of PrestaShop SA
-*}
-<section id="dashactivity" class="panel widget{if $allow_push} allow_push{/if}">
+{**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ *}
+<section id="dashactivity" class="panel widget">
 	<div class="panel-heading">
 		<i class="icon-time"></i> {l s='Activity overview' d='Modules.Dashactivity.Admin'}
 		<span class="panel-heading-action">
@@ -142,13 +142,6 @@
 			<i class="icon-globe"></i> {l s='Traffic' d='Modules.Dashactivity.Admin'} <span class="subtitle small" id="traffic-subtitle"></span>
 		</header>
 		<ul class="data_list">
-			{if $gapi_mode}
-				<li>
-					<span class="data_label">
-						<img src="../modules/dashactivity/gapi-logo.gif" width="16" height="16" alt=""/> <a href="{$link->getAdminLink('AdminModules')|escape:'html':'UTF-8'}&amp;{$gapi_mode}=gapi">{l s='Link to your Google Analytics account' d='Modules.Dashactivity.Admin'}</a>
-					</span>
-				</li>
-			{/if}
 			<li>
 				<span class="data_label"><a href="{$link->getAdminLink('AdminStats')|escape:'html':'UTF-8'}&amp;module=statsforecast">{l s='Visits' d='Modules.Dashactivity.Admin'}</a></span>
 				<span class="data_value size_md">

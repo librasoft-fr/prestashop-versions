@@ -36,16 +36,17 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
     public function __construct()
     {
         $this->name = 'ps_customeraccountlinks';
+        $this->tab = 'front_office_features';
         $this->author = 'PrestaShop';
-        $this->version = '3.1.1';
+        $this->version = '3.2.0';
         $this->need_instance = 0;
 
         parent::__construct();
 
         $this->displayName = $this->trans('My Account block', [], 'Modules.Customeraccountlinks.Admin');
-        $this->description = $this->trans('Enrich your stats, add a registration progress tab to analyze your visitors’ behavior.', [], 'Modules.Customeraccountlinks.Admin');
+        $this->description = $this->trans('Welcome your customers with their personal information displayed right on your footer.', [], 'Modules.Customeraccountlinks.Admin');
 
-        $this->ps_versions_compliancy = ['min' => '1.7.2.0', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '1.7.4.0', 'max' => _PS_VERSION_];
 
         $this->templateFile = 'module:ps_customeraccountlinks/ps_customeraccountlinks.tpl';
     }
@@ -85,11 +86,15 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
 
     public function renderWidget($hookName = null, array $configuration = [])
     {
-        if (!$this->isCached($this->templateFile, $this->getCacheId('ps_customeraccountlinks'))) {
+        $tpl_key = 'ps_customeraccountlinks';
+        if ($this->context->smarty->tpl_vars['customer']->value['addresses']) {
+            $tpl_key .= '_multiple';
+        }
+        if (!$this->isCached($this->templateFile, $this->getCacheId($tpl_key))) {
             $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
         }
 
-        return $this->fetch($this->templateFile, $this->getCacheId('ps_customeraccountlinks'));
+        return $this->fetch($this->templateFile, $this->getCacheId($tpl_key));
     }
 
     public function getWidgetVariables($hookName = null, array $configuration = [])
@@ -133,7 +138,13 @@ class Ps_Customeraccountlinks extends Module implements WidgetInterface
         ksort($my_account_urls);
 
         return [
+            /*
+            * @deprecated
+            */
             'my_account_urls' => $my_account_urls,
+            /*
+            * @deprecated
+            */
             'logout_url' => $link->getPageLink('index', true, null, 'mylogout'),
         ];
     }

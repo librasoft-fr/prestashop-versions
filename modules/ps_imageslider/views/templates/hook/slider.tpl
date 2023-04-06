@@ -28,7 +28,7 @@
     <ul class="rslides">
       {foreach from=$homeslider.slides item=slide}
         <li class="slide">
-          <a href="{$slide.url}">
+          {if !empty($slide.url)}<a href="{$slide.url}">{/if}
             <img src="{$slide.image_url}" alt="{$slide.legend|escape}" />
             {if $slide.title || $slide.description }
               <span class="caption">
@@ -36,7 +36,7 @@
                 <div>{$slide.description nofilter}</div>
               </span>
             {/if}
-          </a>
+          {if !empty($slide.url)}</a>{/if}
         </li>
       {/foreach}
     </ul>

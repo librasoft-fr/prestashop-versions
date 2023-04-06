@@ -31,8 +31,8 @@ use PrestaShop\Module\FacetedSearch\Adapter\InterfaceAdapter;
 use PrestaShop\Module\FacetedSearch\Product\Search;
 use PrestaShop\PrestaShop\Core\Localization\Locale;
 use PrestaShop\PrestaShop\Core\Localization\Specification\NumberSymbolList;
+use PrestaShop\PrestaShop\Core\Product\Search\ProductSearchQuery;
 use PrestaShopDatabaseException;
-use Tools;
 
 /**
  * Display filters block on navigation
@@ -74,12 +74,30 @@ class Block
      */
     private $dataAccessor;
 
-    public function __construct(InterfaceAdapter $searchAdapter, Context $context, Db $database, DataAccessor $dataAccessor)
-    {
+    /**
+     * @var Provider
+     */
+    private $provider;
+
+    /**
+     * @var ProductSearchQuery
+     */
+    private $query;
+
+    public function __construct(
+        InterfaceAdapter $searchAdapter,
+        Context $context,
+        Db $database,
+        DataAccessor $dataAccessor,
+        ProductSearchQuery $query,
+        Provider $provider
+        ) {
         $this->searchAdapter = $searchAdapter;
         $this->context = $context;
         $this->database = $database;
         $this->dataAccessor = $dataAccessor;
+        $this->query = $query;
+        $this->provider = $provider;
     }
 
     /**
@@ -94,19 +112,15 @@ class Block
     ) {
         $idLang = (int) $this->context->language->id;
         $idShop = (int) $this->context->shop->id;
-        $idParent = (int) Tools::getValue(
-            'id_category',
-            Tools::getValue('id_category_layered', Configuration::get('PS_HOME_CATEGORY'))
-        );
 
-        /* Get the filters for the current category */
-        $filters = $this->database->executeS(
-            'SELECT type, id_value, filter_show_limit, filter_type ' .
-            'FROM ' . _DB_PREFIX_ . 'layered_category ' .
-            'WHERE id_category = ' . $idParent . ' ' .
-            'AND id_shop = ' . $idShop . ' ' .
-            'GROUP BY `type`, id_value ORDER BY position ASC'
-        );
+        // Get category ID from the query or home category as a fallback
+        $idCategory = (int) $this->query->getIdCategory();
+        if (empty($idCategory)) {
+            $idCategory = (int) Configuration::get('PS_HOME_CATEGORY');
+        }
+
+        // Get filters configured for the current query
+        $filters = $this->provider->getFiltersForQuery($this->query, $idShop);
 
         $filterBlocks = [];
         // iterate through each filter, and the get corresponding filter block
@@ -121,8 +135,8 @@ class Block
                 case 'condition':
                     $filterBlocks[] = $this->getConditionsBlock($filter, $selectedFilters);
                     break;
-                case 'quantity':
-                    $filterBlocks[] = $this->getQuantitiesBlock($filter, $selectedFilters);
+                case 'availability':
+                    $filterBlocks[] = $this->getAvailabilitiesBlock($filter, $selectedFilters);
                     break;
                 case 'manufacturer':
                     $filterBlocks[] = $this->getManufacturersBlock($filter, $selectedFilters, $idLang);
@@ -136,7 +150,7 @@ class Block
                         array_merge($filterBlocks, $this->getFeaturesBlock($filter, $selectedFilters, $idLang));
                     break;
                 case 'category':
-                    $parent = new Category($idParent, $idLang);
+                    $parent = new Category($idCategory, $idLang);
                     $filterBlocks[] = $this->getCategoriesBlock($filter, $selectedFilters, $idLang, $parent);
             }
         }
@@ -407,7 +421,7 @@ class Block
      *
      * @return array
      */
-    private function getQuantitiesBlock($filter, $selectedFilters)
+    private function getAvailabilitiesBlock($filter, $selectedFilters)
     {
         if ($this->psStockManagement === null) {
             $this->psStockManagement = (bool) Configuration::get('PS_STOCK_MANAGEMENT');
@@ -487,10 +501,10 @@ class Block
             $availabilityOptions[2]['nbr'] = $filteredSearchAdapter->count();
 
             // If some filter was selected, we want to show only this single filter, it does not make sense to show others
-            if (isset($selectedFilters['quantity'])) {
+            if (isset($selectedFilters['availability'])) {
                 // We loop through selected filters and assign it to our options and remove the rest
                 foreach ($availabilityOptions as $key => $values) {
-                    if (in_array($key, $selectedFilters['quantity'], true)) {
+                    if (in_array($key, $selectedFilters['availability'], true)) {
                         $availabilityOptions[$key]['checked'] = true;
                     }
                 }
@@ -498,8 +512,8 @@ class Block
         }
 
         $quantityBlock = [
-            'type_lite' => 'quantity',
-            'type' => 'quantity',
+            'type_lite' => 'availability',
+            'type' => 'availability',
             'id_key' => 0,
             'name' => $this->context->getTranslator()->trans('Availability', [], 'Modules.Facetedsearch.Shop'),
             'values' => $availabilityOptions,
@@ -522,7 +536,14 @@ class Block
     private function getManufacturersBlock($filter, $selectedFilters, $idLang)
     {
         $manufacturersArray = $manufacturers = [];
-        $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter('id_manufacturer');
+
+        // TODO - Needed to make manufacturer filter work (=disappear) on manufacturer page, not sure how it works.
+        // (Manufacturer's page is the only page having id_manufacturer as the initial filter, that's why.)
+        if ($this->query->getQueryType() == 'manufacturer') {
+            $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter();
+        } else {
+            $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter('id_manufacturer');
+        }
 
         $tempManufacturers = Manufacturer::getManufacturers(false, $idLang);
         if (empty($tempManufacturers)) {
@@ -698,7 +719,7 @@ class Block
      */
     private function getFeaturesBlock($filter, $selectedFilters, $idLang)
     {
-        $features = $featureBlock = [];
+        $featureBlock = [];
         $idFeature = $filter['id_value'];
         $filteredSearchAdapter = null;
 
@@ -716,13 +737,9 @@ class Block
             $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter();
         }
 
-        $tempFeatures = $this->dataAccessor->getFeatures($idLang);
-        if (empty($tempFeatures)) {
+        $features = $this->dataAccessor->getFeatures($idLang);
+        if (empty($features)) {
             return [];
-        }
-
-        foreach ($tempFeatures as $key => $feature) {
-            $features[$feature['id_feature']] = $feature;
         }
 
         $filteredSearchAdapter->addOperationsFilter(
@@ -740,10 +757,7 @@ class Block
             $feature = $features[$idFeature];
 
             if (!isset($featureBlock[$idFeature])) {
-                $tempFeatureValues = $this->dataAccessor->getFeatureValues($idFeature, $idLang);
-                foreach ($tempFeatureValues as $featureValueKey => $featureValue) {
-                    $features[$idFeature]['featureValues'][$featureValue['id_feature_value']] = $featureValue;
-                }
+                $features[$idFeature]['featureValues'] = $this->dataAccessor->getFeatureValues($idFeature, $idLang);
 
                 $featureBlock[$idFeature] = [
                     'type_lite' => 'id_feature',
