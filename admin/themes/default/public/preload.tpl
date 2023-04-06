@@ -1,6 +1,6 @@
 <link
       rel="preload"
-      href="{$admin_dir}94cef4c50fdde3db87d08031a829d1a8.preload.woff2"
+      href="{$admin_dir}b073f5972d9c4cc1b8ae8e071e441376.preload.woff2"
       as="font"
       crossorigin
     >
