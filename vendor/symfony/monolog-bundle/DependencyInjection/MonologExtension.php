@@ -11,10 +11,12 @@
 
 namespace Symfony\Bundle\MonologBundle\DependencyInjection;
 
+use Monolog\Attribute\AsMonologProcessor;
 use Monolog\Handler\FingersCrossed\ErrorLevelActivationStrategy;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use Monolog\Processor\ProcessorInterface;
-use Monolog\Handler\HandlerInterface;
+use Monolog\Processor\PsrLogMessageProcessor;
 use Monolog\ResettableInterface;
 use Symfony\Bridge\Monolog\Handler\FingersCrossed\HttpCodeActivationStrategy;
 use Symfony\Bridge\Monolog\Processor\SwitchUserTokenProcessor;
@@ -148,6 +150,21 @@ class MonologExtension extends Extension
                 ]);
             }
         }
+
+        if (80000 <= \PHP_VERSION_ID && method_exists($container, 'registerAttributeForAutoconfiguration')) {
+            $container->registerAttributeForAutoconfiguration(AsMonologProcessor::class, static function (ChildDefinition $definition, AsMonologProcessor $attribute, \Reflector $reflector): void {
+                $tagAttributes = get_object_vars($attribute);
+                if ($reflector instanceof \ReflectionMethod) {
+                    if (isset($tagAttributes['method'])) {
+                        throw new \LogicException(sprintf('AsMonologProcessor attribute cannot declare a method on "%s::%s()".', $reflector->class, $reflector->name));
+                    }
+
+                    $tagAttributes['method'] = $reflector->getName();
+                }
+
+                $definition->addTag('monolog.processor', $tagAttributes);
+            });
+        }
     }
 
     /**
@@ -187,21 +204,13 @@ class MonologExtension extends Extension
             $definition->setConfigurator(['Symfony\\Bundle\\MonologBundle\\MonologBundle', 'includeStacktraces']);
         }
 
-        if (null === $handler['process_psr_3_messages']) {
-            $handler['process_psr_3_messages'] = !isset($handler['handler']) && !$handler['members'];
+        if (null === $handler['process_psr_3_messages']['enabled']) {
+            $handler['process_psr_3_messages']['enabled'] = !isset($handler['handler']) && !$handler['members'];
         }
 
-        if ($handler['process_psr_3_messages']) {
-            if (method_exists($handlerClass, 'pushProcessor')) {
-                $processorId = 'monolog.processor.psr_log_message';
-                if (!$container->hasDefinition($processorId)) {
-                    $processor = new Definition('Monolog\\Processor\\PsrLogMessageProcessor');
-                    $processor->setPublic(false);
-                    $container->setDefinition($processorId, $processor);
-                }
-
-                $definition->addMethodCall('pushProcessor', [new Reference($processorId)]);
-            }
+        if ($handler['process_psr_3_messages']['enabled'] && method_exists($handlerClass, 'pushProcessor')) {
+            $processorId = $this->buildPsrLogMessageProcessor($container, $handler['process_psr_3_messages']);
+            $definition->addMethodCall('pushProcessor', [new Reference($processorId)]);
         }
 
         switch ($handler['type']) {
@@ -279,7 +288,7 @@ class MonologExtension extends Extension
 
                 $server .= $handler['mongo']['host'].':'.$handler['mongo']['port'];
 
-                $client = new Definition('MongoClient', [
+                $client = new Definition('MongoDB\Client', [
                     $server,
                 ]);
 
@@ -296,38 +305,52 @@ class MonologExtension extends Extension
             break;
 
         case 'elasticsearch':
-            if (isset($handler['elasticsearch']['id'])) {
-                $elasticaClient = new Reference($handler['elasticsearch']['id']);
-            } else {
-                // elastica client new definition
-                $elasticaClient = new Definition('Elastica\Client');
-                $elasticaClientArguments = [
-                    'host' => $handler['elasticsearch']['host'],
-                    'port' => $handler['elasticsearch']['port'],
-                    'transport' => $handler['elasticsearch']['transport'],
-                ];
+            @trigger_error('The "elasticsearch" handler type is deprecated in MonologBundle since version 3.8.0, use the "elastica" type instead, or switch to the official Elastic client using the "elastic_search" type.', E_USER_DEPRECATED);
+            // no break
 
-                if (isset($handler['elasticsearch']['user'], $handler['elasticsearch']['password'])) {
-                    $elasticaClientArguments = array_merge(
-                        $elasticaClientArguments,
-                        [
-                            'headers' => [
-                                'Authorization' => 'Basic ' . base64_encode($handler['elasticsearch']['user'] . ':' . $handler['elasticsearch']['password'])
-                            ]
-                        ]
-                    );
+        case 'elastica':
+        case 'elastic_search':
+            if (isset($handler['elasticsearch']['id'])) {
+                $client = new Reference($handler['elasticsearch']['id']);
+            } else {
+                if ($handler['type'] === 'elastic_search') {
+                    // v8 has a new Elastic\ prefix
+                    $client = new Definition(class_exists('Elastic\Elasticsearch\Client') ? 'Elastic\Elasticsearch\Client' : 'Elasticsearch\Client');
+                    $factory = class_exists('Elastic\Elasticsearch\ClientBuilder') ? 'Elastic\Elasticsearch\ClientBuilder' : 'Elasticsearch\ClientBuilder';
+                    $client->setFactory([$factory, 'fromConfig']);
+                    $clientArguments = [
+                        'host' => $handler['elasticsearch']['host'],
+                    ];
+
+                    if (isset($handler['elasticsearch']['user'], $handler['elasticsearch']['password'])) {
+                        $clientArguments['basicAuthentication'] = [$handler['elasticsearch']['user'], $handler['elasticsearch']['password']];
+                    }
+                } else {
+                    $client = new Definition('Elastica\Client');
+
+                    $clientArguments = [
+                        'host' => $handler['elasticsearch']['host'],
+                        'port' => $handler['elasticsearch']['port'],
+                        'transport' => $handler['elasticsearch']['transport'],
+                    ];
+
+                    if (isset($handler['elasticsearch']['user'], $handler['elasticsearch']['password'])) {
+                        $clientArguments['headers'] = [
+                            'Authorization' => 'Basic ' . base64_encode($handler['elasticsearch']['user'] . ':' . $handler['elasticsearch']['password'])
+                        ];
+                    }
                 }
 
-                $elasticaClient->setArguments([
-                    $elasticaClientArguments
+                $client->setArguments([
+                    $clientArguments
                 ]);
 
-                $elasticaClient->setPublic(false);
+                $client->setPublic(false);
             }
 
             // elastica handler definition
             $definition->setArguments([
-                $elasticaClient,
+                $client,
                 [
                     'index' => $handler['index'],
                     'type' => $handler['document_type'],
@@ -337,6 +360,25 @@ class MonologExtension extends Extension
                 $handler['bubble'],
             ]);
             break;
+
+        case 'telegram':
+            if (!class_exists('Monolog\Handler\TelegramBotHandler')) {
+                throw new \RuntimeException('The TelegramBotHandler is not available. Please update "monolog/monolog" to 2.2.0');
+            }
+
+            $definition->setArguments([
+                $handler['token'],
+                $handler['channel'],
+                $handler['level'],
+                $handler['bubble'],
+                $handler['parse_mode'],
+                $handler['disable_webpage_preview'],
+                $handler['disable_notification'],
+                $handler['split_long_messages'],
+                $handler['delay_between_messages'],
+            ]);
+            break;
+
         case 'redis':
         case 'predis':
             if (isset($handler['redis']['id'])) {
@@ -767,6 +809,7 @@ class MonologExtension extends Extension
                 $hub,
                 $handler['level'],
                 $handler['bubble'],
+                $handler['fill_extra_context'],
             ]);
             break;
 
@@ -984,6 +1027,7 @@ class MonologExtension extends Extension
             'filter' => 'Monolog\Handler\FilterHandler',
             'mongo' => 'Monolog\Handler\MongoDBHandler',
             'elasticsearch' => 'Monolog\Handler\ElasticSearchHandler',
+            'telegram' => 'Monolog\Handler\TelegramBotHandler',
             'server_log' => 'Symfony\Bridge\Monolog\Handler\ServerLogHandler',
             'redis' => 'Monolog\Handler\RedisHandler',
             'predis' => 'Monolog\Handler\RedisHandler',
@@ -991,7 +1035,9 @@ class MonologExtension extends Extension
         ];
 
         $v2HandlerTypesAdded = [
+            'elastica' => 'Monolog\Handler\ElasticaHandler',
             'elasticsearch' => 'Monolog\Handler\ElasticaHandler',
+            'elastic_search' => 'Monolog\Handler\ElasticsearchHandler',
             'fallbackgroup' => 'Monolog\Handler\FallbackGroupHandler',
             'noop' => 'Monolog\Handler\NoopHandler',
         ];
@@ -1002,10 +1048,20 @@ class MonologExtension extends Extension
             'slackbot',
         ];
 
-        if (Logger::API === 2) {
+        $v3HandlerTypesRemoved = [
+            'swift_mailer',
+        ];
+
+        if (Logger::API >= 2) {
             $typeToClassMapping = array_merge($typeToClassMapping, $v2HandlerTypesAdded);
             foreach($v2HandlerTypesRemoved as $v2HandlerTypeRemoved) {
                 unset($typeToClassMapping[$v2HandlerTypeRemoved]);
+            }
+        }
+
+        if (Logger::API >= 3) {
+            foreach($v3HandlerTypesRemoved as $v3HandlerTypeRemoved) {
+                unset($typeToClassMapping[$v3HandlerTypeRemoved]);
             }
         }
 
@@ -1014,13 +1070,53 @@ class MonologExtension extends Extension
                 throw new \InvalidArgumentException(sprintf('"%s" was added in Monolog v2, please upgrade if you wish to use it.', $handlerType));
             }
 
-            if (Logger::API === 2 && array_key_exists($handlerType, $v2HandlerTypesRemoved)) {
+            if (Logger::API >= 2 && array_key_exists($handlerType, $v2HandlerTypesRemoved)) {
                 throw new \InvalidArgumentException(sprintf('"%s" was removed in Monolog v2.', $handlerType));
+            }
+
+            if (Logger::API >= 3 && array_key_exists($handlerType, $v3HandlerTypesRemoved)) {
+                throw new \InvalidArgumentException(sprintf('"%s" was removed in Monolog v3.', $handlerType));
             }
 
             throw new \InvalidArgumentException(sprintf('There is no handler class defined for handler "%s".', $handlerType));
         }
 
         return $typeToClassMapping[$handlerType];
+    }
+
+    private function buildPsrLogMessageProcessor(ContainerBuilder $container, array $processorOptions): string
+    {
+        static $hasConstructorArguments;
+
+        if (!isset($hasConstructorArguments)) {
+            $reflectionConstructor = (new \ReflectionClass(PsrLogMessageProcessor::class))->getConstructor();
+            $hasConstructorArguments = null !== $reflectionConstructor && $reflectionConstructor->getNumberOfParameters() > 0;
+            unset($reflectionConstructor);
+        }
+
+        $processorId = 'monolog.processor.psr_log_message';
+        $processorArguments = [];
+
+        unset($processorOptions['enabled']);
+
+        if (!empty($processorOptions)) {
+            if (!$hasConstructorArguments) {
+                throw new \RuntimeException('Monolog 1.26 or higher is required for the "date_format" and "remove_used_context_fields" options to be used.');
+            }
+            $processorArguments = [
+                $processorOptions['date_format'] ?? null,
+                $processorOptions['remove_used_context_fields'] ?? false,
+            ];
+            $processorId .= '.'.ContainerBuilder::hash($processorArguments);
+        }
+
+        if (!$container->hasDefinition($processorId)) {
+            $processor = new Definition(PsrLogMessageProcessor::class);
+            $processor->setPublic(false);
+            $processor->setArguments($processorArguments);
+            $container->setDefinition($processorId, $processor);
+        }
+
+        return $processorId;
     }
 }

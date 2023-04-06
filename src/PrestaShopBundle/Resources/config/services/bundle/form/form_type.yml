@@ -1777,7 +1777,7 @@ services:
 
   form.type.sell.product.data_transformer.typeahead_redirection_target_transformer:
     class: 'PrestaShopBundle\Form\Admin\Sell\Product\DataTransformer\TypeaheadRedirectionTargetTransformer'
-    deprecated: 'The "%service_id%" service is deprecated since 1.7.9 and will be removed in next major.'
+    deprecated: 'The "%service_id%" service is deprecated since 8.0.0 and will be removed in next major.'
     public: true
 
   form.type.sell.product.data_transformer.redirection_target_transformer:
@@ -1919,8 +1919,10 @@ services:
     parent: 'form.type.translatable.aware'
     public: true
     arguments:
-      - '@=service("prestashop.adapter.data_provider.currency").getDefaultCurrency()'
+      - '@=service("prestashop.adapter.data_provider.currency").getDefaultCurrency().iso_code'
       - "@=service('prestashop.adapter.legacy.configuration').get('PS_WEIGHT_UNIT')"
+      - '@prestashop.adapter.product.repository.product_repository'
+      - '@prestashop.adapter.tax.tax_computer'
     tags:
       - { name: form.type }
 

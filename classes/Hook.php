@@ -64,6 +64,8 @@ class HookCore extends ObjectModel
 
     public static $native_module;
 
+    protected static $disabledHookModules = [];
+
     /**
      * @see ObjectModel::$definition
      */
@@ -717,6 +719,19 @@ class HookCore extends ObjectModel
     }
 
     /**
+     * Add a module ID to the list of modules that should not execute hooks
+     */
+    public static function disableHooksForModule(int $moduleId): void
+    {
+        if (in_array($moduleId, self::$disabledHookModules)) {
+            return;
+        }
+
+        self::$disabledHookModules[] = $moduleId;
+        Cache::clean(self::MODULE_LIST_BY_HOOK_KEY . '*');
+    }
+
+    /**
      * Execute modules for specified hook.
      *
      * @param string $hook_name Hook Name
@@ -1054,7 +1069,7 @@ class HookCore extends ObjectModel
             if ($use_groups) {
                 if ($customer instanceof Customer && $customer->isLogged()) {
                     $groups = $customer->getGroups();
-                } elseif ($customer instanceof Customer && $customer->isLogged(true)) {
+                } elseif ($customer instanceof Customer && $customer->isGuest()) {
                     $groups = [(int) Configuration::get('PS_GUEST_GROUP')];
                 } else {
                     $groups = [(int) Configuration::get('PS_UNIDENTIFIED_GROUP')];
@@ -1144,6 +1159,10 @@ class HookCore extends ObjectModel
                     $sql->where('mg.`id_group` IN (' . implode(', ', $groups) . ')');
                 }
             }
+        }
+
+        if (!empty(self::$disabledHookModules)) {
+            $sql->where('m.id_module NOT IN (' . implode(', ', self::$disabledHookModules) . ')');
         }
 
         $sql->groupBy('hm.id_hook, hm.id_module');

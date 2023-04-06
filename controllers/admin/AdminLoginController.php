@@ -24,6 +24,7 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 use PrestaShop\PrestaShop\Core\Util\InternationalizedDomainNameConverter;
+use PrestaShopBundle\Security\Admin\SessionRenewer;
 use Symfony\Component\HttpFoundation\IpUtils;
 
 class AdminLoginControllerCore extends AdminController
@@ -91,7 +92,7 @@ class AdminLoginControllerCore extends AdminController
                 $url = 'https://' . Tools::safeOutput(Tools::getServerName()) . Tools::safeOutput($_SERVER['REQUEST_URI']);
                 $warningSslMessage = $this->trans(
                     'SSL is activated. Please connect using the following link to [1]log in to secure mode (https://)[/1]',
-                    ['[1]' => '<a href="' . $url . '">', '[/1]' => '</a>'],
+                    ['_raw' => true, '[1]' => '<a href="' . $url . '">', '[/1]' => '</a>'],
                     'Admin.Login.Notification'
                 );
             }
@@ -261,6 +262,8 @@ class AdminLoginControllerCore extends AdminController
 
                 $cookie->write();
 
+                $this->get(SessionRenewer::class)->renew();
+
                 // If there is a valid controller name submitted, redirect to it
                 if (isset($_POST['redirect']) && Validate::isControllerName($_POST['redirect'])) {
                     $url = $this->context->link->getAdminLink($_POST['redirect']);
@@ -409,7 +412,7 @@ class AdminLoginControllerCore extends AdminController
         } elseif (!$reset_confirm) {
             $this->errors[] = $this->trans('The confirmation is empty: please fill in the password confirmation as well.', [], 'Admin.Login.Notification');
         } elseif ($reset_password !== $reset_confirm) {
-            $this->errors[] = $this->trans("The confirmation password doesn't match. Please double check both passwords.", [], 'Admin.Login.Notification');
+            $this->errors[] = $this->trans("The confirmation password doesn't match. Please double-check both passwords.", [], 'Admin.Login.Notification');
         } else {
             $employee = new Employee();
             if (!$employee->getByEmail($reset_email) || $employee->id != $id_employee) { // check matching employee id with its email

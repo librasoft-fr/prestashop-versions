@@ -190,6 +190,10 @@ services:
 
   prestashop.core.form.choice_provider.tax_rule_group_choice_provider:
     class: 'PrestaShop\PrestaShop\Adapter\Form\ChoiceProvider\TaxRuleGroupChoiceProvider'
+    arguments:
+      - '@=service("prestashop.adapter.legacy.context").getContext().country.id'
+      - '@prestashop.adapter.tax_rules_group.repository.tax_rules_group_repository'
+      - '@prestashop.adapter.tax.tax_computer'
 
   prestashop.core.form.choice_provider.cms_categories:
     class: 'PrestaShop\PrestaShop\Core\Form\ChoiceProvider\CmsCategoriesChoiceProvider'
@@ -284,6 +288,7 @@ services:
     class: 'PrestaShop\PrestaShop\Core\Form\ChoiceProvider\ProductTypeChoiceProvider'
     arguments:
       - '@translator'
+      - '@prestashop.adapter.legacy.configuration'
 
   prestashop.core.form.choice_provider.zone_by_id:
     class: 'PrestaShop\PrestaShop\Adapter\Form\ChoiceProvider\ZoneByIdChoiceProvider'

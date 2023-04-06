@@ -65,6 +65,9 @@ class ModuleManager implements ModuleManagerInterface
     /** @var Filesystem */
     private $filesystem;
 
+    /** @var bool */
+    private $systemClearCache = true;
+
     public function __construct(
         ModuleRepository $moduleRepository,
         ModuleDataProvider $moduleDataProvider,
@@ -107,7 +110,11 @@ class ModuleManager implements ModuleManagerInterface
 
         $module = $this->moduleRepository->getModule($name);
         $installed = $module->onInstall();
-        $this->dispatch(ModuleManagementEvent::INSTALL, $module);
+        if ($installed) {
+            // Only trigger install event if install has succeeded otherwise it could automatically add tabs linked to a
+            // module not installed (@see ModuleTabManagementSubscriber) or other unwanted automatic actions.
+            $this->dispatch(ModuleManagementEvent::INSTALL, $module);
+        }
 
         return $installed;
     }
@@ -174,6 +181,8 @@ class ModuleManager implements ModuleManagerInterface
             $handler = $this->sourceFactory->getHandler($source);
             $handler->handle($source);
         }
+
+        $this->hookManager->disableHooksForModule($this->moduleDataProvider->getModuleIdByName($name));
 
         $this->hookManager->exec('actionBeforeUpgradeModule', ['moduleName' => $name, 'source' => $source]);
 
@@ -374,6 +383,11 @@ class ModuleManager implements ModuleManagerInterface
 
     private function dispatch(string $event, ModuleInterface $module): void
     {
-        $this->eventDispatcher->dispatch(new ModuleManagementEvent($module), $event);
+        $this->eventDispatcher->dispatch(new ModuleManagementEvent($module, $this->systemClearCache), $event);
+    }
+
+    public function disableSystemClearCache(): void
+    {
+        $this->systemClearCache = false;
     }
 }

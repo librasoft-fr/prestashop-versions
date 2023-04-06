@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
+class ComposerStaticInit722257398ed85eaa39d12bc29012c839
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -730,6 +730,7 @@ class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
         'Composer\\Installers\\ZendInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ZendInstaller.php',
         'Composer\\Installers\\ZikulaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ZikulaInstaller.php',
         'Console_Getopt' => __DIR__ . '/..' . '/pear/console_getopt/Console/Getopt.php',
+        'Contactform' => __DIR__ . '/../..' . '/modules/contactform/contactform.php',
         'Curl\\Curl' => __DIR__ . '/..' . '/curl/curl/src/Curl/Curl.php',
         'CustomText' => __DIR__ . '/../..' . '/modules/ps_customtext/classes/CustomText.php',
         'Datamatrix' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',
@@ -3767,6 +3768,7 @@ class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
         'PrestaShopBundle\\DependencyInjection\\Compiler\\RouterPass' => __DIR__ . '/../..' . '/src/PrestaShopBundle/DependencyInjection/Compiler/RouterPass.php',
         'PrestaShopBundle\\DependencyInjection\\Config\\ConfigYamlLoader' => __DIR__ . '/../..' . '/src/PrestaShopBundle/DependencyInjection/Config/ConfigYamlLoader.php',
         'PrestaShopBundle\\DependencyInjection\\PrestaShopExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/DependencyInjection/PrestaShopExtension.php',
+        'PrestaShopBundle\\DependencyInjection\\RuntimeConstEnvVarProcessor' => __DIR__ . '/../..' . '/src/PrestaShopBundle/DependencyInjection/RuntimeConstEnvVarProcessor.php',
         'PrestaShopBundle\\Entity\\AdminFilter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AdminFilter.php',
         'PrestaShopBundle\\Entity\\Attribute' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Attribute.php',
         'PrestaShopBundle\\Entity\\AttributeGroup' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/AttributeGroup.php',
@@ -4243,6 +4245,7 @@ class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
         'PrestaShopBundle\\Routing\\YamlModuleLoader' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Routing/YamlModuleLoader.php',
         'PrestaShopBundle\\Security\\Admin\\Employee' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/Employee.php',
         'PrestaShopBundle\\Security\\Admin\\EmployeeProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/EmployeeProvider.php',
+        'PrestaShopBundle\\Security\\Admin\\SessionRenewer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/SessionRenewer.php',
         'PrestaShopBundle\\Security\\Annotation\\AdminSecurity' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Annotation/AdminSecurity.php',
         'PrestaShopBundle\\Security\\Annotation\\DemoRestricted' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Annotation/DemoRestricted.php',
         'PrestaShopBundle\\Security\\Annotation\\ModuleActivated' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Annotation/ModuleActivated.php',
@@ -4340,6 +4343,7 @@ class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
         'PrestaShopBundle\\Twig\\Locator\\ModuleTemplateLoader' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/Locator/ModuleTemplateLoader.php',
         'PrestaShopBundle\\Twig\\TranslationsExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/TranslationsExtension.php',
         'PrestaShopBundle\\Utils\\FloatParser' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Utils/FloatParser.php',
+        'PrestaShopBundle\\Utils\\Tree' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Utils/Tree.php',
         'PrestaShopBundle\\Utils\\ZipManager' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Utils/ZipManager.php',
         'PrestaShop\\CircuitBreaker\\AdvancedCircuitBreaker' => __DIR__ . '/..' . '/prestashop/circuit-breaker/src/AdvancedCircuitBreaker.php',
         'PrestaShop\\CircuitBreaker\\AdvancedCircuitBreakerFactory' => __DIR__ . '/..' . '/prestashop/circuit-breaker/src/AdvancedCircuitBreakerFactory.php',
@@ -7719,6 +7723,8 @@ class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleManagerInterface' => __DIR__ . '/../..' . '/src/Core/Module/ModuleManagerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleRepository' => __DIR__ . '/../..' . '/src/Core/Module/ModuleRepository.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleRepositoryInterface' => __DIR__ . '/../..' . '/src/Core/Module/ModuleRepositoryInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\Exception\\SourceNotHandledException' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/Exception/SourceNotHandledException.php',
+        'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\RemoteZipSourceHandler' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/RemoteZipSourceHandler.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\SourceHandlerFactory' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/SourceHandlerFactory.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\SourceHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/SourceHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\SourceHandlerNotFoundException' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/SourceHandlerNotFoundException.php',
@@ -7769,6 +7775,7 @@ class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
         'PrestaShop\\PrestaShop\\Core\\Repository\\AbstractMultiShopObjectModelRepository' => __DIR__ . '/../..' . '/src/Core/Repository/AbstractMultiShopObjectModelRepository.php',
         'PrestaShop\\PrestaShop\\Core\\Repository\\AbstractObjectModelRepository' => __DIR__ . '/../..' . '/src/Core/Repository/AbstractObjectModelRepository.php',
         'PrestaShop\\PrestaShop\\Core\\Repository\\RepositoryInterface' => __DIR__ . '/../..' . '/src/Core/Repository/RepositoryInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Repository\\ShopConstraintTrait' => __DIR__ . '/../..' . '/src/Core/Repository/ShopConstraintTrait.php',
         'PrestaShop\\PrestaShop\\Core\\Routing\\EntityLinkBuilderFactory' => __DIR__ . '/../..' . '/src/Core/Routing/EntityLinkBuilderFactory.php',
         'PrestaShop\\PrestaShop\\Core\\Routing\\EntityLinkBuilderInterface' => __DIR__ . '/../..' . '/src/Core/Routing/EntityLinkBuilderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Routing\\Exception\\BuilderNotFoundException' => __DIR__ . '/../..' . '/src/Core/Routing/Exception/BuilderNotFoundException.php',
@@ -11396,11 +11403,11 @@ class ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInite0da9a46ec9b74424e3af84a2a13de68::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit722257398ed85eaa39d12bc29012c839::$classMap;
 
         }, null, ClassLoader::class);
     }

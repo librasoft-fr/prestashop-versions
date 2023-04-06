@@ -33,6 +33,7 @@ use PrestaShop\PrestaShop\Core\Localization\Locale;
 use PrestaShop\PrestaShop\Core\Localization\Specification\Number as NumberSpecification;
 use PrestaShop\PrestaShop\Core\Localization\Specification\Price as PriceSpecification;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class AdminControllerCore extends Controller
 {
@@ -2140,7 +2141,23 @@ class AdminControllerCore extends Controller
                 $tabs[$index]['current'] = false;
             }
             $tabs[$index]['img'] = null;
-            $tabs[$index]['href'] = $this->context->link->getTabLink($tab);
+            try {
+                $tabs[$index]['href'] = $this->context->link->getTabLink($tab);
+            } catch (RouteNotFoundException $e) {
+                // If the route specified is not accessible we remove the tab (it can happen during module install process
+                // the route should be usable in next request/process once the cache has been cleared - on process shutdown).
+                // This is not ideal, but clearing the cache during a process and restart the whole kernel is quite a challenge.
+                $this->get('logger')->addWarning(
+                    sprintf('Route not found in one of the Tab %s', $tab['route_name'] ?? ''),
+                    [
+                        'message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                    ]
+                );
+                unset($tabs[$index]);
+                continue;
+            }
             $tabs[$index]['sub_tabs'] = array_values($this->getTabs($tab['id_tab'], $level + 1));
 
             $subTabHref = $this->getTabLinkFromSubTabs($tabs[$index]['sub_tabs']);
@@ -2555,17 +2572,17 @@ class AdminControllerCore extends Controller
         $helper->simple_header = $this->list_simple_header;
         $helper->bulk_actions = $this->bulk_actions;
         $helper->currentIndex = self::$currentIndex;
-        if (isset($helper->className)) {
+        if ($helper->className === null) {
             $helper->className = $this->className;
         }
         $helper->table = $this->table;
-        if (isset($helper->name_controller)) {
+        if ($helper->name_controller === null) {
             $helper->name_controller = Tools::getValue('controller');
         }
         $helper->orderBy = $this->_orderBy;
         $helper->orderWay = $this->_orderWay;
         $helper->listTotal = $this->_listTotal;
-        if (isset($helper->shopLink)) {
+        if ($helper->shopLink === null) {
             $helper->shopLink = $this->shopLink;
         }
         $helper->shopLinkType = $this->shopLinkType;
@@ -2580,15 +2597,15 @@ class AdminControllerCore extends Controller
         $helper->ajax_params = isset($this->ajax_params) ? $this->ajax_params : null;
         // @phpstan-ignore-next-line
         $helper->default_form_language = $this->default_form_language;
-        if (isset($helper->allow_employee_form_lang)) {
+        if ($helper->allow_employee_form_lang === null) {
             $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
         }
-        if (isset($helper->multiple_fieldsets)) {
+        if ($helper->multiple_fieldsets === null) {
             $helper->multiple_fieldsets = $this->multiple_fieldsets;
         }
         $helper->row_hover = $this->row_hover;
         $helper->position_identifier = $this->position_identifier;
-        if (isset($helper->position_group_identifier)) {
+        if ($helper->position_group_identifier === null) {
             $helper->position_group_identifier = $this->position_group_identifier;
         }
         // @phpstan-ignore-next-line
@@ -2718,12 +2735,11 @@ class AdminControllerCore extends Controller
     {
         @trigger_error(__FUNCTION__ . 'is deprecated. Use AdminController::trans instead.', E_USER_DEPRECATED);
 
-        $parameters = [];
-        if ($htmlentities) {
-            $parameters['legacy'] = 'htmlspecialchars';
+        if ($htmlentities === true) {
+            return htmlspecialchars($this->translator->trans($string, []), ENT_NOQUOTES);
         }
 
-        return $this->translator->trans($string, $parameters);
+        return $this->translator->trans($string, []);
     }
 
     /**
