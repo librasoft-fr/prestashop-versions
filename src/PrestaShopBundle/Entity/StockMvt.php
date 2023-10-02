@@ -84,21 +84,21 @@ class StockMvt
     /**
      * @var string
      *
-     * @ORM\Column(name="employee_lastname", type="string", length=32, nullable=true)
+     * @ORM\Column(name="employee_lastname", type="string", length=255, nullable=true)
      */
     private $employeeLastname = '';
 
     /**
      * @var string
      *
-     * @ORM\Column(name="employee_firstname", type="string", length=32, nullable=true)
+     * @ORM\Column(name="employee_firstname", type="string", length=255, nullable=true)
      */
     private $employeeFirstname = '';
 
     /**
      * @var int
      *
-     * @ORM\Column(name="physical_quantity", type="integer", nullable=false)
+     * @ORM\Column(name="physical_quantity", type="integer", nullable=false, options={"unsigned":true})
      */
     private $physicalQuantity;
 

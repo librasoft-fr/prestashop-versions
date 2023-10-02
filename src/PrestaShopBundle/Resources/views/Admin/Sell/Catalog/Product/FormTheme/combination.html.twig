@@ -49,13 +49,16 @@
 
     {# Combination generator in a modal #}
     <div id="product_combinations_generator"
+         data-is-multi-store-active="{{ isMultiStoreActive }}"
          data-translations="{{ {
            'generator.open': 'Open combinations generator'|trans({}, 'Admin.Catalog.Feature'),
-           'generator.success': 'Successfully generated %combinationsNb% combinations.'|trans({}, 'Admin.Catalog.Feature'),
-           'generator.action': 'Generate combinations|Generate combination|Generate %combinationsNb% combinations'|trans({}, 'Admin.Catalog.Feature'),
+           'generator.success': 'Successfully generated {combinationsNb} combinations.'|trans({}, 'Admin.Catalog.Feature'),
+           'generator.action': 'Generate combinations|Generate combination|Generate {combinationsNb} combinations'|trans({}, 'Admin.Catalog.Feature'),
+           'generator.select-all': 'Select all values ({valuesNb})'|trans({}, 'Admin.Catalog.Feature'),
            'search.placeholder': 'Search for attributes...'|trans({}, 'Admin.Catalog.Feature'),
            'modal.title': 'Generate combinations'|trans({}, 'Admin.Catalog.Feature'),
            'modal.close': 'Cancel'|trans({}, 'Admin.Actions'),
+           'label.apply-to-all-shops': 'Generate combinations for all stores'|trans({}, 'Admin.Global'),
          }|json_encode }}"
     ></div>
 

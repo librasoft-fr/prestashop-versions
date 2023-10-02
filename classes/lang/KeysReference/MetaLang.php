@@ -24,9 +24,9 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 trans('404 error', 'Shop.Navigation');
-trans('Best sales', 'Shop.Navigation');
+trans('Best sellers', 'Shop.Navigation');
 trans('Contact us', 'Shop.Navigation');
-trans('Manufacturers', 'Shop.Navigation');
+trans('Brands', 'Shop.Navigation');
 trans('New products', 'Shop.Navigation');
 trans('Forgot your password', 'Shop.Navigation');
 trans('Prices drop', 'Shop.Navigation');
@@ -54,28 +54,26 @@ trans('Our best sales', 'Shop.Navigation');
 
 trans('Use our form to contact us', 'Shop.Navigation');
 
-trans('Shop powered by PrestaShop', 'Shop.Navigation');
-
-trans('Brand list', 'Shop.Navigation');
+trans('Brands list', 'Shop.Navigation');
 
 trans('Our new products', 'Shop.Navigation');
 
 trans('Enter the e-mail address you use to sign in to receive an e-mail with a new password', 'Shop.Navigation');
 
-trans('On-sale products', 'Shop.Navigation');
+trans('Our special products', 'Shop.Navigation');
 
 trans('Lost ? Find what your are looking for', 'Shop.Navigation');
 
 trans('Suppliers list', 'Shop.Navigation');
 trans('page-not-found', 'Shop.Navigation');
-trans('best-sales', 'Shop.Navigation');
+trans('best-sellers', 'Shop.Navigation');
 trans('contact-us', 'Shop.Navigation');
-trans('manufacturers', 'Shop.Navigation');
+trans('brands', 'Shop.Navigation');
 trans('new-products', 'Shop.Navigation');
 trans('password-recovery', 'Shop.Navigation');
 trans('prices-drop', 'Shop.Navigation');
 trans('sitemap', 'Shop.Navigation');
-trans('supplier', 'Shop.Navigation');
+trans('suppliers', 'Shop.Navigation');
 trans('address', 'Shop.Navigation');
 trans('addresses', 'Shop.Navigation');
 trans('login', 'Shop.Navigation');

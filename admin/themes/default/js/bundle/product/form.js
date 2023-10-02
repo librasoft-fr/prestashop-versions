@@ -1874,7 +1874,8 @@ window.priceCalculation = (function () {
           ps_round(price - getEcotaxTaxIncluded(),
             displayPricePrecision,
           ),
-          rates, computationMethod),
+          rates,
+          computationMethod),
         displayPricePrecision,
       );
     },
@@ -2212,7 +2213,13 @@ window.seo = (function () {
   /** Hide or show the input product selector */
   function hideShowRedirectToProduct() {
     redirectTypeValue = redirectTypeElem.val();
-    if (redirectTypeValue === '404' || redirectTypeValue === '410') {
+    if (redirectTypeValue === '404'
+      || redirectTypeValue === '410'
+      || redirectTypeValue === 'default'
+      || redirectTypeValue === '200-displayed'
+      || redirectTypeValue === '404-displayed'
+      || redirectTypeValue === '410-displayed'
+    ) {
       $('#id-product-redirected').hide();
     } else {
       updateRemoteUrl();

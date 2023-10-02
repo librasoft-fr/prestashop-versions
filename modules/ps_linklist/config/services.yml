@@ -117,6 +117,7 @@ services:
         - 'sitemap'
         - 'stores'
         - 'authentication'
+        - 'registration'
         - 'my-account'
 
   # Form types
@@ -154,3 +155,18 @@ services:
 
   prestashop.module.link_block.adapter.object_model_handler:
     class: 'PrestaShop\Module\LinkList\Adapter\ObjectModelHandler'
+
+  PrestaShop\Module\LinkList\Form\Type\TranslateCustomUrlType:
+    parent: 'form.type.translatable.aware'
+    public: true
+    arguments:
+      - "@=service('prestashop.adapter.legacy.context').getAvailableLanguages()"
+      - '@router.default'
+      - "@=service('prestashop.adapter.legacy.configuration').getBoolean('PS_BO_ALLOW_EMPLOYEE_FORM_LANG')"
+      - "@=service('prestashop.adapter.legacy.context').getContext().cookie.employee_form_lang"
+      - "@=service('prestashop.adapter.legacy.configuration').getInt('PS_LANG_DEFAULT')"
+    tags:
+      - { name: form.type }
+
+  PrestaShop\Module\LinkList\Controller\Admin\Improve\Design\LinkBlockController:
+    autowire: true

@@ -156,6 +156,13 @@ class HookCore extends ObjectModel
         return $hookNamesByAlias[$loweredName] ?? $hookName;
     }
 
+    /**
+     * Return true if the hook name starts with "display"
+     *
+     * @param string $hook_name The name of the hook to check
+     *
+     * @return bool
+     */
     public static function isDisplayHookName($hook_name)
     {
         $hook_name = strtolower(static::normalizeHookName($hook_name));
@@ -222,6 +229,8 @@ class HookCore extends ObjectModel
 
     /**
      * Return hook ID from name.
+     *
+     * @return string Hook name
      *
      * @throws PrestaShopObjectNotFoundException
      */
@@ -584,12 +593,13 @@ class HookCore extends ObjectModel
             $shop_list_employee = Shop::getShops(true, null, true);
 
             foreach ($shop_list as $shop_id) {
-                // Check if already registered
-                $sql = 'SELECT hm.`id_module`
-                    FROM `' . _DB_PREFIX_ . 'hook_module` hm, `' . _DB_PREFIX_ . 'hook` h
-                    WHERE hm.`id_module` = ' . (int) $module_instance->id . ' AND h.`id_hook` = ' . $id_hook . '
-                    AND h.`id_hook` = hm.`id_hook` AND `id_shop` = ' . (int) $shop_id;
-                if (Db::getInstance()->getRow($sql)) {
+                $isModuleAlreadyRegisteredOnHook = static::isModuleRegisteredOnHook(
+                    $module_instance,
+                    $hook_name,
+                    (int) $shop_id
+                );
+
+                if ($isModuleAlreadyRegisteredOnHook) {
                     continue;
                 }
 
@@ -1090,10 +1100,11 @@ class HookCore extends ObjectModel
                     'module_shop.enable_device & ' . (int) Context::getContext()->getDevice()
                 )
             );
+        } else {
+            $sql->innerJoin('module_shop', 'module_shop', 'module_shop.`id_module` = m.`id_module`');
         }
         $sql->innerJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`');
         $sql->innerJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`');
-        $sql->innerJoin('module_shop', 'mshop', 'mshop.`id_module` = m.`id_module`');
         if ($hookName !== 'paymentOptions') {
             $sql->where('h.`name` != "paymentOptions"');
         } elseif ($frontend) {

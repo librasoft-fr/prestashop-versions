@@ -38,10 +38,12 @@ use Symfony\Component\Form\Extension\Core\Type as FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * This form class is responsible to generate the product price form.
  */
 class ProductPrice extends CommonAbstractType
@@ -253,7 +255,7 @@ class ProductPrice extends CommonAbstractType
 
         //generates fields for price priority
         $specificPricePriorityChoices = [
-            $this->translator->trans('Shop', [], 'Admin.Global') => 'id_shop',
+            $this->translator->trans('Store', [], 'Admin.Global') => 'id_shop',
             $this->translator->trans('Currency', [], 'Admin.Global') => 'id_currency',
             $this->translator->trans('Country', [], 'Admin.Global') => 'id_country',
             $this->translator->trans('Group', [], 'Admin.Global') => 'id_group',

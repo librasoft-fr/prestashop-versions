@@ -32,6 +32,7 @@ use PrestaShop\PrestaShop\Core\Feature\TokenInUrls;
 use PrestaShop\PrestaShop\Core\Localization\Locale;
 use PrestaShop\PrestaShop\Core\Localization\Specification\Number as NumberSpecification;
 use PrestaShop\PrestaShop\Core\Localization\Specification\Price as PriceSpecification;
+use PrestaShop\PrestaShop\Core\Util\ColorBrightnessCalculator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
@@ -400,7 +401,7 @@ class AdminControllerCore extends Controller
     /** @var array */
     protected $list_partners_modules = [];
 
-    /** @var array */
+    /** @var array<string, string|array> */
     public $modals = [];
 
     /** @var bool if logged employee has access to AdminImport */
@@ -491,12 +492,12 @@ class AdminControllerCore extends Controller
 
         $this->_conf = [
             1 => $this->trans('Successful deletion', [], 'Admin.Notifications.Success'),
-            2 => $this->trans('The selection has been successfully deleted', [], 'Admin.Notifications.Success'),
+            2 => $this->trans('The selection has been successfully deleted.', [], 'Admin.Notifications.Success'),
             3 => $this->trans('Successful creation', [], 'Admin.Notifications.Success'),
             4 => $this->trans('Successful update', [], 'Admin.Notifications.Success'),
             5 => $this->trans('The status has been successfully updated.', [], 'Admin.Notifications.Success'),
             6 => $this->trans('The settings have been successfully updated.', [], 'Admin.Notifications.Success'),
-            7 => $this->trans('The image was successfully deleted.', [], 'Admin.Notifications.Success'),
+            7 => $this->trans('Image successfully deleted.', [], 'Admin.Notifications.Success'),
             8 => $this->trans('The module was successfully downloaded.', [], 'Admin.Modules.Notification'),
             9 => $this->trans('The thumbnails were successfully regenerated.', [], 'Admin.Notifications.Success'),
             10 => $this->trans('The message was successfully sent to the customer.', [], 'Admin.Orderscustomers.Notification'),
@@ -671,6 +672,8 @@ class AdminControllerCore extends Controller
 
                 break;
         }
+
+        Hook::exec('actionAdminBreadcrumbModifier', ['tabs' => $tabs, 'breadcrumb' => &$breadcrumbs2], null, true);
 
         $this->context->smarty->assign([
             'breadcrumbs2' => $breadcrumbs2,
@@ -1762,7 +1765,7 @@ class AdminControllerCore extends Controller
                 return $this->object;
             }
             // throw exception
-            $this->errors[] = $this->trans('The object cannot be loaded (or found)', [], 'Admin.Notifications.Error');
+            $this->errors[] = $this->trans('The object cannot be loaded (or found).', [], 'Admin.Notifications.Error');
 
             return false;
         } elseif ($opt) {
@@ -2019,6 +2022,8 @@ class AdminControllerCore extends Controller
         }
 
         $tabs = $this->getTabs();
+        Hook::exec('actionAdminMenuTabsModifier', ['tabs' => &$tabs], null, true);
+
         $currentTabLevel = 0;
         foreach ($tabs as $tab) {
             $currentTabLevel = isset($tab['current_level']) ? $tab['current_level'] : $currentTabLevel;
@@ -2032,7 +2037,7 @@ class AdminControllerCore extends Controller
             $this->context->smarty->assign([
                 'help_box' => Configuration::get('PS_HELPBOX'),
                 'round_mode' => Configuration::get('PS_PRICE_ROUND_MODE'),
-                'brightness' => Tools::getBrightness($bo_color) < 128 ? 'white' : '#383838',
+                'brightness' => (new ColorBrightnessCalculator())->isBright($bo_color) ? '#383838' : 'white',
                 'bo_width' => (int) $this->context->employee->bo_width,
                 'bo_color' => isset($this->context->employee->bo_color) ? Tools::htmlentitiesUTF8($this->context->employee->bo_color) : null,
                 'show_new_orders' => Configuration::get('PS_SHOW_NEW_ORDERS') && isset($accesses['AdminOrders']) && $accesses['AdminOrders']['view'],
@@ -2074,7 +2079,7 @@ class AdminControllerCore extends Controller
             'full_cldr_language_code' => $this->context->getCurrentLocale()->getCode(),
             'link' => $this->context->link,
             'shop_name' => Configuration::get('PS_SHOP_NAME'),
-            'base_url' => $this->context->shop->getBaseURL(true),
+            'base_url' => $this->context->shop->getBaseURL(),
             'current_parent_id' => (int) Tab::getCurrentParentId(),
             'tabs' => $tabs,
             'current_tab_level' => $currentTabLevel,
@@ -2262,6 +2267,7 @@ class AdminControllerCore extends Controller
 
         $this->context->smarty->assign([
             'maintenance_mode' => !(bool) Configuration::get('PS_SHOP_ENABLE'),
+            'maintenance_allow_admins' => (bool) Configuration::get('PS_MAINTENANCE_ALLOW_ADMINS'),
             'debug_mode' => (bool) _PS_MODE_DEV_,
             'lite_display' => $this->lite_display,
             'url_post' => self::$currentIndex . '&token=' . $this->token,
@@ -2676,16 +2682,32 @@ class AdminControllerCore extends Controller
                 $this->addJS(_PS_JS_DIR_ . 'admin/notifications.js');
             }
 
-            // Specific Admin Theme
-            $this->addCSS(__PS_BASE_URI__ . $this->admin_webpath . '/themes/' . $this->bo_theme . '/css/overrides.css', 'all', PHP_INT_MAX);
+            $username = $this->get('prestashop.user_provider')->getUsername();
+            $token = $this->get('security.csrf.token_manager')
+                ->getToken($username)
+                ->getValue();
+
+            $this->context->smarty->assign([
+                'js_router_metadata' => [
+                    'base_url' => __PS_BASE_URI__ . basename(_PS_ADMIN_DIR_),
+                    'token' => $token,
+                ],
+            ]);
         }
 
+        // Specific Admin Theme
+        $this->addCSS(__PS_BASE_URI__ . $this->admin_webpath . '/themes/' . $this->bo_theme . '/css/overrides.css', 'all', PHP_INT_MAX);
+
+        $this->addCSS(__PS_BASE_URI__ . $this->admin_webpath . '/themes/new-theme/public/create_product_default_theme.css', 'all', 0);
         $this->addJS([
             _PS_JS_DIR_ . 'admin.js?v=' . _PS_VERSION_, // TODO: SEE IF REMOVABLE
             __PS_BASE_URI__ . $this->admin_webpath . '/themes/new-theme/public/cldr.bundle.js',
             _PS_JS_DIR_ . 'tools.js?v=' . _PS_VERSION_,
             __PS_BASE_URI__ . $this->admin_webpath . '/public/bundle.js',
         ]);
+
+        // This is handled as an external common dependency for both themes, but once new-theme is the only one it should be integrated directly into the main.bundle.js file
+        $this->addJS(__PS_BASE_URI__ . $this->admin_webpath . '/themes/new-theme/public/create_product.bundle.js');
 
         Media::addJsDef([
             'changeFormLanguageUrl' => $this->context->link->getAdminLink(
@@ -2913,7 +2935,7 @@ class AdminControllerCore extends Controller
 
         // Replace current default country
         $this->context->country = new Country((int) Configuration::get('PS_COUNTRY_DEFAULT'));
-        $this->context->currency = new Currency((int) Configuration::get('PS_CURRENCY_DEFAULT'));
+        $this->context->currency = Currency::getDefaultCurrency();
     }
 
     /**
@@ -4292,7 +4314,7 @@ class AdminControllerCore extends Controller
             $obj = new $module->name();
         }
         // Fill module data
-        $module->logo = '../../img/questionmark.png';
+        $module->logo = '../../img/module/default.png';
 
         if (@filemtime(_PS_ROOT_DIR_ . DIRECTORY_SEPARATOR . basename(_PS_MODULE_DIR_) . DIRECTORY_SEPARATOR . $module->name
             . DIRECTORY_SEPARATOR . 'logo.gif')) {

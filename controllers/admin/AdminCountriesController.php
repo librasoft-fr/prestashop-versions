@@ -153,6 +153,11 @@ class AdminCountriesControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return string|void
+     *
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         if (!($obj = $this->loadObject(true))) {
@@ -246,7 +251,7 @@ class AdminCountriesControllerCore extends AdminController
                 ],
                 [
                     'type' => 'switch',
-                    'label' => $this->trans('Does it need Zip/Postal code?', [], 'Admin.International.Feature'),
+                    'label' => $this->trans('Does it need a ZIP/Postal code?', [], 'Admin.International.Feature'),
                     'name' => 'need_zip_code',
                     'required' => false,
                     'is_bool' => true,
@@ -265,7 +270,7 @@ class AdminCountriesControllerCore extends AdminController
                 ],
                 [
                     'type' => 'text',
-                    'label' => $this->trans('Zip/Postal code format', [], 'Admin.International.Feature'),
+                    'label' => $this->trans('ZIP/Postal code format', [], 'Admin.International.Feature'),
                     'name' => 'zip_code_format',
                     'required' => true,
                     'desc' => $this->trans('Indicate the format of the postal code: use L for a letter, N for a number, and C for the country\'s ISO 3166-1 alpha-2 code. For example, NNNNN for the United States, France, Poland and many other; LNNNNLLL for Argentina, etc. If you do not want PrestaShop to verify the postal code for this country, leave it blank.', [], 'Admin.International.Help'),
@@ -359,7 +364,7 @@ class AdminCountriesControllerCore extends AdminController
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
                 'type' => 'shop',
-                'label' => $this->trans('Shop association', [], 'Admin.Global'),
+                'label' => $this->trans('Store association', [], 'Admin.Global'),
                 'name' => 'checkBoxShopAsso',
             ];
         }
@@ -449,6 +454,11 @@ class AdminCountriesControllerCore extends AdminController
         return $country;
     }
 
+    /**
+     * @return bool|ObjectModel|null
+     *
+     * @throws PrestaShopException
+     */
     public function processStatus()
     {
         parent::processStatus();
@@ -464,6 +474,8 @@ class AdminCountriesControllerCore extends AdminController
 
     /**
      * Allow the assignation of zone only if the form is displayed.
+     *
+     * @return bool|void
      */
     protected function processBulkAffectZone()
     {

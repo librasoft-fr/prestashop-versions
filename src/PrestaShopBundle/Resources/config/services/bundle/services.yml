@@ -46,6 +46,7 @@ services:
     class: PrestaShopBundle\Service\ProductService
     arguments:
       - "@prestashop.adapter.data_provider.product"
+    deprecated: ~
 
   prestashop.service.translation:
     class: PrestaShopBundle\Service\TranslationService
@@ -61,9 +62,9 @@ services:
     class: PrestaShop\PrestaShop\Adapter\Hook\HookDispatcher
     arguments:
       - '@request_stack'
-    calls:
-      - [ addSubscriber, [ "@prestashop.adapter.legacy.hook.subscriber" ] ]
-      - [ addSubscriber, [ "@prestashop.adapter.legacy.block.helper.subscriber" ] ]
+      - !tagged core.legacy.hook.subscriber
+      - '@prestashop.hooks_registry'
+      - '@=service("prestashop.adapter.environment").isDebug()'
 
   prestashop.hook.finder:
     class: PrestaShopBundle\Service\Hook\HookFinder
@@ -95,6 +96,13 @@ services:
   PrestaShopBundle\DependencyInjection\RuntimeConstEnvVarProcessor:
     public: false
     tags: [ 'container.env_var_processor' ]
+
+  PrestaShopBundle\Api\StateProvider\HookStatusProvider:
+    tags: [ 'api_platform.state_provider' ]
+    public: false
+    autowire: true
+    arguments:
+      - '@prestashop.core.query_bus'
 
   PrestaShopBundle\Security\Admin\SessionRenewer:
     arguments:

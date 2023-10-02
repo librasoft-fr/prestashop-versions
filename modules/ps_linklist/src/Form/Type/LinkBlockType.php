@@ -22,16 +22,16 @@ namespace PrestaShop\Module\LinkList\Form\Type;
 
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 use PrestaShopBundle\Form\Admin\Type\ShopChoiceTreeType;
-use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
+use PrestaShopBundle\Form\Admin\Type\TranslatableType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LinkBlockType extends TranslatorAwareType
 {
@@ -108,7 +108,7 @@ class LinkBlockType extends TranslatorAwareType
     {
         $builder
             ->add('id_link_block', HiddenType::class)
-            ->add('block_name', TranslateTextType::class, [
+            ->add('block_name', TranslatableType::class, [
                 'locales' => $this->locales,
                 'required' => true,
                 'label' => $this->trans('Name of the block', 'Modules.Linklist.Admin'),

@@ -5,7 +5,9 @@ services:
   prestashop.utils.zip_manager:
     class: PrestaShopBundle\Utils\ZipManager
 
+  PrestaShopBundle\Utils\FloatParser:
+    autowire: true
+
   prestashop.utils.float_parser:
-    class: PrestaShopBundle\Utils\FloatParser
-    arguments:
-      - '@prestashop.core.util.arabic_to_latin_digit_converter'
+    alias: PrestaShopBundle\Utils\FloatParser
+    deprecated: ~

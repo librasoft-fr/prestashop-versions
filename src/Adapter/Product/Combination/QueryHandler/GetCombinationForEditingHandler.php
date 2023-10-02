@@ -31,13 +31,13 @@ namespace PrestaShop\PrestaShop\Adapter\Product\Combination\QueryHandler;
 use Combination;
 use PrestaShop\Decimal\DecimalNumber;
 use PrestaShop\PrestaShop\Adapter\Attribute\Repository\AttributeRepository;
-use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\PrestaShop\Adapter\Product\Combination\Repository\CombinationRepository;
 use PrestaShop\PrestaShop\Adapter\Product\Image\ProductImagePathFactory;
 use PrestaShop\PrestaShop\Adapter\Product\Image\Repository\ProductImageRepository;
 use PrestaShop\PrestaShop\Adapter\Product\Repository\ProductRepository;
 use PrestaShop\PrestaShop\Adapter\Product\Stock\Repository\StockAvailableRepository;
 use PrestaShop\PrestaShop\Adapter\Tax\TaxComputer;
+use PrestaShop\PrestaShop\Core\Domain\Configuration\ShopConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Domain\Country\ValueObject\CountryId;
 use PrestaShop\PrestaShop\Core\Domain\Language\ValueObject\LanguageId;
 use PrestaShop\PrestaShop\Core\Domain\Product\Combination\Query\GetCombinationForEditing;
@@ -50,6 +50,7 @@ use PrestaShop\PrestaShop\Core\Domain\Product\Combination\ValueObject\Combinatio
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\ValueObject\ImageId;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
 use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopId;
 use PrestaShop\PrestaShop\Core\Domain\TaxRulesGroup\ValueObject\TaxRulesGroupId;
 use PrestaShop\PrestaShop\Core\Product\Combination\NameBuilder\CombinationNameBuilderInterface;
 use PrestaShop\PrestaShop\Core\Util\DateTime\DateTime as DateTimeUtil;
@@ -107,7 +108,7 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
     private $taxComputer;
 
     /**
-     * @var Configuration
+     * @var ShopConfigurationInterface
      */
     private $configuration;
 
@@ -126,7 +127,7 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
      * @param NumberExtractor $numberExtractor
      * @param TaxComputer $taxComputer
      * @param int $contextLanguageId
-     * @param Configuration $configuration
+     * @param ShopConfigurationInterface $configuration
      * @param ProductImagePathFactory $productImageUrlFactory
      */
     public function __construct(
@@ -139,7 +140,7 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
         NumberExtractor $numberExtractor,
         TaxComputer $taxComputer,
         int $contextLanguageId,
-        Configuration $configuration,
+        ShopConfigurationInterface $configuration,
         ProductImagePathFactory $productImageUrlFactory
     ) {
         $this->combinationRepository = $combinationRepository;
@@ -160,10 +161,10 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
      */
     public function handle(GetCombinationForEditing $query): CombinationForEditing
     {
-        $combination = $this->combinationRepository->get($query->getCombinationId());
+        $shopConstraint = $query->getShopConstraint();
+        $combination = $this->combinationRepository->getByShopConstraint($query->getCombinationId(), $shopConstraint);
         $productId = new ProductId((int) $combination->id_product);
-        $defaultCombinationId = $this->combinationRepository->getDefaultCombinationId($productId);
-        $product = $this->productRepository->get($productId);
+        $product = $this->productRepository->getByShopConstraint($productId, $query->getShopConstraint());
         $images = $this->getImages($combination);
 
         return new CombinationForEditing(
@@ -174,8 +175,8 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
             $this->getPrices($combination, $product),
             $this->getStock($combination),
             $images,
-            $this->getCoverUrl($images, $productId),
-            $defaultCombinationId && $defaultCombinationId->getValue() === (int) $combination->id
+            $this->getCoverUrl($images, $productId, $shopConstraint),
+            (bool) $combination->default_on
         );
     }
 
@@ -277,7 +278,10 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
      */
     private function getStock(Combination $combination): CombinationStock
     {
-        $stockAvailable = $this->stockAvailableRepository->getForCombination(new Combinationid($combination->id));
+        $stockAvailable = $this->stockAvailableRepository->getForCombination(
+            new Combinationid($combination->id),
+            new ShopId($combination->getShopId())
+        );
 
         return new CombinationStock(
             (int) $stockAvailable->quantity,
@@ -285,7 +289,9 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
             (int) $combination->low_stock_threshold,
             (bool) $combination->low_stock_alert,
             $stockAvailable->location,
-            DateTimeUtil::buildDateTimeOrNull($combination->available_date)
+            DateTimeUtil::buildDateTimeOrNull($combination->available_date),
+            (array) $combination->available_now,
+            (array) $combination->available_later
         );
     }
 
@@ -298,7 +304,7 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
     {
         $combinationIdValue = (int) $combination->id;
         $combinationId = new CombinationId($combinationIdValue);
-        $combinationImageIds = $this->productImageRepository->getImagesIdsForCombinations([$combinationId]);
+        $combinationImageIds = $this->productImageRepository->getImageIdsForCombinations([$combinationId]);
 
         if (empty($combinationImageIds[$combinationIdValue])) {
             return [];
@@ -315,13 +321,13 @@ class GetCombinationForEditingHandler implements GetCombinationForEditingHandler
      *
      * @return string
      */
-    private function getCoverUrl(array $imageIds, ProductId $productId): string
+    private function getCoverUrl(array $imageIds, ProductId $productId, ShopConstraint $shopConstraint): string
     {
         if (!empty($imageIds)) {
             return $this->productImageUrlFactory->getPathByType(new ImageId((int) $imageIds[0]), ProductImagePathFactory::IMAGE_TYPE_CART_DEFAULT);
         }
 
-        $productImageIds = $this->productImageRepository->getImagesIds($productId);
+        $productImageIds = $this->productImageRepository->getImageIds($productId, $shopConstraint);
         if (!empty($productImageIds)) {
             return $this->productImageUrlFactory->getPathByType($productImageIds[0], ProductImagePathFactory::IMAGE_TYPE_CART_DEFAULT);
         }

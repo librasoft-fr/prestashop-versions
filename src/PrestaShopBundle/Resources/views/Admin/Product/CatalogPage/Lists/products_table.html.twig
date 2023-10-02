@@ -104,7 +104,6 @@
             {% include '@PrestaShop/Admin/Helpers/range_inputs.html.twig' with {
               'input_name': "filter_column_id_product",
               'min': '0',
-              'max': '1000000',
               'minLabel': "Min"|trans({}, 'Admin.Global'),
               'maxLabel': "Max"|trans({}, 'Admin.Global'),
               'value': filter_column_id_product,
@@ -186,7 +185,7 @@
           {% if has_category_filter == true %}
             <td>
               {% if not(activate_drag_and_drop) %}
-                <input type="button" class="btn btn-outline-secondary" name="products_filter_position_asc" value="{{ "Reorder"|trans({}, 'Admin.Actions') }}" onclick="productOrderPrioritiesTable();" />
+                <input type="button" class="btn btn-outline-secondary" name="products_filter_position_asc" value="{{ "Rearrange"|trans({}, 'Admin.Actions') }}" onclick="productOrderPrioritiesTable();" />
                 {% else %}
                 <input type="button" id="bulk_edition_save_keep" class="btn" onclick="bulkProductAction(this, 'edition');" value="{{ "Save & refresh"|trans({}, 'Admin.Actions')|raw }}" />
               {% endif %}

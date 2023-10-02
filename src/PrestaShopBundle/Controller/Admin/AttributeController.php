@@ -26,12 +26,15 @@
 
 namespace PrestaShopBundle\Controller\Admin;
 
+use PrestaShop\PrestaShop\Adapter\Attribute\AdminAttributeGeneratorControllerWrapper;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use Product;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * Admin controller for the attribute / attribute group.
  */
 class AttributeController extends FrameworkBundleAdminController
@@ -130,7 +133,7 @@ class AttributeController extends FrameworkBundleAdminController
         }
 
         //create attributes
-        $this->get('prestashop.adapter.admin.controller.attribute_generator')->processGenerate($product, $newOptions);
+        $this->get(AdminAttributeGeneratorControllerWrapper::class)->processGenerate($product, $newOptions);
 
         //get all product combinations
         $allCombinations = $product->getAttributeCombinations(1, false);
@@ -222,7 +225,7 @@ class AttributeController extends FrameworkBundleAdminController
         if ($request->request->has('attribute-ids')) {
             $attributeIds = $request->request->get('attribute-ids');
             foreach ($attributeIds as $attributeId) {
-                $legacyResponse = $this->get('prestashop.adapter.admin.controller.attribute_generator')
+                $legacyResponse = $this->get(AdminAttributeGeneratorControllerWrapper::class)
                     ->ajaxProcessDeleteProductAttribute($attributeId, $idProduct);
             }
 
@@ -261,7 +264,7 @@ class AttributeController extends FrameworkBundleAdminController
         $res = false;
 
         foreach ($combinations as $combination) {
-            $res = $this->get('prestashop.adapter.admin.controller.attribute_generator')
+            $res = $this->get(AdminAttributeGeneratorControllerWrapper::class)
                 ->ajaxProcessDeleteProductAttribute($combination['id_product_attribute'], $idProduct);
 
             if ($res['status'] == 'error') {

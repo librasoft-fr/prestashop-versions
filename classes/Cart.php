@@ -268,6 +268,9 @@ class CartCore extends ObjectModel
         if (!$this->id_shop) {
             $this->id_shop = Context::getContext()->shop->id;
         }
+        if (!$this->id_shop_group) {
+            $this->id_shop_group = Context::getContext()->shop->id_shop_group;
+        }
 
         $return = parent::add($autoDate, $nullValues);
         Hook::exec('actionCartSave', ['cart' => $this]);
@@ -505,7 +508,7 @@ class CartCore extends ObjectModel
             $row['value_tax_exc'] = $row['obj']->getContextualValue(false, $virtual_context, $filter);
             // Retro compatibility < 1.5.0.2
             $row['id_discount'] = $row['id_cart_rule'];
-            $row['description'] = $row['name'];
+            $row['description'] = $row['obj']->description;
         }
 
         return $result;
@@ -4571,12 +4574,13 @@ class CartCore extends ObjectModel
     public function setWsCartRows($values)
     {
         if ($this->deleteAssociations()) {
-            $query = 'INSERT INTO `' . _DB_PREFIX_ . 'cart_product`(`id_cart`, `id_product`, `id_product_attribute`, `id_address_delivery`, `quantity`, `date_add`, `id_shop`) VALUES ';
+            $query = 'INSERT INTO `' . _DB_PREFIX_ . 'cart_product`(`id_cart`, `id_product`, `id_product_attribute`, `id_address_delivery`, `id_customization`, `quantity`, `date_add`, `id_shop`) VALUES ';
 
             foreach ($values as $value) {
                 $query .= '(' . (int) $this->id . ', ' . (int) $value['id_product'] . ', ' .
                     (isset($value['id_product_attribute']) ? (int) $value['id_product_attribute'] : 'NULL') . ', ' .
                     (isset($value['id_address_delivery']) ? (int) $value['id_address_delivery'] : 0) . ', ' .
+                    (isset($value['id_customization']) ? (int) $value['id_customization'] : 0) . ', ' .
                     (int) $value['quantity'] . ', NOW(), ' . (int) Context::getContext()->shop->id . '),';
             }
 

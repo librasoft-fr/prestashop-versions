@@ -65,7 +65,6 @@ class RequestSqlCore extends ObjectModel
             'RESET', 'START', 'STOP', 'PURGE', 'EXECUTE', 'PREPARE', 'DEALLOCATE', 'LOCK', 'USING', 'DROP', 'FOR', 'UPDATE', 'BEGIN', 'BY', 'ALL', 'SHARE',
             'MODE', 'TO', 'KEY', 'DISTINCTROW', 'DISTINCT',  'HIGH_PRIORITY', 'LOW_PRIORITY', 'DELAYED', 'IGNORE', 'FORCE', 'STRAIGHT_JOIN',
             'SQL_SMALL_RESULT', 'SQL_BIG_RESULT', 'QUICK', 'SQL_BUFFER_RESULT', 'SQL_CACHE', 'SQL_NO_CACHE', 'SQL_CALC_FOUND_ROWS', 'WITH',
-            'OUTFILE', 'DUMPFILE',
         ],
     ];
 
@@ -665,7 +664,7 @@ class RequestSqlCore extends ObjectModel
      */
     public function checkedLimit($limit)
     {
-        if (!preg_match('#^[0-9]+$#', trim($limit['start'])) || !preg_match('#^[0-9]+$#', trim($limit['end']))) {
+        if (!preg_match('#^[0-9]+$#', trim($limit['offset'])) || !preg_match('#^[0-9]+$#', trim($limit['rowcount']))) {
             $this->error_sql['checkedLimit'] = false;
 
             return false;

@@ -136,8 +136,7 @@ class ModuleManagerBuilder
                     self::$adminModuleDataProvider,
                     self::$cacheProvider,
                     new HookManager(),
-                    _PS_MODULE_DIR_,
-                    Context::getContext()->language->id
+                    _PS_MODULE_DIR_
                 );
             }
         }

@@ -24,18 +24,24 @@
  */
 
 const combinationListFormId = '#combination_list';
-const attachmentsBlockId = '#product_specifications_attachments';
+const attachmentsBlockId = '#product_details_attachments';
 // It does not include "#" so it can be selected by getElementById
 const isSelectedCombinationClass = 'combination-is-selected';
 const commonBulkSelectAllClass = 'bulk-select-all';
 const bulkCombinationSelectAllInPageId = 'bulk-select-all-in-page';
 const progressModalId = 'bulk-combination-progress-modal';
+const shopPreviewRowClass = 'shop-preview-row';
 
 export default {
   productForm: 'form[name=product]',
   productLocalizedNameInput: 'input[name^="product[header][name]"]',
+  productNameLocaleSelector: '.header-name .js-locale-btn',
   productLocalizedLinkRewriteInput: 'input[name^="product[seo][link_rewrite]"]',
   productTypePreview: '.product-type-preview',
+  summaryTotalQuantityContainer: '.product-field-preview[data-role="quantity"]',
+  summaryTotalQuantity: '.product-field-preview[data-role="quantity"] .product-total-quantity',
+  summaryTotalQuantityLabel: '.product-field-preview[data-role="quantity"] .product-total-quantity-label',
+  onlineSwitch: '#product_header_active input',
   productType: {
     headerSelector: '#product_header_type',
     headerPreviewButton: '.product-type-preview',
@@ -54,11 +60,37 @@ export default {
   create: {
     newProductButton: '.new-product-button',
     createModalSelector: '#create_product_type',
+    modalId: 'modal-create-product',
+    form: 'form.product-form',
+    createFieldId: '#create_product',
+    modalSizeContainer: '.create-product-form',
+  },
+  shops: {
+    modalButtons: 'a.product-shops-action',
+    modalId: 'modal-product-shops',
+    form: 'form[name="product_shops"]',
+    modalSizeContainer: '.product-shops-form',
+    cancelButton: '#product_shops_buttons_cancel',
+    editProductClass: 'multi-shop-edit-product',
+    selectorItem: '.shop-selector-item',
+    shopItemClass: 'shop-selector-shop-item',
+    groupShopItemClass: 'shop-selector-group-item',
+    shopListCell: '.column-associated_shops .product-shop-list',
+    contextWarning: '.multi-shop-context-warning',
+    shopPreviews: {
+      toggleButtons: '.product-shop-details-toggle',
+      loadingRowClass: 'loading-shop-row',
+      expandedShopRowClass: 'expanded-shop-row',
+      shopPreviewRowClass,
+      productPreviewsSelector: (productId: string): string => `.${shopPreviewRowClass}[data-product-id="${productId}"]`,
+    },
   },
   invalidField: '.is-invalid',
   productFormSubmitButton: '.product-form-save-button',
   navigationBar: '#form-nav',
   dropzoneImagesContainer: '.product-image-dropzone',
+  manageShopImagesButtonContainer: '.manage-shop-images-button-container',
+  manageShopImagesButton: '.manage-shop-images-button',
   featureValues: {
     collectionContainer: '.feature-values-collection',
     collectionRowsContainer: '.feature-values-collection > .col-sm',
@@ -90,13 +122,14 @@ export default {
     combinationsPaginatedList: '#combinations-paginated-list',
     combinationsFormContainer: '#combinations-list-form-container',
     combinationsFiltersContainer: '#combinations_filters',
-    filtersSelectorButtons: '.combinations-filters-dropdown button',
+    filtersSelectorButtons: '#combinations_filters .ps-checkboxes-dropdown button.dropdown-toggle',
     combinationsGeneratorContainer: '#product_combinations_generator',
     combinationsTable: `${combinationListFormId}`,
     combinationsTableBody: `${combinationListFormId} tbody`,
     combinationIdInputsSelector: '.combination-id-input',
     deleteCombinationSelector: '.delete-combination-item',
-    combinationName: 'form .combination-name-row .text-preview',
+    deleteCombinationAllShopsSelector: '.delete-combination-all-shops',
+    combinationName: 'form .combination-name-row .text-preview-value',
     paginationContainer: '#combinations-pagination',
     loadingSpinner: '#productCombinationsLoading',
     impactOnPriceInputWrapper: '.combination-impact-on-price',
@@ -131,24 +164,26 @@ export default {
       deleteButton: (rowIndex: number): string => `${combinationListFormId}_combinations_${rowIndex}_delete`,
     },
     list: {
+      attributeFilterInputName: 'combination-attribute-filter',
       combinationRow: '.combination-list-row',
       priceImpactTaxExcluded: '.combination-impact-on-price-tax-excluded',
       priceImpactTaxIncluded: '.combination-impact-on-price-tax-included',
       isDefault: '.combination-is-default-input',
+      ecoTax: '.combination-eco-tax',
       finalPrice: '.combination-final-price',
       finalPricePreview: '.text-preview',
       modifiedFieldClass: 'combination-value-changed',
       invalidClass: 'is-invalid',
-      editionModeClass: 'edition-mode',
+      editionModeClass: 'combination-edition-mode',
       fieldInputs: `.combination-list-row :input:not(.${commonBulkSelectAllClass}):not(.${isSelectedCombinationClass})`,
       errorAlerts: '.combination-list-row .alert-danger',
-      rowActionButtons: '.combination-row-actions button',
+      rowActionButtons: '.combination-row-actions button, .combination-row-actions .dropdown-toggle',
       footer: {
         cancel: '#cancel-combinations-edition',
-        reset: '#reset-combinations-edition',
         save: '#save-combinations-edition',
       },
     },
+    availabilityContainer: '.combination-availability',
     editModal: '#combination-edit-modal',
     images: {
       selectorContainer: '.combination-images-selector',
@@ -160,7 +195,8 @@ export default {
     searchInput: '#product-combinations-generate .attributes-search',
     generateCombinationsButton: '.generate-combinations-button',
     bulkCombinationFormBtn: '#combination-bulk-form-btn',
-    bulkDeleteBtn: '#combination-bulk-delete-btn',
+    bulkDeleteBtn: '.bulk-delete-btn',
+    bulkDeleteBtnAllShopsId: 'combination-bulk-delete-btn-all-shops',
     bulkActionBtn: '.bulk-action-btn',
     bulkActionsDropdownBtn: '#combination-bulk-actions-btn',
     bulkAllPreviewInput: '#bulk-all-preview',
@@ -176,8 +212,9 @@ export default {
     bulkFixedQuantitySwitchName: 'bulk_combination[stock][disabling_switch_fixed_quantity]',
   },
   virtualProduct: {
-    container: '.virtual-product-file-container',
-    fileContentContainer: '.virtual-product-file-content',
+    fileContentContainer: '.virtual-product-file-container .virtual-product-file-content',
+    fileUploadInput: '#product_stock_virtual_product_file_file',
+    filenameInput: '#product_stock_virtual_product_file_name',
   },
   dropzone: {
     configuration: {
@@ -202,6 +239,8 @@ export default {
     availableForOrderInput: 'input[name="product[options][visibility][available_for_order]"]',
     showPriceInput: 'input[name="product[options][visibility][show_price]"]',
     showPriceSwitchContainer: '.show-price-switch-container',
+    visibilityRadio: 'input[name="product[options][visibility][visibility]"]',
+    visibilityDescriptionField: '.js-visibility-description',
   },
   suppliers: {
     productSuppliers: '#product_options_product_suppliers',
@@ -211,6 +250,9 @@ export default {
   shipping: {
     deliveryTimeTypeInput: 'input[name="product[shipping][delivery_time_note_type]"]',
     deliveryTimeNotesBlock: '#product_shipping_delivery_time_notes',
+    carrierSelectorContainer: '#product_shipping_carriers',
+    carrierChoiceLabel: '.carrier-choice-label',
+    carrierCheckboxesDropdownId: 'carrier-checkboxes-dropdown',
   },
   seo: {
     container: '#product_seo_serp',
@@ -231,14 +273,15 @@ export default {
     },
     resetLinkRewriteBtn: '.reset-link-rewrite',
   },
-  jsTabs: '.js-tabs',
-  jsArrow: '.js-arrow',
-  jsNavTabs: '.js-nav-tabs',
-  toggleTab: '[data-toggle="tab"]',
+  jsTabs: '#product-tabs',
+  jsArrow: '#product-tabs .js-arrow',
+  jsNavTabs: '#product-tabs .js-nav-tabs',
+  toggleTab: '#product-tabs [data-toggle="tab"]',
   formContentTab: '#product-tabs-content > .form-contenttab',
   leftArrow: '.left-arrow',
   rightArrow: '.right-arrow',
   footer: {
+    container: '.product-footer',
     previewUrlButton: '.preview-url-button',
     deleteProductButton: '.delete-product-button',
     deleteProductModalId: 'delete-product-footer-modal',
@@ -274,6 +317,8 @@ export default {
     tagCategoryIdInput: '.category-id-input',
     tagItem: '.tag-item',
     categoryNamePreview: '.category-name-preview',
+    // eslint-disable-next-line max-len
+    namePreviewInput: '.category-name-preview-input',
     categoryNameInput: '.category-name-input',
     searchInput: '#ps-select-product-category',
     fieldset: '.tree-fieldset',
@@ -312,8 +357,8 @@ export default {
     searchAttributeInput: `${attachmentsBlockId}_attached_files`,
     addAttachmentBtn: '.add-attachment',
   },
-  conditionSwitch: 'input[name="product[specifications][show_condition]"]',
-  conditionChoiceSelect: '#product_specifications_condition',
+  conditionSwitch: 'input[name="product[details][show_condition]"]',
+  conditionChoiceSelect: '#product_details_condition',
   relatedProducts: {
     searchInput: '#product_description_related_products',
   },
@@ -363,5 +408,27 @@ export default {
   },
   packedProducts: {
     searchInput: '#product_stock_packed_products',
+  },
+  catalogPriceRule: {
+    listContainer: '#catalog-price-rule-list-container',
+    paginationContainer: '#catalog-price-rules-pagination',
+    loadingSpinner: '#catalog-price-rules-loading',
+    listTable: '#catalog-price-rules-list-table',
+    listRowTemplate: '#catalog-price-rule-tr-template',
+    showCatalogPriceRules: '#product_pricing_show_catalog_price_rules',
+    blockContainer: '#product_pricing_catalog_price_rules',
+    listFields: {
+      catalogPriceRuleId: '.catalog-price-rule-id',
+      shop: '.shop',
+      currency: '.currency',
+      country: '.country',
+      group: '.group',
+      name: '.name',
+      impact: '.impact',
+      from: '.from',
+      to: '.to',
+      fromQuantity: '.from-qty',
+      editBtn: '.js-edit-catalog-price-rule-btn',
+    },
   },
 };

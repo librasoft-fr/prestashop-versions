@@ -36,9 +36,11 @@ use Symfony\Component\Form\Extension\Core\Type as FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * This form class is responsible to generate the product SEO form.
  */
 class ProductSeo extends CommonAbstractType
@@ -159,12 +161,16 @@ class ProductSeo extends CommonAbstractType
                 FormType\ChoiceType::class,
                 [
                     'choices' => [
+                        $this->translator->trans('Default behavior from configuration', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_DEFAULT,
+                        $this->translator->trans('No redirection (200), display product', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_SUCCESS_DISPLAYED,
+                        $this->translator->trans('No redirection (404), display product', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_NOT_FOUND_DISPLAYED,
+                        $this->translator->trans('No redirection (410), display product', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_GONE_DISPLAYED,
+                        $this->translator->trans('No redirection (404), display error page', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_NOT_FOUND,
+                        $this->translator->trans('No redirection (410), display error page', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_GONE,
                         $this->translator->trans('Permanent redirection to a category (301)', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_CATEGORY_PERMANENT,
                         $this->translator->trans('Temporary redirection to a category (302)', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_CATEGORY_TEMPORARY,
                         $this->translator->trans('Permanent redirection to a product (301)', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_PRODUCT_PERMANENT,
                         $this->translator->trans('Temporary redirection to a product (302)', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_PRODUCT_TEMPORARY,
-                        $this->translator->trans('No redirection (410)', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_GONE,
-                        $this->translator->trans('No redirection (404)', [], 'Admin.Catalog.Feature') => RedirectType::TYPE_NOT_FOUND,
                     ],
                     'choice_attr' => function ($val, $key, $index) use ($remoteUrls) {
                         if (array_key_exists($index, $remoteUrls)) {
@@ -177,10 +183,10 @@ class ProductSeo extends CommonAbstractType
                     'label' => $this->translator->trans('Redirection when offline', [], 'Admin.Catalog.Feature'),
                     'attr' => [
                         'data-labelproduct' => $this->translator->trans('Target product', [], 'Admin.Catalog.Feature'),
-                        'data-placeholderproduct' => $this->translator->trans('To which product the page should redirect?', [], 'Admin.Catalog.Help'),
+                        'data-placeholderproduct' => $this->translator->trans('To which product should the page redirect?', [], 'Admin.Catalog.Help'),
                         'data-labelcategory' => $this->translator->trans('Target category', [], 'Admin.Catalog.Feature'),
-                        'data-placeholdercategory' => $this->translator->trans('To which category the page should redirect?', [], 'Admin.Catalog.Help'),
-                        'data-hintcategory' => $this->translator->trans('If no category is selected the Main Category is used', [], 'Admin.Catalog.Help'),
+                        'data-placeholdercategory' => $this->translator->trans('To which category should the page redirect?', [], 'Admin.Catalog.Help'),
+                        'data-hintcategory' => $this->translator->trans('By default, the main category will be used if no category is selected.', [], 'Admin.Catalog.Help'),
                     ],
                 ]
             )

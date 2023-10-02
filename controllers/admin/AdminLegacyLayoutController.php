@@ -87,7 +87,7 @@ class AdminLegacyLayoutControllerCore extends AdminController
         $useRegularH1Structure = true
     ) {
         // Compatibility with legacy behavior.
-        // Some controllers can only be used in "All shops" context.
+        // Some controllers can only be used in "All stores" context.
         // This makes sure that user cannot switch shop contexts
         // when in one of pages (controller) below.
         $controllers = [
@@ -179,6 +179,7 @@ class AdminLegacyLayoutControllerCore extends AdminController
 
         $vars = [
             'maintenance_mode' => !(bool) Configuration::get('PS_SHOP_ENABLE'),
+            'maintenance_allow_admins' => (bool) Configuration::get('PS_MAINTENANCE_ALLOW_ADMINS'),
             'debug_mode' => (bool) _PS_MODE_DEV_,
             'headerTabContent' => $this->headerTabContent,
             'content' => '{$content}', //replace content by original smarty tag var

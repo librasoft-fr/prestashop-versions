@@ -267,7 +267,7 @@ class CartController extends FrameworkBundleAdminController
      */
     public function updateDeliverySettingsAction(Request $request, int $cartId)
     {
-        $configuration = $this->get('prestashop.adapter.legacy.configuration');
+        $configuration = $this->getConfiguration();
         $recycledPackagingEnabled = (bool) $configuration->get('PS_RECYCLABLE_PACK');
         $giftSettingsEnabled = (bool) $configuration->get('PS_GIFT_WRAPPING');
 
@@ -537,7 +537,7 @@ class CartController extends FrameworkBundleAdminController
         $minimalQuantity = $e instanceof MinimalQuantityException ? $e->getMinimalQuantity() : 0;
 
         return [
-            CartNotFoundException::class => $this->trans('The object cannot be loaded (or found)', 'Admin.Notifications.Error'),
+            CartNotFoundException::class => $this->trans('The object cannot be loaded (or found).', 'Admin.Notifications.Error'),
             CartRuleValidityException::class => $e->getMessage(),
             CartConstraintException::class => [
                 CartConstraintException::INVALID_QUANTITY => $this->trans(

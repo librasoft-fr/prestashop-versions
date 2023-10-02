@@ -30,11 +30,8 @@ const ModuleCardMap = ComponentsMap.moduleCard;
 
 const {$} = window;
 
-
 /**
  * Class is responsible for handling Module Card behavior
- *
- * This is a port of admin-dev/themes/default/js/bundle/module/module_card.js
  */
 export default class ModuleCard {
   moduleActionMenuLinkSelector: string;
@@ -54,6 +51,8 @@ export default class ModuleCard {
   moduleActionMenuResetLinkSelector: string;
 
   moduleActionMenuUpdateLinkSelector: string;
+
+  moduleActionMenuDeleteLinkSelector: string;
 
   moduleItemListSelector: string;
 
@@ -84,6 +83,7 @@ export default class ModuleCard {
     this.moduleActionMenuDisableMobileLinkSelector = 'button.module_action_menu_disableMobile';
     this.moduleActionMenuResetLinkSelector = 'button.module_action_menu_reset';
     this.moduleActionMenuUpdateLinkSelector = 'button.module_action_menu_upgrade';
+    this.moduleActionMenuDeleteLinkSelector = 'button.module_action_menu_delete';
     this.moduleItemListSelector = '.module-item-list';
     this.moduleItemGridSelector = '.module-item-grid';
     this.moduleItemActionsSelector = '.module-actions';
@@ -147,6 +147,18 @@ export default class ModuleCard {
           self.dispatchPreEvent('uninstall', this)
           && self.confirmAction('uninstall', this)
           && self.requestToController('uninstall', $(this))
+        );
+      },
+    );
+
+    $(document).on(
+      'click',
+      this.moduleActionMenuDeleteLinkSelector,
+      function () {
+        return (
+          self.dispatchPreEvent('delete', this)
+          && self.confirmAction('delete', this)
+          && self.requestToController('delete', $(this))
         );
       },
     );
@@ -353,7 +365,7 @@ export default class ModuleCard {
   ): boolean {
     if (this.pendingRequest) {
       $.growl.warning({
-        message: window.translate_javascripts['An action is already in progress please wait for it to finish.'],
+        message: window.translate_javascripts['An action is already in progress. Please wait for it to finish.'],
       });
       return false;
     }

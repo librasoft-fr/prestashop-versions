@@ -39,8 +39,8 @@ use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DescriptionType extends TranslatorAwareType
 {
@@ -55,6 +55,11 @@ class DescriptionType extends TranslatorAwareType
     private $employeeIsoCode;
 
     /**
+     * @var int
+     */
+    private $shortDescriptionMaxLength;
+
+    /**
      * @param TranslatorInterface $translator
      * @param array $locales
      * @param RouterInterface $router
@@ -64,11 +69,13 @@ class DescriptionType extends TranslatorAwareType
         TranslatorInterface $translator,
         array $locales,
         RouterInterface $router,
-        string $employeeIsoCode
+        string $employeeIsoCode,
+        int $shortDescriptionMaxLength
     ) {
         parent::__construct($translator, $locales);
         $this->router = $router;
         $this->employeeIsoCode = $employeeIsoCode;
+        $this->shortDescriptionMaxLength = $shortDescriptionMaxLength;
     }
 
     /**
@@ -76,38 +83,29 @@ class DescriptionType extends TranslatorAwareType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $productId = (int) $options['product_id'];
+        $productId = $options['product_id'];
+        $shopId = $options['shop_id'];
 
-        if ($productId) {
-            $builder
-                ->add('images', ImageDropzoneType::class, [
-                    'product_id' => $productId,
-                    'update_form_type' => ProductImageType::class,
-                ])
-            ;
+        if ($this->shortDescriptionMaxLength > 0) {
+            $shortDescriptionLimit = $this->shortDescriptionMaxLength;
+        } else {
+            $shortDescriptionLimit = ProductSettings::MAX_DESCRIPTION_SHORT_LENGTH;
         }
 
         $builder
+            ->add('images', ImageDropzoneType::class, [
+                'product_id' => $productId,
+                'shop_id' => $shopId,
+                'update_form_type' => ProductImageType::class,
+            ])
             ->add('description_short', TranslatableType::class, [
                 'required' => false,
                 'label' => $this->trans('Summary', 'Admin.Global'),
                 'type' => FormattedTextareaType::class,
                 'options' => [
-                    'limit' => ProductSettings::MAX_DESCRIPTION_SHORT_LENGTH,
+                    'limit' => $shortDescriptionLimit,
                     'attr' => [
                         'class' => 'serp-default-description',
-                    ],
-                    'constraints' => [
-                        new Length([
-                            'max' => ProductSettings::MAX_DESCRIPTION_SHORT_LENGTH,
-                            'maxMessage' => $this->trans(
-                                'This field cannot be longer than %limit% characters.',
-                                'Admin.Notifications.Error',
-                                [
-                                    '%limit%' => ProductSettings::MAX_DESCRIPTION_SHORT_LENGTH,
-                                ]
-                            ),
-                        ]),
                     ],
                 ],
                 'label_tag_name' => 'h3',
@@ -148,7 +146,7 @@ class DescriptionType extends TranslatorAwareType
                 'entry_options' => [
                     'block_prefix' => 'related_product',
                 ],
-                'remote_url' => $this->router->generate('admin_products_v2_search_associations', [
+                'remote_url' => $this->router->generate('admin_products_search_products_for_association', [
                     'languageCode' => $this->employeeIsoCode,
                     'query' => '__QUERY__',
                 ]),
@@ -172,8 +170,10 @@ class DescriptionType extends TranslatorAwareType
             ])
             ->setRequired([
                 'product_id',
+                'shop_id',
             ])
             ->setAllowedTypes('product_id', 'int')
+            ->setAllowedTypes('shop_id', 'int')
         ;
     }
 }

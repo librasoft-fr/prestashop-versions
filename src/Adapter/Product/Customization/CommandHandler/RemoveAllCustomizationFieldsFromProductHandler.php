@@ -75,13 +75,13 @@ final class RemoveAllCustomizationFieldsFromProductHandler implements RemoveAllC
      */
     public function handle(RemoveAllCustomizationFieldsFromProductCommand $command): void
     {
-        $product = $this->productRepository->get($command->getProductId());
+        $product = $this->productRepository->getProductByDefaultShop($command->getProductId());
 
         $customizationFieldIds = array_map(function (array $field): CustomizationFieldId {
             return new CustomizationFieldId((int) $field['id_customization_field']);
         }, $product->getCustomizationFieldIds());
 
         $this->customizationFieldDeleter->bulkDelete($customizationFieldIds);
-        $this->productCustomizationFieldUpdater->refreshProductCustomizability($product);
+        $this->productCustomizationFieldUpdater->refreshProductCustomizability($command->getProductId());
     }
 }

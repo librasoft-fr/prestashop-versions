@@ -94,7 +94,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole implement
             }
         }
         if (!isset(Context::getContext()->currency) || !Validate::isLoadedObject(Context::getContext()->currency)) {
-            if ($id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT')) {
+            if ($id_currency = Currency::getDefaultCurrencyId()) {
                 Context::getContext()->currency = new Currency((int) $id_currency);
             }
         }
@@ -116,6 +116,10 @@ class InstallControllerConsoleProcess extends InstallControllerConsole implement
         $steps = explode(',', $this->datas->step);
         if (in_array('all', $steps)) {
             $steps = ['database', 'modules', 'theme', 'fixtures', 'postInstall'];
+        }
+        if (!file_exists(PS_INSTALLATION_LOCK_FILE)) {
+            // Set the install lock file
+            file_put_contents(PS_INSTALLATION_LOCK_FILE, '1');
         }
 
         if (in_array('database', $steps)) {

@@ -37,9 +37,9 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Defines form for manufacturer create/edit actions (Sell > Catalog > Brands & Suppliers)
@@ -199,7 +199,7 @@ class ManufacturerType extends TranslatorAwareType
 
         if ($this->isMultistoreEnabled) {
             $builder->add('shop_association', ShopChoiceTreeType::class, [
-                'label' => $this->trans('Shop association', 'Admin.Global'),
+                'label' => $this->trans('Store association', 'Admin.Global'),
                 'required' => false,
                 'constraints' => [
                     new NotBlank([

@@ -35,9 +35,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class QuantityType extends TranslatorAwareType
 {
@@ -81,6 +81,7 @@ class QuantityType extends TranslatorAwareType
                     'required' => false,
                     'label' => $this->trans('Edit quantity', 'Admin.Catalog.Feature'),
                     'label_tag_name' => 'h4',
+                    'modify_delta_for_all_shops' => true,
                 ])
                 ->add('stock_movements', EntitySearchInputType::class, [
                     'required' => false,
@@ -88,6 +89,10 @@ class QuantityType extends TranslatorAwareType
                     'label_tag_name' => 'h4',
                     'layout' => 'table',
                     'entry_type' => StockMovementType::class,
+                    'entry_options' => [
+                        'product_type' => $options['product_type'],
+                        'block_prefix' => 'entity_item',
+                    ],
                     // No search input
                     'allow_search' => false,
                     // No delete button
@@ -95,6 +100,9 @@ class QuantityType extends TranslatorAwareType
                     'external_link' => [
                         'text' => $this->trans('[1]View all stock movements[/1]', 'Admin.Catalog.Feature'),
                         'href' => $stockMovementsUrl,
+                    ],
+                    'attr' => [
+                        'class' => 'stock-movement-list',
                     ],
                 ])
             ;
@@ -113,6 +121,10 @@ class QuantityType extends TranslatorAwareType
                 'attr' => [
                     'class' => 'small-input',
                 ],
+                'label_help_box' => $this->trans(
+                    'The minimum quantity required to buy this product (set to 1 to disable this feature). E.g.: if set to 3, customers will be able to purchase the product only if they take at least 3 in quantity.',
+                    'Admin.Catalog.Help'
+                ),
             ])
         ;
     }
@@ -131,8 +143,10 @@ class QuantityType extends TranslatorAwareType
             ])
             ->setRequired([
                 'product_id',
+                'product_type',
             ])
             ->setAllowedTypes('product_id', 'int')
+            ->setAllowedTypes('product_type', 'string')
         ;
     }
 }

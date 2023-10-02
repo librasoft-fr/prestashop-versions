@@ -39,9 +39,9 @@ use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ActionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\BadgeColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\BulkActionColumn;
+use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\DateTimeColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ToggleColumn;
-use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Filter\Filter;
 use PrestaShop\PrestaShop\Core\Grid\Filter\FilterCollection;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
@@ -285,7 +285,7 @@ final class CustomerGridDefinitionFactory extends AbstractGridDefinitionFactory
             $columns->addBefore(
                 'actions',
                 (new DataColumn('shop_name'))
-                    ->setName($this->trans('Shop', [], 'Admin.Global'))
+                    ->setName($this->trans('Store', [], 'Admin.Global'))
                     ->setOptions([
                         'field' => 'shop_name',
                         'sortable' => false,

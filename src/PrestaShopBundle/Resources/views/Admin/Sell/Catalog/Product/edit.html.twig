@@ -25,6 +25,7 @@
 {% extends '@PrestaShop/Admin/layout.html.twig' %}
 
 {% block stylesheets %}
+  {{ parent() }}
   <link rel="stylesheet" href="{{ asset('themes/new-theme/public/product' ~ rtl_suffix ~ '.css') }}" type="text/css" media="all">
 {% endblock %}
 
@@ -36,14 +37,17 @@
 <div class="product-page-v2">
   {% set productType = productForm.vars.product_type %}
   {% set productId = productForm.vars.product_id %}
+  {% set shopId = productForm.vars.shop_id %}
 
   <div class="header-toolbar d-print-none">
-    {{ multistoreHeader() }}
+    {{ multistoreProductHeader(productId) }}
   </div>
 
   {{ form_start(productForm, {'attr': {
-    'class': 'form-horizontal product-page justify-content-md-center', 'novalidate': 'novalidate',
+    'class': 'form-horizontal product-page justify-content-md-center product-form',
+    'novalidate': 'novalidate',
     'data-product-id': productId,
+    'data-shop-id': shopId,
     'data-product-type': productType
   }}) }}
 
@@ -63,22 +67,12 @@
 
   {{ block('session_alert') }}
 
-  {% if isMultistoreActive %}
-  <div class="alert alert-info alert-experimental" role="alert">
-    <p class="mb-1">
-      <strong>{{ 'This is the experimental product page.'|trans({}, 'Admin.Catalog.Notification') }}</strong>
-    </p>
-    <p class="alert-text">
-      {{ 'This page benefits from increased performance and includes new features such as a new combination management system. Please note this is a work in progress and some features are not available yet.'|trans({}, 'Admin.Advparameters.Help') }}
-    </p>
-  </div>
-  {% endif %}
   <div id="contextual-notification-box"></div>
 
   {{ form_widget(productForm) }}
 
   {% block product_rest %}
-  {{ form_end(productForm) }}
+    {{ form_end(productForm) }}
   {% endblock %}
 
   {% block category_tree_form %}

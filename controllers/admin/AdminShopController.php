@@ -61,7 +61,7 @@ class AdminShopControllerCore extends AdminController
                 'class' => 'fixed-width-xs',
             ],
             'name' => [
-                'title' => $this->trans('Shop name', [], 'Admin.Shopparameters.Feature'),
+                'title' => $this->trans('Store name', [], 'Admin.Shopparameters.Feature'),
                 'filter_key' => 'a!name',
                 'width' => 200,
             ],
@@ -261,7 +261,7 @@ class AdminShopControllerCore extends AdminController
         if (Tools::isSubmit('submitAddshopAndStay') || Tools::isSubmit('submitAddshop')) {
             $shop_group = new ShopGroup((int) Tools::getValue('id_shop_group'));
             if ($shop_group->shopNameExists(Tools::getValue('name'), (int) Tools::getValue('id_shop'))) {
-                $this->errors[] = $this->trans('You cannot have two shops with the same name in the same group.', [], 'Admin.Advparameters.Notification');
+                $this->errors[] = $this->trans('You cannot have two stores with the same name in the same group.', [], 'Admin.Advparameters.Notification');
             }
         }
 
@@ -283,10 +283,15 @@ class AdminShopControllerCore extends AdminController
         return $result;
     }
 
+    /**
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
     public function processDelete()
     {
         if (!Validate::isLoadedObject($object = $this->loadObject())) {
-            $this->errors[] = $this->trans('Unable to load this shop.', [], 'Admin.Advparameters.Notification');
+            $this->errors[] = $this->trans('Unable to load this store.', [], 'Admin.Advparameters.Notification');
         } elseif (!Shop::hasDependency($object->id)) {
             $result = Category::deleteCategoriesFromShop($object->id) && parent::processDelete();
             Tools::generateHtaccess();
@@ -302,7 +307,7 @@ class AdminShopControllerCore extends AdminController
     /**
      * @param Shop $new_shop
      *
-     * @return bool
+     * @return ObjectModel|bool
      */
     protected function afterAdd($new_shop)
     {
@@ -374,6 +379,13 @@ class AdminShopControllerCore extends AdminController
         $this->context->smarty->assign('shops_having_dependencies', $shop_delete_list);
     }
 
+    /**
+     * @return string|void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         if (!($obj = $this->loadObject(true))) {
@@ -383,14 +395,14 @@ class AdminShopControllerCore extends AdminController
 
         $this->fields_form = [
             'legend' => [
-                'title' => $this->trans('Shop', [], 'Admin.Global'),
+                'title' => $this->trans('Store', [], 'Admin.Global'),
                 'icon' => 'icon-shopping-cart',
             ],
             'identifier' => 'shop_id',
             'input' => [
                 [
                     'type' => 'text',
-                    'label' => $this->trans('Shop name', [], 'Admin.Shopparameters.Feature'),
+                    'label' => $this->trans('Store name', [], 'Admin.Shopparameters.Feature'),
                     'desc' => [
                         $this->trans('This field does not refer to the shop name visible in the front office.', [], 'Admin.Shopparameters.Help'),
                         $this->trans('Follow [1]this link[/1] to edit the shop name used on the front office.', [
@@ -601,7 +613,7 @@ class AdminShopControllerCore extends AdminController
                 'select' => [
                     'type' => 'select',
                     'name' => 'importFromShop',
-                    'label' => $this->trans('Choose the source shop', [], 'Admin.Advparameters.Feature'),
+                    'label' => $this->trans('Choose the source store', [], 'Admin.Advparameters.Feature'),
                     'options' => [
                         'query' => Shop::getShops(false),
                         'name' => 'name',
@@ -668,7 +680,12 @@ class AdminShopControllerCore extends AdminController
     }
 
     /**
-     * Object creation.
+     * Object creation
+     *
+     * @return Shop|void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -872,7 +889,7 @@ class AdminShopControllerCore extends AdminController
 
         $tree = [[
             'data' => [
-                'title' => '<b>' . $this->trans('Shop groups list', [], 'Admin.Advparameters.Feature') . '</b>',
+                'title' => '<b>' . $this->trans('Store groups list', [], 'Admin.Advparameters.Feature') . '</b>',
                 'icon' => 'themes/' . $this->context->employee->bo_theme . '/img/tree-multishop-root.png',
                 'attr' => [
                     'href' => $this->context->link->getAdminLink('AdminShopGroup'),

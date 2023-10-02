@@ -28,8 +28,8 @@ namespace PrestaShopBundle\Form\Admin\Product;
 
 use Language;
 use Pack;
-use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\PrestaShop\Adapter\LegacyContext;
+use PrestaShop\PrestaShop\Core\ConfigurationInterface;
 use PrestaShopBundle\Form\Admin\Type\CommonAbstractType;
 use PrestaShopBundle\Form\Admin\Type\DatePickerType;
 use PrestaShopBundle\Form\Admin\Type\TranslateType;
@@ -39,16 +39,18 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * This form class is responsible to generate the product quantity form.
  */
 class ProductQuantity extends CommonAbstractType
 {
     /**
-     * @var Configuration
+     * @var ConfigurationInterface
      */
     public $configuration;
     /**
@@ -74,14 +76,18 @@ class ProductQuantity extends CommonAbstractType
      * @param TranslatorInterface $translator
      * @param Router $router
      * @param LegacyContext $legacyContext
+     * @param ConfigurationInterface $configuration
      */
-    public function __construct($translator, $router, $legacyContext)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        Router $router,
+        LegacyContext $legacyContext,
+        ConfigurationInterface $configuration
+    ) {
         $this->router = $router;
         $this->translator = $translator;
         $this->legacyContext = $legacyContext;
-        $this->locales = $this->legacyContext->getLanguages();
-        $this->configuration = $this->getConfiguration();
+        $this->configuration = $configuration;
     }
 
     /**
@@ -91,6 +97,7 @@ class ProductQuantity extends CommonAbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->locales = $this->legacyContext->getLanguages();
         $is_stock_management = $this->configuration->get('PS_STOCK_MANAGEMENT');
         $builder
             ->add(

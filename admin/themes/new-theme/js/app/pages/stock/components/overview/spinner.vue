@@ -41,6 +41,7 @@
       :value="getQuantity()"
       @change="onChange"
       @keyup="onKeyup($event)"
+      @keydown="onKeydown($event)"
       @focus="focusIn"
       @blur="focusOut($event)"
     />
@@ -57,11 +58,12 @@
 
 <script lang="ts">
   import PSNumber from '@app/widgets/ps-number.vue';
-  import Vue from 'vue';
+  import isNumber from 'lodash/isNumber';
+  import {defineComponent} from 'vue';
 
   const {$} = window;
 
-  export default Vue.extend({
+  export default defineComponent({
     props: {
       product: {
         type: Object,
@@ -87,15 +89,23 @@
         }
         return <string> this.value === '' ? '' : Number.parseInt(<string> this.value, 10);
       },
-      onChange(val: number): void {
-        this.value = val;
-        this.isEnabled = !!val;
+      onChange(val: any): void {
+        if (val && isNumber(val)) {
+          this.value = val;
+          this.isEnabled = !!val;
+        }
       },
       deActivate(): void {
         this.isActive = false;
         this.isEnabled = false;
         this.value = '';
         this.product.qty = null;
+      },
+      // @see Preventing decimal numbers inside input: https://github.com/PrestaShop/PrestaShop/pull/28510
+      onKeydown(event: KeyboardEvent): void {
+        if (event.key === '.' || event.key === ',') {
+          event.preventDefault();
+        }
       },
       onKeyup(event: Event): void {
         const val = (<HTMLInputElement>event.target).value;
@@ -112,7 +122,7 @@
         this.isActive = true;
       },
       focusOut(event: Event): void {
-        const value = Math.round(<number> this.value);
+        const value = isNumber(this.value) ? Math.round(this.value) : 0;
 
         if (
           !$(<HTMLElement>event.target).hasClass('ps-number')
@@ -126,7 +136,8 @@
         const postUrl = this.product.edit_url;
 
         if (
-          parseInt(this.product.qty, 10) !== 0
+          this.value !== ''
+          && parseInt(this.product.qty, 10) !== 0
           && !Number.isNaN(Math.round(<number> this.value))
         ) {
           this.$store.dispatch('updateQtyByProductId', {
@@ -139,10 +150,12 @@
     },
     watch: {
       value(val: number): void {
-        this.$emit('updateProductQty', {
-          product: this.product,
-          delta: val,
-        });
+        if (isNumber(val)) {
+          this.$emit('updateProductQty', {
+            product: this.product,
+            delta: val,
+          });
+        }
       },
     },
     components: {

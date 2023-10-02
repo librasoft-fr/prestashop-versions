@@ -68,6 +68,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -166,7 +167,7 @@ class CategoryController extends FrameworkBundleAdminController
         $categoryFormBuilder = $this->get('prestashop.core.form.identifiable_object.builder.category_form_builder');
         $categoryFormHandler = $this->get('prestashop.core.form.identifiable_object.handler.category_form_handler');
 
-        $parentId = (int) $request->query->get('id_parent', $this->configuration->getInt('PS_HOME_CATEGORY'));
+        $parentId = (int) $request->query->get('id_parent', $this->getConfiguration()->getInt('PS_HOME_CATEGORY'));
 
         $categoryForm = $categoryFormBuilder->getForm(['id_parent' => $parentId]);
         $categoryForm->handleRequest($request);
@@ -193,8 +194,7 @@ class CategoryController extends FrameworkBundleAdminController
                 'allowMenuThumbnailsUpload' => true,
                 'categoryForm' => $categoryForm->createView(),
                 'defaultGroups' => $defaultGroups,
-                'categoryUrl' => $this->get('prestashop.adapter.shop.url.category_provider')
-                    ->getUrl(0, '{friendly-url}'),
+                'categoryUrl' => null,
             ]
         );
     }
@@ -227,7 +227,7 @@ class CategoryController extends FrameworkBundleAdminController
                 $this->addFlash('success', $this->trans('Successful creation', 'Admin.Notifications.Success'));
 
                 return $this->redirectToRoute('admin_categories_index', [
-                    'categoryId' => $this->configuration->getInt('PS_ROOT_CATEGORY'),
+                    'categoryId' => $this->getConfiguration()->getInt('PS_ROOT_CATEGORY'),
                 ]);
             }
         } catch (Exception $e) {
@@ -379,7 +379,7 @@ class CategoryController extends FrameworkBundleAdminController
                 $this->addFlash('success', $this->trans('Successful update', 'Admin.Notifications.Success'));
 
                 return $this->redirectToRoute('admin_categories_index', [
-                    'categoryId' => $this->configuration->getInt('PS_ROOT_CATEGORY'),
+                    'categoryId' => $this->getConfiguration()->getInt('PS_ROOT_CATEGORY'),
                 ]);
             }
         } catch (Exception $e) {
@@ -434,7 +434,7 @@ class CategoryController extends FrameworkBundleAdminController
 
             $this->addFlash(
                 'success',
-                $this->trans('The image was successfully deleted.', 'Admin.Notifications.Success')
+                $this->trans('Image successfully deleted.', 'Admin.Notifications.Success')
             );
         } catch (CategoryException $e) {
             $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
@@ -479,7 +479,7 @@ class CategoryController extends FrameworkBundleAdminController
 
             $this->addFlash(
                 'success',
-                $this->trans('The image was successfully deleted.', 'Admin.Notifications.Success')
+                $this->trans('Image successfully deleted.', 'Admin.Notifications.Success')
             );
         } catch (CategoryException $e) {
             $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
@@ -618,7 +618,7 @@ class CategoryController extends FrameworkBundleAdminController
     {
         $deleteCategoriesForm = $this->createForm(DeleteCategoriesType::class);
         $deleteCategoriesForm->handleRequest($request);
-        $idParent = $this->configuration->getInt('PS_HOME_CATEGORY');
+        $idParent = $this->getConfiguration()->getInt('PS_HOME_CATEGORY');
 
         if ($deleteCategoriesForm->isSubmitted()) {
             try {
@@ -637,7 +637,7 @@ class CategoryController extends FrameworkBundleAdminController
 
                 $this->addFlash(
                     'success',
-                    $this->trans('The selection has been successfully deleted', 'Admin.Notifications.Success')
+                    $this->trans('The selection has been successfully deleted.', 'Admin.Notifications.Success')
                 );
             } catch (CategoryException $e) {
                 $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
@@ -665,7 +665,7 @@ class CategoryController extends FrameworkBundleAdminController
     {
         $deleteCategoriesForm = $this->createForm(DeleteCategoriesType::class);
         $deleteCategoriesForm->handleRequest($request);
-        $idParent = $this->configuration->getInt('PS_HOME_CATEGORY');
+        $idParent = $this->getConfiguration()->getInt('PS_HOME_CATEGORY');
 
         if ($deleteCategoriesForm->isSubmitted()) {
             $categoriesDeleteData = $deleteCategoriesForm->getData();
@@ -772,6 +772,27 @@ class CategoryController extends FrameworkBundleAdminController
     /**
      * @AdminSecurity("is_granted('read', request.get('_legacy_controller')) || is_granted('create', 'AdminProducts')")
      *
+     * Get Categories formatted like ajax_product_file.php.
+     *
+     * @param int $limit
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAjaxCategoriesAction($limit, Request $request)
+    {
+        if (!$request->isXmlHttpRequest()) {
+            throw new NotFoundHttpException('Should be ajax request.');
+        }
+
+        return new JsonResponse(
+            $this->get('prestashop.adapter.data_provider.category')->getAjaxCategories($request->get('query'), $limit, true)
+        );
+    }
+
+    /**
+     * @AdminSecurity("is_granted('read', request.get('_legacy_controller')) || is_granted('create', 'AdminProducts')")
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -779,7 +800,7 @@ class CategoryController extends FrameworkBundleAdminController
     public function getCategoriesTreeAction(Request $request): JsonResponse
     {
         $langId = $request->query->getInt('langId') ?: (int) $this->getContextLangId();
-        $categoriesTree = $this->getQueryBus()->handle(new GetCategoriesTree($langId));
+        $categoriesTree = $this->getQueryBus()->handle(new GetCategoriesTree($langId, $this->getContextShopId()));
 
         return $this->json($this->formatCategoriesTreeForPresentation($categoriesTree, $langId));
     }
@@ -800,12 +821,12 @@ class CategoryController extends FrameworkBundleAdminController
         foreach ($categoriesTree as $categoryForTree) {
             $children = $this->formatCategoriesTreeForPresentation($categoryForTree->getChildren(), $langId);
 
-            $names = $categoryForTree->getLocalizedNames();
             $active = $categoryForTree->getActive();
             $formattedCategories[] = [
                 'id' => $categoryForTree->getCategoryId(),
                 'active' => $active,
-                'name' => $names[$langId] ?? reset($names),
+                'name' => $categoryForTree->getName(),
+                'displayName' => $categoryForTree->getDisplayName(),
                 'children' => $children,
             ];
         }
@@ -835,7 +856,7 @@ class CategoryController extends FrameworkBundleAdminController
             $categoryId = $request->attributes->get('categoryId');
         }
         if (empty($categoryId)) {
-            $categoryId = $this->configuration->getInt('PS_HOME_CATEGORY');
+            $categoryId = $this->getConfiguration()->getInt('PS_HOME_CATEGORY');
         }
 
         // Display the button "Add new category" if the current category is not a root category
@@ -860,7 +881,7 @@ class CategoryController extends FrameworkBundleAdminController
     {
         return [
             CannotDeleteImageException::class => $this->trans('Unable to delete associated images.', 'Admin.Notifications.Error'),
-            CategoryNotFoundException::class => $this->trans('The object cannot be loaded (or found)', 'Admin.Notifications.Error'),
+            CategoryNotFoundException::class => $this->trans('The object cannot be loaded (or found).', 'Admin.Notifications.Error'),
             CategoryConstraintException::class => [
                 CategoryConstraintException::EMPTY_BULK_DELETE_DATA => $this->trans('You must select at least one element to delete.', 'Admin.Notifications.Error'),
                 CategoryConstraintException::TOO_MANY_MENU_THUMBNAILS => sprintf(

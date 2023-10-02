@@ -77,6 +77,7 @@ class ModuleController extends ModuleAbstractController
             'bulk-reset' => $this->trans('Reset', 'Admin.Actions'),
             'bulk-enable-mobile' => $this->trans('Enable Mobile', 'Admin.Modules.Feature'),
             'bulk-disable-mobile' => $this->trans('Disable Mobile', 'Admin.Modules.Feature'),
+            'bulk-delete' => $this->trans('Delete', 'Admin.Modules.Feature'),
         ];
 
         return $this->render(
@@ -176,6 +177,7 @@ class ModuleController extends ModuleAbstractController
             case ModuleAdapter::ACTION_INSTALL:
                 $deniedAccess = $this->checkPermission(PageVoter::CREATE);
                 break;
+            case ModuleAdapter::ACTION_DELETE:
             case ModuleAdapter::ACTION_UNINSTALL:
                 $deniedAccess = $this->checkPermission(PageVoter::DELETE);
                 break;
@@ -217,6 +219,16 @@ class ModuleController extends ModuleAbstractController
                 $args[] = (bool) ($request->request->get('actionParams', [])['deletion'] ?? false);
                 $response[$module]['refresh_needed'] = $this->moduleNeedsReload($moduleRepository->getModule($module));
             }
+            if ($action === ModuleAdapter::ACTION_DELETE) {
+                $response[$module]['refresh_needed'] = false;
+            }
+            $systemCacheClearEnabled = filter_var(
+                $request->request->get('actionParams', [])['cacheClearEnabled'] ?? true,
+                FILTER_VALIDATE_BOOLEAN
+            );
+            if (!$systemCacheClearEnabled) {
+                $moduleManager->disableSystemClearCache();
+            }
             $response[$module]['status'] = call_user_func([$moduleManager, $action], ...$args);
         } catch (Exception $e) {
             $response[$module]['status'] = false;
@@ -246,7 +258,7 @@ class ModuleController extends ModuleAbstractController
                     '%module%' => $module,
                 ]
             );
-            if ($action !== 'uninstall') {
+            if ($action !== 'uninstall' && $action !== 'delete') {
                 $response[$module]['module_name'] = $module;
                 $response[$module]['is_configurable'] = (bool) $moduleInstance->attributes->get('is_configurable');
             }

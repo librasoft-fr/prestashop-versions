@@ -31,10 +31,14 @@ namespace PrestaShop\PrestaShop\Adapter\Product\Image\QueryHandler;
 use Image;
 use PrestaShop\PrestaShop\Adapter\Product\Image\ProductImagePathFactory;
 use PrestaShop\PrestaShop\Adapter\Product\Image\Repository\ProductImageRepository;
+use PrestaShop\PrestaShop\Adapter\Product\Repository\ProductRepository;
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\Query\GetProductImages;
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\QueryHandler\GetProductImagesHandlerInterface;
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\QueryResult\ProductImage;
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\ValueObject\ImageId;
+use PrestaShop\PrestaShop\Core\Domain\Shop\Exception\InvalidShopConstraintException;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopId;
 
 /**
  * Handles @see GetProductImages query
@@ -52,15 +56,23 @@ final class GetProductImagesHandler implements GetProductImagesHandlerInterface
     private $productImageUrlFactory;
 
     /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    /**
      * @param ProductImageRepository $productImageRepository
      * @param ProductImagePathFactory $productImageUrlFactory
+     * @param ProductRepository $productRepository
      */
     public function __construct(
         ProductImageRepository $productImageRepository,
-        ProductImagePathFactory $productImageUrlFactory
+        ProductImagePathFactory $productImageUrlFactory,
+        ProductRepository $productRepository
     ) {
         $this->productImageRepository = $productImageRepository;
         $this->productImageUrlFactory = $productImageUrlFactory;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -68,32 +80,61 @@ final class GetProductImagesHandler implements GetProductImagesHandlerInterface
      */
     public function handle(GetProductImages $query): array
     {
-        $images = $this->productImageRepository->getImages($query->getProductId());
+        if (!$query->getShopConstraint()->getShopId()) {
+            throw new InvalidShopConstraintException('Only single shop constraint is supported');
+        }
 
-        return $this->formatImages($images);
-    }
+        $shopId = $query->getShopConstraint()->getShopId();
+        $productId = $query->getProductId();
+        $this->productRepository->assertProductIsAssociatedToShop($productId, $shopId);
+        $coverId = $this->productImageRepository->findCoverImageId($productId, $shopId);
 
-    /**
-     * @param Image[] $images
-     *
-     * @return ProductImage[]
-     */
-    private function formatImages(array $images): array
-    {
+        // we still use hardcoded AllShops constraint here to get images for all the shops
+        // but when we format the image we will check if it is cover for the shopId from query,
+        // because cover is the only property of image that might differ between shops
+        $images = $this->productImageRepository->getImages($productId, ShopConstraint::allShops());
+
         $productImages = [];
-
         foreach ($images as $image) {
-            $imageId = new ImageId((int) $image->id);
-            $productImages[] = new ProductImage(
-                (int) $image->id,
-                (bool) $image->cover,
-                (int) $image->position,
-                $image->legend,
-                $this->productImageUrlFactory->getPath($imageId),
-                $this->productImageUrlFactory->getPathByType($imageId, ProductImagePathFactory::IMAGE_TYPE_SMALL_DEFAULT)
+            // if for some reason there is no cover, we set first found image as cover to avoid further errors
+            if (!$coverId) {
+                $imageId = new ImageId($image->id);
+                $coverId = $imageId;
+            }
+
+            $productImages[] = $this->formatImage(
+                $image,
+                $this->productImageRepository->getAssociatedShopIds(new ImageId($image->id)),
+                $coverId
             );
         }
 
         return $productImages;
+    }
+
+    /**
+     * @param Image $image
+     *
+     * @return ProductImage
+     */
+    private function formatImage(Image $image, array $shopIds, ImageId $coverId): ProductImage
+    {
+        $imageIdValue = (int) $image->id;
+        $imageId = new ImageId($imageIdValue);
+
+        return new ProductImage(
+            $imageIdValue,
+            $coverId->getValue() === $imageIdValue,
+            (int) $image->position,
+            $image->legend,
+            $this->productImageUrlFactory->getPath($imageId),
+            $this->productImageUrlFactory->getPathByType($imageId, ProductImagePathFactory::IMAGE_TYPE_SMALL_DEFAULT),
+            array_map(
+                static function (ShopId $shopId): int {
+                    return $shopId->getValue();
+                },
+                $shopIds
+            )
+        );
     }
 }

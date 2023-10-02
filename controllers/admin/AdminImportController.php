@@ -142,7 +142,7 @@ class AdminImportControllerCore extends AdminController
                     ],
                     'supplier_reference' => ['label' => $this->trans('Supplier reference', [], 'Admin.Advparameters.Feature')],
                     'reference' => ['label' => $this->trans('Reference', [], 'Admin.Global')],
-                    'ean13' => ['label' => $this->trans('EAN13', [], 'Admin.Advparameters.Feature')],
+                    'ean13' => ['label' => $this->trans('EAN-13', [], 'Admin.Advparameters.Feature')],
                     'upc' => ['label' => $this->trans('UPC', [], 'Admin.Advparameters.Feature')],
                     'mpn' => ['label' => $this->trans('MPN', [], 'Admin.Catalog.Feature')],
                     'wholesale_price' => ['label' => $this->trans('Cost price', [], 'Admin.Catalog.Feature')],
@@ -161,12 +161,12 @@ class AdminImportControllerCore extends AdminController
                     'image_url' => ['label' => $this->trans('Image URLs (x,y,z...)', [], 'Admin.Advparameters.Feature')],
                     'image_alt' => ['label' => $this->trans('Image alt texts (x,y,z...)', [], 'Admin.Advparameters.Feature')],
                     'shop' => [
-                        'label' => $this->trans('ID / Name of shop', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.', [], 'Admin.Advparameters.Help'),
+                        'label' => $this->trans('ID / Name of the store', [], 'Admin.Advparameters.Feature'),
+                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default store will be used.', [], 'Admin.Advparameters.Help'),
                     ],
                     'advanced_stock_management' => [
                         'label' => $this->trans('Advanced Stock Management', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Enable Advanced Stock Management on product (0 = No, 1 = Yes)', [], 'Admin.Advparameters.Help'),
+                        'help' => $this->trans('Enable advanced stock management on product (0 = No, 1 = Yes)', [], 'Admin.Advparameters.Help'),
                     ],
                     'depends_on_stock' => [
                         'label' => $this->trans('Depends on stock', [], 'Admin.Advparameters.Feature'),
@@ -218,8 +218,8 @@ class AdminImportControllerCore extends AdminController
                     'link_rewrite' => ['label' => $this->trans('Rewritten URL', [], 'Admin.Shopparameters.Feature')],
                     'image' => ['label' => $this->trans('Image URL', [], 'Admin.Advparameters.Feature')],
                     'shop' => [
-                        'label' => $this->trans('ID / Name of shop', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.', [], 'Admin.Advparameters.Help'),
+                        'label' => $this->trans('ID / Name of the store', [], 'Admin.Advparameters.Feature'),
+                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default store will be used.', [], 'Admin.Advparameters.Help'),
                     ],
                 ];
 
@@ -256,7 +256,7 @@ class AdminImportControllerCore extends AdminController
                     'supplier_reference' => ['label' => $this->trans('Supplier reference #', [], 'Admin.Advparameters.Feature')],
                     'supplier' => ['label' => $this->trans('Supplier', [], 'Admin.Global')],
                     'manufacturer' => ['label' => $this->trans('Brand', [], 'Admin.Global')],
-                    'ean13' => ['label' => $this->trans('EAN13', [], 'Admin.Advparameters.Feature')],
+                    'ean13' => ['label' => $this->trans('EAN-13', [], 'Admin.Advparameters.Feature')],
                     'upc' => ['label' => $this->trans('UPC', [], 'Admin.Advparameters.Feature')],
                     'mpn' => ['label' => $this->trans('MPN', [], 'Admin.Catalog.Feature')],
                     'ecotax' => ['label' => $this->trans('Ecotax', [], 'Admin.Catalog.Feature')],
@@ -323,12 +323,12 @@ class AdminImportControllerCore extends AdminController
                         'help' => $this->trans('Number of days this file can be accessed by customers. Set to zero for unlimited access.', [], 'Admin.Catalog.Help'),
                     ],
                     'shop' => [
-                        'label' => $this->trans('ID / Name of shop', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.', [], 'Admin.Advparameters.Help'),
+                        'label' => $this->trans('ID / Name of the store', [], 'Admin.Advparameters.Feature'),
+                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default store will be used.', [], 'Admin.Advparameters.Help'),
                     ],
                     'advanced_stock_management' => [
                         'label' => $this->trans('Advanced Stock Management', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Enable Advanced Stock Management on product (0 = No, 1 = Yes).', [], 'Admin.Advparameters.Help'),
+                        'help' => $this->trans('Enable advanced stock management on product (0 = No, 1 = Yes).', [], 'Admin.Advparameters.Help'),
                     ],
                     'depends_on_stock' => [
                         'label' => $this->trans('Depends on stock', [], 'Admin.Advparameters.Feature'),
@@ -395,8 +395,8 @@ class AdminImportControllerCore extends AdminController
                     'group' => ['label' => $this->trans('Groups (x,y,z...)', [], 'Admin.Advparameters.Feature')],
                     'id_default_group' => ['label' => $this->trans('Default group ID', [], 'Admin.Advparameters.Feature')],
                     'id_shop' => [
-                        'label' => $this->trans('ID / Name of shop', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.', [], 'Admin.Advparameters.Help'),
+                        'label' => $this->trans('ID / Name of the store', [], 'Admin.Advparameters.Feature'),
+                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default store will be used.', [], 'Admin.Advparameters.Help'),
                     ],
                 ];
 
@@ -441,7 +441,7 @@ class AdminImportControllerCore extends AdminController
                     'state' => ['label' => $this->trans('State', [], 'Admin.Global')],
                     'other' => ['label' => $this->trans('Other', [], 'Admin.Global')],
                     'phone' => ['label' => $this->trans('Phone', [], 'Admin.Global')],
-                    'phone_mobile' => ['label' => $this->trans('Mobile Phone', [], 'Admin.Global')],
+                    'phone_mobile' => ['label' => $this->trans('Mobile phone', [], 'Admin.Global')],
                     'vat_number' => ['label' => $this->trans('VAT number', [], 'Admin.Orderscustomers.Feature')],
                     'dni' => ['label' => $this->trans('Identification number', [], 'Admin.Orderscustomers.Feature')],
                 ];
@@ -476,9 +476,13 @@ class AdminImportControllerCore extends AdminController
                     'image' => ['label' => $this->trans('Image URL', [], 'Admin.Advparameters.Feature')],
                     'shop' => [
                         'label' => $this->trans('ID / Name of group shop', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.', [], 'Admin.Advparameters.Help'),
+                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default store will be used.', [], 'Admin.Advparameters.Help'),
                     ],
                 ];
+
+                if ($this->entities[$this->trans('Suppliers', [], 'Admin.Global')]) {
+                    unset($this->available_fields['short_description'], self::$validators['short_description']);
+                }
 
                 self::$default_values = [
                     'shop' => Shop::getGroupFromShop((int) Configuration::get('PS_SHOP_DEFAULT')),
@@ -535,8 +539,8 @@ class AdminImportControllerCore extends AdminController
                     'hours' => ['label' => $this->trans('Hours (x,y,z...)', [], 'Admin.Advparameters.Feature')],
                     'image' => ['label' => $this->trans('Image URL', [], 'Admin.Advparameters.Feature')],
                     'shop' => [
-                        'label' => $this->trans('ID / Name of shop', [], 'Admin.Advparameters.Feature'),
-                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.', [], 'Admin.Advparameters.Help'),
+                        'label' => $this->trans('ID / Name of the store', [], 'Admin.Advparameters.Feature'),
+                        'help' => $this->trans('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default store will be used.', [], 'Admin.Advparameters.Help'),
                     ],
                 ];
                 self::$default_values = [
@@ -634,6 +638,12 @@ class AdminImportControllerCore extends AdminController
         $this->addJs(__PS_BASE_URI__ . 'js/vendor/ladda.js');
     }
 
+    /**
+     * @return bool|string
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         // If import was executed - collect errors or success message
@@ -797,7 +807,7 @@ class AdminImportControllerCore extends AdminController
                     break;
             }
         } elseif (!preg_match('#([^\.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $_FILES['file']['name'])) {
-            $_FILES['file']['error'] = $this->trans('The extension of your file should be .csv.', [], 'Admin.Advparameters.Notification');
+            $_FILES['file']['error'] = $this->trans('The extension of your file should be ".csv".', [], 'Admin.Advparameters.Notification');
         } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
             !@move_uploaded_file($_FILES['file']['tmp_name'], AdminImportController::getPath() . $filename_prefix . str_replace("\0", '', $_FILES['file']['name']))) {
             $_FILES['file']['error'] = $this->trans('An error occurred while uploading / copying the file.', [], 'Admin.Advparameters.Notification');
@@ -1174,130 +1184,12 @@ class AdminImportControllerCore extends AdminController
      */
     protected static function copyImg($id_entity, $id_image = null, $url = '', $entity = 'products', $regenerate = true)
     {
-        $tmpfile = tempnam(_PS_TMP_IMG_DIR_, 'ps_import');
-        $watermark_types = explode(',', Configuration::get('WATERMARK_TYPES'));
-
-        switch ($entity) {
-            default:
-            case 'products':
-                $image_obj = new Image($id_image);
-                $path = $image_obj->getPathForCreation();
-
-                break;
-            case 'categories':
-                $path = _PS_CAT_IMG_DIR_ . (int) $id_entity;
-
-                break;
-            case 'manufacturers':
-                $path = _PS_MANU_IMG_DIR_ . (int) $id_entity;
-
-                break;
-            case 'suppliers':
-                $path = _PS_SUPP_IMG_DIR_ . (int) $id_entity;
-
-                break;
-            case 'stores':
-                $path = _PS_STORE_IMG_DIR_ . (int) $id_entity;
-
-                break;
-        }
-
-        $url = urldecode(trim($url));
-        $parced_url = parse_url($url);
-
-        if (isset($parced_url['path'])) {
-            $uri = ltrim($parced_url['path'], '/');
-            $parts = explode('/', $uri);
-            foreach ($parts as &$part) {
-                $part = rawurlencode($part);
-            }
-            unset($part);
-            $parced_url['path'] = '/' . implode('/', $parts);
-        }
-
-        if (isset($parced_url['query'])) {
-            $query_parts = [];
-            parse_str($parced_url['query'], $query_parts);
-            $parced_url['query'] = http_build_query($query_parts);
-        }
-
-        $url = http_build_url('', $parced_url);
-
-        $orig_tmpfile = $tmpfile;
-
-        if (Tools::copy($url, $tmpfile)) {
-            // Evaluate the memory required to resize the image: if it's too much, you can't resize it.
-            if (!ImageManager::checkImageMemoryLimit($tmpfile)) {
-                @unlink($tmpfile);
-
-                return false;
-            }
-
-            $tgt_width = $tgt_height = 0;
-            $src_width = $src_height = 0;
-            $error = 0;
-            ImageManager::resize($tmpfile, $path . '.jpg', null, null, 'jpg', false, $error, $tgt_width, $tgt_height, 5, $src_width, $src_height);
-            $images_types = ImageType::getImagesTypes($entity, true);
-
-            if ($regenerate) {
-                $path_infos = [];
-                $path_infos[] = [$tgt_width, $tgt_height, $path . '.jpg'];
-                foreach ($images_types as $image_type) {
-                    $tmpfile = self::get_best_path($image_type['width'], $image_type['height'], $path_infos);
-
-                    if (ImageManager::resize(
-                        $tmpfile,
-                        $path . '-' . stripslashes($image_type['name']) . '.jpg',
-                        $image_type['width'],
-                        $image_type['height'],
-                        'jpg',
-                        false,
-                        $error,
-                        $tgt_width,
-                        $tgt_height,
-                        5,
-                        $src_width,
-                        $src_height
-                    )) {
-                        // the last image should not be added in the candidate list if it's bigger than the original image
-                        if ($tgt_width <= $src_width && $tgt_height <= $src_height) {
-                            $path_infos[] = [$tgt_width, $tgt_height, $path . '-' . stripslashes($image_type['name']) . '.jpg'];
-                        }
-                        if ($entity == 'products') {
-                            if (is_file(_PS_TMP_IMG_DIR_ . 'product_mini_' . (int) $id_entity . '.jpg')) {
-                                unlink(_PS_TMP_IMG_DIR_ . 'product_mini_' . (int) $id_entity . '.jpg');
-                            }
-                            if (is_file(_PS_TMP_IMG_DIR_ . 'product_mini_' . (int) $id_entity . '_' . (int) Context::getContext()->shop->id . '.jpg')) {
-                                unlink(_PS_TMP_IMG_DIR_ . 'product_mini_' . (int) $id_entity . '_' . (int) Context::getContext()->shop->id . '.jpg');
-                            }
-                        }
-                    }
-                }
-
-                Hook::exec('actionWatermark', ['id_image' => $id_image, 'id_product' => $id_entity]);
-            }
-        } else {
-            @unlink($orig_tmpfile);
-
-            return false;
-        }
-        unlink($orig_tmpfile);
-
-        return true;
+        return ImageManager::copyImg($id_entity, $id_image, $url, $entity, $regenerate);
     }
 
     protected static function get_best_path($tgt_width, $tgt_height, $path_infos)
     {
-        $path_infos = array_reverse($path_infos);
-        $path = '';
-        foreach ($path_infos as $path_info) {
-            list($width, $height, $path) = $path_info;
-            if ($width >= $tgt_width && $height >= $tgt_height) {
-                return $path;
-            }
-        }
-
-        return $path;
+        return ImageManager::get_best_path($tgt_width, $tgt_height, $path_infos);
     }
 
     public function categoryImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
@@ -1423,7 +1315,7 @@ class AdminImportControllerCore extends AdminController
                 $category_to_create = new Category();
                 $category_to_create->name = AdminImportController::createMultiLangField($category->parent);
                 $category_to_create->active = true;
-                $category_link_rewrite = Tools::link_rewrite($category_to_create->name[$id_lang]);
+                $category_link_rewrite = Tools::str2url($category_to_create->name[$id_lang]);
                 $category_to_create->link_rewrite = AdminImportController::createMultiLangField($category_link_rewrite);
                 $category_to_create->id_parent = (int) Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
 
@@ -1464,7 +1356,7 @@ class AdminImportControllerCore extends AdminController
 
         $bak = $category->link_rewrite[$default_language_id];
         if ((isset($category->link_rewrite) && empty($category->link_rewrite[$default_language_id])) || !$valid_link) {
-            $category->link_rewrite = Tools::link_rewrite($category->name[$default_language_id]);
+            $category->link_rewrite = Tools::str2url($category->name[$default_language_id]);
             if ($category->link_rewrite == '') {
                 $category->link_rewrite = 'friendly-url-autogeneration-failed';
                 $this->warnings[] = $this->trans(
@@ -1893,7 +1785,7 @@ class AdminImportControllerCore extends AdminController
                         $category_to_create->name = AdminImportController::createMultiLangField($value);
                         $category_to_create->active = true;
                         $category_to_create->id_parent = (int) Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
-                        $category_link_rewrite = Tools::link_rewrite($category_to_create->name[$default_language_id]);
+                        $category_link_rewrite = Tools::str2url($category_to_create->name[$default_language_id]);
                         $category_to_create->link_rewrite = AdminImportController::createMultiLangField($category_link_rewrite);
                         if (($field_error = $category_to_create->validateFields(UNFRIENDLY_ERROR, true)) === true &&
                             ($lang_field_error = $category_to_create->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
@@ -1948,7 +1840,7 @@ class AdminImportControllerCore extends AdminController
         $link_rewrite = (is_array($product->link_rewrite) && isset($product->link_rewrite[$id_lang])) ? trim($product->link_rewrite[$id_lang]) : '';
         $valid_link = Validate::isLinkRewrite($link_rewrite);
         if ((isset($product->link_rewrite[$id_lang]) && empty($product->link_rewrite[$id_lang])) || !$valid_link) {
-            $link_rewrite = Tools::link_rewrite($product->name[$id_lang]);
+            $link_rewrite = Tools::str2url($product->name[$id_lang]);
             if ($link_rewrite == '') {
                 $link_rewrite = 'friendly-url-autogeneration-failed';
             }
@@ -2445,7 +2337,7 @@ class AdminImportControllerCore extends AdminController
         $category_to_create->name = AdminImportController::createMultiLangField(trim($category_name));
         $category_to_create->active = true;
         $category_to_create->id_parent = (int) $id_parent_category ? (int) $id_parent_category : (int) Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
-        $category_link_rewrite = Tools::link_rewrite($category_to_create->name[$default_language_id]);
+        $category_link_rewrite = Tools::str2url($category_to_create->name[$default_language_id]);
         $category_to_create->link_rewrite = AdminImportController::createMultiLangField($category_link_rewrite);
 
         if (($field_error = $category_to_create->validateFields(UNFRIENDLY_ERROR, true)) !== true ||
@@ -2773,7 +2665,7 @@ class AdminImportControllerCore extends AdminController
 
                     if (!Validate::isEan13($info['ean13'])) {
                         $this->warnings[] = $this->trans(
-                            'EAN13 "%ean13%" has incorrect value for product with id %id%.',
+                            'EAN-13 "%ean13%" has incorrect value for product with ID %id%.',
                             [
                                 '%ean13%' => Tools::htmlentitiesUTF8($info['ean13']),
                                 '%id%' => Tools::htmlentitiesUTF8($product->id),
@@ -3210,10 +3102,10 @@ class AdminImportControllerCore extends AdminController
                         $customer->id_shop = (int) $key;
                         $customer->id_shop_group = (int) $id;
                         if ($customer_exist
-                            && isset($current_id_customer)
+                            && isset($current_id_customer) // @phpstan-ignore-line
                             && (
-                                (isset($current_id_shop_group) && (int) $current_id_shop_group == (int) $id)
-                                || (isset($current_id_shop) && in_array($current_id_shop, ShopGroup::getShopsFromGroup($id)))
+                                (isset($current_id_shop_group) && (int) $current_id_shop_group == (int) $id) // @phpstan-ignore-line
+                                || (isset($current_id_shop) && in_array($current_id_shop, ShopGroup::getShopsFromGroup($id))) // @phpstan-ignore-line
                             )
                         ) {
                             $customer->id = (int) $current_id_customer;
@@ -3235,7 +3127,7 @@ class AdminImportControllerCore extends AdminController
                 } else {
                     $customer->id_shop = $id_shop;
                     $customer->id_shop_group = $id_group;
-                    if ($customer_exist && isset($current_id_customer, $current_id_shop) && (int) $id_shop == (int) $current_id_shop) {
+                    if ($customer_exist && isset($current_id_customer, $current_id_shop) && (int) $id_shop == (int) $current_id_shop) { // @phpstan-ignore-line
                         $customer->id = (int) $current_id_customer;
                         $res &= ($validateOnly || $customer->update());
                     } else {
@@ -4543,6 +4435,7 @@ class AdminImportControllerCore extends AdminController
                 Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_shop`');
                 Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_combination`');
                 Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_image`');
+                Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_lang`');
                 Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'pack`');
                 Image::deleteAllImages(_PS_PRODUCT_IMG_DIR_);
                 if (!file_exists(_PS_PRODUCT_IMG_DIR_)) {
@@ -4561,6 +4454,7 @@ class AdminImportControllerCore extends AdminController
                 Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_shop`');
                 Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_combination`');
                 Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_image`');
+                Db::getInstance()->execute('TRUNCATE TABLE `' . _DB_PREFIX_ . 'product_attribute_lang`');
                 Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'stock_available` WHERE id_product_attribute != 0');
 
                 break;

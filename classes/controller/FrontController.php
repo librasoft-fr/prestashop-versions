@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -23,6 +24,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+
 use PrestaShop\PrestaShop\Adapter\Configuration as ConfigurationAdapter;
 use PrestaShop\PrestaShop\Adapter\ContainerBuilder;
 use PrestaShop\PrestaShop\Adapter\Image\ImageRetriever;
@@ -284,6 +286,7 @@ class FrontControllerCore extends Controller
             $useSSL = true;
         }
 
+        // Redirect to SSL variant of the page if required and visited in non-ssl mode
         $this->sslRedirection();
 
         if ($this->ajax) {
@@ -298,21 +301,23 @@ class FrontControllerCore extends Controller
 
         ob_start();
 
+        // Initialize URL provider in context, depending on SSL mode
         $protocol_link = (Configuration::get('PS_SSL_ENABLED') || Tools::usingSecureMode()) ? 'https://' : 'http://';
         $useSSL = ($this->ssl && Configuration::get('PS_SSL_ENABLED')) || Tools::usingSecureMode();
         $protocol_content = ($useSSL) ? 'https://' : 'http://';
         $link = new Link($protocol_link, $protocol_content);
         $this->context->link = $link;
 
-        if ($id_cart = (int) $this->recoverCart()) {
-            $this->context->cookie->id_cart = (int) $id_cart;
-        }
+        // Attempt to recover cart, if the user is using recovery link
+        // This is used by abandoned cart modules or when sending a prepared order to customer from backoffice
+        $this->recoverCart();
 
+        // Redirect user to login page, if the controller requires authentication
         if ($this->auth && !$this->context->customer->isLogged()) {
             Tools::redirect('index.php?controller=authentication' . ($this->authRedirection ? '&back=' . $this->authRedirection : ''));
         }
 
-        /* Theme is missing */
+        // If the theme is missing, we need to throw an Exception
         if (!is_dir(_PS_THEME_DIR_)) {
             throw new PrestaShopException($this->trans('Current theme is unavailable. Please check your theme\'s directory name ("%s") and permissions.', [basename(rtrim(_PS_THEME_DIR_, '/\\'))], 'Admin.Design.Notification'));
         }
@@ -346,7 +351,7 @@ class FrontControllerCore extends Controller
 
                 if (!$has_currency && Validate::isLoadedObject($country) && $this->context->country->id !== $country->id) {
                     $this->context->country = $country;
-                    $this->context->cookie->id_currency = (int) Currency::getCurrencyInstance($country->id_currency ? (int) $country->id_currency : (int) Configuration::get('PS_CURRENCY_DEFAULT'))->id;
+                    $this->context->cookie->id_currency = (int) Currency::getCurrencyInstance($country->id_currency ? (int) $country->id_currency : Currency::getDefaultCurrencyId())->id;
                     $this->context->cookie->iso_code_country = strtoupper($country->iso_code);
                 }
             }
@@ -373,7 +378,8 @@ class FrontControllerCore extends Controller
                 PrestaShopLogger::addLog('Frontcontroller::init - Cart cannot be loaded or an order has already been placed using this cart', 1, null, 'Cart', (int) $this->context->cookie->id_cart, true);
                 unset($this->context->cookie->id_cart, $cart, $this->context->cookie->checkedTOS);
                 $this->context->cookie->check_cgv = false;
-            } elseif ((int) (Configuration::get('PS_GEOLOCATION_ENABLED'))
+            } elseif (
+                (int) (Configuration::get('PS_GEOLOCATION_ENABLED'))
                 && !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', Configuration::get('PS_ALLOWED_COUNTRIES')))
                 && $cart->nbProducts()
                 && (int) (Configuration::get('PS_GEOLOCATION_NA_BEHAVIOR')) != -1
@@ -383,7 +389,11 @@ class FrontControllerCore extends Controller
                 /* Delete product of cart, if user can't make an order from his country */
                 PrestaShopLogger::addLog('Frontcontroller::init - GEOLOCATION is deleting a cart', 1, null, 'Cart', (int) $this->context->cookie->id_cart, true);
                 unset($this->context->cookie->id_cart, $cart);
-            } elseif ($this->context->cookie->id_customer != $cart->id_customer || $this->context->cookie->id_lang != $cart->id_lang || $currency->id != $cart->id_currency) {
+            } elseif (
+                $this->context->cookie->id_customer != $cart->id_customer
+                || $this->context->cookie->id_lang != $cart->id_lang
+                || $currency->id != $cart->id_currency
+            ) {
                 // update cart values
                 if ($this->context->cookie->id_customer) {
                     $cart->id_customer = (int) $this->context->cookie->id_customer;
@@ -393,8 +403,11 @@ class FrontControllerCore extends Controller
                 $cart->update();
             }
             /* Select an address if not set */
-            if (isset($cart) && (!isset($cart->id_address_delivery) || $cart->id_address_delivery == 0 ||
-                    !isset($cart->id_address_invoice) || $cart->id_address_invoice == 0) && $this->context->cookie->id_customer) {
+            if (
+                isset($cart)
+                && (!isset($cart->id_address_delivery) || $cart->id_address_delivery == 0 || !isset($cart->id_address_invoice) || $cart->id_address_invoice == 0)
+                && $this->context->cookie->id_customer
+            ) {
                 $to_update = false;
                 if ($this->automaticallyAllocateDeliveryAddress && (!isset($cart->id_address_delivery) || $cart->id_address_delivery == 0)) {
                     $to_update = true;
@@ -488,6 +501,7 @@ class FrontControllerCore extends Controller
             'cart' => $this->cart_presenter->present($cart),
             'currency' => $this->getTemplateVarCurrency(),
             'customer' => $this->getTemplateVarCustomer(),
+            'country' => $this->objectPresenter->present($this->context->country),
             'language' => $this->objectPresenter->present($this->context->language),
             'page' => $this->getTemplateVarPage(),
             'shop' => $this->getTemplateVarShop(),
@@ -736,6 +750,13 @@ class FrontControllerCore extends Controller
     {
         if ($this->maintenance == true || !(int) Configuration::get('PS_SHOP_ENABLE')) {
             $this->maintenance = true;
+
+            $is_admin = (int) (new Cookie('psAdmin'))->id_employee;
+            $maintenance_allow_admins = (bool) Configuration::get('PS_MAINTENANCE_ALLOW_ADMINS');
+            if ($is_admin && $maintenance_allow_admins) {
+                return;
+            }
+
             $allowed_ips = array_map('trim', explode(',', Configuration::get('PS_MAINTENANCE_IP')));
             if (!IpUtils::checkIp(Tools::getRemoteAddr(), $allowed_ips)) {
                 header('HTTP/1.1 503 Service Unavailable');
@@ -869,7 +890,7 @@ class FrontControllerCore extends Controller
                         $defaultCountry = new Country($idCountry);
                     }
                     if (isset($hasBeenSet) && $hasBeenSet) {
-                        $this->context->cookie->id_currency = (int) ($defaultCountry->id_currency ? (int) $defaultCountry->id_currency : (int) Configuration::get('PS_CURRENCY_DEFAULT'));
+                        $this->context->cookie->id_currency = (int) ($defaultCountry->id_currency ? (int) $defaultCountry->id_currency : Currency::getDefaultCurrencyId());
                     }
 
                     return $defaultCountry;
@@ -907,7 +928,9 @@ class FrontControllerCore extends Controller
             $this->registerStylesheet('theme-rtl', '/assets/css/rtl.css', ['media' => 'all', 'priority' => 900]);
         }
 
-        $this->registerJavascript('corejs', '/themes/core.js', ['position' => 'bottom', 'priority' => 0]);
+        if ($this->context->shop->theme->requiresCoreScripts()) {
+            $this->registerJavascript('corejs', '/themes/core.js', ['position' => 'bottom', 'priority' => 0]);
+        }
         $this->registerJavascript('theme-main', '/assets/js/theme.js', ['position' => 'bottom', 'priority' => 50]);
         $this->registerJavascript('theme-custom', '/assets/js/custom.js', ['position' => 'bottom', 'priority' => 1000]);
 
@@ -1229,28 +1252,57 @@ class FrontControllerCore extends Controller
      */
     protected function recoverCart()
     {
-        if (($id_cart = (int) Tools::getValue('recover_cart')) && Tools::getValue('token_cart') == md5(_COOKIE_KEY_ . 'recover_cart_' . $id_cart)) {
-            $cart = new Cart((int) $id_cart);
-            if (Validate::isLoadedObject($cart)) {
-                $customer = new Customer((int) $cart->id_customer);
-                if (Validate::isLoadedObject($customer)) {
-                    $customer->logged = true;
-                    $this->context->customer = $customer;
-                    $this->context->cookie->id_customer = (int) $customer->id;
-                    $this->context->cookie->customer_lastname = $customer->lastname;
-                    $this->context->cookie->customer_firstname = $customer->firstname;
-                    $this->context->cookie->logged = true;
-                    $this->context->cookie->check_cgv = 1;
-                    $this->context->cookie->is_guest = $customer->isGuest();
-                    $this->context->cookie->passwd = $customer->passwd;
-                    $this->context->cookie->email = $customer->email;
-
-                    return $id_cart;
-                }
-            }
+        if (!Tools::isSubmit('recover_cart')) {
+            return false;
         }
 
-        return false;
+        // Get ID cart from URL
+        $id_cart = (int) Tools::getValue('recover_cart');
+
+        // Check if token in URL matches, otherwise, ignore it, probably malicious intentions
+        if (Tools::getValue('token_cart') != md5(_COOKIE_KEY_ . 'recover_cart_' . $id_cart)) {
+            return false;
+        }
+
+        // Create cart object and check if it's still valid. It can be deleted by automated cleaners or manually.
+        $cart = new Cart($id_cart);
+        if (!Validate::isLoadedObject($cart)) {
+            $this->errors[] = $this->trans('This cart has expired.', [], 'Shop.Notifications.Error');
+
+            return false;
+        }
+
+        // Customer - same scenario. It can be deleted by automated cleaners or manually.
+        $customer = new Customer((int) $cart->id_customer);
+        if (!Validate::isLoadedObject($customer)) {
+            $this->errors[] = $this->trans('This cart has expired.', [], 'Shop.Notifications.Error');
+
+            return false;
+        }
+
+        // Check if there is already a finished order with this cart, we notify the customer nicely
+        if ($cart->orderExists()) {
+            $this->errors[] = $this->trans('This cart was already used in an order and has expired.', [], 'Shop.Notifications.Error');
+
+            return false;
+        }
+
+        // Initialize this data into cookie, FrontController will use it later
+        $customer->logged = true;
+        $this->context->customer = $customer;
+        $this->context->cookie->id_customer = (int) $customer->id;
+        $this->context->cookie->customer_lastname = $customer->lastname;
+        $this->context->cookie->customer_firstname = $customer->firstname;
+        $this->context->cookie->logged = true;
+        $this->context->cookie->check_cgv = 1;
+        $this->context->cookie->is_guest = $customer->isGuest();
+        $this->context->cookie->passwd = $customer->passwd;
+        $this->context->cookie->email = $customer->email;
+        $this->context->cookie->id_guest = (int) $cart->id_guest;
+        $this->context->cookie->id_cart = $id_cart;
+
+        // Return the value for backward compatibility
+        return $id_cart;
     }
 
     /**
@@ -1286,7 +1338,7 @@ class FrontControllerCore extends Controller
     }
 
     /**
-     * Returns the layout corresponding to the current page by using the override system
+     * Returns the layout's full path corresponding to the current page by using the override system
      * Ex:
      * On the url: http://localhost/index.php?id_product=1&controller=product, this method will
      * check if the layout exists in the following files (in that order), and return the first found:
@@ -1300,15 +1352,20 @@ class FrontControllerCore extends Controller
      */
     public function getLayout()
     {
+        // Primary identifier to search for a template is php_self property,
+        // For modules, we will use page_name
         $entity = $this->php_self;
         if (empty($entity)) {
             $entity = $this->getPageName();
         }
 
-        $layout = $this->context->shop->theme->getLayoutRelativePathForPage($entity);
+        // Get layout set in prestashop configuration
+        $layout = $this->context->shop->theme->getLayoutNameForPage($entity);
 
+        // Check if we are in content_only mode (used for displaying terms and conditions in a popup for example)
         $content_only = (int) Tools::getValue('content_only');
 
+        // If a module provides its own custom layout, we ignore what is set in configuration
         if ($overridden_layout = Hook::exec(
             'overrideLayoutTemplate',
             [
@@ -1322,11 +1379,22 @@ class FrontControllerCore extends Controller
             return $overridden_layout;
         }
 
+        // When using content_only, there will be no header, footer and sidebars
         if ($content_only) {
-            $layout = 'layouts/layout-content-only.tpl';
+            $layout = 'layout-content-only';
         }
 
-        return $layout;
+        return $this->context->shop->theme->getLayoutPath($layout);
+    }
+
+    /**
+     * Returns layout name for the current controller. Used to display layout name in <body> tag.
+     *
+     * @return string layout name
+     */
+    protected function getLayoutName()
+    {
+        return str_replace(['.tpl'], '', basename($this->getLayout()));
     }
 
     /**
@@ -1359,6 +1427,7 @@ class FrontControllerCore extends Controller
             [
                 'controller' => $this,
                 'template_file' => $template,
+                'entity' => $params['entity'],
                 'id' => $params['id'],
                 'locale' => $locale,
             ]
@@ -1376,6 +1445,8 @@ class FrontControllerCore extends Controller
 
     /**
      * Renders and adds color list HTML for each product in a list.
+     *
+     * @deprecated since 8.1 and will be removed in next major version.
      *
      * @param array $products
      */
@@ -1415,6 +1486,8 @@ class FrontControllerCore extends Controller
     /**
      * Returns cache ID for product color list.
      *
+     * @deprecated since 8.1 and will be removed in next major version.
+     *
      * @param int $id_product
      *
      * @return string
@@ -1451,6 +1524,7 @@ class FrontControllerCore extends Controller
                 'js_url' => _THEME_JS_DIR_,
                 'pic_url' => _THEME_PROD_PIC_DIR_,
                 'theme_assets' => _THEME_DIR_ . 'assets/',
+                'theme_dir' => $this->getThemeDir(),
             ];
 
             $themeAssetsConfig = $this->context->shop->theme->get('assets', false);
@@ -1467,11 +1541,7 @@ class FrontControllerCore extends Controller
             }
 
             foreach ($assign_array as $assign_key => $assign_value) {
-                if (substr($assign_value, 0, 1) == '/' || $this->ssl) {
-                    $urls[$assign_key] = $http . Tools::getMediaServer($assign_value) . $assign_value;
-                } else {
-                    $urls[$assign_key] = $assign_value;
-                }
+                $urls[$assign_key] = $http . Tools::getMediaServer($assign_value) . $assign_value;
             }
 
             $pages = [];
@@ -1480,7 +1550,7 @@ class FrontControllerCore extends Controller
                 'discount', 'guest-tracking', 'history', 'identity', 'index', 'my-account',
                 'order-confirmation', 'order-detail', 'order-follow', 'order', 'order-return',
                 'order-slip', 'pagenotfound', 'password', 'pdf-invoice', 'pdf-order-return', 'pdf-order-slip',
-                'prices-drop', 'product', 'registration', 'search', 'sitemap', 'stores', 'supplier',
+                'prices-drop', 'product', 'registration', 'search', 'sitemap', 'stores', 'supplier', 'new-products',
             ];
             foreach ($p as $page_name) {
                 $index = str_replace('-', '_', $page_name);
@@ -1681,7 +1751,7 @@ class FrontControllerCore extends Controller
             'lang-rtl' => (bool) $this->context->language->is_rtl,
             'country-' . $this->context->country->iso_code => true,
             'currency-' . $this->context->currency->iso_code => true,
-            $this->context->shop->theme->getLayoutNameForPage($this->php_self) => true,
+            $this->getLayoutName() => true,
             'page-' . $this->php_self => true,
             'tax-display-' . ($this->getDisplayTaxesLabel() ? 'enabled' : 'disabled') => true,
             'page-customer-account' => false,
@@ -1826,7 +1896,7 @@ class FrontControllerCore extends Controller
 
         if (null !== $extraParams) {
             foreach ($params as $key => $param) {
-                if (null === $param || '' === $param) {
+                if ('' === $param) {
                     unset($params[$key]);
                 }
             }
@@ -1841,7 +1911,7 @@ class FrontControllerCore extends Controller
 
     protected function getCurrentURL()
     {
-        return Tools::getCurrentUrlProtocolPrefix() . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        return Tools::getCurrentUrl();
     }
 
     public function getPageName()
@@ -2077,7 +2147,8 @@ class FrontControllerCore extends Controller
         $excluded_key = ['isolang', 'id_lang', 'controller', 'fc', 'id_product', 'id_category', 'id_manufacturer', 'id_supplier', 'id_cms'];
         $excluded_key = array_merge($excluded_key, $this->redirectionExtraExcludedKeys);
         foreach ($_GET as $key => $value) {
-            if (in_array($key, $excluded_key)
+            if (
+                in_array($key, $excluded_key)
                 || !Validate::isUrl($key)
                 || !$this->validateInputAsUrl($value)
             ) {

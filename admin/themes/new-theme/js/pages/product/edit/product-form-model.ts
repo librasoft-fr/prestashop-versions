@@ -276,11 +276,11 @@ export default class ProductFormModel {
     this.$taxRuleGroupHelpLabel.html(
       taxPlaceholder
         .replace(
-          new RegExp('_TAX_RATE_HELP_PLACEHOLDER_', 'g'),
+          /_TAX_RATE_HELP_PLACEHOLDER_/g,
           taxRatio.minus(1).times(100).toPrecision(),
         )
         .replace(
-          new RegExp('_STATE_ISO_CODE_HELP_PLACEHOLDER_', 'g'),
+          /_STATE_ISO_CODE_HELP_PLACEHOLDER_/g,
           stateIsoCode,
         ),
     );

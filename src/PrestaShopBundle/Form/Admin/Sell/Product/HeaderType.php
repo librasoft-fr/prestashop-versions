@@ -31,16 +31,18 @@ namespace PrestaShopBundle\Form\Admin\Sell\Product;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\TypedRegex;
 use PrestaShop\PrestaShop\Core\Domain\Product\ProductSettings;
+use PrestaShopBundle\Form\Admin\Type\ButtonCollectionType;
 use PrestaShopBundle\Form\Admin\Type\ImagePreviewType;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslatableType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
+use PrestaShopBundle\Form\Toolbar\ToolbarButtonsProviderInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class HeaderType extends TranslatorAwareType
 {
@@ -55,19 +57,28 @@ class HeaderType extends TranslatorAwareType
     private $isEcotaxEnabled;
 
     /**
+     * @var ToolbarButtonsProviderInterface
+     */
+    private $toolbarButtonsProvider;
+
+    /**
      * @param TranslatorInterface $translator
      * @param array $locales
      * @param bool $stockManagementEnabled
+     * @param bool $isEcotaxEnabled
+     * @param ToolbarButtonsProviderInterface $toolbarButtonsProvider
      */
     public function __construct(
         TranslatorInterface $translator,
         array $locales,
         bool $stockManagementEnabled,
-        bool $isEcotaxEnabled
+        bool $isEcotaxEnabled,
+        ToolbarButtonsProviderInterface $toolbarButtonsProvider
     ) {
         parent::__construct($translator, $locales);
         $this->stockManagementEnabled = $stockManagementEnabled;
         $this->isEcotaxEnabled = $isEcotaxEnabled;
+        $this->toolbarButtonsProvider = $toolbarButtonsProvider;
     }
 
     /**
@@ -85,7 +96,16 @@ class HeaderType extends TranslatorAwareType
                 'constraints' => $options['active'] ? [new DefaultLanguage()] : [],
                 'options' => [
                     'constraints' => [
-                        new TypedRegex(TypedRegex::TYPE_CATALOG_NAME),
+                        new TypedRegex(
+                            [
+                                'type' => TypedRegex::TYPE_CATALOG_NAME,
+                                'message' => $this->trans(
+                                    'This field contains invalid characters: %invalidCharacters%',
+                                    'Admin.Catalog.Feature',
+                                    ['%invalidCharacters%' => '<>;=#{}']
+                                ),
+                            ]
+                        ),
                         new Length(['max' => ProductSettings::MAX_NAME_LENGTH]),
                     ],
                     'attr' => [
@@ -120,6 +140,14 @@ class HeaderType extends TranslatorAwareType
                     $this->trans('Offline', 'Admin.Global') => false,
                     $this->trans('Online', 'Admin.Global') => true,
                 ],
+                'modify_all_shops' => true,
+            ])
+            ->add('mobile_toolbar', ButtonCollectionType::class, [
+                'buttons' => $this->toolbarButtonsProvider->getToolbarButtonsOptions(['productId' => $options['product_id']]),
+                'inline_buttons_limit' => 0,
+                'row_attr' => [
+                    'class' => 'header-mobile-toolbar',
+                ],
             ])
             ->add('initial_type', HiddenType::class)
         ;
@@ -139,6 +167,10 @@ class HeaderType extends TranslatorAwareType
                 'label' => false,
                 'form_theme' => '@PrestaShop/Admin/Sell/Catalog/Product/FormTheme/header.html.twig',
             ])
+            ->setRequired([
+                'product_id',
+            ])
+            ->setAllowedTypes('product_id', 'int')
             ->setAllowedTypes('active', ['bool'])
         ;
     }

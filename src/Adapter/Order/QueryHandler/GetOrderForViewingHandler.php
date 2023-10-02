@@ -35,6 +35,7 @@ use Country;
 use Currency;
 use Customer;
 use DateTimeImmutable;
+use Employee;
 use Gender;
 use Group;
 use Module;
@@ -87,7 +88,7 @@ use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
 use PrestaShop\PrestaShop\Core\Localization\Exception\LocalizationException;
 use PrestaShop\PrestaShop\Core\Localization\Locale;
 use State;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Tools;
 use Validate;
 
@@ -653,6 +654,8 @@ final class GetOrderForViewingHandler extends AbstractOrderHandler implements Ge
             $invoiceNumber = $invoice ?
                 $invoice->getInvoiceNumberFormatted($this->contextLanguageId, $order->id_shop) :
                 null;
+            $employee = $payment->id_employee ? new Employee($payment->id_employee) : null;
+            $employeeName = $employee ? $employee->firstname . ' ' . $employee->lastname : null;
 
             $orderPayments[] = new OrderPaymentForViewing(
                 $payment->id,
@@ -664,7 +667,8 @@ final class GetOrderForViewingHandler extends AbstractOrderHandler implements Ge
                 $payment->card_number,
                 $payment->card_brand,
                 $payment->card_expiration,
-                $payment->card_holder
+                $payment->card_holder,
+                $employeeName
             );
         }
 

@@ -59,6 +59,12 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
     /** @var int|null Language ID */
     protected $id_lang = null;
 
+    /** @var Language|null Language ID
+     * This is the same Language as the $id_lang except in the following case:
+     * If $id_lang is invalid (e.g. due to a removed language) $lang_associated is the default language
+     */
+    protected $lang_associated = null;
+
     /** @var int|null Shop ID */
     protected $id_shop = null;
 
@@ -393,12 +399,15 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
      */
     public function getAssociatedLanguage(): Language
     {
-        $language = new Language($this->id_lang);
-        if (null === $language->id) {
-            $language = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
+        if (null !== $this->lang_associated) {
+            return $this->lang_associated;
+        }
+        $this->lang_associated = new Language($this->id_lang);
+        if (null === $this->lang_associated->id) {
+            $this->lang_associated = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
         }
 
-        return $language;
+        return $this->lang_associated;
     }
 
     /**
@@ -608,6 +617,7 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
             /* @phpstan-ignore-next-line  */
             $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $id_shop_list) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($id_shop_list);
         }
+
         if (!$result = Db::getInstance()->insert($this->def['table'], $this->getFields(), $null_values)) {
             return false;
         }
@@ -814,12 +824,14 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
                 $all_fields['id_shop'] = (int) $id_shop;
                 $where = $this->def['primary'] . ' = ' . (int) $this->id . ' AND id_shop = ' . (int) $id_shop;
 
-                // A little explanation of what we do here : we want to create multishop entry when update is called, but
-                // only if we are in a shop context (if we are in all context, we just want to update entries that alread exists)
+                // A little explanation of what we do here we want to create multishop entry when update is called:
+                // - if the shop is already associated the data is updated
+                // - if we are in a single shop context the association is created
+                // - if the id_shop_list has been forced the association is created
                 $shop_exists = Db::getInstance()->getValue('SELECT ' . $this->def['primary'] . ' FROM ' . _DB_PREFIX_ . $this->def['table'] . '_shop WHERE ' . $where);
                 if ($shop_exists) {
                     $result &= Db::getInstance()->update($this->def['table'] . '_shop', $multiShopFieldsToUpdate, $where, 0, $null_values);
-                } elseif (Shop::getContext() == Shop::CONTEXT_SHOP) {
+                } elseif (Shop::getContext() == Shop::CONTEXT_SHOP || count($this->id_shop_list)) {
                     $result &= Db::getInstance()->insert($this->def['table'] . '_shop', $all_fields, $null_values);
                 }
             }
@@ -890,17 +902,23 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
 
         $this->clearCache();
         $result = true;
+
         // Remove association to multishop table
+        if (count($this->id_shop_list)) {
+            $shopIdsList = $this->id_shop_list;
+        } else {
+            $shopIdsList = Shop::getContextListShopID();
+        }
+        $shopIdsList = array_map('intval', $shopIdsList);
+
         if (Shop::isTableAssociated($this->def['table'])) {
-            $id_shop_list = Shop::getContextListShopID();
-            if (count($this->id_shop_list)) {
-                $id_shop_list = $this->id_shop_list;
-            }
-
-            $id_shop_list = array_map('intval', $id_shop_list);
-
             $result &= Db::getInstance()->delete($this->def['table'] . '_shop', '`' . $this->def['primary'] . '`=' .
-                (int) $this->id . ' AND id_shop IN (' . implode(', ', $id_shop_list) . ')');
+                (int) $this->id . ' AND id_shop IN (' . implode(', ', $shopIdsList) . ')');
+        }
+
+        if ($this->isLangMultishop()) {
+            $result &= Db::getInstance()->delete($this->def['table'] . '_lang', '`' . $this->def['primary'] . '`=' .
+                (int) $this->id . ' AND id_shop IN (' . implode(', ', $shopIdsList) . ')');
         }
 
         // Database deletion
@@ -1205,6 +1223,7 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
             }
 
             $length = Tools::strlen($value);
+
             if ($length < $size['min'] || $length > $size['max']) {
                 if ($human_errors) {
                     if (isset($data['lang']) && $data['lang']) {
@@ -1229,6 +1248,23 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
             }
         }
 
+        // Range validation allows you to check if the value is between the defined boundaries (min and max options)
+        if (!in_array('range', $skip) && isset($data['range']['min'], $data['range']['max'])) {
+            $range = $data['range'];
+            if ($value < $range['min'] || $value > $range['max']) {
+                return $this->trans(
+                    'The range of property %1$s is currently %2$d. It must be between %3$d and %4$d.',
+                    [
+                        get_class($this) . '->' . $field,
+                        $value,
+                        $range['min'],
+                        $range['max'],
+                    ],
+                    'Admin.Notifications.Error'
+                );
+            }
+        }
+
         // Check field validator
         if (!in_array('validate', $skip) && !empty($data['validate'])) {
             if (!method_exists('Validate', $data['validate'])) {
@@ -1237,7 +1273,7 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
 
             if (!empty($value)) {
                 $res = true;
-                if (Tools::strtolower($data['validate']) == 'iscleanhtml') {
+                if (Tools::strtolower($data['validate']) === 'iscleanhtml') {
                     if (!call_user_func(['Validate', $data['validate']], $value, $ps_allow_html_iframe)) {
                         $res = false;
                     }
@@ -1745,7 +1781,7 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
      *
      * @since 1.5.0.1
      *
-     * @return array
+     * @return array<int, int>
      *
      * @throws PrestaShopDatabaseException
      */
@@ -1758,7 +1794,7 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
         $list = [];
         $sql = 'SELECT id_shop FROM `' . _DB_PREFIX_ . $this->def['table'] . '_shop` WHERE `' . $this->def['primary'] . '` = ' . (int) $this->id;
         foreach (Db::getInstance()->executeS($sql) as $row) {
-            $list[] = $row['id_shop'];
+            $list[] = (int) $row['id_shop'];
         }
 
         return $list;
@@ -2296,5 +2332,19 @@ abstract class ObjectModelCore implements \PrestaShop\PrestaShop\Core\Foundation
         }
 
         return self::$htmlFields[$this->def['table']];
+    }
+
+    /**
+     * @return int[]
+     */
+    protected function getShopIdsList(): array
+    {
+        if (count($this->id_shop_list)) {
+            $shopIdsList = $this->id_shop_list;
+        } else {
+            $shopIdsList = Shop::getContextListShopID();
+        }
+
+        return $shopIdsList;
     }
 }

@@ -30,16 +30,17 @@ namespace PrestaShop\PrestaShop\Core\Form\IdentifiableObject\CommandBuilder\Prod
 use PrestaShop\PrestaShop\Core\Domain\Product\Attachment\Command\RemoveAllAssociatedProductAttachmentsCommand;
 use PrestaShop\PrestaShop\Core\Domain\Product\Attachment\Command\SetAssociatedProductAttachmentsCommand;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
 
 class ProductAttachmentsCommandsBuilder implements ProductCommandsBuilderInterface
 {
-    public function buildCommands(ProductId $productId, array $formData): array
+    public function buildCommands(ProductId $productId, array $formData, ShopConstraint $singleShopConstraint): array
     {
-        if (!isset($formData['specifications']['attachments']['attached_files'])) {
+        if (!isset($formData['details']['attachments']['attached_files'])) {
             return [];
         }
 
-        $attachedFiles = $formData['specifications']['attachments']['attached_files'];
+        $attachedFiles = $formData['details']['attachments']['attached_files'];
 
         if (empty($attachedFiles)) {
             return [new RemoveAllAssociatedProductAttachmentsCommand($productId->getValue())];

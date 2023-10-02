@@ -41,7 +41,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Type is used to created form for order state add/edit actions
@@ -141,7 +141,7 @@ class OrderStateType extends TranslatorAwareType
             ])
             ->add('invoice', CheckboxType::class, [
                 'required' => false,
-                'label' => $this->trans('Allow a customer to download and view PDF versions of his/her invoices.', 'Admin.Shopparameters.Feature'),
+                'label' => $this->trans('Allow a customer to download and view PDF versions of their invoices.', 'Admin.Shopparameters.Feature'),
                 'attr' => [
                     'material_design' => true,
                 ],
@@ -155,7 +155,7 @@ class OrderStateType extends TranslatorAwareType
             ])
             ->add('send_email', CheckboxType::class, [
                 'required' => false,
-                'label' => $this->trans('Send an email to the customer when his/her order status has changed.', 'Admin.Shopparameters.Feature'),
+                'label' => $this->trans('Send an email to the customer when their order status has changed.', 'Admin.Shopparameters.Feature'),
                 'attr' => [
                     'material_design' => true,
                 ],

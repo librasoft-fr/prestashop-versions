@@ -36,7 +36,6 @@ use PrestaShop\PrestaShop\Adapter\Product\Stock\Update\ProductStockUpdater;
 use PrestaShop\PrestaShop\Adapter\Product\VirtualProduct\Update\VirtualProductUpdater;
 use PrestaShop\PrestaShop\Core\Domain\Product\Exception\CannotUpdateProductException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Exception\InvalidProductTypeException;
-use PrestaShop\PrestaShop\Core\Domain\Product\Exception\ProductConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Pack\ValueObject\PackId;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductType;
@@ -97,19 +96,11 @@ class ProductTypeUpdater
         $this->productPackRepository = $productPackRepository;
     }
 
-    /**
-     * @param ProductId $productId
-     * @param ProductType $productType
-     *
-     * @throws CannotUpdateProductException
-     * @throws ProductConstraintException
-     * @throws InvalidProductTypeException
-     */
     public function updateType(ProductId $productId, ProductType $productType): void
     {
         $this->checkExistingPackAssociation($productId, $productType);
 
-        $product = $this->productRepository->get($productId);
+        $product = $this->productRepository->getProductByDefaultShop($productId);
 
         // First remove the associations before the type is updated (since these actions are only allowed for a certain type)
         if ($product->product_type === ProductType::TYPE_PACK && $productType->getValue() !== ProductType::TYPE_PACK) {
@@ -121,7 +112,7 @@ class ProductTypeUpdater
             // anymore to create the appropriate stock movement
             $this->resetProductStock($productId);
 
-            $this->combinationDeleter->deleteAllProductCombinations($productId);
+            $this->combinationDeleter->deleteAllProductCombinations($productId, ShopConstraint::allShops());
         }
         if ($product->product_type === ProductType::TYPE_VIRTUAL && $productType->getValue() !== ProductType::TYPE_VIRTUAL) {
             $this->virtualProductUpdater->deleteFileForProduct($productId);
@@ -151,7 +142,12 @@ class ProductTypeUpdater
             $updatedProperties[] = 'price';
         }
 
-        $this->productRepository->partialUpdate($product, $updatedProperties, CannotUpdateProductException::FAILED_UPDATE_TYPE);
+        $this->productRepository->partialUpdate(
+            $product,
+            $updatedProperties,
+            ShopConstraint::shop($this->productRepository->getProductDefaultShopId($productId)->getValue()),
+            CannotUpdateProductException::FAILED_UPDATE_TYPE
+        );
 
         if ($resetProductStock) {
             $this->resetProductStock($productId);

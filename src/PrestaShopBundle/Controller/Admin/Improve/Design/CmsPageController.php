@@ -61,8 +61,11 @@ use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\CmsPageCategoryDefinition
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\CmsPageDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionDataException;
 use PrestaShop\PrestaShop\Core\Grid\Position\Exception\PositionUpdateException;
+use PrestaShop\PrestaShop\Core\Grid\Position\GridPositionUpdaterInterface;
+use PrestaShop\PrestaShop\Core\Grid\Position\PositionUpdateFactoryInterface;
 use PrestaShop\PrestaShop\Core\Search\Filters\CmsPageCategoryFilters;
 use PrestaShop\PrestaShop\Core\Search\Filters\CmsPageFilters;
+use PrestaShop\PrestaShop\Core\Util\HelperCard\DocumentationLinkProviderInterface;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\DemoRestricted;
@@ -121,7 +124,7 @@ class CmsPageController extends FrameworkBundleAdminController
             )
         );
 
-        $helperBlockLinkProvider = $this->get('prestashop.core.util.helper_card.documentation_link_provider');
+        $helperBlockLinkProvider = $this->get(DocumentationLinkProviderInterface::class);
 
         return $this->render(
             '@PrestaShop/Admin/Improve/Design/Cms/index.html.twig',
@@ -494,7 +497,7 @@ class CmsPageController extends FrameworkBundleAdminController
 
             $this->addFlash(
                 'success',
-                $this->trans('The selection has been successfully deleted', 'Admin.Notifications.Success')
+                $this->trans('The selection has been successfully deleted.', 'Admin.Notifications.Success')
             );
         } catch (Exception $exception) {
             $this->addFlash(
@@ -537,7 +540,7 @@ class CmsPageController extends FrameworkBundleAdminController
 
         $positionDefinition = $this->get('prestashop.core.grid.cms_page_category.position_definition');
 
-        $positionUpdateFactory = $this->get('prestashop.core.grid.position.position_update_factory');
+        $positionUpdateFactory = $this->get(PositionUpdateFactoryInterface::class);
 
         try {
             $positionUpdate = $positionUpdateFactory->buildPositionUpdate($positionsData, $positionDefinition);
@@ -548,7 +551,7 @@ class CmsPageController extends FrameworkBundleAdminController
             return $this->redirectToIndexPageById($cmsCategoryParentId);
         }
 
-        $updater = $this->get('prestashop.core.grid.position.doctrine_grid_position_updater');
+        $updater = $this->get(GridPositionUpdaterInterface::class);
 
         try {
             $updater->update($positionUpdate);
@@ -589,7 +592,7 @@ class CmsPageController extends FrameworkBundleAdminController
         ];
 
         $positionDefinition = $this->get('prestashop.core.grid.cms_page.position_definition');
-        $positionUpdateFactory = $this->get('prestashop.core.grid.position.position_update_factory');
+        $positionUpdateFactory = $this->get(PositionUpdateFactoryInterface::class);
 
         try {
             $positionUpdate = $positionUpdateFactory->buildPositionUpdate($positionsData, $positionDefinition);
@@ -600,7 +603,7 @@ class CmsPageController extends FrameworkBundleAdminController
             return $this->redirectToParentIndexPage($cmsCategoryParentId);
         }
 
-        $updater = $this->get('prestashop.core.grid.position.doctrine_grid_position_updater');
+        $updater = $this->get(GridPositionUpdaterInterface::class);
 
         try {
             $updater->update($positionUpdate);
@@ -907,7 +910,7 @@ class CmsPageController extends FrameworkBundleAdminController
 
             $this->addFlash(
                 'success',
-                $this->trans('The selection has been successfully deleted', 'Admin.Notifications.Success')
+                $this->trans('The selection has been successfully deleted.', 'Admin.Notifications.Success')
             );
         } catch (Exception $exception) {
             $this->addFlash(
@@ -1107,7 +1110,7 @@ class CmsPageController extends FrameworkBundleAdminController
     {
         return [
             CmsPageNotFoundException::class => $this->trans(
-                'The object cannot be loaded (or found)',
+                'The object cannot be loaded (or found).',
                 'Admin.Notifications.Error'
             ),
             CannotToggleCmsPageException::class => $this->trans(
@@ -1196,7 +1199,7 @@ class CmsPageController extends FrameworkBundleAdminController
                 ),
             ],
             CmsPageCategoryNotFoundException::class => $this->trans(
-                'The object cannot be loaded (or found)',
+                'The object cannot be loaded (or found).',
                 'Admin.Notifications.Error'
             ),
             CannotToggleCmsPageCategoryStatusException::class => $this->trans(

@@ -27,13 +27,12 @@
 {% extends '@PrestaShop/Admin/layout.html.twig' %}
 
 {% block stylesheets %}
+  {{ parent() }}
   <link rel="stylesheet" href="{{ asset('themes/new-theme/public/product' ~ rtl_suffix ~ '.css') }}" type="text/css"
         media="all">
 {% endblock %}
 
 {% block content %}
-  {% form_theme bulkCombinationForm '@PrestaShop/Admin/Sell/Catalog/Product/FormTheme/combination.html.twig' %}
-
   {{ form_start(
     bulkCombinationForm,
     {'attr': {

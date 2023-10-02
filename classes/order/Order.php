@@ -1827,13 +1827,19 @@ class OrderCore extends ObjectModel
 
     /**
      * Generate a unique reference for orders generated with the same cart id
-     * This references, is useful for check payment.
+     * This reference is the primary order identifier for public use.
+     *
+     * Modules can return their own reference.
      *
      * @return string
      */
     public static function generateReference()
     {
-        return strtoupper(Tools::passwdGen(9, 'NO_NUMERIC'));
+        $reference = Hook::exec('actionGenerateDocumentReference', [
+            'type' => 'order',
+        ]);
+
+        return !empty($reference) ? $reference : strtoupper(Tools::passwdGen(9, 'NO_NUMERIC'));
     }
 
     public function orderContainProduct($id_product)
@@ -1905,11 +1911,19 @@ class OrderCore extends ObjectModel
      * @param Currency $currency
      * @param string $date
      * @param OrderInvoice $order_invoice
+     * @param int|null $id_employee
      *
      * @return bool
      */
-    public function addOrderPayment($amount_paid, $payment_method = null, $payment_transaction_id = null, $currency = null, $date = null, $order_invoice = null)
-    {
+    public function addOrderPayment(
+        $amount_paid,
+        $payment_method = null,
+        $payment_transaction_id = null,
+        $currency = null,
+        $date = null,
+        $order_invoice = null,
+        int $id_employee = null
+    ) {
         $order_payment = new OrderPayment();
         $order_payment->order_reference = $this->reference;
         $order_payment->id_currency = ($currency ? $currency->id : $this->id_currency);
@@ -1919,6 +1933,7 @@ class OrderCore extends ObjectModel
         $order_payment->payment_method = ($payment_method ? $payment_method : $this->payment);
         $order_payment->transaction_id = $payment_transaction_id;
         $order_payment->amount = (float) $amount_paid;
+        $order_payment->id_employee = $id_employee;
         $order_payment->date_add = ($date ? $date : null);
 
         // Add time to the date if needed
@@ -1948,7 +1963,7 @@ class OrderCore extends ObjectModel
         if ($order_payment->id_currency == $this->id_currency) {
             $this->total_paid_real += $order_payment->amount;
         } else {
-            $default_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT');
+            $default_currency = Currency::getDefaultCurrencyId();
             if ($order_payment->id_currency === $default_currency) {
                 $this->total_paid_real += Tools::ps_round(
                     Tools::convertPrice((float) $order_payment->amount, $this->id_currency, false),

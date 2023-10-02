@@ -27,8 +27,10 @@
 namespace PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters;
 
 use PrestaShop\PrestaShop\Adapter\Backup\Backup;
+use PrestaShop\PrestaShop\Core\Backup\BackupInterface;
 use PrestaShop\PrestaShop\Core\Backup\Exception\BackupException;
 use PrestaShop\PrestaShop\Core\Backup\Exception\DirectoryIsNotWritableException;
+use PrestaShop\PrestaShop\Core\Backup\Manager\BackupRemoverInterface;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Search\Filters\BackupFilters;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
@@ -60,7 +62,7 @@ class BackupController extends FrameworkBundleAdminController
     public function indexAction(Request $request, BackupFilters $filters)
     {
         $backupForm = $this->getBackupFormHandler()->getForm();
-        $configuration = $this->get('prestashop.adapter.legacy.configuration');
+        $configuration = $this->getConfiguration();
 
         $hasDownloadFile = false;
         $downloadFile = null;
@@ -86,7 +88,7 @@ class BackupController extends FrameworkBundleAdminController
             'enableSidebar' => true,
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'multistoreInfoTip' => $this->trans(
-                'Note that this feature is available in all shops context only. It will be added to all your stores.',
+                'Note that this feature is only available in the "all stores" context. It will be added to all your stores.',
                 'Admin.Notifications.Info'
             ),
             'multistoreIsUsed' => $this->get('prestashop.adapter.multistore_feature')->isUsed(),
@@ -184,7 +186,7 @@ class BackupController extends FrameworkBundleAdminController
     public function createAction()
     {
         try {
-            $backupCreator = $this->get('prestashop.adapter.backup.database_creator');
+            $backupCreator = $this->get(BackupInterface::class);
             $backup = $backupCreator->createBackup();
 
             $this->addFlash(
@@ -227,7 +229,7 @@ class BackupController extends FrameworkBundleAdminController
     public function deleteAction($deleteFileName)
     {
         $backup = new Backup($deleteFileName);
-        $backupRemover = $this->get('prestashop.adapter.backup.backup_remover');
+        $backupRemover = $this->get(BackupRemoverInterface::class);
 
         if (!$backupRemover->remove($backup)) {
             $this->addFlash(
@@ -273,7 +275,7 @@ class BackupController extends FrameworkBundleAdminController
             return $this->redirectToRoute('admin_backups_index');
         }
 
-        $backupRemover = $this->get('prestashop.adapter.backup.backup_remover');
+        $backupRemover = $this->get(BackupRemoverInterface::class);
         $failedBackups = [];
 
         foreach ($backupsToDelete as $backupFileName) {
@@ -302,7 +304,7 @@ class BackupController extends FrameworkBundleAdminController
 
         $this->addFlash(
             'success',
-            $this->trans('The selection has been successfully deleted', 'Admin.Notifications.Success')
+            $this->trans('The selection has been successfully deleted.', 'Admin.Notifications.Success')
         );
 
         return $this->redirectToRoute('admin_backups_index');

@@ -27,7 +27,6 @@
 namespace PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters;
 
 use Exception;
-use GuzzleHttp\Client;
 use PrestaShop\PrestaShop\Core\Domain\Webservice\Exception\DuplicateWebserviceKeyException;
 use PrestaShop\PrestaShop\Core\Domain\Webservice\Exception\WebserviceConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Webservice\ValueObject\Key;
@@ -37,6 +36,7 @@ use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\DemoRestricted;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -218,7 +218,7 @@ class WebserviceController extends FrameworkBundleAdminController
         } else {
             $this->addFlash(
                 'success',
-                $this->trans('The selection has been successfully deleted', 'Admin.Notifications.Success')
+                $this->trans('The selection has been successfully deleted.', 'Admin.Notifications.Success')
             );
         }
 
@@ -429,22 +429,22 @@ class WebserviceController extends FrameworkBundleAdminController
      */
     private function checkWebserviceEndpoint(string $url): bool
     {
-        $client = new Client();
-
+        $client = HttpClient::create();
+        $statusCode = null;
         try {
             $response = $client->request('GET', $url, [
-                'http_errors' => false,
-                'allow_redirects' => true,
+                'max_redirects' => 5,
             ]);
+            $statusCode = $response->getStatusCode();
         } catch (Exception $e) {
             $this->addFlash('error', $e->getMessage());
 
             return false;
         }
 
-        if ($response->getStatusCode() >= Response::HTTP_OK && $response->getStatusCode() < Response::HTTP_MULTIPLE_CHOICES) {
+        if ($statusCode >= Response::HTTP_OK && $statusCode < Response::HTTP_MULTIPLE_CHOICES) {
             return true;
-        } elseif ($response->getStatusCode() == Response::HTTP_UNAUTHORIZED) {
+        } elseif ($statusCode == Response::HTTP_UNAUTHORIZED) {
             return true;
         }
 

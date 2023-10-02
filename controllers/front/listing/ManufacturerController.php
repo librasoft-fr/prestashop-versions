@@ -32,6 +32,7 @@ class ManufacturerControllerCore extends ProductListingFrontController
     /** @var string */
     public $php_self = 'manufacturer';
 
+    /** @var Manufacturer|null */
     protected $manufacturer;
     protected $label;
 
@@ -112,6 +113,11 @@ class ManufacturerControllerCore extends ProductListingFrontController
         }
     }
 
+    /**
+     * @return ProductSearchQuery
+     *
+     * @throws \PrestaShop\PrestaShop\Core\Product\Search\Exception\InvalidSortOrderDirectionException
+     */
     protected function getProductSearchQuery()
     {
         $query = new ProductSearchQuery();
@@ -123,6 +129,9 @@ class ManufacturerControllerCore extends ProductListingFrontController
         return $query;
     }
 
+    /**
+     * @return ManufacturerProductSearchProvider
+     */
     protected function getDefaultProductSearchProvider()
     {
         return new ManufacturerProductSearchProvider(
@@ -216,7 +225,7 @@ class ManufacturerControllerCore extends ProductListingFrontController
             'url' => $this->context->link->getPageLink('manufacturer', true),
         ];
 
-        if (Validate::isLoadedObject($this->manufacturer) && $this->manufacturer->active && $this->manufacturer->isAssociatedToShop()) {
+        if (!empty($this->manufacturer)) {
             $breadcrumb['links'][] = [
                 'title' => $this->manufacturer->name,
                 'url' => $this->context->link->getManufacturerLink($this->manufacturer),
@@ -224,5 +233,25 @@ class ManufacturerControllerCore extends ProductListingFrontController
         }
 
         return $breadcrumb;
+    }
+
+    public function getTemplateVarPage()
+    {
+        $page = parent::getTemplateVarPage();
+
+        if (!empty($this->manufacturer)) {
+            $page['body_classes']['manufacturer-id-' . $this->manufacturer->id] = true;
+            $page['body_classes']['manufacturer-' . $this->manufacturer->name] = true;
+        }
+
+        return $page;
+    }
+
+    /**
+     * @return Manufacturer
+     */
+    public function getManufacturer()
+    {
+        return $this->manufacturer;
     }
 }

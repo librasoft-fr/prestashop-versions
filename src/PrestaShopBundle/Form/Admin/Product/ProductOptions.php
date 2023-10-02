@@ -36,6 +36,8 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * This form class is responsible to generate the product options form.
  */
 class ProductOptions extends CommonAbstractType
@@ -197,9 +199,9 @@ class ProductOptions extends CommonAbstractType
             ])
             ->add('condition', FormType\ChoiceType::class, [
                 'choices' => [
-                    $this->translator->trans('New', [], 'Admin.Catalog.Feature') => 'new',
-                    $this->translator->trans('Used', [], 'Admin.Catalog.Feature') => 'used',
-                    $this->translator->trans('Refurbished', [], 'Admin.Catalog.Feature') => 'refurbished',
+                    $this->translator->trans('New', [], 'Admin.Global') => 'new',
+                    $this->translator->trans('Used', [], 'Shop.Theme.Catalog') => 'used',
+                    $this->translator->trans('Refurbished', [], 'Shop.Theme.Catalog') => 'refurbished',
                 ],
                 'attr' => [
                     'class' => 'custom-select',

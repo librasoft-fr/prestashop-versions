@@ -59,14 +59,14 @@
 {else}
     var youEditFieldFor = '';
 {/if}
-		var new_order_msg = '{l|escape s='A new order has been placed on your shop.' js=1 d='Admin.Navigation.Header'}';
+		var new_order_msg = '{l|escape s='A new order has been placed on your store.' js=1 d='Admin.Navigation.Header'}';
 		var order_number_msg = '{l|escape s='Order number:' js=1 d='Admin.Navigation.Header'} ';
 		var total_msg = '{l|escape s='Total' js=1 d='Admin.Global'} ';
 		var from_msg = '{l|escape s='From:' js=1 d='Admin.Global'} ';
 		var see_order_msg = '{l|escape s='View this order' js=1 d='Admin.Orderscustomers.Feature'}';
-		var new_customer_msg = '{l|escape s='A new customer registered on your shop.' js=1 d='Admin.Navigation.Header'}';
+		var new_customer_msg = '{l|escape s='A new customer registered on your store.' js=1 d='Admin.Navigation.Header'}';
         var customer_name_msg = '{l|escape s='registered' js=1 d='Admin.Navigation.Notification'} ';
-		var new_msg = '{l|escape s='A new message was posted on your shop.' js=1 d='Admin.Navigation.Header'}';
+		var new_msg = '{l|escape s='A new message was posted on your store.' js=1 d='Admin.Navigation.Header'}';
 		var see_msg = '{l|escape s='Read this message' js=1 d='Admin.Navigation.Header'}';
 		var token = '{$token|addslashes}';
 		var token_admin_orders = tokenAdminOrders = '{getAdminToken tab='AdminOrders'}';
@@ -112,7 +112,9 @@
 </head>
 
 {if $display_header}
-  <body class="lang-{$iso_user}{if $lang_is_rtl} lang-rtl{/if} ps_back-office{if $employee->bo_menu} page-sidebar{if $collapse_menu} page-sidebar-closed{/if}{else} page-topbar{/if} {$controller_name|escape|strtolower}">
+<body class="lang-{$iso_user}{if $lang_is_rtl} lang-rtl{/if} ps_back-office{if $employee->bo_menu} page-sidebar{if $collapse_menu} page-sidebar-closed{/if}{else} page-topbar{/if} {$controller_name|escape|strtolower}{if !empty($debug_mode)} developer-mode{/if}"
+      {if isset($js_router_metadata.base_url)}data-base-url="{$js_router_metadata.base_url}"{/if}
+      {if isset($js_router_metadata.token)}data-token="{$js_router_metadata.token}"{/if}>
   {* begin  HEADER *}
   <header id="header" class="bootstrap">
     <nav id="header_infos" role="navigation">
@@ -134,8 +136,8 @@
             {if !empty($quick_access)}
               {foreach $quick_access as $quick}
                 <li class="quick-row-link{if $link->matchQuickLink({$quick.link})}{assign "matchQuickLink" $quick.id_quick_access} active{/if}">
-                  <a href="{$quick.link|escape:'html':'UTF-8'}" {if $quick.new_window}target="_blank"{/if}>
-                    {$quick.name}
+                  <a {if isset($quick.class)}class="{$quick.class}"{/if} href="{$quick.link|escape:'html':'UTF-8'}" {if $quick.new_window}target="_blank"{/if}>
+                      {$quick.name}
                   </a>
                 </li>
               {/foreach}
@@ -226,7 +228,7 @@
            data-toggle="tooltip"
            data-placement="bottom"
            data-html="true"
-           title="<p class=&quot;text-left&quot;><strong>{l|escape s='Your shop is in debug mode.' d='Admin.Navigation.Notification'}</strong></p><p class=&quot;text-left&quot;>{l|escape s='All the PHP errors and messages are displayed. When you no longer need it, [1]turn off[/1] this mode.' html=true sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Admin.Navigation.Notification'}</p>"
+           title="<p class=&quot;text-left&quot;><strong>{l|escape s='Your store is in debug mode.' d='Admin.Navigation.Notification'}</strong></p><p class=&quot;text-left&quot;>{l|escape s='All the PHP errors and messages are displayed. When you no longer need it, [1]turn off[/1] this mode.' html=true sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Admin.Navigation.Notification'}</p>"
              href="{$link->getAdminLink('AdminPerformance')|escape:'html':'UTF-8'}"
           >
           <i class="material-icons">bug_report</i>
@@ -236,18 +238,36 @@
       {/if}
 
       {if isset($maintenance_mode) && $maintenance_mode == true}
-      <div class="component hide-mobile-sm">
-        <a class="shop-state label-tooltip" id="maintenance-mode"
-           href="{$link->getAdminLink('AdminMaintenance')|escape:'html':'UTF-8'}"
-           data-toggle="tooltip"
-           data-placement="bottom"
-           data-html="true"
-           title="<p class=&quot;text-left text-nowrap&quot;><strong>{l|escape s='Your shop is in maintenance.' d='Admin.Navigation.Notification'}</strong></p><p class=&quot;text-left&quot;>{l|escape s='Your visitors and customers cannot access your shop while in maintenance mode.%s To manage the maintenance settings, go to Shop Parameters > Maintenance tab.' sprintf=['<br />'] d='Admin.Navigation.Notification'}</p>"
-        >
-          <i class="material-icons">build</i>
-          <span>{l|escape s='Maintenance mode' d='Admin.Navigation.Header'}</span>
-        </a>
-      </div>
+        {capture name="title"}
+          <p class="text-left text-nowrap">
+            <strong>{l s='Your store is in maintenance mode.' d='Admin.Navigation.Notification'}</strong>
+          </p>
+          <p class="text-left">
+              {l s='Your visitors and customers cannot access your store while in maintenance mode.' d='Admin.Navigation.Notification'}
+          </p>
+          <p class="text-left">
+            {l s='To manage the maintenance settings, go to Shop Parameters > General > Maintenance tab.' d='Admin.Navigation.Notification'}
+          </p>
+          {if isset($maintenance_allow_admins) && $maintenance_allow_admins}
+            <p class="text-left">
+                {l s='Admins can access the store front office without storing their IP.' d='Admin.Navigation.Notification'}
+            </p>
+          {/if}
+        {/capture}
+        <div class="component hide-mobile-sm">
+          <a class="shop-state label-tooltip" id="maintenance-mode"
+             href="{$link->getAdminLink('AdminMaintenance')|escape:'html':'UTF-8'}"
+             data-toggle="tooltip"
+             data-placement="bottom"
+             data-html="true"
+             title="{$smarty.capture.title|htmlspecialchars}"
+          >
+            <i class="material-icons"
+               style="{if isset($maintenance_allow_admins)}color: #72c279;{/if}"
+            >build</i>
+            <span>{l|escape s='Maintenance mode' d='Admin.Navigation.Header'}</span>
+          </a>
+        </div>
       {/if}
 
       {* Shop name *}
@@ -269,7 +289,7 @@
             {else}
               <a id="header_shopname" class="shop-state" href="{$base_url|escape:'html':'UTF-8'}" target="_blank">
                 <i class="material-icons">visibility</i>
-                <span>{l|escape s='View my shop' d='Admin.Navigation.Header'}</span>
+                <span>{l|escape s='View my store' d='Admin.Navigation.Header'}</span>
               </a>
             {/if}
           </li>

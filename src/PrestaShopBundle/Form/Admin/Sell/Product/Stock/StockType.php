@@ -35,7 +35,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StockType extends TranslatorAwareType
 {
@@ -87,7 +87,7 @@ class StockType extends TranslatorAwareType
                 'entry_options' => [
                     'block_prefix' => 'packed',
                 ],
-                'remote_url' => $this->router->generate('admin_products_v2_search_combinations', [
+                'remote_url' => $this->router->generate('admin_products_search_combinations_for_association', [
                     'languageCode' => $this->employeeIsoCode,
                     'filters' => [
                         'filteredTypes' => [ProductType::TYPE_PACK],
@@ -105,6 +105,7 @@ class StockType extends TranslatorAwareType
             ])
             ->add('quantities', QuantityType::class, [
                 'product_id' => $options['product_id'],
+                'product_type' => $options['product_type'],
             ])
             ->add('options', StockOptionsType::class)
             ->add('virtual_product_file', VirtualProductFileType::class, [

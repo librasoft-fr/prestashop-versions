@@ -32,24 +32,21 @@ use PrestaShop\PrestaShop\Core\Domain\Product\VirtualProductFile\VirtualProductF
 use PrestaShopBundle\Form\Admin\Type\DatePickerType;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
-use PrestaShopBundle\Form\FormCloner;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class VirtualProductFileType extends TranslatorAwareType implements EventSubscriberInterface
+class VirtualProductFileType extends TranslatorAwareType
 {
     /**
      * @var int
@@ -62,9 +59,9 @@ class VirtualProductFileType extends TranslatorAwareType implements EventSubscri
     private $router;
 
     /**
-     * @var FormCloner
+     * @var EventSubscriberInterface
      */
-    private $formCloner;
+    private $virtualProductFileListener;
 
     /**
      * @param TranslatorInterface $translator
@@ -76,23 +73,12 @@ class VirtualProductFileType extends TranslatorAwareType implements EventSubscri
         array $locales,
         int $maxFileSizeInMegabytes,
         RouterInterface $router,
-        FormCloner $formCloner
+        EventSubscriberInterface $virtualProductFileListener
     ) {
         parent::__construct($translator, $locales);
         $this->maxFileSizeInMegabytes = $maxFileSizeInMegabytes;
         $this->router = $router;
-        $this->formCloner = $formCloner;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            FormEvents::PRE_SET_DATA => 'adaptSelf',
-            FormEvents::PRE_SUBMIT => 'adaptSelf',
-        ];
+        $this->virtualProductFileListener = $virtualProductFileListener;
     }
 
     /**
@@ -102,7 +88,7 @@ class VirtualProductFileType extends TranslatorAwareType implements EventSubscri
     {
         $virtualProductFileDownloadUrl = null;
         if (!empty($options['virtual_product_file_id'])) {
-            $virtualProductFileDownloadUrl = $this->router->generate('admin_products_v2_download_virtual_product_file', [
+            $virtualProductFileDownloadUrl = $this->router->generate('admin_products_download_virtual_product_file', [
                 'virtualProductFileId' => (int) $options['virtual_product_file_id'],
             ]);
         }
@@ -123,6 +109,7 @@ class VirtualProductFileType extends TranslatorAwareType implements EventSubscri
                 ),
                 'constraints' => [
                     new File(['maxSize' => $maxUploadSize]),
+                    new NotBlank(),
                 ],
                 'download_url' => $virtualProductFileDownloadUrl,
                 'column_breaker' => true,
@@ -188,24 +175,7 @@ class VirtualProductFileType extends TranslatorAwareType implements EventSubscri
         ;
 
         // The form type acts as its own listener to dynamize some field options
-        $builder->addEventSubscriber($this);
-    }
-
-    /**
-     * @param FormEvent $event
-     */
-    public function adaptSelf(FormEvent $event): void
-    {
-        $form = $event->getForm();
-        $data = $event->getData();
-
-        // Remove filename constraint if there is no virtual product to avoid invalidating the form for nothing
-        if (empty($data['has_file'])) {
-            $newNameField = $this->formCloner->cloneForm($form->get('name'), [
-                'constraints' => [],
-            ]);
-            $form->add($newNameField);
-        }
+        $builder->addEventSubscriber($this->virtualProductFileListener);
     }
 
     /**

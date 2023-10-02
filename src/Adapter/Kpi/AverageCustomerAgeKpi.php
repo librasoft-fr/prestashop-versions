@@ -29,7 +29,7 @@ namespace PrestaShop\PrestaShop\Adapter\Kpi;
 use HelperKpi;
 use PrestaShop\PrestaShop\Core\ConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Kpi\KpiInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Renders average age of all customers.
@@ -72,7 +72,7 @@ final class AverageCustomerAgeKpi implements KpiInterface
         $helper->color = 'color2';
 
         $helper->title = $this->translator->trans('Average Age', [], 'Admin.Orderscustomers.Feature');
-        $helper->subtitle = $this->translator->trans('All Time', [], 'Admin.Global');
+        $helper->subtitle = $this->translator->trans('All time', [], 'Admin.Global');
 
         if (false !== $this->kpiConfiguration->get('AVG_CUSTOMER_AGE')) {
             $helper->value = $this->kpiConfiguration->get('AVG_CUSTOMER_AGE');

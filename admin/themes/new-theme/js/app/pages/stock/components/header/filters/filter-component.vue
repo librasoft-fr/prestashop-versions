@@ -58,9 +58,8 @@
       v-else
     >
       <li
-        v-for="(item, index) in getItems()"
+        v-for="(item, index) in visibleItems"
         :key="index"
-        v-show="item.visible"
         class="item"
       >
         <PSTreeItem
@@ -75,13 +74,14 @@
 </template>
 
 <script lang="ts">
-  import Vue from 'vue';
+  import {defineComponent} from 'vue';
   import PSTags from '@app/widgets/ps-tags.vue';
   import PSTreeItem from '@app/widgets/ps-tree/ps-tree-item.vue';
   import PSTree from '@app/widgets/ps-tree/ps-tree.vue';
-  import {EventBus} from '@app/utils/event-bus';
+  import {EventEmitter} from '@components/event-emitter';
+  import translate from '@app/pages/stock/mixins/translate';
 
-  const FilterComponent = Vue.extend({
+  const FilterComponent = defineComponent({
     props: {
       placeholder: {
         type: String,
@@ -102,6 +102,7 @@
         required: true,
       },
     },
+    mixins: [translate],
     computed: {
       isOverview(): boolean {
         return this.$route.name === 'overview';
@@ -114,6 +115,11 @@
           expand: this.trans('tree_expand'),
           reduce: this.trans('tree_reduce'),
         };
+      },
+      visibleItems(): Array<any> {
+        const items = this.getItems();
+
+        return items.filter((item) => item.visible);
       },
     },
     methods: {
@@ -178,7 +184,7 @@
         if (this.match) {
           checkedTag = this.match[this.label];
         }
-        EventBus.$emit('toggleCheckbox', checkedTag);
+        EventEmitter.emit('toggleCheckbox', checkedTag);
         this.currentVal = '';
       },
       filterList(tags: Array<any>): Array<number> {

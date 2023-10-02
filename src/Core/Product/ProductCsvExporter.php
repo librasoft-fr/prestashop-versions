@@ -29,9 +29,11 @@ namespace PrestaShop\PrestaShop\Core\Product;
 use PrestaShopBundle\Component\CsvResponse;
 use PrestaShopBundle\Service\DataProvider\Admin\ProductInterface as ProductDataProviderInterface;
 use Symfony\Component\Translation\Exception\InvalidArgumentException;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * Used to export list of Products in CSV in the Product list page.
  * For internal use only.
  */

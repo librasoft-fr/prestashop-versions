@@ -24,6 +24,7 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 use PrestaShop\PrestaShop\Adapter\ServiceLocator;
+use PrestaShop\PrestaShop\Core\Domain\Product\Stock\StockSettings;
 
 /**
  * Represents quantities available
@@ -80,7 +81,7 @@ class StockAvailableCore extends ObjectModel
             'id_product_attribute' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'id_shop' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
             'id_shop_group' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'quantity' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true, 'size' => 10],
+            'quantity' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true, 'range' => ['min' => StockSettings::INT_32_MAX_NEGATIVE, 'max' => StockSettings::INT_32_MAX_POSITIVE]],
             'depends_on_stock' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
             'out_of_stock' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true],
             'location' => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 255],
@@ -498,7 +499,12 @@ class StockAvailableCore extends ObjectModel
             return true;
         }
 
-        $id_shop = (Shop::getContext() != Shop::CONTEXT_GROUP && $this->id_shop ? $this->id_shop : null);
+        // If shop list was explicitly set we ignore the shop context
+        if (count($this->id_shop_list)) {
+            $id_shop = reset($this->id_shop_list);
+        } else {
+            $id_shop = (Shop::getContext() != Shop::CONTEXT_GROUP && $this->id_shop ? $this->id_shop : null);
+        }
 
         if (!Configuration::get('PS_DISP_UNAVAILABLE_ATTR')) {
             $combination = new Combination((int) $this->id_product_attribute);
@@ -625,6 +631,8 @@ class StockAvailableCore extends ObjectModel
                     'id_product' => $id_product,
                     'id_product_attribute' => $id_product_attribute,
                     'quantity' => $stock_available->quantity,
+                    'delta_quantity' => $deltaQuantity ?? null,
+                    'id_shop' => $id_shop,
                 ]
             );
         }
@@ -636,7 +644,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @param int $id_product
      * @param int|null $id_product_attribute Optional
-     * @param Shop|null $shop Shop id or shop object Optional
+     * @param Shop|int|null $shop Shop id or shop object Optional
      *
      * @return bool
      */
@@ -646,30 +654,38 @@ class StockAvailableCore extends ObjectModel
             return false;
         }
 
-        if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-            if (Shop::getContextShopGroup()->share_stock == 1) {
-                $pa_sql = '';
-                if ($id_product_attribute !== null) {
-                    $pa_sql = '_attribute';
-                    $id_product_attribute_sql = $id_product_attribute;
-                } else {
-                    $id_product_attribute_sql = $id_product;
-                }
+        if (null !== $shop) {
+            if (!($shop instanceof Shop)) {
+                $shop = new Shop($shop);
+            }
+            $groupSharedStock = (bool) $shop->getGroup()->share_stock;
+        } else {
+            $groupSharedStock = Shop::getContext() == Shop::CONTEXT_SHOP && (bool) Shop::getContextShopGroup()->share_stock;
+        }
 
-                if ((int) Db::getInstance()->getValue('SELECT COUNT(*)
+        // If stock is shared by group and the product is still associated to some shops from the group no need to delete the stock
+        if ($groupSharedStock) {
+            $pa_sql = '';
+            if ($id_product_attribute !== null) {
+                $pa_sql = '_attribute';
+                $id_product_attribute_sql = $id_product_attribute;
+            } else {
+                $id_product_attribute_sql = $id_product;
+            }
+
+            if ((int) Db::getInstance()->getValue('SELECT COUNT(*)
 						FROM ' . _DB_PREFIX_ . 'product' . $pa_sql . '_shop
 						WHERE id_product' . $pa_sql . '=' . (int) $id_product_attribute_sql . '
 							AND id_shop IN (' . implode(',', array_map('intval', Shop::getContextListShopID(Shop::SHARE_STOCK))) . ')')) {
-                    return true;
-                }
+                return true;
             }
         }
 
         $res = Db::getInstance()->execute('
 		DELETE FROM ' . _DB_PREFIX_ . 'stock_available
 		WHERE id_product = ' . (int) $id_product .
-        ($id_product_attribute ? ' AND id_product_attribute = ' . (int) $id_product_attribute : '') .
-        StockAvailable::addSqlShopRestriction(null, $shop));
+            ($id_product_attribute ? ' AND id_product_attribute = ' . (int) $id_product_attribute : '') .
+            StockAvailable::addSqlShopRestriction(null, $shop));
 
         if ($id_product_attribute) {
             if ($shop === null || !Validate::isLoadedObject($shop)) {

@@ -26,11 +26,14 @@
 
 namespace PrestaShopBundle\Controller\Admin;
 
+use PrestaShop\PrestaShop\Adapter\Product\AdminProductWrapper;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * Admin controller for product attachments (in /product/form page).
  */
 class AttachementProductController extends FrameworkBundleAdminController
@@ -38,7 +41,7 @@ class AttachementProductController extends FrameworkBundleAdminController
     /**
      * Manage form add product attachment.
      *
-     * @AdminSecurity("is_granted('create', 'ADMINPRODUCTS_') && is_granted('update', 'ADMINPRODUCTS_')")
+     * @AdminSecurity("is_granted('create', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller'))")
      *
      * @param int $idProduct
      * @param Request $request
@@ -49,7 +52,7 @@ class AttachementProductController extends FrameworkBundleAdminController
     {
         $response = new JsonResponse();
         $legacyContext = $this->get('prestashop.adapter.legacy.context');
-        $adminProductWrapper = $this->get('prestashop.adapter.admin.wrapper.product');
+        $adminProductWrapper = $this->get(AdminProductWrapper::class);
         $productAdapter = $this->get('prestashop.adapter.data_provider.product');
 
         //get product

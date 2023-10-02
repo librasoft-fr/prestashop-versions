@@ -33,6 +33,7 @@ use PrestaShop\PrestaShop\Core\Domain\Exception\FileUploadException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\Command\AddProductImageCommand;
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\Command\UpdateProductImageCommand;
 use PrestaShop\PrestaShop\Core\Domain\Product\Image\ValueObject\ImageId;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProductImageFormDataHandler implements FormDataHandlerInterface
@@ -57,13 +58,15 @@ class ProductImageFormDataHandler implements FormDataHandlerInterface
     public function create(array $data)
     {
         $uploadedFile = $data['file'] ?? null;
+
         if (!($uploadedFile instanceof UploadedFile)) {
             throw new FileUploadException('No file was uploaded', UPLOAD_ERR_NO_FILE);
         }
 
         $command = new AddProductImageCommand(
             (int) ($data['product_id'] ?? 0),
-            $uploadedFile->getPathname()
+            $uploadedFile->getPathname(),
+            !empty($data['shop_id']) ? ShopConstraint::shop((int) $data['shop_id']) : ShopConstraint::allShops()
         );
 
         /** @var ImageId $imageId */
@@ -77,7 +80,13 @@ class ProductImageFormDataHandler implements FormDataHandlerInterface
      */
     public function update($id, array $data)
     {
-        $command = new UpdateProductImageCommand((int) $id);
+        if (!empty($data['shop_id'])) {
+            $shopConstraint = ShopConstraint::shop((int) $data['shop_id']);
+        } else {
+            $shopConstraint = ShopConstraint::allShops();
+        }
+
+        $command = new UpdateProductImageCommand((int) $id, $shopConstraint);
 
         if (isset($data['is_cover'])) {
             $command->setIsCover($data['is_cover']);

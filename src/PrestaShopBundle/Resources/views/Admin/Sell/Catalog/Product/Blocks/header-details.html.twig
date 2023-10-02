@@ -30,7 +30,7 @@
    #}
   {% set productData = productForm.vars.data %}
   <div class="product-header-summary">
-    <div class="product-field-preview">
+    <div class="product-field-preview" data-role="price-tax-excluded">
       <div class="product-field-value">
         {% if productData.pricing.retail_price.ecotax_tax_excluded is defined %}
           {% set final_price_tax_excluded = productData.pricing.retail_price.price_tax_excluded + productData.pricing.retail_price.ecotax_tax_excluded %}
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="product-field-preview">
+    <div class="product-field-preview" data-role="price-tax-included">
       <div class="product-field-value">
         {{ productData.pricing.retail_price.price_tax_included|price_format }}
       </div>
@@ -75,22 +75,34 @@
         {% set lowStock = 0 %}
       {% endif %}
 
+      {% set outOfStockLabel = 'out of stock'|trans({}, 'Admin.Catalog.Feature') %}
+      {% set lowStockLabel = 'low stock'|trans({}, 'Admin.Catalog.Feature') %}
+      {% set inStockLabel = 'in stock'|trans({}, 'Admin.Catalog.Feature') %}
+
       {% if quantityData <= 0 %}
         {% set stockClass = 'danger' %}
-        {% set stockLabel = 'out of stock'|trans({}, 'Admin.Catalog.Feature') %}
+        {% set stockLabel = outOfStockLabel %}
       {% elseif lowStock > 0 and quantityData <= lowStock %}
         {% set stockClass = 'warning' %}
-        {% set stockLabel = 'low stock'|trans({}, 'Admin.Catalog.Feature') %}
+        {% set stockLabel = lowStockLabel %}
       {% else %}
         {% set stockClass = 'success' %}
-        {% set stockLabel = 'in stock'|trans({}, 'Admin.Catalog.Feature') %}
+        {% set stockLabel = inStockLabel %}
       {% endif %}
 
-      <div class="product-field-preview">
-        <div class="product-field-value {{ stockClass }}">
+      <div
+        class="product-field-preview"
+        data-role="quantity"
+        {# these data attributes are needed for dynamic quantity update in javascript side #}
+        data-low-stock-threshold="{{ lowStock }}"
+        data-out-of-stock-label="{{ outOfStockLabel }}"
+        data-low-stock-label="{{ lowStockLabel }}"
+        data-in-stock-label="{{ inStockLabel }}"
+      >
+        <div class="product-total-quantity product-field-value {{ stockClass }}">
           {{ quantityData }}
         </div>
-        <div class="product-field-label">
+        <div class="product-field-label product-total-quantity-label">
           {{ stockLabel }}
         </div>
       </div>
@@ -99,7 +111,7 @@
 {% endblock %}
 
 {% block header_references %}
-  {% set referencesForm = productForm.specifications.references %}
+  {% set referencesForm = productForm.details.references %}
   <div class="product-header-references">
     {% for child in referencesForm.children %}
       {% if child.vars.value is not empty %}

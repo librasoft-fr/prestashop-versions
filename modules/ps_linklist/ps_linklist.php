@@ -73,7 +73,7 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $this->name = 'ps_linklist';
         $this->author = 'PrestaShop';
-        $this->version = '5.0.5';
+        $this->version = '6.0.2';
         $this->need_instance = 0;
         $this->tab = 'front_office_features';
 
@@ -99,7 +99,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         $this->displayName = $this->trans('Link List', [], 'Modules.Linklist.Admin');
         $this->description = $this->trans('Give more visibility to your content/static pages (CMS, external pages, or else), where you want and when you want, to make your visitors feel like shopping on your store.', [], 'Modules.Linklist.Admin');
 
-        $this->ps_versions_compliancy = ['min' => '1.7.8.0', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '8.1.0', 'max' => _PS_VERSION_];
         $this->templateFile = 'module:ps_linklist/views/templates/hook/linkblock.tpl';
         $this->templateFileColumn = 'module:ps_linklist/views/templates/hook/linkblock-column.tpl';
 
@@ -142,8 +142,7 @@ class Ps_Linklist extends Module implements WidgetInterface
         $dataLoadedWithSuccess = $dataLoadedWithSuccess
             && $this->registerHook('displayFooter')
             && $this->registerHook('actionUpdateLangAfter')
-            && $this->registerHook('actionGeneralPageSave')
-        ;
+            && $this->registerHook('actionGeneralPageSave');
         if ($dataLoadedWithSuccess) {
             return true;
         }
@@ -261,7 +260,14 @@ class Ps_Linklist extends Module implements WidgetInterface
     {
         $key = 'ps_linklist|' . $hookName;
 
-        if ($hookName === 'displayLeftColumn' || $hookName === 'displayRightColumn') {
+        if (
+            in_array($hookName, [
+                'displayLeftColumn',
+                'displayLeftColumnProduct',
+                'displayRightColumn',
+                'displayRightColumnProduct',
+            ])
+        ) {
             $template = $this->templateFileColumn;
         } else {
             $template = $this->templateFile;

@@ -153,7 +153,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 			LEFT JOIN `' . _DB_PREFIX_ . 'state` s
 				ON (a.`id_state` = s.`id_state`)
 			LEFT JOIN `' . _DB_PREFIX_ . 'tax` t
-				ON (a.`id_tax` = t.`id_tax` AND t.active = 1)';
+				ON (a.`id_tax` = t.`id_tax`)';
         $this->_where = 'AND `id_tax_rules_group` = ' . (int) $id_group;
         $this->_use_found_rows = false;
 
@@ -165,6 +165,11 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return string|void
+     *
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         $this->fields_form = [
@@ -209,7 +214,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
                 'type' => 'shop',
-                'label' => $this->trans('Shop association', [], 'Admin.Global'),
+                'label' => $this->trans('Store association', [], 'Admin.Global'),
                 'name' => 'checkBoxShopAsso',
             ];
         }
@@ -330,7 +335,6 @@ class AdminTaxRulesGroupControllerCore extends AdminController
                             'label' => $this->trans('No Tax', [], 'Admin.International.Help'),
                         ],
                     ],
-                    'hint' => $this->trans('(Total tax: 9%)', [], 'Admin.International.Help'),
                 ],
                 [
                     'type' => 'text',

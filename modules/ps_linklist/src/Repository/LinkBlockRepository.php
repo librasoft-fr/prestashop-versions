@@ -28,7 +28,7 @@ use Hook;
 use PrestaShop\Module\LinkList\Adapter\ObjectModelHandler;
 use PrestaShop\PrestaShop\Adapter\Shop\Context;
 use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class LinkBlockRepository.

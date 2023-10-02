@@ -1,4 +1,4 @@
-(()=>{var o={9567:o=>{"use strict";o.exports=window.jQuery}},t={};function n(r){var e=t[r];if(void 0!==e)return e.exports;var i=t[r]={exports:{}};return o[r](i,i.exports,n),i.exports}
+(()=>{"use strict";var o={9567:o=>{o.exports=window.jQuery}},t={};function n(r){var e=t[r];if(void 0!==e)return e.exports;var i=t[r]={exports:{}};return o[r](i,i.exports,n),i.exports}
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA

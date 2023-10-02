@@ -35,10 +35,12 @@ use PrestaShopBundle\Form\Admin\Type\TranslateType;
 use Symfony\Component\Form\Extension\Core\Type as FormType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * This form class is responsible to generate the product shipping form.
  */
 class ProductShipping extends CommonAbstractType
@@ -105,7 +107,7 @@ class ProductShipping extends CommonAbstractType
         $this->carriersChoices = [];
         foreach ($carriers as $carrier) {
             $choiceId = $carrier['id_carrier'] . ' - ' . $carrier['name'];
-            if ($carrier['name']) {
+            if (!empty($carrier['delay'])) {
                 $choiceId .= ' (' . $carrier['delay'] . ')';
             }
 

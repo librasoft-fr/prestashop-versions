@@ -26,6 +26,7 @@
 import _ from 'lodash';
 import ProductEventMap from '@pages/product/product-event-map';
 import {EventEmitter} from 'events';
+import ProductMap from '@pages/product/product-map';
 
 const {$} = window;
 
@@ -46,15 +47,7 @@ export default class ProductPartialUpdater {
 
   private $productFormSubmitButton: JQuery;
 
-  private $productFormPreviewButton: JQuery;
-
-  private $productFormDuplicateButton: JQuery;
-
-  private $productFormNewProductButton: JQuery;
-
-  private $productFormGoToCatalogButton: JQuery;
-
-  private $productFormCancelButton: JQuery;
+  private $productTypePreview: JQuery;
 
   private initialData: Record<string, any>;
 
@@ -63,31 +56,15 @@ export default class ProductPartialUpdater {
   /**
    * @param eventEmitter {EventEmitter}
    * @param $productForm {JQuery}
-   * @param $productFormSubmitButton {JQuery}
-   * @param $productFormPreviewButton {JQuery}
-   * @param $productFormDuplicateButton {JQuery}
-   * @param $productFormNewProductButton {JQuery}
-   * @param $productFormGoToCatalogButton {JQuery}
-   * @param $productFormCancelButton {JQuery}
    */
   constructor(
     eventEmitter: EventEmitter,
     $productForm: JQuery,
-    $productFormSubmitButton: JQuery,
-    $productFormPreviewButton: JQuery,
-    $productFormDuplicateButton: JQuery,
-    $productFormNewProductButton: JQuery,
-    $productFormGoToCatalogButton: JQuery,
-    $productFormCancelButton: JQuery,
   ) {
     this.eventEmitter = eventEmitter;
     this.$productForm = $productForm;
-    this.$productFormSubmitButton = $productFormSubmitButton;
-    this.$productFormPreviewButton = $productFormPreviewButton;
-    this.$productFormDuplicateButton = $productFormDuplicateButton;
-    this.$productFormNewProductButton = $productFormNewProductButton;
-    this.$productFormGoToCatalogButton = $productFormGoToCatalogButton;
-    this.$productFormCancelButton = $productFormCancelButton;
+    this.$productFormSubmitButton = $(ProductMap.productFormSubmitButton);
+    this.$productTypePreview = $(ProductMap.productType.headerPreviewButton);
     this.initialData = {};
 
     this.watch();
@@ -104,7 +81,11 @@ export default class ProductPartialUpdater {
     this.initialData = this.getFormDataAsObject();
     this.$productForm.submit(() => this.updatePartialForm());
     // 'dp.change' event allows tracking datepicker input changes
-    this.$productForm.on('keyup change dp.change', ':input', () => this.updateFooterButtonStates());
+    this.$productForm.on('keyup change dp.change',
+      // listen for all inputs except combination filters
+      `:input[name!="${ProductMap.combinations.list.attributeFilterInputName}"]`,
+      () => this.updateFooterButtonStates(),
+    );
     this.eventEmitter.on(ProductEventMap.updateSubmitButtonState, () => this.updateFooterButtonStates());
     this.eventEmitter.on(ProductEventMap.combinations.listEditionMode, (editionMode) => {
       this.listEditionMode = editionMode;
@@ -227,27 +208,53 @@ export default class ProductPartialUpdater {
     const updatedData = this.getUpdatedFormData();
 
     if (this.listEditionMode) {
-      this.$productFormSubmitButton.prop('disabled', true);
-      this.$productFormCancelButton.addClass('disabled');
-      this.$productFormGoToCatalogButton.addClass('disabled');
-      this.$productFormPreviewButton.addClass('disabled');
-      this.$productFormDuplicateButton.addClass('disabled');
-      this.$productFormNewProductButton.addClass('disabled');
+      this.toggleButtonsState([
+        ProductMap.productFormSubmitButton,
+        ProductMap.footer.cancelButton,
+        ProductMap.footer.goToCatalogButton,
+        ProductMap.footer.previewUrlButton,
+        ProductMap.footer.duplicateProductButton,
+        ProductMap.footer.newProductButton,
+        ProductMap.productType.headerPreviewButton,
+      ], false);
+      // Disable type button permanently
+      this.$productTypePreview.off('click');
     } else if (updatedData === null) {
-      this.$productFormSubmitButton.prop('disabled', true);
-      this.$productFormCancelButton.addClass('disabled');
-      this.$productFormGoToCatalogButton.removeClass('disabled');
-      this.$productFormPreviewButton.removeClass('disabled');
-      this.$productFormDuplicateButton.removeClass('disabled');
-      this.$productFormNewProductButton.removeClass('disabled');
+      // Initial mode no modification
+      this.toggleButtonsState([
+        ProductMap.productFormSubmitButton,
+        ProductMap.footer.cancelButton,
+      ], false);
+      this.toggleButtonsState([
+        ProductMap.footer.goToCatalogButton,
+        ProductMap.footer.previewUrlButton,
+        ProductMap.footer.duplicateProductButton,
+        ProductMap.footer.newProductButton,
+        ProductMap.productType.headerPreviewButton,
+      ], true);
     } else {
-      this.$productFormSubmitButton.prop('disabled', false);
-      this.$productFormCancelButton.removeClass('disabled');
-      this.$productFormGoToCatalogButton.addClass('disabled');
-      this.$productFormPreviewButton.addClass('disabled');
-      this.$productFormDuplicateButton.addClass('disabled');
-      this.$productFormNewProductButton.addClass('disabled');
+      this.toggleButtonsState([
+        ProductMap.productFormSubmitButton,
+        ProductMap.footer.cancelButton,
+      ], true);
+      this.toggleButtonsState([
+        ProductMap.footer.goToCatalogButton,
+        ProductMap.footer.previewUrlButton,
+        ProductMap.footer.duplicateProductButton,
+        ProductMap.footer.newProductButton,
+        ProductMap.productType.headerPreviewButton,
+      ], false);
+      // Disable type button permanently
+      this.$productTypePreview.off('click');
     }
+  }
+
+  private toggleButtonsState(buttons: string[], enabled: boolean): void {
+    buttons.forEach((buttonSelector: string) => {
+      const $button = $(buttonSelector);
+      $button.prop('disabled', !enabled);
+      $button.toggleClass('disabled', !enabled);
+    });
   }
 
   /**

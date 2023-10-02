@@ -30,6 +30,8 @@ use PrestaShop\PrestaShop\Core\Hook\Hook;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use PrestaShop\PrestaShop\Core\Hook\HookInterface;
 use PrestaShop\PrestaShop\Core\Hook\RenderedHook;
+use PrestaShop\PrestaShop\Core\Version;
+use PrestaShopBundle\DataCollector\HookRegistry;
 use PrestaShopBundle\Service\Hook\HookEvent;
 use PrestaShopBundle\Service\Hook\RenderingHookEvent;
 use Symfony\Component\EventDispatcher\Event;
@@ -57,11 +59,34 @@ class HookDispatcher extends EventDispatcher implements HookDispatcherInterface
     private $requestStack;
 
     /**
-     * @param RequestStack|null $requestStack (nullable to preserve backward compatibility)
+     * @var HookRegistry
      */
-    public function __construct(RequestStack $requestStack = null)
-    {
+    private $hookRegistry;
+
+    /**
+     * @var bool
+     */
+    private $isDebug;
+
+    /**
+     * @param RequestStack|null $requestStack (nullable to preserve backward compatibility)
+     * @param iterable|null $hookSubscribers
+     * @param HookRegistry|null $hookRegistry (nullable to preserve backward compatibility)
+     * @param bool $isDebug
+     */
+    public function __construct(
+        RequestStack $requestStack = null,
+        iterable $hookSubscribers = null,
+        HookRegistry $hookRegistry = null,
+        bool $isDebug = false
+    ) {
         $this->requestStack = $requestStack;
+        $this->hookRegistry = $hookRegistry;
+        $this->isDebug = $isDebug;
+
+        foreach ($hookSubscribers as $hookSubscriber) {
+            $this->addSubscriber($hookSubscriber);
+        }
     }
 
     /**
@@ -86,6 +111,25 @@ class HookDispatcher extends EventDispatcher implements HookDispatcherInterface
 
         if ($listeners = $this->getListeners(strtolower($eventName))) {
             $this->doDispatch($listeners, $eventName, $event);
+        } elseif ($this->isDebug && null !== $this->hookRegistry) {
+            // When a hook has no listeners it means it's not even in the database or no modules were attached, in the current case
+            // Hook::exec will never be called meaning no stats will be registered for this hook So we handle the registry data collection
+            // here so that we can still get some info in the Debug toolbar
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5);
+
+            // Try to find the initial backtrace that was not called from the dispatcher services
+            $initialBackTrace = [];
+            for ($i = 0; $i < count($backtrace); ++$i) {
+                $initialBackTrace = $backtrace[$i];
+                $isCodeFromDispatcher = (bool) strpos($initialBackTrace['file'], 'HookDispatcher');
+                if (!$isCodeFromDispatcher) {
+                    break;
+                }
+            }
+
+            $this->hookRegistry->selectHook($eventName, $event->getHookParameters(), $initialBackTrace['file'] ?? 'unknown file', $initialBackTrace['line'] ?? 'unknown line');
+            $this->hookRegistry->hookWasNotRegistered();
+            $this->hookRegistry->collect();
         }
 
         return $event;
@@ -224,7 +268,7 @@ class HookDispatcher extends EventDispatcher implements HookDispatcherInterface
      */
     private function getHookEventContextParameters(): array
     {
-        $globalParameters = ['_ps_version' => \AppKernel::VERSION];
+        $globalParameters = ['_ps_version' => Version::VERSION];
 
         if (null === $this->requestStack) {
             return $globalParameters;

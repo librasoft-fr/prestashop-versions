@@ -31,13 +31,23 @@ services:
   prestashop.adapter.image.uploader.supplier_image_uploader:
     class: 'PrestaShop\PrestaShop\Adapter\Image\Uploader\SupplierImageUploader'
 
-  prestashop.adapter.image.image_generator:
-    class: 'PrestaShop\PrestaShop\Adapter\Image\ImageGenerator'
+  PrestaShop\PrestaShop\Adapter\Image\ImageGenerator:
+    arguments:
+      - '@prestashop.core.admin.feature_flag.repository'
+      - '@PrestaShop\PrestaShop\Core\Image\ImageFormatConfiguration'
 
-  prestashop.adapter.image.image_validator:
-    class: 'PrestaShop\PrestaShop\Adapter\Image\ImageValidator'
+  PrestaShop\PrestaShop\Adapter\Image\ImageValidator:
     arguments:
       - '@=service("prestashop.core.configuration.upload_size_configuration").getMaxUploadSizeInBytes()'
+
+  PrestaShop\PrestaShop\Adapter\Image\ProductImageFileValidator:
+    arguments:
+      - '@=service("prestashop.core.configuration.upload_size_configuration").getMaxUploadSizeInBytes()'
+      - '@prestashop.adapter.upload_quota.configuration'
+
+  prestashop.adapter.image.image_validator:
+    alias: PrestaShop\PrestaShop\Adapter\Image\ImageValidator
+    deprecated: ~
 
   prestashop.adapter.image.category_image_path_factory:
     class: 'PrestaShop\PrestaShop\Adapter\Image\ImagePathFactory'

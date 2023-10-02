@@ -390,6 +390,7 @@ class AddressController extends FrameworkBundleAdminController
             'displayInIframe' => $request->query->has('submitFormAjax'),
             'addressForm' => $addressForm->createView(),
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
+            'cancelPath' => $request->query->has('back') ? $request->query->get('back') : $this->generateUrl('admin_addresses_index'),
         ]);
     }
 
@@ -618,7 +619,7 @@ class AddressController extends FrameworkBundleAdminController
                 $e instanceof BulkDeleteAddressException ? implode(', ', $e->getAddressIds()) : ''
             ),
             AddressNotFoundException::class => $this->trans(
-                'The object cannot be loaded (or found)',
+                'The object cannot be loaded (or found).',
                 'Admin.Notifications.Error'
             ),
             CannotSetRequiredFieldsForAddressException::class => $this->trans(
@@ -675,15 +676,15 @@ class AddressController extends FrameworkBundleAdminController
                 ),
             ],
             CustomerNotFoundException::class => $this->trans(
-                'The object cannot be loaded (or found)',
+                'The object cannot be loaded (or found).',
                 'Admin.Notifications.Error'
             ),
             CountryNotFoundException::class => $this->trans(
-                'The object cannot be loaded (or found)',
+                'The object cannot be loaded (or found).',
                 'Admin.Notifications.Error'
             ),
             CustomerByEmailNotFoundException::class => $this->trans(
-                'The object cannot be loaded (or found)',
+                'The object cannot be loaded (or found).',
                 'Admin.Notifications.Error'
             ),
         ];

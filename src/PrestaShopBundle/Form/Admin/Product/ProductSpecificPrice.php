@@ -42,10 +42,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * This form class is responsible to generate the basic product specific prices form.
  */
 class ProductSpecificPrice extends CommonAbstractType
@@ -159,7 +161,7 @@ class ProductSpecificPrice extends CommonAbstractType
                     'choices' => $this->shops,
                     'required' => false,
                     'label' => false,
-                    'placeholder' => $this->translator->trans('All shops', [], 'Admin.Global'),
+                    'placeholder' => $this->translator->trans('All stores', [], 'Admin.Global'),
                 ]
             );
         }

@@ -14,12 +14,17 @@ services:
     class: 'PrestaShop\PrestaShop\Adapter\Country\CountryZipCodeRequirementsProvider'
     arguments:
       - '@prestashop.adapter.legacy.context'
-      - '@prestashop.core.domain.country.zip_code_format_resolver'
+      - '@PrestaShop\PrestaShop\Core\Domain\Country\ZipCodePatternResolverInterface'
 
   prestashop.adapter.country.country_required_fields_provider:
     class: 'PrestaShop\PrestaShop\Adapter\Country\CountryRequiredFieldsProvider'
     arguments:
       - '@prestashop.adapter.data_provider.country'
 
-  prestashop.adapter.country.repository.country_repository:
-    class: 'PrestaShop\PrestaShop\Adapter\Country\Repository\CountryRepository'
+  PrestaShop\PrestaShop\Adapter\Country\Repository\CountryRepository: ~
+
+  prestashop.adapter.country.command_handler.add_country_handler:
+    public: true
+    class: 'PrestaShop\PrestaShop\Adapter\Country\CommandHandler\AddCountryHandler'
+    tags:
+      - { name: 'tactician.handler', command: 'PrestaShop\PrestaShop\Core\Domain\Country\Command\AddCountryCommand' }

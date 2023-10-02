@@ -110,6 +110,9 @@ class ShopCore extends ObjectModel
     /** @var int|null ID shop group in the current context (will be empty if context is CONTEXT_ALL) */
     protected static $context_id_shop_group;
 
+    /** @var ShopGroup|null Context shop group kept as cache */
+    protected static $context_shop_group = null;
+
     /** @var bool|null is multistore activated */
     protected static $feature_active;
 
@@ -241,6 +244,7 @@ class ShopCore extends ObjectModel
     public function add($autodate = true, $null_values = false)
     {
         $res = parent::add($autodate, $null_values);
+        Shop::resetStaticCache();
         Shop::cacheShops(true);
 
         return $res;
@@ -396,7 +400,9 @@ class ShopCore extends ObjectModel
             Configuration::getMultiShopValues('PS_MEDIA_SERVER_3')
         );
 
-        if ((!$id_shop && defined('_PS_ADMIN_DIR_')) || Tools::isPHPCLI() || in_array($http_host, $all_media)) {
+        $isAllShop = 'all' === $id_shop;
+        $isApiInUse = defined('_PS_API_IN_USE_') && _PS_API_IN_USE_;
+        if ((!$id_shop && defined('_PS_ADMIN_DIR_')) || ($isAllShop && $isApiInUse) || Tools::isPHPCLI() || in_array($http_host, $all_media)) {
             // If in admin, we can access to the shop without right URL
             if ((!$id_shop && Tools::isPHPCLI()) || defined('_PS_ADMIN_DIR_')) {
                 $id_shop = (int) Configuration::get('PS_SHOP_DEFAULT');
@@ -465,6 +471,7 @@ class ShopCore extends ObjectModel
 
         self::$context_id_shop = $shop->id;
         self::$context_id_shop_group = $shop->id_shop_group;
+        static::$context_shop_group = null;
         self::$context = self::CONTEXT_SHOP;
 
         return $shop;
@@ -522,7 +529,7 @@ class ShopCore extends ObjectModel
      *
      * @return string|bool complete base url of current shop
      */
-    public function getBaseURL($auto_secure_mode = false, $add_base_uri = true)
+    public function getBaseURL($auto_secure_mode = true, $add_base_uri = true)
     {
         if ($auto_secure_mode && Tools::usingSecureMode()) {
             if (!$this->domain_ssl) {
@@ -984,7 +991,7 @@ class ShopCore extends ObjectModel
             default:
                 throw new PrestaShopException('Unknown context for shop');
         }
-
+        static::$context_shop_group = null;
         self::$context = $type;
     }
 
@@ -1003,6 +1010,7 @@ class ShopCore extends ObjectModel
         parent::resetStaticCache();
         static::$shops = null;
         static::$feature_active = null;
+        static::$context_shop_group = null;
         Cache::clean('Shop::*');
     }
 
@@ -1066,12 +1074,11 @@ class ShopCore extends ObjectModel
 
     public static function getContextShopGroup()
     {
-        static $context_shop_group = null;
-        if ($context_shop_group === null) {
-            $context_shop_group = new ShopGroup((int) self::$context_id_shop_group);
+        if (static::$context_shop_group === null) {
+            static::$context_shop_group = new ShopGroup((int) self::$context_id_shop_group);
         }
 
-        return $context_shop_group;
+        return static::$context_shop_group;
     }
 
     /**

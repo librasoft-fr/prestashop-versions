@@ -7,6 +7,7 @@ namespace Doctrine\Persistence\Mapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Proxy;
 use Psr\Cache\CacheItemPoolInterface;
+use ReflectionClass;
 use ReflectionException;
 
 use function array_combine;
@@ -15,7 +16,10 @@ use function array_map;
 use function array_reverse;
 use function array_unshift;
 use function assert;
+use function class_exists;
+use function ltrim;
 use function str_replace;
+use function strpos;
 use function strrpos;
 use function substr;
 
@@ -151,6 +155,18 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     abstract protected function isEntity(ClassMetadata $class);
 
     /**
+     * Removes the prepended backslash of a class string to conform with how php outputs class names
+     *
+     * @psalm-param class-string $className
+     *
+     * @psalm-return class-string
+     */
+    private function normalizeClassName(string $className): string
+    {
+        return ltrim($className, '\\');
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @throws ReflectionException
@@ -158,8 +174,18 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public function getMetadataFor(string $className)
     {
+        $className = $this->normalizeClassName($className);
+
         if (isset($this->loadedMetadata[$className])) {
             return $this->loadedMetadata[$className];
+        }
+
+        if (class_exists($className, false) && (new ReflectionClass($className))->isAnonymous()) {
+            throw MappingException::classIsAnonymous($className);
+        }
+
+        if (! class_exists($className, false) && strpos($className, ':') !== false) {
+            throw MappingException::nonExistingClass($className);
         }
 
         $realClassName = $this->getRealClass($className);
@@ -168,8 +194,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             // We do not have the alias name in the map, include it
             return $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
         }
-
-        $loadingException = null;
 
         try {
             if ($this->cache !== null) {
@@ -223,6 +247,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public function hasMetadataFor(string $className)
     {
+        $className = $this->normalizeClassName($className);
+
         return isset($this->loadedMetadata[$className]);
     }
 
@@ -231,13 +257,14 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * NOTE: This is only useful in very special cases, like when generating proxy classes.
      *
+     * @psalm-param class-string $className
      * @psalm-param CMTemplate $class
      *
      * @return void
      */
     public function setMetadataFor(string $className, ClassMetadata $class)
     {
-        $this->loadedMetadata[$className] = $class;
+        $this->loadedMetadata[$this->normalizeClassName($className)] = $class;
     }
 
     /**
@@ -246,7 +273,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * @psalm-param class-string $name
      *
      * @return string[]
-     * @psalm-return class-string[]
+     * @psalm-return list<class-string>
      */
     protected function getParentClasses(string $name)
     {
@@ -271,13 +298,14 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * Important: The class $name does not necessarily exist at this point here.
      * Scenarios in a code-generation setup might have access to XML/YAML
      * Mapping files without the actual PHP code existing here. That is why the
-     * {@see Doctrine\Persistence\Mapping\ReflectionService} interface
+     * {@see \Doctrine\Persistence\Mapping\ReflectionService} interface
      * should be used for reflection.
      *
      * @param string $name The name of the class for which the metadata should get loaded.
      * @psalm-param class-string $name
      *
      * @return array<int, string>
+     * @psalm-return list<string>
      */
     protected function loadMetadata(string $name)
     {
@@ -381,6 +409,14 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     {
         if (! $this->initialized) {
             $this->initialize();
+        }
+
+        if (class_exists($className, false) && (new ReflectionClass($className))->isAnonymous()) {
+            return false;
+        }
+
+        if (! class_exists($className, false) && strpos($className, ':') !== false) {
+            throw MappingException::nonExistingClass($className);
         }
 
         /** @psalm-var class-string $className */

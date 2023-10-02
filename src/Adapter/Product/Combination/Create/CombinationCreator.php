@@ -28,13 +28,22 @@ declare(strict_types=1);
 
 namespace PrestaShop\PrestaShop\Adapter\Product\Combination\Create;
 
+use PrestaShop\PrestaShop\Adapter\Attribute\Repository\AttributeRepository;
+use PrestaShop\PrestaShop\Adapter\AttributeGroup\Repository\AttributeGroupRepository;
 use PrestaShop\PrestaShop\Adapter\Product\Combination\Repository\CombinationRepository;
+use PrestaShop\PrestaShop\Adapter\Product\Combination\Update\DefaultCombinationUpdater;
 use PrestaShop\PrestaShop\Adapter\Product\Repository\ProductRepository;
+use PrestaShop\PrestaShop\Adapter\Product\Stock\Repository\StockAvailableRepository;
+use PrestaShop\PrestaShop\Core\Domain\Product\Combination\Exception\CannotGenerateCombinationException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Combination\ValueObject\CombinationId;
 use PrestaShop\PrestaShop\Core\Domain\Product\Combination\ValueObject\GroupedAttributeIds;
 use PrestaShop\PrestaShop\Core\Domain\Product\Exception\InvalidProductTypeException;
+use PrestaShop\PrestaShop\Core\Domain\Product\Stock\ValueObject\OutOfStockType;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductType;
+use PrestaShop\PrestaShop\Core\Domain\Shop\Exception\ShopAssociationNotFound;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopId;
 use PrestaShop\PrestaShop\Core\Exception\CoreException;
 use PrestaShop\PrestaShop\Core\Product\Combination\Generator\CombinationGeneratorInterface;
 use PrestaShopException;
@@ -53,41 +62,75 @@ class CombinationCreator
     private $combinationGenerator;
 
     /**
-     * @var CombinationRepository
-     */
-    private $combinationRepository;
-
-    /**
      * @var ProductRepository
      */
     private $productRepository;
 
     /**
+     * @var CombinationRepository
+     */
+    private $combinationRepository;
+
+    /**
+     * @var StockAvailableRepository
+     */
+    private $stockAvailableRepository;
+
+    /**
+     * @var AttributeGroupRepository
+     */
+    private $attributeGroupRepository;
+
+    /**
+     * @var AttributeRepository
+     */
+    private $attributeRepository;
+
+    /**
+     * @var DefaultCombinationUpdater
+     */
+    private $defaultCombinationUpdater;
+
+    /**
      * @param CombinationGeneratorInterface $combinationGenerator
      * @param CombinationRepository $combinationRepository
      * @param ProductRepository $productRepository
+     * @param StockAvailableRepository $stockAvailableRepository
+     * @param DefaultCombinationUpdater $defaultCombinationUpdater
      */
     public function __construct(
         CombinationGeneratorInterface $combinationGenerator,
         CombinationRepository $combinationRepository,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        StockAvailableRepository $stockAvailableRepository,
+        AttributeGroupRepository $attributeGroupRepository,
+        AttributeRepository $attributeRepository,
+        DefaultCombinationUpdater $defaultCombinationUpdater
     ) {
         $this->combinationGenerator = $combinationGenerator;
         $this->combinationRepository = $combinationRepository;
         $this->productRepository = $productRepository;
+        $this->stockAvailableRepository = $stockAvailableRepository;
+        $this->defaultCombinationUpdater = $defaultCombinationUpdater;
+        $this->attributeGroupRepository = $attributeGroupRepository;
+        $this->attributeRepository = $attributeRepository;
     }
 
     /**
      * @param ProductId $productId
      * @param GroupedAttributeIds[] $groupedAttributeIdsList
+     * @param ShopConstraint $shopConstraint
      *
      * @return CombinationId[]
      *
-     * @todo: multistore
+     * @throws CoreException
+     * @throws InvalidProductTypeException
      */
-    public function createCombinations(ProductId $productId, array $groupedAttributeIdsList): array
+    public function createCombinations(ProductId $productId, array $groupedAttributeIdsList, ShopConstraint $shopConstraint): array
     {
-        $product = $this->productRepository->get($productId);
+        $product = $this->productRepository->getByShopConstraint($productId, $shopConstraint);
+        $this->assertAttributesExistenceInShops($productId, $groupedAttributeIdsList, $shopConstraint);
+
         if ($product->product_type !== ProductType::TYPE_COMBINATIONS) {
             throw new InvalidProductTypeException(InvalidProductTypeException::EXPECTED_COMBINATIONS_TYPE);
         }
@@ -96,13 +139,40 @@ class CombinationCreator
 
         // avoid applying specificPrice on each combination.
         $this->disableSpecificPriceRulesApplication();
-
-        $combinationIds = $this->addCombinations($product, $generatedCombinations);
+        $shopIdsByConstraint = $this->productRepository->getShopIdsByConstraint($productId, $shopConstraint);
+        $combinationIds = $this->addCombinations($product, $generatedCombinations, $shopIdsByConstraint);
 
         // apply all specific price rules at once after all the combinations are generated
         $this->applySpecificPriceRules($productId);
+        $this->productRepository->updateCachedDefaultCombination($productId, $shopConstraint);
+        $this->syncOutOfStockType($product, $shopConstraint, $shopIdsByConstraint);
 
         return $combinationIds;
+    }
+
+    /**
+     * Makes sure combinations out_of_stock type has the same value as the product out_of_stock type.
+     *
+     * @param Product $product
+     * @param ShopConstraint $shopConstraint
+     * @param ShopId[] $shopIdsByConstraint
+     */
+    private function syncOutOfStockType(
+        Product $product,
+        ShopConstraint $shopConstraint,
+        array $shopIdsByConstraint
+    ): void {
+        $productId = new ProductId((int) $product->id);
+        $productStockAvailable = $this->stockAvailableRepository->getForProduct($productId, new ShopId($product->getShopId()));
+        $outOfStockType = new OutOfStockType((int) $productStockAvailable->out_of_stock);
+
+        if ($shopConstraint->forAllShops()) {
+            foreach ($shopIdsByConstraint as $shopId) {
+                $this->combinationRepository->updateCombinationOutOfStockType($productId, $outOfStockType, ShopConstraint::shop($shopId->getValue()));
+            }
+        } else {
+            $this->combinationRepository->updateCombinationOutOfStockType($productId, $outOfStockType, $shopConstraint);
+        }
     }
 
     /**
@@ -125,54 +195,93 @@ class CombinationCreator
     /**
      * @param Product $product
      * @param Traversable $generatedCombinations
+     * @param ShopId[] $shopIds
      *
-     * @return CombinationId[]
-     *
-     * @throws CoreException
+     * @return CombinationId[] the ids of newly created combinations
      */
-    private function addCombinations(Product $product, Traversable $generatedCombinations): array
+    private function addCombinations(Product $product, Traversable $generatedCombinations, array $shopIds): array
     {
         $product->setAvailableDate();
         $productId = new ProductId((int) $product->id);
-        $alreadyHasCombinations = $hasDefault = (bool) $this->combinationRepository->findDefaultCombination($productId);
+        $hasCombinations = $this->productRepository->hasCombinations($productId);
+        $newCombinationIds = [];
 
-        $addedCombinationIds = [];
         foreach ($generatedCombinations as $generatedCombination) {
-            // Product already has combinations so we need to filter existing ones
-            if ($alreadyHasCombinations) {
-                $attributeIds = array_values($generatedCombination);
-                $matchingCombinations = $this->combinationRepository->getCombinationIdsByAttributes($productId, $attributeIds);
-                if (!empty($matchingCombinations)) {
-                    continue;
-                }
+            if (!$hasCombinations || !$matchingCombinationId = $this->findMatchingCombinationId($productId, $generatedCombination)) {
+                // Product has no combinations yet, so we create new combinations and skip the rest of the loop
+                $newCombinationIds[] = $this->persistCombination($productId, $generatedCombination, $shopIds);
+                continue;
             }
 
-            $addedCombinationIds[] = $this->persistCombination($productId, $generatedCombination, !$hasDefault);
-            $hasDefault = true;
+            foreach ($shopIds as $shopId) {
+                // if there is a combination of provided attributes, and it is already associated with the shop, then we don't do anything and skip to next iteration
+                if ($this->combinationRepository->isAssociatedWithShop($matchingCombinationId, $shopId)) {
+                    continue;
+                }
+
+                // when combination already exists in product_attribute, then we add it to related product_attribute_shop
+                $this->combinationRepository->addToShop($matchingCombinationId, $shopId);
+                // create dedicated stock_available for combination in related shop
+                $this->stockAvailableRepository->createStockAvailable($productId, $shopId, $matchingCombinationId);
+            }
         }
 
-        return $addedCombinationIds;
+        $this->updateDefaultCombination($productId, $shopIds);
+
+        return $newCombinationIds;
+    }
+
+    /**
+     * @param ProductId $productId
+     * @param ShopId[] $shopIds
+     */
+    private function updateDefaultCombination(ProductId $productId, array $shopIds): void
+    {
+        foreach ($shopIds as $shopId) {
+            // set default combination if none is set yet
+            if (!$this->combinationRepository->findDefaultCombinationIdForShop($productId, $shopId)) {
+                $shopConstraint = ShopConstraint::shop($shopId->getValue());
+                $firstCombinationId = $this->combinationRepository->findFirstCombinationId($productId, $shopConstraint);
+                $this->defaultCombinationUpdater->setDefaultCombination($firstCombinationId, $shopConstraint);
+            }
+        }
     }
 
     /**
      * @param ProductId $productId
      * @param int[] $generatedCombination
-     * @param bool $isDefault
+     *
+     * @return CombinationId|null
+     */
+    private function findMatchingCombinationId(ProductId $productId, array $generatedCombination): ?CombinationId
+    {
+        $attributeIds = array_values($generatedCombination);
+
+        return $this->combinationRepository->findCombinationIdByAttributes($productId, $attributeIds);
+    }
+
+    /**
+     * @param ProductId $productId
+     * @param int[] $generatedCombination
+     * @param ShopId[] $shopIds
      *
      * @return CombinationId
-     *
-     * @throws CoreException
      */
-    private function persistCombination(ProductId $productId, array $generatedCombination, bool $isDefault): CombinationId
-    {
-        $combination = $this->combinationRepository->create($productId, $isDefault);
+    private function persistCombination(
+        ProductId $productId,
+        array $generatedCombination,
+        array $shopIds
+    ): CombinationId {
+        $combination = $this->combinationRepository->create($productId, $shopIds);
         $combinationId = new CombinationId((int) $combination->id);
 
-        //@todo: Use DB transaction instead if they are accepted (PR #21740)
         try {
             $this->combinationRepository->saveProductAttributeAssociation($combinationId, $generatedCombination);
         } catch (CoreException $e) {
-            $this->combinationRepository->delete($combinationId);
+            foreach ($shopIds as $shopId) {
+                $this->combinationRepository->delete($combinationId, ShopConstraint::shop($shopId->getValue()));
+            }
+
             throw $e;
         }
 
@@ -203,6 +312,41 @@ class CombinationCreator
             SpecificPriceRule::applyAllRules([$productId->getValue()]);
         } catch (PrestaShopException $e) {
             throw new CoreException('Error occurred when trying to apply specific prices rules', 0, $e);
+        }
+    }
+
+    /**
+     * @param ProductId $productId
+     * @param GroupedAttributeIds[] $groupedAttributeIdsList
+     * @param ShopConstraint $shopConstraint
+     *
+     * @return void
+     *
+     * @throws CannotGenerateCombinationException
+     */
+    private function assertAttributesExistenceInShops(
+        ProductId $productId,
+        array $groupedAttributeIdsList,
+        ShopConstraint $shopConstraint
+    ): void {
+        $attributeGroupIds = [];
+        $attributeIds = [];
+        foreach ($groupedAttributeIdsList as $groupedAttributeIds) {
+            $attributeGroupIds[] = $groupedAttributeIds->getAttributeGroupId();
+            $attributeIds = array_merge($attributeIds, $groupedAttributeIds->getAttributeIds());
+        }
+
+        $shopIds = $this->productRepository->getShopIdsByConstraint($productId, $shopConstraint);
+
+        try {
+            $this->attributeGroupRepository->assertExistsInEveryShop($attributeGroupIds, $shopIds);
+            $this->attributeRepository->assertExistsInEveryShop($attributeIds, $shopIds);
+        } catch (ShopAssociationNotFound $e) {
+            throw new CannotGenerateCombinationException(
+                'Not all provided attributes exists in all shops',
+                CannotGenerateCombinationException::DIFFERENT_ATTRIBUTES_BETWEEN_SHOPS,
+                $e
+            );
         }
     }
 }

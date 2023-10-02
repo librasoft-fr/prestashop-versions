@@ -4,7 +4,9 @@ admin_carriers_index:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::indexAction'
     _legacy_controller: AdminCarriers
-#     _legacy_link: AdminCarriers
+    _legacy_link: AdminCarriers
+    _legacy_feature_flag: carrier
+
 
 admin_carriers_search:
   path: /
@@ -12,13 +14,16 @@ admin_carriers_search:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::searchAction'
     _legacy_controller: AdminCarriers
-#     _legacy_link: AdminCarriers:submitFiltercarrier
+    _legacy_link: AdminCarriers:submitFiltercarrier
+    _legacy_feature_flag: carrier
+
 
 admin_carriers_edit:
   path: /{carrierId}/edit
   methods: GET
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::editAction'
+    _legacy_controller: AdminCarriers
   requirements:
     carrierId: \d+
 
@@ -28,7 +33,8 @@ admin_carriers_delete:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::deleteAction'
     _legacy_controller: AdminCarriers
-    #     _legacy_link: AdminCarriers:deletecarrier
+    _legacy_link: AdminCarriers:deletecarrier
+    _legacy_feature_flag: carrier
     _legacy_parameters:
       id_carrier: carrierId
   requirements:
@@ -40,7 +46,8 @@ admin_carriers_toggle_status:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::toggleStatusAction'
     _legacy_controller: AdminCarriers
-    #     _legacy_link: AdminCarriers:statuscarrier
+    _legacy_link: AdminCarriers:statuscarrier
+    _legacy_feature_flag: carrier
     _legacy_parameters:
       id_carrier: carrierId
   requirements:
@@ -52,7 +59,8 @@ admin_carriers_toggle_is_free:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::toggleIsFreeAction'
     _legacy_controller: AdminCarriers
-    #     _legacy_link: AdminCarriers:isFreecarrier
+    _legacy_link: AdminCarriers:isFreecarrier
+    _legacy_feature_flag: carrier
     _legacy_parameters:
       id_carrier: carrierId
   requirements:
@@ -64,7 +72,8 @@ admin_carriers_update_position:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::updatePositionAction'
     _legacy_controller: AdminCarriers
-#     _legacy_link: AdminCarriers:updatePositions
+    _legacy_link: AdminCarriers:updatePositions
+    _legacy_feature_flag: carrier
 
 admin_carriers_bulk_enable_status:
   path: /bulk-enable
@@ -72,7 +81,8 @@ admin_carriers_bulk_enable_status:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::bulkEnableStatusAction'
     _legacy_controller: AdminCarriers
-#     _legacy_link: AdminCarriers:submitBulkenableSelectioncarrier
+    _legacy_link: AdminCarriers:submitBulkenableSelectioncarrier
+    _legacy_feature_flag: carrier
 
 admin_carriers_bulk_disable_status:
   path: /bulk-disable
@@ -80,7 +90,8 @@ admin_carriers_bulk_disable_status:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::bulkDisableStatusAction'
     _legacy_controller: AdminCarriers
-#     _legacy_link: AdminCarriers:submitBulkdisableSelectioncarrier
+    _legacy_link: AdminCarriers:submitBulkdisableSelectioncarrier
+    _legacy_feature_flag: carrier
 
 admin_carriers_bulk_delete:
   path: /bulk-delete
@@ -88,4 +99,5 @@ admin_carriers_bulk_delete:
   defaults:
     _controller: 'PrestaShopBundle\Controller\Admin\Improve\Shipping\CarriersController::bulkDeleteAction'
     _legacy_controller: AdminCarriers
-#     _legacy_link: AdminCarriers:submitBulkdeletecarrier
+    _legacy_link: AdminCarriers:submitBulkdeletecarrier
+    _legacy_feature_flag: carrier

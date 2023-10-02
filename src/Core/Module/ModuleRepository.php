@@ -74,25 +74,18 @@ class ModuleRepository implements ModuleRepositoryInterface
     /** @var Module[] */
     private $modulesFromHook;
 
-    /**
-     * @var int
-     */
-    private $contextLangId;
-
     public function __construct(
         ModuleDataProvider $moduleDataProvider,
         AdminModuleDataProvider $adminModuleDataProvider,
         CacheProvider $cacheProvider,
         HookManager $hookManager,
-        string $modulePath,
-        int $contextLangId
+        string $modulePath
     ) {
         $this->moduleDataProvider = $moduleDataProvider;
         $this->adminModuleDataProvider = $adminModuleDataProvider;
         $this->cacheProvider = $cacheProvider;
         $this->hookManager = $hookManager;
         $this->modulePath = $modulePath;
-        $this->contextLangId = $contextLangId;
     }
 
     public function getList(): ModuleCollection
@@ -178,9 +171,9 @@ class ModuleRepository implements ModuleRepositoryInterface
     public function getModulePath(string $moduleName): ?string
     {
         $path = $this->modulePath . '/' . $moduleName;
-        $filePath = $path . '/' . $moduleName . '.php';
+        $filePath = $this->modulePath . '/' . $moduleName . '/' . $moduleName . '.php';
 
-        if (!is_dir($path) || !is_file($filePath)) {
+        if (!is_file($filePath)) {
             return null;
         }
 
@@ -234,7 +227,7 @@ class ModuleRepository implements ModuleRepositoryInterface
     {
         $shop = $shopId ? [$shopId] : Shop::getContextListShopID();
 
-        return $moduleName . implode('-', $shop) . $this->contextLangId;
+        return $moduleName . implode('-', $shop);
     }
 
     private function getModuleAttributes(string $moduleName, bool $isValid): array
@@ -265,7 +258,7 @@ class ModuleRepository implements ModuleRepositoryInterface
 
         return [
             'filemtime' => $filemtime,
-            'is_present' => $this->moduleDataProvider->isOnDisk($moduleName),
+            'is_present' => $filemtime > 0,
             'is_valid' => $isValid,
             'version' => $isValid ? ModuleLegacy::getInstanceByName($moduleName)->version : null,
             'path' => $path,

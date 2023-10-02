@@ -63,12 +63,12 @@ class AdminShopUrlControllerCore extends AdminController
 
         $this->fields_list = [
             'id_shop_url' => [
-                'title' => $this->trans('Shop URL ID', [], 'Admin.Advparameters.Feature'),
+                'title' => $this->trans('Store URL ID', [], 'Admin.Advparameters.Feature'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
             ],
             'shop_name' => [
-                'title' => $this->trans('Shop name', [], 'Admin.Advparameters.Feature'),
+                'title' => $this->trans('Store name', [], 'Admin.Advparameters.Feature'),
                 'filter_key' => 's!name',
             ],
             'url' => [
@@ -122,6 +122,12 @@ class AdminShopUrlControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return string|void
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         $update_htaccess = Tools::modRewriteActive() && ((file_exists('.htaccess') && is_writable('.htaccess')) || is_writable(dirname('.htaccess')));
@@ -147,7 +153,7 @@ class AdminShopUrlControllerCore extends AdminController
                     'input' => [
                         [
                             'type' => 'select',
-                            'label' => $this->trans('Shop', [], 'Admin.Global'),
+                            'label' => $this->trans('Store', [], 'Admin.Global'),
                             'name' => 'id_shop',
                             'onchange' => 'checkMainUrlInfo(this.value);',
                             'options' => [
@@ -164,7 +170,7 @@ class AdminShopUrlControllerCore extends AdminController
                         ],
                         [
                             'type' => 'switch',
-                            'label' => $this->trans('Is it the main URL for this shop?', [], 'Admin.Advparameters.Feature'),
+                            'label' => $this->trans('Is it the main URL for this store?', [], 'Admin.Advparameters.Feature'),
                             'name' => 'main',
                             'is_bool' => true,
                             'class' => 't',
@@ -217,7 +223,7 @@ class AdminShopUrlControllerCore extends AdminController
             [
                 'form' => [
                     'legend' => [
-                        'title' => $this->trans('Shop URL', [], 'Admin.Advparameters.Feature'),
+                        'title' => $this->trans('Store URL', [], 'Admin.Advparameters.Feature'),
                         'icon' => 'icon-shopping-cart',
                     ],
                     'input' => [
@@ -304,7 +310,7 @@ class AdminShopUrlControllerCore extends AdminController
             }
 
             $this->page_header_toolbar_btn['edit'] = [
-                'desc' => $this->trans('Edit this shop', [], 'Admin.Advparameters.Feature'),
+                'desc' => $this->trans('Edit this store', [], 'Admin.Advparameters.Feature'),
                 'href' => $this->context->link->getAdminLink('AdminShop') . '&updateshop&shop_id=' . (int) $this->id_shop,
             ];
 
@@ -513,6 +519,8 @@ class AdminShopUrlControllerCore extends AdminController
 
     /**
      * @param ShopUrl $object
+     *
+     * @return void|bool
      */
     protected function afterUpdate($object)
     {

@@ -27,6 +27,7 @@
     <div class="col-4">
       <h4>{{ $t('step.symbol') }}</h4>
       <input
+        data-role="custom-symbol"
         type="text"
         v-model="customSymbol"
       >
@@ -56,8 +57,9 @@
 
 <script>
   import {NumberFormatter} from '@app/cldr';
+  import {defineComponent} from 'vue';
 
-  export default {
+  export default defineComponent({
     name: 'CurrencyFormatForm',
     data: () => ({
       value: {
@@ -82,7 +84,7 @@
         },
         set(symbol) {
           this.value.symbol = symbol;
-          this.$emit('input', this.value);
+          this.$emit('formatChange', this.value);
         },
       },
       customTransformation: {
@@ -91,7 +93,7 @@
         },
         set(transformation) {
           this.value.transformation = transformation;
-          this.$emit('input', this.value);
+          this.$emit('formatChange', this.value);
         },
       },
     },
@@ -125,5 +127,5 @@
         }
       }
     },
-  };
+  });
 </script>

@@ -26,7 +26,7 @@ use Hook;
 use Language;
 use PrestaShop\Module\LinkList\Model\LinkBlock;
 use Shop;
-use Symfony\Component\Translation\TranslatorInterface as Translator;
+use Symfony\Contracts\Translation\TranslatorInterface as Translator;
 
 /**
  * Class LegacyLinkBlockRepository.

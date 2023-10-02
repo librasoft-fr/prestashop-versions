@@ -36,8 +36,8 @@ use PrestaShop\PrestaShop\Core\Grid\Action\Type\SimpleGridAction;
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ActionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\BulkActionColumn;
+use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\DateTimeColumn;
-use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Filter\Filter;
 use PrestaShop\PrestaShop\Core\Grid\Filter\FilterCollection;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
@@ -99,7 +99,7 @@ final class CatalogPriceRuleGridDefinitionFactory extends AbstractGridDefinition
             ])
             )
             ->add((new DataColumn('shop'))
-            ->setName($this->trans('Shop', [], 'Admin.Global'))
+            ->setName($this->trans('Store', [], 'Admin.Global'))
             ->setOptions([
                 'field' => 'shop',
             ])
@@ -215,7 +215,7 @@ final class CatalogPriceRuleGridDefinitionFactory extends AbstractGridDefinition
             ->setTypeOptions([
                 'required' => false,
                 'attr' => [
-                    'placeholder' => $this->trans('Shop', [], 'Admin.Global'),
+                    'placeholder' => $this->trans('Store', [], 'Admin.Global'),
                 ],
             ])
             ->setAssociatedColumn('shop')

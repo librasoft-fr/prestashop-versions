@@ -24,8 +24,12 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagSettings;
+use PrestaShop\PrestaShop\Core\Image\ImageFormatConfiguration;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * @property Product|null $object
  */
 class AdminProductsControllerCore extends AdminController
@@ -439,7 +443,7 @@ class AdminProductsControllerCore extends AdminController
                 $language = Language::getLanguage((int) $lang);
 
                 if (!Validate::isCleanHtml($description)) {
-                    $_FILES['attachment_file']['error'][] = $this->trans('Invalid description for %s language', [$language['name']], 'Admin.Catalog.Notification');
+                    $_FILES['attachment_file']['error'][] = $this->trans('Invalid description for %s language.', [$language['name']], 'Admin.Catalog.Notification');
                 }
             }
 
@@ -580,6 +584,11 @@ class AdminProductsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return bool|ObjectModel|void|null
+     *
+     * @throws PrestaShopException
+     */
     public function processDelete()
     {
         $object = $this->loadObject();
@@ -655,6 +664,11 @@ class AdminProductsControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return bool|void
+     *
+     * @throws PrestaShopException
+     */
     protected function processBulkDelete()
     {
         if ($this->access('delete')) {
@@ -686,7 +700,7 @@ class AdminProductsControllerCore extends AdminController
                              * - physical stock for this product
                              * - supply order(s) for this product
                              */
-                            if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $product->advanced_stock_management && isset($stock_manager)) {
+                            if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $product->advanced_stock_management && isset($stock_manager)) { // @phpstan-ignore-line
                                 $physical_quantity = $stock_manager->getProductPhysicalQuantities($product->id, 0);
                                 $real_quantity = $stock_manager->getProductRealQuantities($product->id, 0);
                                 if ($physical_quantity > 0 || $real_quantity > $physical_quantity) {
@@ -932,7 +946,7 @@ class AdminProductsControllerCore extends AdminController
 
         foreach ($id_specific_prices as $key => $id_specific_price) {
             if ($reduction_types[$key] == 'percentage' && ((float) $reductions[$key] <= 0 || (float) $reductions[$key] > 100)) {
-                $this->errors[] = $this->trans('Submitted reduction value (0-100) is out-of-range', [], 'Admin.Catalog.Notification');
+                $this->errors[] = $this->trans('The submitted reduction value (0-100) is out-of-range.', [], 'Admin.Catalog.Notification');
             } elseif ($this->_validateSpecificPrice($id_shops[$key], $id_currencies[$key], $id_countries[$key], $id_groups[$key], $id_customers[$key], $prices[$key], $from_quantities[$key], $reductions[$key], $reduction_types[$key], $froms[$key], $tos[$key], $id_combinations[$key])) {
                 $specific_price = new SpecificPrice((int) ($id_specific_price));
                 $specific_price->id_shop = (int) $id_shops[$key];
@@ -987,11 +1001,11 @@ class AdminProductsControllerCore extends AdminController
         }
 
         if (($price == '-1') && ((float) $reduction == '0')) {
-            $this->errors[] = $this->trans('No reduction value has been submitted', [], 'Admin.Catalog.Notification');
+            $this->errors[] = $this->trans('No reduction value has been submitted.', [], 'Admin.Catalog.Notification');
         } elseif ($to != '0000-00-00 00:00:00' && strtotime($to) < strtotime($from)) {
             $this->errors[] = $this->trans('Invalid date range', [], 'Admin.Notifications.Error');
         } elseif ($reduction_type == 'percentage' && ((float) $reduction <= 0 || (float) $reduction > 100)) {
-            $this->errors[] = $this->trans('Submitted reduction value (0-100) is out-of-range', [], 'Admin.Catalog.Notification');
+            $this->errors[] = $this->trans('The submitted reduction value (0-100) is out-of-range.', [], 'Admin.Catalog.Notification');
         } elseif ($this->_validateSpecificPrice($id_shop, $id_currency, $id_country, $id_group, $id_customer, $price, $from_quantity, $reduction, $reduction_type, $from, $to, $id_product_attribute)) {
             $specificPrice = new SpecificPrice();
             $specificPrice->id_product = (int) $id_product;
@@ -1113,6 +1127,10 @@ class AdminProductsControllerCore extends AdminController
 
     /**
      * Overrides parent for custom redirect link.
+     *
+     * @return bool|ObjectModel|void|null
+     *
+     * @throws PrestaShopException
      */
     public function processPosition()
     {
@@ -1777,7 +1795,7 @@ class AdminProductsControllerCore extends AdminController
                     $warehouse_location_entity->id_product = $this->object->id;
                     $warehouse_location_entity->id_product_attribute = 0;
                     $warehouse_location_entity->id_warehouse = (int) Configuration::get('PS_DEFAULT_WAREHOUSE_NEW_PRODUCT');
-                    $warehouse_location_entity->location = pSQL('');
+                    $warehouse_location_entity->location = '';
                     $warehouse_location_entity->save();
                 }
 
@@ -2487,7 +2505,7 @@ class AdminProductsControllerCore extends AdminController
                     if ($this->context->currency->id) {
                         $product_supplier->id_currency = (int) $this->context->currency->id;
                     } else {
-                        $product_supplier->id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT');
+                        $product_supplier->id_currency = Currency::getDefaultCurrencyId();
                     }
                     $product_supplier->save();
 
@@ -2859,20 +2877,54 @@ class AdminProductsControllerCore extends AdminController
                     continue;
                 } else {
                     $imagesTypes = ImageType::getImagesTypes('products');
+
+                    // Should we generate high DPI images?
                     $generate_hight_dpi_images = (bool) Configuration::get('PS_HIGHT_DPI');
 
+                    $sfContainer = SymfonyContainer::getInstance();
+
+                    /*
+                    * Let's resolve which formats we will use for image generation.
+                    * In new image system, it's multiple formats. In case of legacy, it's only .jpg.
+                    *
+                    * In case of .jpg images, the actual format inside is decided by ImageManager.
+                    */
+                    if ($sfContainer->get('prestashop.core.admin.feature_flag.repository')->isEnabled(FeatureFlagSettings::FEATURE_FLAG_MULTIPLE_IMAGE_FORMAT)) {
+                        $configuredImageFormats = $sfContainer->get(ImageFormatConfiguration::class)->getGenerationFormats();
+                    } else {
+                        $configuredImageFormats = ['jpg'];
+                    }
                     foreach ($imagesTypes as $imageType) {
-                        if (!ImageManager::resize($file['save_path'], $new_path . '-' . stripslashes($imageType['name']) . '.' . $image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
-                            $file['error'] = $this->trans('An error occurred while copying this image:', [], 'Admin.Notifications.Error') . ' ' . stripslashes($imageType['name']);
-
-                            continue;
-                        }
-
-                        if ($generate_hight_dpi_images) {
-                            if (!ImageManager::resize($file['save_path'], $new_path . '-' . stripslashes($imageType['name']) . '2x.' . $image->image_format, (int) $imageType['width'] * 2, (int) $imageType['height'] * 2, $image->image_format)) {
+                        foreach ($configuredImageFormats as $imageFormat) {
+                            // For JPG images, we let Imagemanager decide what to do and choose between JPG/PNG.
+                            // For webp and avif extensions, we want it to follow our command and ignore the original format.
+                            $forceFormat = ($imageFormat !== 'jpg');
+                            if (!ImageManager::resize(
+                                $file['save_path'],
+                                $new_path . '-' . stripslashes($imageType['name']) . '.' . $imageFormat,
+                                $imageType['width'],
+                                $imageType['height'],
+                                $imageFormat,
+                                $forceFormat
+                            )) {
                                 $file['error'] = $this->trans('An error occurred while copying this image:', [], 'Admin.Notifications.Error') . ' ' . stripslashes($imageType['name']);
 
                                 continue;
+                            }
+
+                            if ($generate_hight_dpi_images) {
+                                if (!ImageManager::resize(
+                                    $file['save_path'],
+                                    $new_path . '-' . stripslashes($imageType['name']) . '2x.' . $imageFormat,
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2,
+                                    $imageFormat,
+                                    $forceFormat
+                                )) {
+                                    $file['error'] = $this->trans('An error occurred while copying this image:', [], 'Admin.Notifications.Error') . ' ' . stripslashes($imageType['name']);
+
+                                    continue;
+                                }
                             }
                         }
                     }

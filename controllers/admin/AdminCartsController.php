@@ -24,6 +24,8 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
+use PrestaShop\PrestaShop\Core\Localization\Exception\LocalizationException;
+
 /**
  * @property Cart $object
  */
@@ -219,6 +221,13 @@ class AdminCartsControllerCore extends AdminController
         return $helper->generate();
     }
 
+    /**
+     * @return string|void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws LocalizationException
+     */
     public function renderView()
     {
         if (!($cart = $this->loadObject(true))) {
@@ -290,7 +299,7 @@ class AdminCartsControllerCore extends AdminController
         $helper->id = 'box-kpi-cart';
         $helper->icon = 'icon-shopping-cart';
         $helper->color = 'color1';
-        $helper->title = $this->trans('Total Cart', [], 'Admin.Orderscustomers.Feature');
+        $helper->title = $this->trans('Total cart', [], 'Admin.Orderscustomers.Feature');
         $helper->subtitle = $this->trans('Cart #%ID%', ['%ID%' => $cart->id], 'Admin.Orderscustomers.Feature');
         $helper->value = $this->context->getCurrentLocale()->formatPrice($total_price, $currency->iso_code);
         $kpi = $helper->generate();
@@ -348,7 +357,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->id_lang = (($id_lang = (int) Tools::getValue('id_lang')) ? $id_lang : Configuration::get('PS_LANG_DEFAULT'));
             }
             if (!$this->context->cart->id_currency) {
-                $this->context->cart->id_currency = (($id_currency = (int) Tools::getValue('id_currency')) ? $id_currency : Configuration::get('PS_CURRENCY_DEFAULT'));
+                $this->context->cart->id_currency = (($id_currency = (int) Tools::getValue('id_currency')) ? $id_currency : Currency::getDefaultCurrencyId());
             }
 
             $addresses = $customer->getAddresses((int) $this->context->cart->id_lang);
@@ -415,7 +424,7 @@ class AdminCartsControllerCore extends AdminController
                             continue;
                         }
                         if (!Validate::isMessage(Tools::getValue($field_id))) {
-                            $errors[] = $this->trans('Invalid message', [], 'Admin.Notifications.Error');
+                            $errors[] = $this->trans('Invalid message.', [], 'Admin.Notifications.Error');
                         }
                         $this->context->cart->addTextFieldToProduct((int) $product->id, (int) $customization_field['id_customization_field'], Product::CUSTOMIZE_TEXTFIELD, Tools::getValue($field_id));
                     } elseif ($customization_field['type'] == Product::CUSTOMIZE_FILE) {
@@ -971,6 +980,8 @@ class AdminCartsControllerCore extends AdminController
         } else {
             $helper->list_skip_actions['delete'] = (array) $skip_list;
         }
+        $helper->force_show_bulk_actions = true;
+        $helper->force_hide_bulk_actions_btn = count($helper->list_skip_actions['delete']) === count($this->_list);
 
         return $helper->generateList($this->_list, $this->fields_list);
     }

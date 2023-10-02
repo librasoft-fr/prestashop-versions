@@ -36,7 +36,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CombinationAvailabilityType extends TranslatorAwareType
 {
@@ -107,6 +107,9 @@ class CombinationAvailabilityType extends TranslatorAwareType
                 'label_tag_name' => 'h3',
                 'required' => false,
                 'columns_number' => 3,
+                'row_attr' => [
+                    'class' => 'combination-availability',
+                ],
             ])
         ;
     }

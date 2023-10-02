@@ -26,6 +26,7 @@
 
 namespace PrestaShopBundle\Controller\Admin;
 
+use PrestaShop\PrestaShop\Adapter\Tools;
 use PrestaShop\PrestaShop\Core\Domain\Category\Command\AddCategoryCommand;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CategoryException;
 use PrestaShop\PrestaShop\Core\Domain\Category\ValueObject\CategoryId;
@@ -39,6 +40,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
+ * @deprecated since 8.1 and will be removed in next major.
+ *
  * Admin controller for the Category pages.
  */
 class CategoryController extends FrameworkBundleAdminController
@@ -53,12 +56,12 @@ class CategoryController extends FrameworkBundleAdminController
     public function addSimpleCategoryFormAction(Request $request)
     {
         $response = new JsonResponse();
-        $commandBus = $this->get('prestashop.core.command_bus');
-        $tools = $this->get('prestashop.adapter.tools');
+        $commandBus = $this->getCommandBus();
+        $tools = $this->get(Tools::class);
         $shopContext = $this->get('prestashop.adapter.shop.context');
         $shopList = $shopContext->getShops(false, true);
         $currentIdShop = $shopContext->getContextShopID();
-        $defaultLanguageId = $this->get('prestashop.adapter.legacy.configuration')->getInt('PS_LANG_DEFAULT');
+        $defaultLanguageId = $this->getConfiguration()->getInt('PS_LANG_DEFAULT');
 
         $form = $this->createFormBuilder()
             ->add('category', SimpleCategory::class)

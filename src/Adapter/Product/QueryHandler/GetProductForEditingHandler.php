@@ -35,15 +35,16 @@ use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\PrestaShop\Adapter\Product\Image\ProductImagePathFactory;
 use PrestaShop\PrestaShop\Adapter\Product\Image\Repository\ProductImageRepository;
 use PrestaShop\PrestaShop\Adapter\Product\Options\RedirectTargetProvider;
-use PrestaShop\PrestaShop\Adapter\Product\Repository\ProductMultiShopRepository;
+use PrestaShop\PrestaShop\Adapter\Product\Repository\ProductRepository;
 use PrestaShop\PrestaShop\Adapter\Product\SpecificPrice\Repository\SpecificPriceRepository;
-use PrestaShop\PrestaShop\Adapter\Product\Stock\Repository\StockAvailableMultiShopRepository;
+use PrestaShop\PrestaShop\Adapter\Product\Stock\Repository\StockAvailableRepository;
 use PrestaShop\PrestaShop\Adapter\Product\VirtualProduct\Repository\VirtualProductFileRepository;
 use PrestaShop\PrestaShop\Adapter\Tax\TaxComputer;
+use PrestaShop\PrestaShop\Core\Category\NameBuilder\CategoryDisplayNameBuilder;
 use PrestaShop\PrestaShop\Core\Domain\Attachment\QueryResult\AttachmentInformation;
 use PrestaShop\PrestaShop\Core\Domain\Category\ValueObject\CategoryId;
 use PrestaShop\PrestaShop\Core\Domain\Country\ValueObject\CountryId;
-use PrestaShop\PrestaShop\Core\Domain\Product\Image\ValueObject\ImageId;
+use PrestaShop\PrestaShop\Core\Domain\Language\ValueObject\LanguageId;
 use PrestaShop\PrestaShop\Core\Domain\Product\ProductCustomizabilitySettings;
 use PrestaShop\PrestaShop\Core\Domain\Product\Query\GetProductForEditing;
 use PrestaShop\PrestaShop\Core\Domain\Product\QueryHandler\GetProductForEditingHandlerInterface;
@@ -59,6 +60,7 @@ use PrestaShop\PrestaShop\Core\Domain\Product\QueryResult\ProductPricesInformati
 use PrestaShop\PrestaShop\Core\Domain\Product\QueryResult\ProductSeoOptions;
 use PrestaShop\PrestaShop\Core\Domain\Product\QueryResult\ProductShippingInformation;
 use PrestaShop\PrestaShop\Core\Domain\Product\QueryResult\ProductStockInformation;
+use PrestaShop\PrestaShop\Core\Domain\Product\Stock\Exception\StockAvailableNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
 use PrestaShop\PrestaShop\Core\Domain\Product\VirtualProductFile\Exception\VirtualProductFileNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\Product\VirtualProductFile\QueryResult\VirtualProductFileForEditing;
@@ -74,7 +76,7 @@ use Tag;
 /**
  * Handles the query @see GetProductForEditing using legacy ObjectModel
  */
-final class GetProductForEditingHandler implements GetProductForEditingHandlerInterface
+class GetProductForEditingHandler implements GetProductForEditingHandlerInterface
 {
     /**
      * @var NumberExtractor
@@ -82,7 +84,7 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
     private $numberExtractor;
 
     /**
-     * @var ProductMultiShopRepository
+     * @var ProductRepository
      */
     private $productRepository;
 
@@ -92,7 +94,7 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
     private $categoryRepository;
 
     /**
-     * @var StockAvailableMultiShopRepository
+     * @var StockAvailableRepository
      */
     private $stockAvailableRepository;
 
@@ -142,10 +144,15 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
     private $configuration;
 
     /**
+     * @var CategoryDisplayNameBuilder
+     */
+    private $categoryDisplayNameBuilder;
+
+    /**
      * @param NumberExtractor $numberExtractor
-     * @param ProductMultiShopRepository $productRepository
+     * @param ProductRepository $productRepository
      * @param CategoryRepository $categoryRepository
-     * @param StockAvailableMultiShopRepository $stockAvailableRepository
+     * @param StockAvailableRepository $stockAvailableRepository
      * @param VirtualProductFileRepository $virtualProductFileRepository
      * @param ProductImageRepository $productImageRepository
      * @param AttachmentRepository $attachmentRepository
@@ -155,12 +162,13 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
      * @param ProductImagePathFactory $productImageUrlFactory
      * @param SpecificPriceRepository $specificPriceRepository
      * @param Configuration $configuration
+     * @param CategoryDisplayNameBuilder $categoryDisplayNameBuilder
      */
     public function __construct(
         NumberExtractor $numberExtractor,
-        ProductMultiShopRepository $productRepository,
+        ProductRepository $productRepository,
         CategoryRepository $categoryRepository,
-        StockAvailableMultiShopRepository $stockAvailableRepository,
+        StockAvailableRepository $stockAvailableRepository,
         VirtualProductFileRepository $virtualProductFileRepository,
         ProductImageRepository $productImageRepository,
         AttachmentRepository $attachmentRepository,
@@ -169,7 +177,8 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
         RedirectTargetProvider $targetProvider,
         ProductImagePathFactory $productImageUrlFactory,
         SpecificPriceRepository $specificPriceRepository,
-        Configuration $configuration
+        Configuration $configuration,
+        CategoryDisplayNameBuilder $categoryDisplayNameBuilder
     ) {
         $this->numberExtractor = $numberExtractor;
         $this->productRepository = $productRepository;
@@ -184,6 +193,7 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
         $this->productImageUrlFactory = $productImageUrlFactory;
         $this->specificPriceRepository = $specificPriceRepository;
         $this->configuration = $configuration;
+        $this->categoryDisplayNameBuilder = $categoryDisplayNameBuilder;
     }
 
     /**
@@ -202,7 +212,7 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
             (bool) $product->active,
             $this->getCustomizationOptions($product),
             $this->getBasicInformation($product),
-            $this->getCategoriesInformation($product),
+            $this->getCategoriesInformation($product, $query->getDisplayLanguageId()),
             $this->getPricesInformation($product, $query->getShopConstraint()),
             $this->getOptions($product),
             $this->getDetails($product),
@@ -211,7 +221,7 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
             $this->getAttachments($query->getProductId()),
             $this->getProductStockInformation($product),
             $this->getVirtualProductFile($product),
-            $this->getCover($product)
+            $this->getCover($query->getProductId(), $product->getShopId())
         );
     }
 
@@ -256,24 +266,34 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
 
     /**
      * @param Product $product
+     * @param LanguageId $languageId
      *
      * @return CategoriesInformation
      */
-    private function getCategoriesInformation(Product $product): CategoriesInformation
+    private function getCategoriesInformation(Product $product, LanguageId $languageId): CategoriesInformation
     {
-        $categoryIdValues = $product->getCategories();
-        $defaultCategoryId = (int) $product->id_category_default;
+        $shopId = new ShopId($product->getShopId());
+        $productId = new ProductId((int) $product->id);
 
-        $categoryIds = [];
-        foreach ($categoryIdValues as $categoryIdValue) {
-            $categoryIds[] = new CategoryId((int) $categoryIdValue);
-        }
+        $categoryIds = $this->categoryRepository->getProductCategoryIds($productId, ShopConstraint::shop($shopId->getValue()));
+        $defaultCategoryId = (int) $product->id_category_default;
 
         $categoryNames = $this->categoryRepository->getLocalizedNames($categoryIds);
 
         $categoriesInformation = [];
         foreach ($categoryNames as $categoryId => $localizedNames) {
-            $categoriesInformation[] = new CategoryInformation($categoryId, $localizedNames);
+            $categoryName = $categoryNames[$categoryId][$languageId->getValue()];
+            $displayName = $this->categoryDisplayNameBuilder->build(
+                $categoryName,
+                $shopId,
+                $languageId,
+                new CategoryId($categoryId)
+            );
+            $categoriesInformation[] = new CategoryInformation(
+                $categoryId,
+                $categoryName,
+                $displayName
+            );
         }
 
         return new CategoriesInformation($categoriesInformation, $defaultCategoryId);
@@ -481,7 +501,11 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
      */
     private function getProductStockInformation(Product $product): ProductStockInformation
     {
-        $stockAvailable = $this->stockAvailableRepository->getForProduct(new ProductId($product->id), new ShopId($product->getShopId()));
+        try {
+            $stockAvailable = $this->stockAvailableRepository->getForProduct(new ProductId($product->id), new ShopId($product->getShopId()));
+        } catch (StockAvailableNotFoundException $e) {
+            $stockAvailable = $this->stockAvailableRepository->createStockAvailable(new ProductId($product->id), new ShopId($product->getShopId()));
+        }
 
         return new ProductStockInformation(
             (int) $product->pack_stock_type,
@@ -523,16 +547,12 @@ final class GetProductForEditingHandler implements GetProductForEditingHandlerIn
         );
     }
 
-    /**
-     * @param Product $product
-     *
-     * @return string
-     */
-    private function getCover(Product $product): string
+    private function getCover(ProductId $productId, int $shopId): string
     {
-        $coverImage = $this->productImageRepository->findCover(new ProductId((int) $product->id));
-        if ($coverImage) {
-            return $this->productImageUrlFactory->getPathByType(new ImageId((int) $coverImage->id), ProductImagePathFactory::IMAGE_TYPE_CART_DEFAULT);
+        $idOfCoverImage = $this->productImageRepository->findCoverImageId($productId, new ShopId($shopId));
+
+        if ($idOfCoverImage) {
+            return $this->productImageUrlFactory->getPathByType($idOfCoverImage, ProductImagePathFactory::IMAGE_TYPE_CART_DEFAULT);
         }
 
         return $this->productImageUrlFactory->getNoImagePath(ProductImagePathFactory::IMAGE_TYPE_CART_DEFAULT);

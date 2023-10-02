@@ -102,6 +102,12 @@ class AdminAttributesGroupsControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return false|string|void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function renderView()
     {
         if (($id = (int) Tools::getValue('id_attribute_group'))) {
@@ -170,6 +176,10 @@ class AdminAttributesGroupsControllerCore extends AdminController
      * AdminController::renderForm() override.
      *
      * @see AdminController::renderForm()
+     *
+     * @return string|void
+     *
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -234,7 +244,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
                 'type' => 'shop',
-                'label' => $this->trans('Shop association', [], 'Admin.Global'),
+                'label' => $this->trans('Store association', [], 'Admin.Global'),
                 'name' => 'checkBoxShopAsso',
             ];
         }
@@ -298,7 +308,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
             $this->fields_form['input'][] = [
                 'type' => 'shop',
-                'label' => $this->trans('Shop association', [], 'Admin.Global'),
+                'label' => $this->trans('Store association', [], 'Admin.Global'),
                 'name' => 'checkBoxShopAsso',
                 'values' => Shop::getTree(),
             ];

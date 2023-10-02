@@ -130,6 +130,12 @@ class AdminStoresControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return string|void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws SmartyException
+     */
     public function renderForm()
     {
         if (!($obj = $this->loadObject(true))) {
@@ -290,7 +296,7 @@ class AdminStoresControllerCore extends AdminController
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
                 'type' => 'shop',
-                'label' => $this->trans('Shop association', [], 'Admin.Global'),
+                'label' => $this->trans('Store association', [], 'Admin.Global'),
                 'name' => 'checkBoxShopAsso',
             ];
         }
@@ -378,6 +384,7 @@ class AdminStoresControllerCore extends AdminController
                 $this->errors[] = $this->trans('The Zip/Postal code is invalid.', [], 'Admin.Notifications.Error');
             }
             /* Store hours */
+            $encodedHours = [];
             foreach ($langs as $lang) {
                 $hours = [];
                 for ($i = 1; $i < 8; ++$i) {
@@ -404,6 +411,8 @@ class AdminStoresControllerCore extends AdminController
     protected function postImage($id)
     {
         $ret = parent::postImage($id);
+
+        // Should we generate high DPI images?
         $generate_hight_dpi_images = (bool) Configuration::get('PS_HIGHT_DPI');
 
         if (($id_store = (int) Tools::getValue('id_store')) && count($_FILES) && file_exists(_PS_STORE_IMG_DIR_ . $id_store . '.jpg')) {
@@ -446,7 +455,7 @@ class AdminStoresControllerCore extends AdminController
 
         $formFields = [
             'PS_SHOP_NAME' => [
-                'title' => $this->trans('Shop name', [], 'Admin.Shopparameters.Feature'),
+                'title' => $this->trans('Store name', [], 'Admin.Shopparameters.Feature'),
                 'hint' => $this->trans('Displayed in emails and page titles.', [], 'Admin.Shopparameters.Feature'),
                 'validation' => 'isGenericName',
                 'required' => true,

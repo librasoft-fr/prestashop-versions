@@ -575,7 +575,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
         $helper->id = 'box-pending-messages';
         $helper->icon = 'icon-envelope';
         $helper->color = 'color1';
-        $helper->href = $this->context->link->getAdminLink('AdminCustomerThreads');
         $helper->title = $this->trans('Pending Discussion Threads', [], 'Admin.Catalog.Feature');
         if (ConfigurationKPI::get('PENDING_MESSAGES') !== false) {
             $helper->value = ConfigurationKPI::get('PENDING_MESSAGES');
@@ -616,6 +615,12 @@ class AdminCustomerThreadsControllerCore extends AdminController
         return $helper->generate();
     }
 
+    /**
+     * @return string|void
+     *
+     * @throws PrestaShopException
+     * @throws \PrestaShop\PrestaShop\Core\Localization\Exception\LocalizationException
+     */
     public function renderView()
     {
         if (!$id_customer_thread = (int) Tools::getValue('id_customer_thread')) {

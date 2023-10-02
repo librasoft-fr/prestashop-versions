@@ -49,6 +49,7 @@ use PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Builder\FormBuilderInterf
 use PrestaShop\PrestaShop\Core\Form\IdentifiableObject\Handler\FormHandler;
 use PrestaShop\PrestaShop\Core\Image\Uploader\Exception\UploadedImageConstraintException;
 use PrestaShop\PrestaShop\Core\Search\Filters\EmployeeFilters;
+use PrestaShop\PrestaShop\Core\Util\HelperCard\DocumentationLinkProviderInterface;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\DemoRestricted;
@@ -84,7 +85,7 @@ class EmployeeController extends FrameworkBundleAdminController
         $employeeGrid = $employeeGridFactory->getGrid($filters);
 
         $helperCardDocumentationLinkProvider =
-            $this->get('prestashop.core.util.helper_card.documentation_link_provider');
+            $this->get(DocumentationLinkProviderInterface::class);
 
         $showcaseCardIsClosed = $this->getQueryBus()->handle(
             new GetShowcaseCardIsClosed((int) $this->getContext()->employee->id, ShowcaseCard::EMPLOYEES_CARD)
@@ -262,7 +263,7 @@ class EmployeeController extends FrameworkBundleAdminController
 
             $this->addFlash(
                 'success',
-                $this->trans('The selection has been successfully deleted', 'Admin.Notifications.Success')
+                $this->trans('The selection has been successfully deleted.', 'Admin.Notifications.Success')
             );
         } catch (EmployeeException $e) {
             $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages($e)));
@@ -299,13 +300,14 @@ class EmployeeController extends FrameworkBundleAdminController
         }
 
         $templateVars = [
+            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'employeeForm' => $employeeForm->createView(),
             'enableSidebar' => true,
         ];
 
         return $this->render(
             '@PrestaShop/Admin/Configure/AdvancedParameters/Employee/create.html.twig',
-            $templateVars + $this->getFormTemplateVariables($request)
+            $templateVars
         );
     }
 
@@ -384,6 +386,7 @@ class EmployeeController extends FrameworkBundleAdminController
         }
 
         $templateVars = [
+            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'employeeForm' => $employeeForm->createView(),
             'isRestrictedAccess' => $isRestrictedAccess,
             'editableEmployee' => $editableEmployee,
@@ -391,7 +394,7 @@ class EmployeeController extends FrameworkBundleAdminController
 
         return $this->render(
             '@PrestaShop/Admin/Configure/AdvancedParameters/Employee/edit.html.twig',
-            $templateVars + $this->getFormTemplateVariables($request)
+            $templateVars
         );
     }
 
@@ -419,7 +422,7 @@ class EmployeeController extends FrameworkBundleAdminController
      */
     public function changeFormLanguageAction(Request $request)
     {
-        $configuration = $this->get('prestashop.adapter.legacy.configuration');
+        $configuration = $this->getConfiguration();
 
         if ($configuration->getBoolean('PS_BO_ALLOW_EMPLOYEE_FORM_LANG')) {
             $languageChanger = $this->get('prestashop.adapter.employee.form_language_changer');
@@ -490,7 +493,7 @@ class EmployeeController extends FrameworkBundleAdminController
                 'Admin.Notifications.Error'
             ),
             EmployeeNotFoundException::class => $this->trans(
-                'The object cannot be loaded (or found)',
+                'The object cannot be loaded (or found).',
                 'Admin.Notifications.Error'
             ),
             AdminEmployeeException::class => [
@@ -553,26 +556,6 @@ class EmployeeController extends FrameworkBundleAdminController
                     'Admin.Notifications.Error'
                 ),
             ],
-        ];
-    }
-
-    /**
-     * Get template variables that are same between create and edit forms.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    private function getFormTemplateVariables(Request $request)
-    {
-        $configuration = $this->get('prestashop.adapter.legacy.configuration');
-
-        return [
-            'level' => $this->authorizationLevel($request->attributes->get('_legacy_controller')),
-            'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
-            'superAdminProfileId' => $configuration->get('_PS_ADMIN_PROFILE_'),
-            'getTabsUrl' => $this->generateUrl('admin_employees_get_tabs'),
-            'errorMessage' => $this->trans('You need permission to add this.', 'Admin.Notifications.Error'),
         ];
     }
 }

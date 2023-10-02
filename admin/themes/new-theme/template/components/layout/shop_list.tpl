@@ -36,7 +36,7 @@
       <span class="selected-item">
         <i class="material-icons visibility">visibility</i>
         {if !isset($current_shop_name) || $current_shop_name == ''}
-          {l s='All shops' d='Admin.Global'}
+          {l s='All stores' d='Admin.Global'}
         {else}
           {$current_shop_name}
         {/if}
@@ -51,7 +51,7 @@
   <div class="shop-list">
     <a class="link" id="header_shopname" href="{$base_url|escape:'html':'UTF-8'}" target= "_blank">
       <i class="material-icons">visibility</i>
-      <span>{l s='View my shop' d='Admin.Navigation.Header'}</span>
+      <span>{l s='View my store' d='Admin.Navigation.Header'}</span>
     </a>
   </div>
 {/if}

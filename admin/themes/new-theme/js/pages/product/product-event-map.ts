@@ -34,6 +34,7 @@ export default {
     error: 'error',
     success: 'success',
     languageSelected: 'languageSelected',
+    resetDropzone: 'resetDropzone',
     photoswipe: {
       destroy: 'destroy',
       closeGallery: 'closeGallery',
@@ -43,12 +44,13 @@ export default {
     refreshPage: 'refreshPage',
     refreshCombinationList: 'refreshCombinationList',
     listEditionMode: 'listEditionMode',
-    updateAttributeGroups: 'updateAttributeGroups',
+    updateAttributeFilters: 'updateAttributeFilters',
     combinationGeneratorReady: 'combinationGeneratorReady',
     openCombinationsGenerator: 'openCombinationsGenerator',
     clearFilters: 'clearFilters',
     selectCombination: 'selectCombination',
     listRendered: 'combinationsListRendered',
+    errorListRendered: 'combinationsErrorListRendered',
     buildCombinationRow: 'buildCombinationRow',
     bulkUpdateFinished: 'combinationsBulkUpdateFinished',
     bulkDeleteFinished: 'combinationsBulkDeleteFinished',
@@ -64,4 +66,5 @@ export default {
   specificPrice: {
     listUpdated: 'specificPricesListUpdated',
   },
+  cancelProductShops: 'cancelProductShops',
 };

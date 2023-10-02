@@ -41,6 +41,7 @@ use PrestaShop\PrestaShop\Adapter\Presenter\AbstractLazyArray;
 use PrestaShop\PrestaShop\Adapter\Presenter\Cart\CartPresenter;
 use PrestaShop\PrestaShop\Adapter\Presenter\Object\ObjectPresenter;
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
+use PrestaShop\PrestaShop\Core\Util\ColorBrightnessCalculator;
 use PrestaShopBundle\Translation\TranslatorComponent;
 use PrestaShopException;
 use ProductDownload;
@@ -178,7 +179,11 @@ class OrderLazyArray extends AbstractLazyArray
             $orderProduct['id_product_attribute'] = $orderProduct['product_attribute_id'];
 
             $productPrice = $includeTaxes ? 'product_price_wt' : 'product_price';
-            $totalPrice = $includeTaxes ? 'total_wt' : 'total_price';
+            if (is_array($orderProduct['customizedDatas']) && count($orderProduct['customizedDatas'])) {
+                $totalPrice = $includeTaxes ? 'total_customization_wt' : 'total_customization';
+            } else {
+                $totalPrice = $includeTaxes ? 'total_wt' : 'total_price';
+            }
 
             $orderProduct['price'] = $this->priceFormatter->format(
                 $orderProduct[$productPrice],
@@ -308,7 +313,7 @@ class OrderLazyArray extends AbstractLazyArray
             }
             $orderHistory[$historyId] = $history;
             $orderHistory[$historyId]['history_date'] = Tools::displayDate($history['date_add'], false);
-            $orderHistory[$historyId]['contrast'] = (Tools::getBrightness($history['color']) > 128) ? 'dark' : 'bright';
+            $orderHistory[$historyId]['contrast'] = (new ColorBrightnessCalculator())->isBright($history['color']) ? 'dark' : 'bright';
         }
 
         if (!isset($orderHistory['current'])) {
