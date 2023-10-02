@@ -3985,6 +3985,7 @@ return array(
     'PrestaShop\\PrestaShop\\Adapter\\Cache\\CacheAdapter' => $baseDir . '/src/Adapter/Cache/CacheAdapter.php',
     'PrestaShop\\PrestaShop\\Adapter\\Cache\\CachingConfiguration' => $baseDir . '/src/Adapter/Cache/CachingConfiguration.php',
     'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\ClassIndexCacheClearer' => $baseDir . '/src/Adapter/Cache/Clearer/ClassIndexCacheClearer.php',
+    'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\DoctrineCacheClearer' => $baseDir . '/src/Adapter/Cache/Clearer/DoctrineCacheClearer.php',
     'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\MediaCacheClearer' => $baseDir . '/src/Adapter/Cache/Clearer/MediaCacheClearer.php',
     'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\SmartyCacheClearer' => $baseDir . '/src/Adapter/Cache/Clearer/SmartyCacheClearer.php',
     'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\SymfonyCacheClearer' => $baseDir . '/src/Adapter/Cache/Clearer/SymfonyCacheClearer.php',

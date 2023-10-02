@@ -686,9 +686,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/dashtrends' => array(
-            'pretty_version' => 'v2.1.1',
-            'version' => '2.1.1.0',
-            'reference' => 'c0ffb850abf1896ae8650522c8c8f4cff1c1dd80',
+            'pretty_version' => 'v2.1.2',
+            'version' => '2.1.2.0',
+            'reference' => 'e2cbdb088241a17118a8c4424b468a36216f8316',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/dashtrends',
             'aliases' => array(),
@@ -722,9 +722,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/gsitemap' => array(
-            'pretty_version' => 'v4.2.1',
-            'version' => '4.2.1.0',
-            'reference' => '5d7c4bf591fcbbd3ac66e15bd9805b78abb47694',
+            'pretty_version' => 'v4.3.0',
+            'version' => '4.3.0.0',
+            'reference' => '06763bb45c7643c92726cb3e43783183b37c3506',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/gsitemap',
             'aliases' => array(),
@@ -733,7 +733,7 @@
         'prestashop/laminas-code-lts' => array(
             'pretty_version' => 'dev-4.5-lts',
             'version' => 'dev-4.5-lts',
-            'reference' => '3dbe7f7f48a5d877e02cc70e4f58cb0e1e5cca82',
+            'reference' => 'c22c7aee2092bcec532b910a1f4dbac0ce6a3bbf',
             'type' => 'library',
             'install_path' => __DIR__ . '/../prestashop/laminas-code-lts',
             'aliases' => array(
@@ -958,9 +958,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_imageslider' => array(
-            'pretty_version' => 'v3.1.2',
-            'version' => '3.1.2.0',
-            'reference' => 'c5980fe4e99ba6aa5139b4e0755540be42c52b88',
+            'pretty_version' => 'v3.1.3',
+            'version' => '3.1.3.0',
+            'reference' => '36f848c1943f84f1dc0c41813f07c0e9b70ae8b0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_imageslider',
             'aliases' => array(),
@@ -1057,9 +1057,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_themecusto' => array(
-            'pretty_version' => 'v1.2.2',
-            'version' => '1.2.2.0',
-            'reference' => 'e421bfdc27f247c2e6361dd5eb8983e806f52459',
+            'pretty_version' => 'v1.2.3',
+            'version' => '1.2.3.0',
+            'reference' => 'cfea8fa485c61a05755eadb5f9764f12e666f2a8',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_themecusto',
             'aliases' => array(),
@@ -1371,8 +1371,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0.0',
-                1 => '1.0|2.0',
+                0 => '1.0|2.0',
+                1 => '1.0.0',
             ),
         ),
         'psr/simple-cache' => array(

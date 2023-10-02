@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit015ec6598460e77da763c3cb9c71a97c
+class ComposerStaticInit62ad80f1739dc9fe3abaa2e5cae471cd
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -4584,6 +4584,7 @@ class ComposerStaticInit015ec6598460e77da763c3cb9c71a97c
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\CacheAdapter' => __DIR__ . '/../..' . '/src/Adapter/Cache/CacheAdapter.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\CachingConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Cache/CachingConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\ClassIndexCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/ClassIndexCacheClearer.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\DoctrineCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/DoctrineCacheClearer.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\MediaCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/MediaCacheClearer.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\SmartyCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/SmartyCacheClearer.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\SymfonyCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/SymfonyCacheClearer.php',
@@ -11410,11 +11411,11 @@ class ComposerStaticInit015ec6598460e77da763c3cb9c71a97c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit015ec6598460e77da763c3cb9c71a97c::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit015ec6598460e77da763c3cb9c71a97c::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit015ec6598460e77da763c3cb9c71a97c::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit015ec6598460e77da763c3cb9c71a97c::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit015ec6598460e77da763c3cb9c71a97c::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit62ad80f1739dc9fe3abaa2e5cae471cd::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit62ad80f1739dc9fe3abaa2e5cae471cd::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit62ad80f1739dc9fe3abaa2e5cae471cd::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit62ad80f1739dc9fe3abaa2e5cae471cd::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit62ad80f1739dc9fe3abaa2e5cae471cd::$classMap;
 
         }, null, ClassLoader::class);
     }
