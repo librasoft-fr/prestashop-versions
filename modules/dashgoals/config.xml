@@ -2,7 +2,7 @@
 <module>
 	<name>dashgoals</name>
 	<displayName><![CDATA[Dashboard Goals]]></displayName>
-	<version><![CDATA[2.0.3]]></version>
+	<version><![CDATA[2.0.4]]></version>
 	<description><![CDATA[Adds a block with your store&#039;s forecast.]]></description>
 	<author><![CDATA[PrestaShop]]></author>
 	<tab><![CDATA[dashboard]]></tab>
