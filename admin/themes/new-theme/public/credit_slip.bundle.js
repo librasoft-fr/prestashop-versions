@@ -97,7 +97,7 @@ class _{extend(e){const t=e.getContainer().find(a);new b(t).attach()}}
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-const{$:L}=window,x=function(e,t){L.post(e).then((()=>window.location.assign(t)))},{$:j}=window;class C{extend(e){e.getContainer().on("click",u,(e=>{x(j(e.currentTarget).data("url"),j(e.currentTarget).data("redirect"))}))}}
+const{$:L}=window,x=function(e,t){L.post(e).then((()=>window.location.assign(t)))},{$:C}=window;class j{extend(e){e.getContainer().on("click",u,(e=>{x(C(e.currentTarget).data("url"),C(e.currentTarget).data("redirect"))}))}}
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -172,7 +172,7 @@ const{$:E}=window;class ${extend(t){t.getHeaderContainer().on("click",e.showQuer
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-const O=new(n(7187).EventEmitter),{$:k}=window;const I=class{constructor(e={}){const t=e||{};this.localeItemSelector=t.localeItemSelector||".js-locale-item",this.localeButtonSelector=t.localeButtonSelector||".js-locale-btn",this.localeInputSelector=t.localeInputSelector||".js-locale-input",this.selectedLocale=k(this.localeItemSelector).data("locale"),k("body").on("click",this.localeItemSelector,this.toggleLanguage.bind(this)),O.on("languageSelected",this.toggleInputs.bind(this))}refreshInputs(e){this.selectedLocale&&O.emit("languageSelected",{selectedLocale:this.selectedLocale,form:e})}toggleLanguage(e){const t=k(e.target),n=t.closest("form");this.selectedLocale=t.data("locale"),this.refreshInputs(n)}toggleInputs(e){const{form:t}=e;this.selectedLocale=e.selectedLocale;const n=t.find(this.localeButtonSelector),o=n.data("change-language-url");n.text(this.selectedLocale),t.find(this.localeInputSelector).addClass("d-none"),t.find(`${this.localeInputSelector}.js-locale-${this.selectedLocale}`).removeClass("d-none"),o&&this.saveSelectedLanguage(o,this.selectedLocale)}saveSelectedLanguage(e,t){k.post({url:e,data:{language_iso_code:t}})}};
+const O=new(n(7187).EventEmitter),{$:k}=window;const I=class{constructor(e={}){const t=e||{};this.localeItemSelector=t.localeItemSelector||".js-locale-item",this.localeButtonSelector=t.localeButtonSelector||".js-locale-btn",this.localeInputSelector=t.localeInputSelector||".js-locale-input",this.selectedLocale=k(this.localeItemSelector).data("locale"),k("body").on("click",this.localeItemSelector,this.toggleLanguage.bind(this)),O.on("languageSelected",this.toggleInputs.bind(this))}refreshInputs(e){this.selectedLocale&&O.emit("languageSelected",{selectedLocale:this.selectedLocale,form:e})}toggleLanguage(e){const t=k(e.target),n=t.closest("form");this.selectedLocale=t.data("locale"),this.refreshInputs(n)}toggleInputs(e){const{form:t}=e;this.selectedLocale=e.selectedLocale;const n=t.find(this.localeButtonSelector),o=n.data("change-language-url");n.text(this.selectedLocale.toUpperCase()),t.find(this.localeInputSelector).addClass("d-none"),t.find(`${this.localeInputSelector}.js-locale-${this.selectedLocale}`).removeClass("d-none"),o&&this.saveSelectedLanguage(o,this.selectedLocale)}saveSelectedLanguage(e,t){k.post({url:e,data:{language_iso_code:t}})}};
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -222,4 +222,4 @@ class M{extend(e){const t=e.getContainer().find(d);t.find(h).prop("disabled",!0)
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-const{$:B}=window;B((()=>{const e=new y("credit_slip");e.addExtension(new $),e.addExtension(new S),e.addExtension(new _),e.addExtension(new C),e.addExtension(new M),new I}))})(),window.credit_slip=o})();
+const{$:B}=window;B((()=>{const e=new y("credit_slip");e.addExtension(new $),e.addExtension(new S),e.addExtension(new _),e.addExtension(new j),e.addExtension(new M),new I}))})(),window.credit_slip=o})();

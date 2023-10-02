@@ -98,15 +98,16 @@ class CategoryControllerCore extends ProductListingFrontController
 
         $categoryVar = $this->getTemplateVarCategory();
 
+        // Chained hook call - if multiple modules are hooked here, they will receive the result of the previous one as a parameter
         $filteredCategory = Hook::exec(
             'filterCategoryContent',
             ['object' => $categoryVar],
-            $id_module = null,
-            $array_return = false,
-            $check_exceptions = true,
-            $use_push = false,
-            $id_shop = null,
-            $chain = true
+            null,
+            false,
+            true,
+            false,
+            null,
+            true
         );
         if (!empty($filteredCategory['object'])) {
             $categoryVar = $filteredCategory['object'];
@@ -156,9 +157,14 @@ class CategoryControllerCore extends ProductListingFrontController
 
     protected function getAjaxProductSearchVariables()
     {
+        // Basic data with rendered products, facets, active filters etc.
         $data = parent::getAjaxProductSearchVariables();
-        $rendered_products_header = $this->render('catalog/_partials/category-header', ['listing' => $data]);
-        $data['rendered_products_header'] = $rendered_products_header;
+
+        // Extra data for category pages, so we can dynamically update also these parts
+        $rendered_category_header = $this->render('catalog/_partials/category-header', ['listing' => $data]);
+        $data['rendered_products_header'] = $rendered_category_header;
+        $rendered_category_footer = $this->render('catalog/_partials/category-footer', ['listing' => $data]);
+        $data['rendered_products_footer'] = $rendered_category_footer;
 
         return $data;
     }

@@ -148,7 +148,7 @@ class te extends J{constructor(e){super(((e,t)=>{for(var s in t||(t={}))Y.call(t
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-class se{constructor(){this.router=new d,this.init()}init(){document.querySelectorAll(a.newProductButton).forEach((e=>{e.addEventListener("click",(t=>{if("_blank"!==e.getAttribute("target")){t.preventDefault();const s=`${e.getAttribute("href")}&liteDisplaying=1`;this.openCreationModal(s)}}))}))}openCreationModal(e){const t=new te({id:a.modalId,formSelector:i,formUrl:e,closable:!0,autoSizeContainer:a.modalSizeContainer,onFormLoaded:(e,s,o)=>{if(o&&(o.modalTitle&&t.setTitle(o.modalTitle),o.productId)){const e=this.router.generate("admin_products_edit",{productId:o.productId});t.showLoading(),window.location.href=e}}});t.show()}}
+class se{constructor(){this.router=new d,this.init()}init(){document.querySelectorAll(a.newProductButton).forEach((e=>{e.addEventListener("click",(t=>{if("_blank"!==e.getAttribute("target")){t.preventDefault();const s=`${e.getAttribute("href")}&liteDisplaying=1`;this.openCreationModal(s)}}))}))}openCreationModal(e){const t=new te({id:a.modalId,formSelector:i,formUrl:e,closable:!0,autoSizeContainer:a.modalSizeContainer,onFormLoaded:(e,s,o)=>{var r;if(o&&(o.modalTitle&&t.setTitle(o.modalTitle),o.productId)){const e=this.router.generate("admin_products_edit",{productId:o.productId,forceDefaultActive:1===parseInt(null!=(r=o.forceDefaultActive)?r:"0",10)?1:0});t.showLoading(),window.location.href=e}}});t.show()}}
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA

@@ -57,6 +57,7 @@ use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use PrestaShop\PrestaShop\Core\Shop\ShopConstraintContextInterface;
 use PrestaShopBundle\Form\Admin\Type\IntegerMinMaxFilterType;
 use PrestaShopBundle\Form\Admin\Type\NumberMinMaxFilterType;
+use PrestaShopBundle\Form\Admin\Type\ReorderPositionsButtonType;
 use PrestaShopBundle\Form\Admin\Type\SearchAndResetType;
 use PrestaShopBundle\Form\Admin\Type\ShopSelectorType;
 use PrestaShopBundle\Form\Admin\Type\YesAndNoChoiceType;
@@ -372,6 +373,7 @@ class ProductGridDefinitionFactory extends AbstractGridDefinitionFactory
                 'extra_route_params' => [
                     'shopId' => $shopId,
                 ],
+                'confirm_message' => $this->trans('Remember to properly edit all information after duplicating - including SEO information and friendly URL.', [], 'Admin.Catalog.Notification'),
                 'modal_options' => new ModalOptions([
                     'title' => $this->trans('Duplicate product', [], 'Admin.Actions'),
                     'confirm_button_label' => $duplicateLabel,
@@ -475,6 +477,7 @@ class ProductGridDefinitionFactory extends AbstractGridDefinitionFactory
                 'route_param_name' => 'productId',
                 'route_param_field' => 'id_product',
                 'extra_route_params' => $extraRouteParams,
+                'confirm_message' => $this->trans('Remember to properly edit all information after duplicating - including SEO information and friendly URL.', [], 'Admin.Catalog.Notification'),
                 'modal_options' => new ModalOptions([
                     'title' => $this->trans('Duplicate product', [], 'Admin.Actions'),
                     'confirm_button_label' => $duplicateLabel,
@@ -574,14 +577,9 @@ class ProductGridDefinitionFactory extends AbstractGridDefinitionFactory
                 (new Filter('active', YesAndNoChoiceType::class))
                     ->setAssociatedColumn('active')
             )
-            ->add((new Filter('position', TextType::class))
-            ->setAssociatedColumn('position')
-            ->setTypeOptions([
-                'required' => false,
-                'attr' => [
-                    'placeholder' => $this->trans('Search position', [], 'Admin.Actions'),
-                ],
-            ])
+            ->add(
+                (new Filter('position', ReorderPositionsButtonType::class))
+                    ->setAssociatedColumn('position')
             )
             ->add(
                 (new Filter('actions', SearchAndResetType::class))
@@ -694,10 +692,10 @@ class ProductGridDefinitionFactory extends AbstractGridDefinitionFactory
             $bulkDuplicateRoute = 'admin_products_bulk_duplicate_all_shops';
             $bulkDeleteRoute = 'admin_products_bulk_delete_from_all_shops';
             $routeParams = [];
-            $bulkEnableLabel = $this->trans('Activate selection for all stores', [], 'Admin.Actions');
-            $bulkDisableLabel = $this->trans('Deactivate selection for all stores', [], 'Admin.Actions');
-            $bulkDuplicateLabel = $this->trans('Duplicate selection for all stores', [], 'Admin.Actions');
-            $bulkDeleteLabel = $this->trans('Delete selection for all stores', [], 'Admin.Actions');
+            $bulkEnableLabel = $this->trans('Activate selection for associated stores', [], 'Admin.Actions');
+            $bulkDisableLabel = $this->trans('Deactivate selection for associated stores', [], 'Admin.Actions');
+            $bulkDuplicateLabel = $this->trans('Duplicate selection for associated stores', [], 'Admin.Actions');
+            $bulkDeleteLabel = $this->trans('Delete selection for associated stores', [], 'Admin.Actions');
         }
 
         return (new BulkActionCollection())

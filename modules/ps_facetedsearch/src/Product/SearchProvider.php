@@ -164,6 +164,13 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
         // Init the search with the initial population associated with the current filters
         $facetedSearch->initSearch($facetedSearchFilters);
 
+        // Request combination IDs if we have some attributes to search by.
+        // If not, we won't use this to let the core select the default combination.
+        if ($this->shouldPassCombinationIds($facetedSearchFilters)) {
+            $facetedSearch->getSearchAdapter()->getInitialPopulation()->addSelectField('id_product_attribute');
+            $facetedSearch->getSearchAdapter()->addSelectField('id_product_attribute');
+        }
+
         // Load the product searcher, it gets the Adapter through Search object
         $filterProductSearch = new Filters\Products($facetedSearch);
 
@@ -499,7 +506,8 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
 
     /**
      * Remove the facet when there's only 1 result.
-     * Keep facet status when it's a slider
+     * Keep facet status when it's a slider.
+     * Keep facet status if it's a availability facet.
      *
      * @param array $facets
      * @param int $totalProducts
@@ -507,6 +515,7 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
     private function hideUselessFacets(array $facets, $totalProducts)
     {
         foreach ($facets as $facet) {
+            // If the facet is a slider type, we hide it ONLY if the MIN and MAX value match
             if ($facet->getWidgetType() === 'slider') {
                 $facet->setDisplayed(
                     $facet->getProperty('min') != $facet->getProperty('max')
@@ -514,6 +523,7 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
                 continue;
             }
 
+            // Now the rest of facets - we apply this logic
             $totalFacetProducts = 0;
             $usefulFiltersCount = 0;
             foreach ($facet->getFilters() as $filter) {
@@ -523,21 +533,22 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
                 }
             }
 
+            // We display the facet in several cases
             $facet->setDisplayed(
-                // There are two filters displayed
+                // If there are two filters available
                 $usefulFiltersCount > 1
                 ||
-                /*
-                 * There is only one fitler and the
-                 * magnitude is different than the
-                 * total products
-                 */
+                // There is only one filter available, but it furhter reduces the product selection
                 (
                     count($facet->getFilters()) === 1
                     && $totalFacetProducts < $totalProducts
                     && $usefulFiltersCount > 0
                 )
+                ||
+                // If there is only one filter, but it's availability filter - we want this one to be displayed all the time
+                ($usefulFiltersCount === 1 && $facet->getType() == 'availability')
             );
+            // Other cases - hidden by default
         }
     }
 
@@ -577,5 +588,17 @@ class SearchProvider implements FacetsRendererInterface, ProductSearchProviderIn
         $queryString = str_replace('%2F', '/', http_build_query($params, '', '&'));
 
         return $url . ($queryString ? "?$queryString" : '');
+    }
+
+    /**
+     * Checks if we should return information about combinations to the core
+     *
+     * @param array $facetedSearchFilters filters passed in the query and parsed by our module
+     *
+     * @return bool if should add attributes to the select
+     */
+    private function shouldPassCombinationIds(array $facetedSearchFilters)
+    {
+        return !empty($facetedSearchFilters['id_attribute_group']);
     }
 }

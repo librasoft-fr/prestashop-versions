@@ -2530,11 +2530,6 @@ class ToolsCore
 	<FilesMatch \"\.(ttf|ttc|otf|eot|woff|woff2|svg)$\">
 		Header set Access-Control-Allow-Origin \"*\"
 	</FilesMatch>
-
-    <FilesMatch \"\.pdf$\">
-      Header set Content-Disposition \"Attachment\"
-      Header set X-Content-Type-Options \"nosniff\"
-    </FilesMatch>
 </IfModule>\n\n");
         fwrite($write_fd, '<Files composer.lock>
     # Apache 2.2
@@ -2553,6 +2548,9 @@ class ToolsCore
         if ($cache_control) {
             $cache_control = "<IfModule mod_expires.c>
 	ExpiresActive On
+    AddType image/webp .webp
+    ExpiresByType image/webp \"access plus 1 month\"
+    ExpiresByType image/avif \"access plus 1 month\"
 	ExpiresByType image/gif \"access plus 1 month\"
 	ExpiresByType image/jpeg \"access plus 1 month\"
 	ExpiresByType image/png \"access plus 1 month\"

@@ -98,16 +98,22 @@ class AdminImagesControllerCore extends AdminController
 
         $this->canGenerateAvif = $this->get('PrestaShop\PrestaShop\Core\Image\AvifExtensionChecker')->isAvailable();
         $this->isMultipleImageFormatFeatureEnabled = $this->get(FeatureFlagRepository::class)->isEnabled(FeatureFlagSettings::FEATURE_FLAG_MULTIPLE_IMAGE_FORMAT);
-        $this->imageFormatConfiguration = $this->get('PrestaShop\PrestaShop\Core\Image\ImageFormatConfiguration');
+        $this->imageFormatConfiguration = $this->get(ImageFormatConfiguration::class);
 
         $formFields = [];
 
         if ($this->isMultipleImageFormatFeatureEnabled) {
+            /* We will disable few image formats
+             * Base JPG is mandatory, see https://github.com/PrestaShop/PrestaShop/issues/30944
+             * AVIF support depends on platform - PHP version and required libraries available
+             */
             $imageFormatsDisabled = [];
-            $imageFormatsDisabled['jpg'] = true; // jpg is mandatory, see https://github.com/PrestaShop/PrestaShop/issues/30944
-            if (false === $this->canGenerateAvif) {
+            $imageFormatsDisabled['jpg'] = true;
+            if (!$this->canGenerateAvif) {
                 $imageFormatsDisabled['avif'] = true;
             }
+
+            // Load configured formats to see what to check
             $configuredImageFormats = $this->imageFormatConfiguration->getGenerationFormats();
 
             $fields = [
@@ -476,6 +482,25 @@ class AdminImagesControllerCore extends AdminController
         ];
     }
 
+    public function beforeUpdateOptions()
+    {
+        // We check this only if new image system is enabled
+        // With the old system, PS_IMAGE_FORMAT is not present in the form
+        if (!$this->isMultipleImageFormatFeatureEnabled) {
+            return;
+        }
+
+        // Unset AVIF if not supported, add JPG if missing
+        foreach ($_POST['PS_IMAGE_FORMAT'] as $k => $v) {
+            if ($v == 'avif' && !$this->canGenerateAvif) {
+                unset($_POST['PS_IMAGE_FORMAT'][$k]);
+            }
+        }
+        if (!in_array('jpg', $_POST['PS_IMAGE_FORMAT'])) {
+            $_POST['PS_IMAGE_FORMAT'][] = 'jpg';
+        }
+    }
+
     public function updateOptionPsImageFormat($value): void
     {
         if ($this->access('edit') != '1') {
@@ -661,15 +686,10 @@ class AdminImagesControllerCore extends AdminController
 
         /*
          * Let's resolve which formats we will use for image generation.
-         * In new image system, it's multiple formats. In case of legacy, it's only .jpg.
          *
          * In case of .jpg images, the actual format inside is decided by ImageManager.
          */
-        if ($this->isMultipleImageFormatFeatureEnabled) {
-            $configuredImageFormats = $this->imageFormatConfiguration->getGenerationFormats();
-        } else {
-            $configuredImageFormats = ['jpg'];
-        }
+        $configuredImageFormats = $this->imageFormatConfiguration->getGenerationFormats();
 
         if (!$productsImages) {
             $formated_medium = ImageType::getFormattedName('medium');
@@ -817,15 +837,10 @@ class AdminImagesControllerCore extends AdminController
 
         /*
          * Let's resolve which formats we will use for image generation.
-         * In new image system, it's multiple formats. In case of legacy, it's only .jpg.
          *
          * In case of .jpg images, the actual format inside is decided by ImageManager.
          */
-        if ($this->isMultipleImageFormatFeatureEnabled) {
-            $configuredImageFormats = $this->imageFormatConfiguration->getGenerationFormats();
-        } else {
-            $configuredImageFormats = ['jpg'];
-        }
+        $configuredImageFormats = $this->imageFormatConfiguration->getGenerationFormats();
 
         foreach ($type as $image_type) {
             foreach ($languages as $language) {

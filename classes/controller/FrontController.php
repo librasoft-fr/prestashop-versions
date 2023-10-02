@@ -207,8 +207,10 @@ class FrontControllerCore extends Controller
             $useSSL = $this->ssl;
         }
 
+        // Prepare presenters that we will require on every page
         $this->objectPresenter = new ObjectPresenter();
         $this->cart_presenter = new CartPresenter();
+
         $this->templateFinder = new TemplateFinder($this->context->smarty->getTemplateDir(), '.tpl');
         $this->stylesheetManager = new StylesheetManager(
             [_PS_THEME_URI_, _PS_PARENT_THEME_URI_, __PS_BASE_URI__],
@@ -517,6 +519,7 @@ class FrontControllerCore extends Controller
             'debug' => _PS_MODE_DEV_,
         ];
 
+        // An array [module_name => module_output] will be returned
         $modulesVariables = Hook::exec(
             'actionFrontControllerSetVariables',
             [
@@ -2137,18 +2140,24 @@ class FrontControllerCore extends Controller
     protected function sanitizeUrl(string $url): string
     {
         $params = [];
-        $url_details = parse_url($url);
 
+        // Extract all parts of the URL
+        $url_details = parse_url($url);
         if (!empty($url_details['query'])) {
             parse_str($url_details['query'], $query);
             $params = $this->sanitizeQueryOutput($query);
         }
 
-        $excluded_key = ['isolang', 'id_lang', 'controller', 'fc', 'id_product', 'id_category', 'id_manufacturer', 'id_supplier', 'id_cms'];
-        $excluded_key = array_merge($excluded_key, $this->redirectionExtraExcludedKeys);
-        foreach ($_GET as $key => $value) {
+        // Build a list of parameters we won't be sanitizing
+        $excludedKeys = array_merge(
+            ['isolang', 'id_lang', 'controller', 'fc', 'id_product', 'id_category', 'id_manufacturer', 'id_supplier', 'id_cms'],
+            $this->redirectionExtraExcludedKeys
+        );
+
+        // Go through each parameter we got from dispatcher and sanitize it
+        foreach ($params as $key => $value) {
             if (
-                in_array($key, $excluded_key)
+                in_array($key, $excludedKeys)
                 || !Validate::isUrl($key)
                 || !$this->validateInputAsUrl($value)
             ) {
@@ -2158,6 +2167,7 @@ class FrontControllerCore extends Controller
             $params[Tools::safeOutput($key)] = is_array($value) ? array_walk_recursive($value, 'Tools::safeOutput') : Tools::safeOutput($value);
         }
 
+        // Build back the query
         $str_params = http_build_query($params, '', '&');
         $sanitizedUrl = preg_replace('/^([^?]*)?.*$/', '$1', $url) . (!empty($str_params) ? '?' . $str_params : '');
 

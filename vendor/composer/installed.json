@@ -5460,23 +5460,23 @@
         },
         {
             "name": "prestashop/blockwishlist",
-            "version": "v3.0.0",
-            "version_normalized": "3.0.0.0",
+            "version": "v3.0.1",
+            "version_normalized": "3.0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PrestaShop/blockwishlist.git",
-                "reference": "d42091134c5b7060e195fa9d60dda63396c06d64"
+                "reference": "75c39bc12648cba4e09d870479e7857fd06eee79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PrestaShop/blockwishlist/zipball/d42091134c5b7060e195fa9d60dda63396c06d64",
-                "reference": "d42091134c5b7060e195fa9d60dda63396c06d64",
+                "url": "https://api.github.com/repos/PrestaShop/blockwishlist/zipball/75c39bc12648cba4e09d870479e7857fd06eee79",
+                "reference": "75c39bc12648cba4e09d870479e7857fd06eee79",
                 "shasum": ""
             },
             "require-dev": {
-                "prestashop/php-dev-tools": "~3.0"
+                "prestashop/php-dev-tools": "^4.3"
             },
-            "time": "2023-02-23T10:22:22+00:00",
+            "time": "2023-08-11T10:08:33+00:00",
             "type": "prestashop-module",
             "installation-source": "dist",
             "autoload": {
@@ -5502,7 +5502,7 @@
             "description": "PrestaShop module blockwishlist",
             "homepage": "https://github.com/PrestaShop/blockwishlist",
             "support": {
-                "source": "https://github.com/PrestaShop/blockwishlist/tree/v3.0.0"
+                "source": "https://github.com/PrestaShop/blockwishlist/tree/v3.0.1"
             },
             "install-path": "../../modules/blockwishlist"
         },
@@ -6128,26 +6128,26 @@
         },
         {
             "name": "prestashop/productcomments",
-            "version": "v5.0.3",
-            "version_normalized": "5.0.3.0",
+            "version": "v6.0.2",
+            "version_normalized": "6.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PrestaShop/productcomments.git",
-                "reference": "2a1e4bebec1d834b00728117e5e2655c7cf535a9"
+                "reference": "03955f7315f97f9d99fd1bd1675b24f0a97e1938"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PrestaShop/productcomments/zipball/2a1e4bebec1d834b00728117e5e2655c7cf535a9",
-                "reference": "2a1e4bebec1d834b00728117e5e2655c7cf535a9",
+                "url": "https://api.github.com/repos/PrestaShop/productcomments/zipball/03955f7315f97f9d99fd1bd1675b24f0a97e1938",
+                "reference": "03955f7315f97f9d99fd1bd1675b24f0a97e1938",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "php": ">=7.1.3"
             },
             "require-dev": {
-                "prestashop/php-dev-tools": "^3.4"
+                "prestashop/php-dev-tools": "^4.3"
             },
-            "time": "2023-03-06T15:11:12+00:00",
+            "time": "2023-08-30T08:14:56+00:00",
             "type": "prestashop-module",
             "installation-source": "dist",
             "autoload": {
@@ -6172,7 +6172,7 @@
             "description": "PrestaShop module productcomments",
             "homepage": "https://github.com/PrestaShop/productcomments",
             "support": {
-                "source": "https://github.com/PrestaShop/productcomments/tree/v5.0.3"
+                "source": "https://github.com/PrestaShop/productcomments/tree/v6.0.2"
             },
             "install-path": "../../modules/productcomments"
         },
@@ -6853,17 +6853,17 @@
         },
         {
             "name": "prestashop/ps_emailalerts",
-            "version": "v2.4.1",
-            "version_normalized": "2.4.1.0",
+            "version": "v2.4.2",
+            "version_normalized": "2.4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PrestaShop/ps_emailalerts.git",
-                "reference": "3145d0c9beef7576bf056b22ac63a125e0c063ac"
+                "reference": "fa6011032236e48c8cdbc7ba64dd340d737d75ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PrestaShop/ps_emailalerts/zipball/3145d0c9beef7576bf056b22ac63a125e0c063ac",
-                "reference": "3145d0c9beef7576bf056b22ac63a125e0c063ac",
+                "url": "https://api.github.com/repos/PrestaShop/ps_emailalerts/zipball/fa6011032236e48c8cdbc7ba64dd340d737d75ef",
+                "reference": "fa6011032236e48c8cdbc7ba64dd340d737d75ef",
                 "shasum": ""
             },
             "require": {
@@ -6872,7 +6872,7 @@
             "require-dev": {
                 "prestashop/php-dev-tools": "^3.16"
             },
-            "time": "2023-03-22T16:42:26+00:00",
+            "time": "2023-09-02T00:56:29+00:00",
             "type": "prestashop-module",
             "installation-source": "dist",
             "notification-url": "https://packagist.org/downloads/",
@@ -6888,7 +6888,7 @@
             "description": "PrestaShop module ps_emailalerts",
             "homepage": "https://github.com/PrestaShop/ps_emailalerts",
             "support": {
-                "source": "https://github.com/PrestaShop/ps_emailalerts/tree/v2.4.1"
+                "source": "https://github.com/PrestaShop/ps_emailalerts/tree/v2.4.2"
             },
             "install-path": "../../modules/ps_emailalerts"
         },
@@ -6940,17 +6940,17 @@
         },
         {
             "name": "prestashop/ps_facetedsearch",
-            "version": "v3.12.1",
-            "version_normalized": "3.12.1.0",
+            "version": "v3.13.2",
+            "version_normalized": "3.13.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PrestaShop/ps_facetedsearch.git",
-                "reference": "25d0a3fb8707632f865a9311dadaf5c0db307215"
+                "reference": "8e6ed8e88d670ffadf0fa79993f8d255862be191"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PrestaShop/ps_facetedsearch/zipball/25d0a3fb8707632f865a9311dadaf5c0db307215",
-                "reference": "25d0a3fb8707632f865a9311dadaf5c0db307215",
+                "url": "https://api.github.com/repos/PrestaShop/ps_facetedsearch/zipball/8e6ed8e88d670ffadf0fa79993f8d255862be191",
+                "reference": "8e6ed8e88d670ffadf0fa79993f8d255862be191",
                 "shasum": ""
             },
             "require": {
@@ -6962,7 +6962,7 @@
                 "phpunit/phpunit": "~5.7",
                 "prestashop/php-dev-tools": "^3.4"
             },
-            "time": "2023-03-22T16:15:40+00:00",
+            "time": "2023-09-18T14:40:21+00:00",
             "type": "prestashop-module",
             "installation-source": "dist",
             "autoload": {
@@ -6988,7 +6988,7 @@
             "description": "PrestaShop module ps_facetedsearch",
             "homepage": "https://github.com/PrestaShop/ps_facetedsearch",
             "support": {
-                "source": "https://github.com/PrestaShop/ps_facetedsearch/tree/v3.12.1"
+                "source": "https://github.com/PrestaShop/ps_facetedsearch/tree/v3.13.2"
             },
             "install-path": "../../modules/ps_facetedsearch"
         },
@@ -7229,17 +7229,17 @@
         },
         {
             "name": "prestashop/ps_linklist",
-            "version": "v6.0.3",
-            "version_normalized": "6.0.3.0",
+            "version": "v6.0.4",
+            "version_normalized": "6.0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PrestaShop/ps_linklist.git",
-                "reference": "2bf726d44e1e009b794c04068083fda4f2707440"
+                "reference": "f4048a33e3cfc06a76e68d40cb77425103f0124e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PrestaShop/ps_linklist/zipball/2bf726d44e1e009b794c04068083fda4f2707440",
-                "reference": "2bf726d44e1e009b794c04068083fda4f2707440",
+                "url": "https://api.github.com/repos/PrestaShop/ps_linklist/zipball/f4048a33e3cfc06a76e68d40cb77425103f0124e",
+                "reference": "f4048a33e3cfc06a76e68d40cb77425103f0124e",
                 "shasum": ""
             },
             "require": {
@@ -7248,7 +7248,7 @@
             "require-dev": {
                 "prestashop/php-dev-tools": "^4.3"
             },
-            "time": "2023-06-23T07:48:32+00:00",
+            "time": "2023-09-05T12:44:43+00:00",
             "type": "prestashop-module",
             "installation-source": "dist",
             "autoload": {
@@ -7273,7 +7273,7 @@
             "description": "PrestaShop - Link list",
             "homepage": "https://github.com/PrestaShop/ps_linklist",
             "support": {
-                "source": "https://github.com/PrestaShop/ps_linklist/tree/v6.0.3"
+                "source": "https://github.com/PrestaShop/ps_linklist/tree/v6.0.4"
             },
             "install-path": "../../modules/ps_linklist"
         },

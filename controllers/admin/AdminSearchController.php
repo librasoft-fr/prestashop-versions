@@ -502,6 +502,7 @@ class AdminSearchControllerCore extends AdminController
         );
 
         // Get additional search panels from hooks
+        // An array [module_name => module_output] will be returned
         $alternativeSearchPanelsFromModules = Hook::exec(
             'actionGetAlternativeSearchPanels',
             [
@@ -527,6 +528,7 @@ class AdminSearchControllerCore extends AdminController
                 'title' => $searchPanel->getTitle(),
                 'button_label' => $searchPanel->getButtonLabel(),
                 'link' => $searchPanel->getLink(),
+                'is_external_link' => $searchPanel->isExternalLink(),
             ];
         }
     }
