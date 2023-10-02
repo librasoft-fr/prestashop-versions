@@ -44,7 +44,7 @@ class dashtrends extends Module
     {
         $this->name = 'dashtrends';
         $this->tab = 'administration';
-        $this->version = '2.1.1';
+        $this->version = '2.1.2';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -237,9 +237,9 @@ class dashtrends extends Module
         return [
             'data_value' => [
                 'sales_score' => $sales_score,
-                'orders_score' => Tools::displayNumber($this->dashboard_data_sum['orders']),
+                'orders_score' => $this->context->getCurrentLocale()->formatNumber($this->dashboard_data_sum['orders']),
                 'cart_value_score' => $cart_value_score,
-                'visits_score' => Tools::displayNumber($this->dashboard_data_sum['visits']),
+                'visits_score' => $this->context->getCurrentLocale()->formatNumber($this->dashboard_data_sum['visits']),
                 'conversion_rate_score' => round(100 * $this->dashboard_data_sum['conversion_rate'], 2) . '%',
                 'net_profits_score' => $net_profit_score,
             ],
