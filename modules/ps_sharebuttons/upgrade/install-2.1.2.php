@@ -27,7 +27,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-function upgrade_module_2_5_7($module)
+function upgrade_module_2_1_2($object)
 {
-    return true;
+    return $object->unregisterHook('displayProductButtons')
+        && $object->registerHook('displayProductAdditionalInfo');
 }

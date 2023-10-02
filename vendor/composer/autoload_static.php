@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitde4b0518cecf081b00d033225f064d88
+class ComposerStaticInit8e504a87a5608196669a5d0af1d65c5e
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -666,6 +666,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
 
     public static $classMap = array (
         'AdminConfigureFaviconBoController' => __DIR__ . '/../..' . '/modules/ps_faviconnotificationbo/controllers/admin/AdminConfigureFaviconBoController.php',
+        'AdminDashgoalsController' => __DIR__ . '/../..' . '/modules/dashgoals/controllers/admin/AdminDashgoalsController.php',
         'AdminPsThemeCustoAdvancedController' => __DIR__ . '/../..' . '/modules/ps_themecusto/controllers/admin/AdminPsThemeCustoAdvanced.php',
         'AdminPsThemeCustoConfigurationController' => __DIR__ . '/../..' . '/modules/ps_themecusto/controllers/admin/AdminPsThemeCustoConfiguration.php',
         'AppCache' => __DIR__ . '/../..' . '/app/AppCache.php',
@@ -785,6 +786,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'Composer\\Installers\\ZendInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ZendInstaller.php',
         'Composer\\Installers\\ZikulaInstaller' => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers/ZikulaInstaller.php',
         'Console_Getopt' => __DIR__ . '/..' . '/pear/console_getopt/Console/Getopt.php',
+        'Contactform' => __DIR__ . '/../..' . '/modules/contactform/contactform.php',
         'Csa\\Bundle\\GuzzleBundle\\CsaGuzzleBundle' => __DIR__ . '/..' . '/csa/guzzle-bundle/src/CsaGuzzleBundle.php',
         'Csa\\Bundle\\GuzzleBundle\\DataCollector\\GuzzleCollector' => __DIR__ . '/..' . '/csa/guzzle-bundle/src/DataCollector/GuzzleCollector.php',
         'Csa\\Bundle\\GuzzleBundle\\DependencyInjection\\CompilerPass\\LoaderPass' => __DIR__ . '/..' . '/csa/guzzle-bundle/src/DependencyInjection/CompilerPass/LoaderPass.php',
@@ -2040,6 +2042,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'GeoIp2\\Record\\Subdivision' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Subdivision.php',
         'GeoIp2\\Record\\Traits' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Traits.php',
         'GeoIp2\\WebService\\Client' => __DIR__ . '/..' . '/geoip2/geoip2/src/WebService/Client.php',
+        'Gsitemap' => __DIR__ . '/../..' . '/modules/gsitemap/gsitemap.php',
         'GuzzleHttp\\BatchResults' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/BatchResults.php',
         'GuzzleHttp\\Client' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Client.php',
         'GuzzleHttp\\ClientInterface' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/ClientInterface.php',
@@ -3869,6 +3872,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'PrestaShopBundle\\Routing\\YamlModuleLoader' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Routing/YamlModuleLoader.php',
         'PrestaShopBundle\\Security\\Admin\\Employee' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/Employee.php',
         'PrestaShopBundle\\Security\\Admin\\EmployeeProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/EmployeeProvider.php',
+        'PrestaShopBundle\\Security\\Admin\\SessionRenewer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Admin/SessionRenewer.php',
         'PrestaShopBundle\\Security\\Annotation\\AdminSecurity' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Annotation/AdminSecurity.php',
         'PrestaShopBundle\\Security\\Annotation\\DemoRestricted' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Annotation/DemoRestricted.php',
         'PrestaShopBundle\\Security\\Annotation\\ModuleActivated' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Security/Annotation/ModuleActivated.php',
@@ -4049,6 +4053,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Converter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Converter.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\DataAccessor' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/DataAccessor.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Products' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Products.php',
+        'PrestaShop\\Module\\FacetedSearch\\Filters\\Provider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Provider.php',
         'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormDataProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormDataProvider.php',
         'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormModifier' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormModifier.php',
         'PrestaShop\\Module\\FacetedSearch\\HookDispatcher' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/HookDispatcher.php',
@@ -4063,6 +4068,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'PrestaShop\\Module\\FacetedSearch\\Hook\\Product' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/Product.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\ProductSearch' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/ProductSearch.php',
         'PrestaShop\\Module\\FacetedSearch\\Hook\\SpecificPrice' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Hook/SpecificPrice.php',
+        'PrestaShop\\Module\\FacetedSearch\\Product\\CoreSearchBackport' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/CoreSearchBackport.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\Search' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/Search.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\SearchFactory' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/SearchFactory.php',
         'PrestaShop\\Module\\FacetedSearch\\Product\\SearchProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Product/SearchProvider.php',
@@ -7283,6 +7289,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'Ps_CheckpaymentPaymentModuleFrontController' => __DIR__ . '/../..' . '/modules/ps_checkpayment/controllers/front/payment.php',
         'Ps_CheckpaymentValidationModuleFrontController' => __DIR__ . '/../..' . '/modules/ps_checkpayment/controllers/front/validation.php',
         'Ps_Crossselling' => __DIR__ . '/../..' . '/modules/ps_crossselling/ps_crossselling.php',
+        'Ps_Currencyselector' => __DIR__ . '/../..' . '/modules/ps_currencyselector/ps_currencyselector.php',
         'Ps_CustomerSignIn' => __DIR__ . '/../..' . '/modules/ps_customersignin/ps_customersignin.php',
         'Ps_Customeraccountlinks' => __DIR__ . '/../..' . '/modules/ps_customeraccountlinks/ps_customeraccountlinks.php',
         'Ps_Customtext' => __DIR__ . '/../..' . '/modules/ps_customtext/ps_customtext.php',
@@ -7290,6 +7297,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'Ps_Facetedsearch' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/ps_facetedsearch.php',
         'Ps_FeaturedProducts' => __DIR__ . '/../..' . '/modules/ps_featuredproducts/ps_featuredproducts.php',
         'Ps_ImageSlider' => __DIR__ . '/../..' . '/modules/ps_imageslider/ps_imageslider.php',
+        'Ps_Languageselector' => __DIR__ . '/../..' . '/modules/ps_languageselector/ps_languageselector.php',
         'Ps_Linklist' => __DIR__ . '/../..' . '/modules/ps_linklist/ps_linklist.php',
         'Ps_MainMenu' => __DIR__ . '/../..' . '/modules/ps_mainmenu/ps_mainmenu.php',
         'Ps_Shoppingcart' => __DIR__ . '/../..' . '/modules/ps_shoppingcart/ps_shoppingcart.php',
@@ -10254,6 +10262,7 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
         'Twig_Util_TemplateDirIterator' => __DIR__ . '/..' . '/twig/twig/lib/Twig/Util/TemplateDirIterator.php',
         'WishList' => __DIR__ . '/../..' . '/modules/blockwishlist/classes/WishList.php',
         'blockreassurance' => __DIR__ . '/../..' . '/modules/blockreassurance/blockreassurance.php',
+        'dashgoals' => __DIR__ . '/../..' . '/modules/dashgoals/dashgoals.php',
         'dashtrends' => __DIR__ . '/../..' . '/modules/dashtrends/dashtrends.php',
         'ps_themecusto' => __DIR__ . '/../..' . '/modules/ps_themecusto/ps_themecusto.php',
     );
@@ -10261,11 +10270,11 @@ class ComposerStaticInitde4b0518cecf081b00d033225f064d88
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitde4b0518cecf081b00d033225f064d88::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitde4b0518cecf081b00d033225f064d88::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitde4b0518cecf081b00d033225f064d88::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitde4b0518cecf081b00d033225f064d88::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitde4b0518cecf081b00d033225f064d88::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit8e504a87a5608196669a5d0af1d65c5e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit8e504a87a5608196669a5d0af1d65c5e::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit8e504a87a5608196669a5d0af1d65c5e::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit8e504a87a5608196669a5d0af1d65c5e::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit8e504a87a5608196669a5d0af1d65c5e::$classMap;
 
         }, null, ClassLoader::class);
     }

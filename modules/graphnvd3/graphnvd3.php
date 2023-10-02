@@ -23,94 +23,98 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
-
-if (!defined('_PS_VERSION_'))
-	exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 class GraphNvD3 extends ModuleGraphEngine
 {
-	private $_width;
-	private $_height;
-	private $_values;
-	private $_legend;
-	private $_titles;
+    private $_width;
+    private $_height;
+    private $_values;
+    private $_legend;
+    private $_titles;
 
-	function __construct($type = null)
-	{
-		if ($type !== null)
-			return parent::__construct($type);
+    public function __construct($type = null)
+    {
+        if ($type !== null) {
+            parent::__construct($type);
 
-		$this->name = 'graphnvd3';
-		$this->tab = 'administration';
-		$this->version = '2.0.2';
-		$this->author = 'PrestaShop';
-		$this->need_instance = 0;
+            return;
+        }
 
-		Module::__construct();
+        $this->name = 'graphnvd3';
+        $this->tab = 'administration';
+        $this->version = '2.0.3';
+        $this->author = 'PrestaShop';
+        $this->need_instance = 0;
 
-		$this->displayName = $this->trans('NVD3 Charts', array(), 'Modules.Graphnvd3.Admin');
-		$this->description = $this->trans('Enable the NVD3 charting code for your own uses, providing you with ever so useful graphs.', array(), 'Modules.Graphnvd3.Admin');
-		$this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
-	}
+        Module::__construct();
 
-	function install()
-	{
-		return (parent::install() && $this->registerHook('GraphEngine') && $this->registerHook('actionAdminControllerSetMedia'));
-	}
+        $this->displayName = $this->trans('NVD3 Charts', [], 'Modules.Graphnvd3.Admin');
+        $this->description = $this->trans('Enable the NVD3 charting code for your own uses, providing you with ever so useful graphs.', [], 'Modules.Graphnvd3.Admin');
+        $this->ps_versions_compliancy = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
+    }
 
-	public function hookActionAdminControllerSetMedia($params)
-	{
-		$admin_webpath = str_ireplace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
-		$admin_webpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $admin_webpath);
+    public function install()
+    {
+        return parent::install() && $this->registerHook('GraphEngine') && $this->registerHook('actionAdminControllerSetMedia');
+    }
 
-		$this->context->controller->addJS(array(
-			_PS_JS_DIR_.'vendor/d3.v3.min.js',
-			__PS_BASE_URI__.$admin_webpath.'/themes/'.$this->context->employee->bo_theme.'/js/vendor/nv.d3.min.js',
-		));
-		$this->context->controller->addCSS(__PS_BASE_URI__.$admin_webpath.'/themes/'.$this->context->employee->bo_theme.'/css/vendor/nv.d3.css');
-	}
+    public function hookActionAdminControllerSetMedia($params)
+    {
+        $admin_webpath = str_ireplace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
+        $admin_webpath = preg_replace('/^' . preg_quote(DIRECTORY_SEPARATOR, '/') . '/', '', $admin_webpath);
 
-	public static function hookGraphEngine($params, $drawer)
-	{
-		static $divid = 1;
+        $this->context->controller->addJS([
+            _PS_JS_DIR_ . 'vendor/d3.v3.min.js',
+            __PS_BASE_URI__ . $admin_webpath . '/themes/' . $this->context->employee->bo_theme . '/js/vendor/nv.d3.min.js',
+        ]);
+        $this->context->controller->addCSS(__PS_BASE_URI__ . $admin_webpath . '/themes/' . $this->context->employee->bo_theme . '/css/vendor/nv.d3.css');
+    }
 
-		if (strpos($params['width'], '%') !== false)
-			$params['width'] = (int)preg_replace('/\s*%\s*/', '', $params['width']).'%';
-		else
-			$params['width'] = (int)$params['width'].'px';
+    public static function hookGraphEngine($params, $drawer)
+    {
+        static $divid = 1;
 
-		$nvd3_func = array(
-			'line' => '
+        if (strpos($params['width'], '%') !== false) {
+            $params['width'] = (int) preg_replace('/\s*%\s*/', '', $params['width']) . '%';
+        } else {
+            $params['width'] = (int) $params['width'] . 'px';
+        }
+
+        $nvd3_func = [
+            'line' => '
 				nv.models.lineChart()',
-			'pie' => '
+            'pie' => '
 				nv.models.pieChart()
 					.x(function(d) { return d.label; })
 					.y(function(d) { return d.value; })
 					.showLabels(true)
-					.showLegend(false)'
-		);
+					.showLegend(false)',
+        ];
 
-		return '
-		<div id="nvd3_chart_'.$divid.'" class="chart with-transitions">
-			<svg style="width:'.$params['width'].';height:'.(int)$params['height'].'px"></svg>
+        return '
+		<div id="nvd3_chart_' . $divid . '" class="chart with-transitions">
+			<svg style="width:' . $params['width'] . ';height:' . (int) $params['height'] . 'px"></svg>
 		</div>
 		<script>
 			$.ajax({
-			url: "'.addslashes($drawer).'",
+			url: "' . addslashes($drawer) . '",
 			dataType: "json",
 			type: "GET",
 			cache: false,
 			headers: {"cache-control": "no-cache"},
 			success: function(jsonData){
 				nv.addGraph(function(){
-					var chart = '.$nvd3_func[$params['type']].';
+					var chart = ' . $nvd3_func[$params['type']] . ';
 
 					if (jsonData.axisLabels.xAxis != null)
 						chart.xAxis.axisLabel(jsonData.axisLabels.xAxis);
 					if (jsonData.axisLabels.yAxis != null)
 						chart.yAxis.axisLabel(jsonData.axisLabels.yAxis);
 
-					d3.select("#nvd3_chart_'.($divid++).' svg")
+					d3.select("#nvd3_chart_' . ($divid++) . ' svg")
 						.datum(jsonData.data)
 						.transition().duration(500)
 						.call(chart);
@@ -122,60 +126,58 @@ class GraphNvD3 extends ModuleGraphEngine
 			}
 		});
 		</script>';
-	}
+    }
 
-	public function createValues($values)
-	{
-		$this->_values = $values;
-	}
+    public function createValues($values)
+    {
+        $this->_values = $values;
+    }
 
-	public function setSize($width, $height)
-	{
-		$this->_width = $width;
-		$this->_height = $height;
-	}
+    public function setSize($width, $height)
+    {
+        $this->_width = $width;
+        $this->_height = $height;
+    }
 
-	public function setLegend($legend)
-	{
-		$this->_legend = $legend;
-	}
+    public function setLegend($legend)
+    {
+        $this->_legend = $legend;
+    }
 
-	public function setTitles($titles)
-	{
-		$this->_titles = $titles;
-	}
+    public function setTitles($titles)
+    {
+        $this->_titles = $titles;
+    }
 
-	public function draw()
-	{
-		$array = array(
-			'axisLabels' => array('xAxis' => $this->_titles['x'], 'yAxis' => $this->_titles['y']),
-			'data' => array()
-		);
+    public function draw()
+    {
+        $array = [
+            'axisLabels' => ['xAxis' => $this->_titles['x'], 'yAxis' => $this->_titles['y']],
+            'data' => [],
+        ];
 
-		if (!isset($this->_values[0]) || !is_array($this->_values[0]))
-		{
-			$nvd3_values = array();
-			if (Tools::getValue('type') == 'pie')
-			{
-				foreach ($this->_values as $x => $y)
-					$nvd3_values[] = array('label' => $this->_legend[$x], 'value' => $y);
-				$array['data'] = $nvd3_values;
-			}
-			else
-			{
-				foreach ($this->_values as $x => $y)
-					$nvd3_values[] = array('x' => $x, 'y' => $y);
-				$array['data'][] = array('values' => $nvd3_values, 'key' => $this->_titles['main']);
-			}
-		}
-		else
-			foreach ($this->_values as $layer => $gross_values)
-			{
-				$nvd3_values = array();
-				foreach ($gross_values as $x => $y)
-					$nvd3_values[] = array('x' => $x, 'y' => $y);
-				$array['data'][] = array('values' => $nvd3_values, 'key' => $this->_titles['main'][$layer]);
-			}
-		echo preg_replace('/"([0-9]+)"/', '$1', json_encode($array));
-	}
+        if (!isset($this->_values[0]) || !is_array($this->_values[0])) {
+            $nvd3_values = [];
+            if (Tools::getValue('type') == 'pie') {
+                foreach ($this->_values as $x => $y) {
+                    $nvd3_values[] = ['label' => $this->_legend[$x], 'value' => $y];
+                }
+                $array['data'] = $nvd3_values;
+            } else {
+                foreach ($this->_values as $x => $y) {
+                    $nvd3_values[] = ['x' => $x, 'y' => $y];
+                }
+                $array['data'][] = ['values' => $nvd3_values, 'key' => $this->_titles['main']];
+            }
+        } else {
+            foreach ($this->_values as $layer => $gross_values) {
+                $nvd3_values = [];
+                foreach ($gross_values as $x => $y) {
+                    $nvd3_values[] = ['x' => $x, 'y' => $y];
+                }
+                $array['data'][] = ['values' => $nvd3_values, 'key' => $this->_titles['main'][$layer]];
+            }
+        }
+        echo preg_replace('/"([0-9]+)"/', '$1', json_encode($array));
+    }
 }

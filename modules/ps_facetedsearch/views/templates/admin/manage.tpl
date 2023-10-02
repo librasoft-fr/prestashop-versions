@@ -56,6 +56,7 @@
 		  <tr>
 			<th class="fixed-width-xs center"><span class="title_box">{l s='ID' d='Admin.Global'}</span></th>
 			<th><span class="title_box text-left">{l s='Name' d='Admin.Global'}</span></th>
+			<th><span class="title_box">{l s='Pages' d='Admin.Global'}</span></th>
 			<th class="fixed-width-sm center"><span class="title_box">{l s='Categories' d='Admin.Global'}</span></th>
 			<th class="fixed-width-lg"><span class="title_box">{l s='Created on' d='Modules.Facetedsearch.Admin'}</span></th>
 			<th class="fixed-width-sm"><span class="title_box text-right">{l s='Actions' d='Modules.Facetedsearch.Admin'}</span></th>
@@ -66,6 +67,7 @@
 			<tr>
 			  <td class="center">{(int)$template['id_layered_filter']}</td>
 			  <td class="text-left">{$template['name']}</td>
+			  <td>{$template['controllers']}</td>
 			  <td class="center">{(int)$template['n_categories']}</td>
 			  <td>{Tools::displayDate($template['date_add'],null , true)}</td>
 			  <td>
@@ -237,6 +239,43 @@
 		  <a class="slide-button btn"></a>
 		</span>
 	  </div>
+	</div>
+
+  <div class="form-group">
+    <label class="col-lg-3 control-label">{l s='Use Jquery UI slider' d='Modules.Facetedsearch.Admin'}</label>
+    <div class="col-lg-9">
+    <span class="switch prestashop-switch fixed-width-lg">
+      <input type="radio" name="ps_use_jquery_ui_slider" id="ps_use_jquery_ui_slider_on" value="1"{if $use_jquery_ui_slider} checked="checked"{/if}>
+      <label for="ps_use_jquery_ui_slider_on" class="radioCheck">
+      <i class="color_success"></i> {l s='Yes' d='Admin.Global'}
+      </label>
+      <input type="radio" name="ps_use_jquery_ui_slider" id="ps_use_jquery_ui_slider_off" value="0"{if !$use_jquery_ui_slider} checked="checked"{/if}>
+      <label for="ps_use_jquery_ui_slider_off" class="radioCheck">
+      <i class="color_danger"></i> {l s='No' d='Admin.Global'}
+      </label>
+      <a class="slide-button btn"></a>
+    </span>
+    </div>
+    <div class="col-lg-9 col-lg-offset-3">
+      <div class="help-block">
+        {l s='Switch this off only if your theme does not use Jquery UI slider. It is recommended to keep it on when using classic theme.' d='Modules.Facetedsearch.Admin'}
+      </div>
+    </div>
+  </div>
+
+	<div class="form-group">
+		<label class="control-label col-lg-3">{l s='Default filter template for new categories' d='Modules.Facetedsearch.Admin'}</label>				
+		<div class="col-lg-9">
+			<select class="form-control fixed-width-xxl" name="ps_layered_default_category_template" id="ps_layered_default_category_template">
+				<option value="0" {if empty($default_category_template)} selected="selected" {/if}>{l s='None' d='Admin.Global'}</option>
+				{foreach $filters_templates as $template}
+					<option value="{$template['id_layered_filter']}" {if $default_category_template == $template['id_layered_filter']} selected="selected" {/if}>{$template['name']}</option>
+				{/foreach}
+			</select>
+		</div>
+		<div class="col-lg-9 col-lg-offset-3">
+			<div class="help-block">{l s='If you want to automatically assign a filter template to new categories, select it here.' d='Modules.Facetedsearch.Admin'}</div>
+		</div>
 	</div>
 
 	<div class="panel-footer">

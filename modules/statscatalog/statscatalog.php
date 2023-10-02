@@ -41,8 +41,8 @@ class statscatalog extends Module
     public function __construct()
     {
         $this->name = 'statscatalog';
-        $this->tab = 'analytics_stats';
-        $this->version = '2.0.2';
+        $this->tab = 'administration';
+        $this->version = '2.0.3';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -55,7 +55,7 @@ class statscatalog extends Module
 
     public function install()
     {
-        return parent::install() && $this->registerHook('AdminStatsModules');
+        return parent::install() && $this->registerHook('displayAdminStatsModules');
     }
 
     public function getQuery1()
@@ -145,7 +145,7 @@ class statscatalog extends Module
         return ['total' => Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->NumRows(), 'result' => $result];
     }
 
-    public function hookAdminStatsModules($params)
+    public function hookDisplayAdminStatsModules($params)
     {
         $categories = Category::getCategories($this->context->language->id, true, false);
         $product_token = Tools::getAdminToken('AdminProducts' . (int) Tab::getIdFromClassName('AdminProducts') . (int) $this->context->employee->id);

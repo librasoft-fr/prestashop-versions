@@ -17,7 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
-
 if (!defined('_CAN_LOAD_FILES_')) {
     exit;
 }
@@ -37,29 +36,33 @@ class Ps_Socialfollow extends Module implements WidgetInterface
         'VIMEO',
         'INSTAGRAM',
         'LINKEDIN',
+        'TIKTOK',
+        'DISCORD',
     ];
+
     private $templateFile;
 
     public function __construct()
     {
         $this->name = 'ps_socialfollow';
+        $this->tab = 'advertising_marketing';
         $this->author = 'PrestaShop';
-        $this->version = '2.2.0';
+        $this->version = '2.3.0';
 
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Social media follow links', array(), 'Modules.Socialfollow.Admin');
-        $this->description = $this->trans('Facebook, Twitter, let your customers know where to follow you and increase your community.', array(), 'Modules.Socialfollow.Admin');
+        $this->displayName = $this->trans('Social media follow links', [], 'Modules.Socialfollow.Admin');
+        $this->description = $this->trans('Facebook, Twitter, let your customers know where to follow you and increase your community.', [], 'Modules.Socialfollow.Admin');
 
-        $this->ps_versions_compliancy = array('min' => '1.7.4.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = ['min' => '1.7.4.0', 'max' => _PS_VERSION_];
 
         $this->templateFile = 'module:ps_socialfollow/ps_socialfollow.tpl';
     }
 
     public function install()
     {
-        return (parent::install() &&
+        return parent::install() &&
             Configuration::updateValue('BLOCKSOCIAL_FACEBOOK', '') &&
             Configuration::updateValue('BLOCKSOCIAL_TWITTER', '') &&
             Configuration::updateValue('BLOCKSOCIAL_RSS', '') &&
@@ -68,12 +71,15 @@ class Ps_Socialfollow extends Module implements WidgetInterface
             Configuration::updateValue('BLOCKSOCIAL_VIMEO', '') &&
             Configuration::updateValue('BLOCKSOCIAL_INSTAGRAM', '') &&
             Configuration::updateValue('BLOCKSOCIAL_LINKEDIN', '') &&
-            $this->registerHook('displayFooter'));
+            Configuration::updateValue('BLOCKSOCIAL_TIKTOK', '') &&
+            Configuration::updateValue('BLOCKSOCIAL_DISCORD', '') &&
+            $this->registerHook('actionFrontControllerSetMedia') &&
+            $this->registerHook('displayFooter');
     }
 
     public function uninstall()
     {
-        return (Configuration::deleteByName('BLOCKSOCIAL_FACEBOOK') &&
+        return Configuration::deleteByName('BLOCKSOCIAL_FACEBOOK') &&
             Configuration::deleteByName('BLOCKSOCIAL_TWITTER') &&
             Configuration::deleteByName('BLOCKSOCIAL_RSS') &&
             Configuration::deleteByName('BLOCKSOCIAL_YOUTUBE') &&
@@ -81,7 +87,9 @@ class Ps_Socialfollow extends Module implements WidgetInterface
             Configuration::deleteByName('BLOCKSOCIAL_VIMEO') &&
             Configuration::deleteByName('BLOCKSOCIAL_INSTAGRAM') &&
             Configuration::deleteByName('BLOCKSOCIAL_LINKEDIN') &&
-            parent::uninstall());
+            Configuration::deleteByName('BLOCKSOCIAL_TIKTOK') &&
+            Configuration::deleteByName('BLOCKSOCIAL_DISCORD') &&
+            parent::uninstall();
     }
 
     public function getContent()
@@ -101,8 +109,8 @@ class Ps_Socialfollow extends Module implements WidgetInterface
         }
 
         if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) {
-            $html .=  '<p class="alert alert-warning">' .
-                $this->trans('Please choose a shop to edit the social media links.', array(), 'Modules.Socialfollow.Admin') .
+            $html .= '<p class="alert alert-warning">' .
+                $this->trans('Please choose a shop to edit the social media links.', [], 'Modules.Socialfollow.Admin') .
                 '</p>';
         } else {
             $html .= $this->renderForm();
@@ -118,88 +126,102 @@ class Ps_Socialfollow extends Module implements WidgetInterface
 
     public function renderForm()
     {
-        $fields_form = array(
-            'form' => array(
-                'legend' => array(
-                    'title' => $this->trans('Settings', array(), 'Admin.Global'),
-                    'icon' => 'icon-cogs'
-                ),
-                'input' => array(
-                    array(
+        $fields_form = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->trans('Settings', [], 'Admin.Global'),
+                    'icon' => 'icon-cogs',
+                ],
+                'input' => [
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('Facebook URL', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('Facebook URL', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_FACEBOOK',
-                        'desc' => $this->trans('Your Facebook fan page.', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                    array(
+                        'desc' => $this->trans('Your Facebook fan page.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('Twitter URL', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('Twitter URL', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_TWITTER',
-                        'desc' => $this->trans('Your official Twitter account.', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                    array(
+                        'desc' => $this->trans('Your official Twitter account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('RSS URL', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('RSS URL', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_RSS',
-                        'desc' => $this->trans('The RSS feed of your choice (your blog, your store, etc.).', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                    array(
+                        'desc' => $this->trans('The RSS feed of your choice (your blog, your store, etc.).', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('YouTube URL', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('YouTube URL', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_YOUTUBE',
-                        'desc' => $this->trans('Your official YouTube account.', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                    array(
+                        'desc' => $this->trans('Your official YouTube account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('Pinterest URL:', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('Pinterest URL:', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_PINTEREST',
-                        'desc' => $this->trans('Your official Pinterest account.', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                    array(
+                        'desc' => $this->trans('Your official Pinterest account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('Vimeo URL:', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('Vimeo URL:', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_VIMEO',
-                        'desc' => $this->trans('Your official Vimeo account.', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                    array(
+                        'desc' => $this->trans('Your official Vimeo account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('Instagram URL:', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('Instagram URL:', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_INSTAGRAM',
-                        'desc' => $this->trans('Your official Instagram account.', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                    array(
+                        'desc' => $this->trans('Your official Instagram account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
                         'type' => 'text',
                         'lang' => true,
-                        'label' => $this->trans('LinkedIn URL:', array(), 'Modules.Socialfollow.Admin'),
+                        'label' => $this->trans('LinkedIn URL:', [], 'Modules.Socialfollow.Admin'),
                         'name' => 'BLOCKSOCIAL_LINKEDIN',
-                        'desc' => $this->trans('Your official LinkedIn account.', array(), 'Modules.Socialfollow.Admin'),
-                    ),
-                ),
-                'submit' => array(
-                    'title' => $this->trans('Save', array(), 'Admin.Global'),
-                )
-            ),
-        );
+                        'desc' => $this->trans('Your official LinkedIn account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
+                        'type' => 'text',
+                        'lang' => true,
+                        'label' => $this->trans('TikTok URL:', [], 'Modules.Socialfollow.Admin'),
+                        'name' => 'BLOCKSOCIAL_TIKTOK',
+                        'desc' => $this->trans('Your official TikTok account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                    [
+                        'type' => 'text',
+                        'lang' => true,
+                        'label' => $this->trans('Discord URL:', [], 'Modules.Socialfollow.Admin'),
+                        'name' => 'BLOCKSOCIAL_DISCORD',
+                        'desc' => $this->trans('Your official Discord account.', [], 'Modules.Socialfollow.Admin'),
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->trans('Save', [], 'Admin.Global'),
+                ],
+            ],
+        ];
 
         $helper = new HelperForm();
         $helper->show_toolbar = false;
         $helper->table = $this->table;
         $helper->submit_action = 'submitModule';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]);
-        $helper->tpl_vars = array(
+        $helper->tpl_vars = [
             'fields_value' => $this->getConfigFieldsValues(),
-        );
+        ];
         $helper->languages = $this->context->controller->getLanguages();
-        $helper->default_form_language = (int)$this->context->language->id;
+        $helper->default_form_language = (int) $this->context->language->id;
 
-        return $helper->generateForm(array($fields_form));
+        return $helper->generateForm([$fields_form]);
     }
 
     public function getConfigFieldsValues()
@@ -215,6 +237,7 @@ class Ps_Socialfollow extends Module implements WidgetInterface
                 $result[$configuration_name][$id_lang] = $conf;
             }
         }
+
         return $result;
     }
 
@@ -225,11 +248,13 @@ class Ps_Socialfollow extends Module implements WidgetInterface
      * This function is only run once during upgrade, i.e. the first time the user accesses the configuration in the BO
      * after an upgrade of the module to the localized version.
      *
-     * @param $name string Name of the configuration setting
+     * @param string $name Name of the configuration setting
+     *
      * @return array Configuration value, now localized
      */
     protected function upgradeConfiguration($name)
     {
+        /** @var string|array $value */
         $value = Configuration::get($name);
         if (!empty($value) && !is_array($value)) {
             $value_localized = [];
@@ -254,75 +279,99 @@ class Ps_Socialfollow extends Module implements WidgetInterface
 
     public function getWidgetVariables($hookName = null, array $configuration = [])
     {
-        $social_links = array();
-        $id_lang = (int)$this->context->language->id;
+        $social_links = [];
+        $id_lang = (int) $this->context->language->id;
 
         if ($sf_facebook = Configuration::get('BLOCKSOCIAL_FACEBOOK', $id_lang)) {
-            $social_links['facebook'] = array(
-                'label' => $this->trans('Facebook', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['facebook'] = [
+                'label' => $this->trans('Facebook', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'facebook',
                 'url' => $sf_facebook,
-            );
+            ];
         }
 
         if ($sf_twitter = Configuration::get('BLOCKSOCIAL_TWITTER', $id_lang)) {
-            $social_links['twitter'] = array(
-                'label' => $this->trans('Twitter', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['twitter'] = [
+                'label' => $this->trans('Twitter', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'twitter',
                 'url' => $sf_twitter,
-            );
+            ];
         }
 
         if ($sf_rss = Configuration::get('BLOCKSOCIAL_RSS', $id_lang)) {
-            $social_links['rss'] = array(
-                'label' => $this->trans('Rss', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['rss'] = [
+                'label' => $this->trans('Rss', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'rss',
                 'url' => $sf_rss,
-            );
+            ];
         }
 
         if ($sf_youtube = Configuration::get('BLOCKSOCIAL_YOUTUBE', $id_lang)) {
-            $social_links['youtube'] = array(
-                'label' => $this->trans('YouTube', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['youtube'] = [
+                'label' => $this->trans('YouTube', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'youtube',
                 'url' => $sf_youtube,
-            );
+            ];
         }
 
         if ($sf_pinterest = Configuration::get('BLOCKSOCIAL_PINTEREST', $id_lang)) {
-            $social_links['pinterest'] = array(
-                'label' => $this->trans('Pinterest', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['pinterest'] = [
+                'label' => $this->trans('Pinterest', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'pinterest',
                 'url' => $sf_pinterest,
-            );
+            ];
         }
 
         if ($sf_vimeo = Configuration::get('BLOCKSOCIAL_VIMEO', $id_lang)) {
-            $social_links['vimeo'] = array(
-                'label' => $this->trans('Vimeo', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['vimeo'] = [
+                'label' => $this->trans('Vimeo', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'vimeo',
                 'url' => $sf_vimeo,
-            );
+            ];
         }
 
         if ($sf_instagram = Configuration::get('BLOCKSOCIAL_INSTAGRAM', $id_lang)) {
-            $social_links['instagram'] = array(
-                'label' => $this->trans('Instagram', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['instagram'] = [
+                'label' => $this->trans('Instagram', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'instagram',
                 'url' => $sf_instagram,
-            );
+            ];
         }
 
         if ($sf_linkedin = Configuration::get('BLOCKSOCIAL_LINKEDIN', $id_lang)) {
-            $social_links['linkedin'] = array(
-                'label' => $this->trans('LinkedIn', array(), 'Modules.Socialfollow.Shop'),
+            $social_links['linkedin'] = [
+                'label' => $this->trans('LinkedIn', [], 'Modules.Socialfollow.Shop'),
                 'class' => 'linkedin',
                 'url' => $sf_linkedin,
-            );
+            ];
         }
 
-        return array(
+        if ($sf_tiktok = Configuration::get('BLOCKSOCIAL_TIKTOK', $id_lang)) {
+            $social_links['tiktok'] = [
+                'label' => $this->trans('TikTok', [], 'Modules.Socialfollow.Shop'),
+                'class' => 'tiktok',
+                'url' => $sf_tiktok,
+            ];
+        }
+
+        if ($sf_discord = Configuration::get('BLOCKSOCIAL_DISCORD', $id_lang)) {
+            $social_links['discord'] = [
+                'label' => $this->trans('Discord', [], 'Modules.Socialfollow.Shop'),
+                'class' => 'ps-socialfollow-discord',
+                'url' => $sf_discord,
+            ];
+        }
+
+        return [
             'social_links' => $social_links,
+        ];
+    }
+
+    public function hookActionFrontControllerSetMedia()
+    {
+        $this->context->controller->registerStylesheet(
+            'ps_socialfollow_icons',
+            '/modules/' . $this->name . '/views/css/ps_socialfollow.css'
         );
     }
 

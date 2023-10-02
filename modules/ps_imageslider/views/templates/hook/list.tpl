@@ -32,9 +32,9 @@
 	</span>
 	</h3>
 	<div id="slidesContent">
-		<div id="slides">
+		<div id="slides" class="list-group">
 			{foreach from=$slides item=slide}
-				<div id="slides_{$slide.id_slide}" class="panel">
+				<div id="slides_{$slide.id_slide}" class="panel list-group-item" data-id="slides[]={$slide.id_slide}">
 					<div class="row">
 						<div class="col-lg-1">
 							<span><i class="icon-arrows "></i></span>
