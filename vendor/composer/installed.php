@@ -707,9 +707,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/autoload' => array(
-            'pretty_version' => 'v1.0.0',
-            'version' => '1.0.0.0',
-            'reference' => '9b057242f67076a50e55e7cb77a65d595bfb15b4',
+            'pretty_version' => 'v1.0.1',
+            'version' => '1.0.1.0',
+            'reference' => 'b84a116564d624e3db04fce648dbfee135df87c0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../prestashop/autoload',
             'aliases' => array(),
@@ -835,7 +835,7 @@
         'prestashop/laminas-code-lts' => array(
             'pretty_version' => 'dev-4.5-lts',
             'version' => 'dev-4.5-lts',
-            'reference' => '3dbe7f7f48a5d877e02cc70e4f58cb0e1e5cca82',
+            'reference' => 'c22c7aee2092bcec532b910a1f4dbac0ce6a3bbf',
             'type' => 'library',
             'install_path' => __DIR__ . '/../prestashop/laminas-code-lts',
             'aliases' => array(
@@ -1078,9 +1078,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_linklist' => array(
-            'pretty_version' => 'v6.0.2',
-            'version' => '6.0.2.0',
-            'reference' => '66bd879f99c665f1fac8aab820f02b17c64df7c9',
+            'pretty_version' => 'v6.0.3',
+            'version' => '6.0.3.0',
+            'reference' => '2bf726d44e1e009b794c04068083fda4f2707440',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_linklist',
             'aliases' => array(),
@@ -1473,8 +1473,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0',
-                1 => '1.0.0',
+                0 => '1.0.0',
+                1 => '1.0|2.0',
             ),
         ),
         'psr/simple-cache' => array(

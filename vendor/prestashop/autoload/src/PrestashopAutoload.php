@@ -29,12 +29,16 @@ final class PrestashopAutoload
         $this->classLoader = new LegacyClassLoader($rootDirectory, $cacheDirectory);
         $this->autoload = new Autoloader($rootDirectory);
 
-        $cacheFile = $this->classLoader->getClassIndexFilepath();
-        if (is_file($cacheFile)) {
-            $this->autoload->setClassIndex($this->classLoader->loadClassCache());
-        } else {
-            $this->generateIndex();
-        }
+        $this->autoload->setInitializationCallBack(
+            function () {
+                $cacheFile = $this->classLoader->getClassIndexFilepath();
+                if (is_file($cacheFile)) {
+                    $this->autoload->setClassIndex($this->classLoader->loadClassCache());
+                } else {
+                    $this->generateIndex();
+                }
+            }
+        );
     }
 
     public function generateIndex(): void

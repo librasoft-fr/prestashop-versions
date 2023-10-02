@@ -107,6 +107,7 @@ final class LegacyClassLoader
         $finder = new Finder();
         $finder
             ->in($directories)
+            ->followLinks()
             ->files()
             ->name('*.php')
         ;

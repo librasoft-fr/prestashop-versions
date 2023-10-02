@@ -2,6 +2,8 @@
 
 namespace PrestaShop\Autoload;
 
+use Closure;
+
 final class Autoloader
 {
     /**
@@ -40,6 +42,16 @@ final class Autoloader
      */
     private $loadedClasses = [];
 
+    /**
+     * @var bool
+     */
+    private $initialized = false;
+
+    /**
+     * @var Closure|null
+     */
+    private $initializationCallback;
+
     public function __construct(string $directory)
     {
         if (!str_ends_with($directory, DIRECTORY_SEPARATOR)) {
@@ -61,6 +73,11 @@ final class Autoloader
 
     public function load(string $className): void
     {
+        if (!$this->initialized && null !== $this->initializationCallback) {
+            ($this->initializationCallback)();
+            $this->initialized = true;
+        }
+
         if (str_starts_with($className, self::NAMESPACED_CLASSES)) {
             $classWithoutNs = substr($className, strlen(self::NAMESPACED_CLASSES));
             class_alias($classWithoutNs, '\\'.$className);
@@ -121,5 +138,12 @@ final class Autoloader
     {
         eval('class '.$className.' extends '.self::$class_aliases[$className].' {}');
         $this->loadedClasses[$className] = true;
+    }
+
+    public function setInitializationCallBack(Closure $closure): self
+    {
+        $this->initializationCallback = $closure;
+
+        return $this;
     }
 }
