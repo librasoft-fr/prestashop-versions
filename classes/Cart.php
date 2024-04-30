@@ -132,7 +132,7 @@ class CartCore extends ObjectModel
             'id_lang' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'recyclable' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'gift' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'gift_message' => ['type' => self::TYPE_STRING, 'validate' => 'isMessage'],
+            'gift_message' => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
             'mobile_theme' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'delivery_option' => ['type' => self::TYPE_STRING],
             'secure_key' => ['type' => self::TYPE_STRING, 'size' => 32],
@@ -1511,7 +1511,7 @@ class CartCore extends ObjectModel
         }
 
         if (!Validate::isLoadedObject($product)) {
-            die(Tools::displayError());
+            die(Tools::displayError(sprintf('Product with ID "%s" could not be loaded.', $id_product)));
         }
 
         if (isset(self::$_nbProducts[$this->id])) {
@@ -2029,7 +2029,7 @@ class CartCore extends ObjectModel
     {
         $cart = new Cart($id_cart);
         if (!Validate::isLoadedObject($cart)) {
-            die(Tools::displayError());
+            die(Tools::displayError(sprintf('Cart with ID "%s" could not be loaded.', $id_cart)));
         }
 
         $with_taxes = $use_tax_display ? $cart->_taxCalculationMethod != PS_TAX_EXC : true;

@@ -44,7 +44,7 @@ class dashtrends extends Module
     {
         $this->name = 'dashtrends';
         $this->tab = 'administration';
-        $this->version = '2.1.2';
+        $this->version = '2.1.3';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -73,7 +73,6 @@ class dashtrends extends Module
     {
         $this->context->smarty->assign([
             'currency' => $this->context->currency,
-            '_PS_PRICE_DISPLAY_PRECISION_' => _PS_PRICE_DISPLAY_PRECISION_,
         ]);
 
         return $this->display(__FILE__, 'dashboard_zone_two.tpl');
@@ -271,7 +270,7 @@ class dashtrends extends Module
 
             $translated_array[$key] = [];
             foreach ($date_array as $compare_date => $value) {
-                $translation = $normal_min + ($compare_date - $compare_min) * ($normal_size / $compare_size);
+                $translation = $compare_size == 0 ? 0 : $normal_min + ($compare_date - $compare_min) * ($normal_size / $compare_size);
                 $translated_array[$key][number_format($translation, 0, '', '')] = $value;
             }
         }

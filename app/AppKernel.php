@@ -38,7 +38,7 @@ class AppKernel extends Kernel
     const MAJOR_VERSION_STRING = Version::MAJOR_VERSION_STRING;
     const MAJOR_VERSION = 8;
     const MINOR_VERSION = 1;
-    const RELEASE_VERSION = 2;
+    const RELEASE_VERSION = 3;
 
     /**
      * Lock stream is saved as static field, this way if multiple AppKernel are instanciated (this can happen in
@@ -180,14 +180,6 @@ class AppKernel extends Kernel
     public function getRootDir()
     {
         return __DIR__;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCacheDir()
-    {
-        return _PS_CACHE_DIR_;
     }
 
     /**

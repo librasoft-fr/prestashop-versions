@@ -100,7 +100,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $this->confirmUninstall = $this->trans('Are you sure that you want to delete all of your contacts?', [], 'Modules.Emailsubscription.Admin');
         $this->ps_versions_compliancy = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
 
-        $this->version = '2.7.1';
+        $this->version = '2.8.2';
         $this->author = 'PrestaShop';
         $this->error = false;
         $this->valid = false;
@@ -153,6 +153,9 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
             $conditions[(int) $lang['id_lang']] = $this->getConditionFixtures($lang);
         }
         Configuration::updateValue('NW_CONDITIONS', $conditions, true);
+        Configuration::updateValue('NW_VERIFICATION_EMAIL', 0);
+        Configuration::updateValue('NW_CONFIRMATION_EMAIL', 0);
+        Configuration::updateValue('NW_VOUCHER_CODE', '');
 
         return Db::getInstance()->execute('
         CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'emailsubscription` (
@@ -203,8 +206,8 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
     public function getContent()
     {
         if (Tools::isSubmit('submitUpdate')) {
-            Configuration::updateValue('NW_CONFIRMATION_EMAIL', (bool) Tools::getValue('NW_CONFIRMATION_EMAIL'));
-            Configuration::updateValue('NW_VERIFICATION_EMAIL', (bool) Tools::getValue('NW_VERIFICATION_EMAIL'));
+            Configuration::updateValue('NW_CONFIRMATION_EMAIL', (int) Tools::getValue('NW_CONFIRMATION_EMAIL'));
+            Configuration::updateValue('NW_VERIFICATION_EMAIL', (int) Tools::getValue('NW_VERIFICATION_EMAIL'));
 
             $conditions = [];
             $languages = Language::getLanguages(false);

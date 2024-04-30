@@ -313,7 +313,6 @@ class LinkBlockRepository
         }
 
         foreach ($queries as $query) {
-            $this->connection->executeQuery($query);
             try {
                 $this->connection->executeQuery($query);
             } catch (DBALException $e) {

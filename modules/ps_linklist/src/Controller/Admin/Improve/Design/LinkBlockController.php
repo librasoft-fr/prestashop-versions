@@ -28,16 +28,10 @@ use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
-use PrestaShopBundle\Security\Annotation\ModuleActivated;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class LinkBlockController.
- *
- * @ModuleActivated(moduleName="ps_linklist", redirectRoute="admin_module_manage")
- */
 class LinkBlockController extends FrameworkBundleAdminController
 {
     /**
@@ -198,7 +192,7 @@ class LinkBlockController extends FrameworkBundleAdminController
     public function updatePositionsAction(Request $request, $hookId)
     {
         $positionsData = [
-            'positions' => $request->request->get('positions', null),
+            'positions' => $request->request->all()['positions'],
             'parentId' => $hookId,
         ];
 
@@ -271,7 +265,6 @@ class LinkBlockController extends FrameworkBundleAdminController
     protected function buildFiltersParamsByRequest(Request $request)
     {
         $filtersParams = array_merge(LinkBlockFilters::getDefaults(), $request->query->all());
-        $filtersParams['filters']['id_lang'] = $this->getContext()->language->id;
 
         return $filtersParams;
     }

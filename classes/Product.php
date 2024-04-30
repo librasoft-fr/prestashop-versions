@@ -507,7 +507,7 @@ class ProductCore extends ObjectModel
             'on_sale' => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool'],
             'online_only' => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool'],
             'ecotax' => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice'],
-            'minimal_quantity' => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt'],
+            'minimal_quantity' => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isPositiveInt'],
             'low_stock_threshold' => ['type' => self::TYPE_INT, 'shop' => true, 'allow_null' => true, 'validate' => 'isInt'],
             'low_stock_alert' => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool'],
             'price' => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice', 'required' => true],
@@ -913,7 +913,7 @@ class ProductCore extends ObjectModel
         if ((int) $id_customer > 0) {
             $customer = new Customer((int) $id_customer);
             if (!Validate::isLoadedObject($customer)) {
-                die(Tools::displayError());
+                die(Tools::displayError(sprintf('Customer with ID "%s" could not be loaded.', $id_customer)));
             }
             self::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) $customer->id_default_group);
             $cur_cart = Context::getContext()->cart;
@@ -1645,7 +1645,7 @@ class ProductCore extends ObjectModel
         }
 
         if (!Validate::isOrderBy($order_by) || !Validate::isOrderWay($order_way)) {
-            die(Tools::displayError());
+            die(Tools::displayError('Invalid sorting parameters provided.'));
         }
         if ($order_by == 'id_product' || $order_by == 'price' || $order_by == 'date_add' || $order_by == 'date_upd') {
             $order_by_prefix = 'p';
@@ -3024,7 +3024,7 @@ class ProductCore extends ObjectModel
             $order_by_prefix = 'pl';
         }
         if (!Validate::isOrderBy($order_by) || !Validate::isOrderWay($order_way)) {
-            die(Tools::displayError());
+            die(Tools::displayError('Invalid sorting parameters provided.'));
         }
 
         $sql_groups = '';
@@ -3278,7 +3278,7 @@ class ProductCore extends ObjectModel
         Context $context = null
     ) {
         if (!Validate::isBool($count)) {
-            die(Tools::displayError());
+            die(Tools::displayError('Parameter "count" is invalid.'));
         }
 
         if (!$context) {
@@ -3302,7 +3302,7 @@ class ProductCore extends ObjectModel
             $order_by_prefix = 'pl';
         }
         if (!Validate::isOrderBy($order_by) || !Validate::isOrderWay($order_way)) {
-            die(Tools::displayError());
+            die(Tools::displayError('Invalid sorting parameters provided.'));
         }
         $current_date = date('Y-m-d H:i:00');
         $ids_product = Product::_getProductIdByDate((!$beginning ? $current_date : $beginning), (!$ending ? $current_date : $ending), $context);
@@ -3636,8 +3636,11 @@ class ProductCore extends ObjectModel
             Tools::displayParameterAsDeprecated('divisor');
         }
 
-        if (!Validate::isBool($usetax) || !Validate::isUnsignedId($id_product)) {
-            die(Tools::displayError());
+        if (!Validate::isBool($usetax)) {
+            die(Tools::displayError('Parameter "usetax" is invalid.'));
+        }
+        if (!Validate::isUnsignedId($id_product)) {
+            die(Tools::displayError('Product ID is invalid.'));
         }
 
         // Initializations
@@ -3657,7 +3660,7 @@ class ProductCore extends ObjectModel
             * When called from the back office, cart ID can be inexistant
             */
             if (!$id_cart && !isset($context->employee)) {
-                die(Tools::displayError());
+                die(Tools::displayError('If no employee is assigned in the context, cart ID must be provided to this method.'));
             }
             $cur_cart = new Cart($id_cart);
             // Store cart in context to avoid multiple instantiations in BO
@@ -5639,10 +5642,18 @@ class ProductCore extends ObjectModel
         $row['category_name'] = Db::getInstance()->getValue('SELECT name FROM ' . _DB_PREFIX_ . 'category_lang WHERE id_shop = ' . (int) $context->shop->id . ' AND id_lang = ' . (int) $id_lang . ' AND id_category = ' . (int) $row['id_category_default']);
         $row['link'] = $context->link->getProductLink((int) $row['id_product'], $row['link_rewrite'], $row['category'], $row['ean13']);
 
-        if (empty($row['manufacturer_name']) && (isset($row['id_manufacturer']) && !empty((int) $row['id_manufacturer']))) {
-            $row['manufacturer_name'] = Manufacturer::getNameById((int) $row['id_manufacturer']);
-        } else {
+        // Get manufacturer name if missing
+        if (empty($row['manufacturer_name'])) {
+            // Assign empty value
             $row['manufacturer_name'] = null;
+
+            // If we have manufacturer ID, we wil try to load it's name and assign it
+            if (!empty($row['id_manufacturer'])) {
+                $manufacturerName = Manufacturer::getNameById((int) $row['id_manufacturer']);
+                if (!empty($manufacturerName)) {
+                    $row['manufacturer_name'] = $manufacturerName;
+                }
+            }
         }
 
         $row['attribute_price'] = 0;
@@ -5880,9 +5891,11 @@ class ProductCore extends ObjectModel
         // Then if combination has an impact we apply it on unit price
         if ($combinationId) {
             $combination = new Combination($combinationId);
-            if (0 != $combination->unit_price_impact && 0 != $baseUnitPrice) {
-                $baseUnitPrice = $baseUnitPrice + $combination->unit_price_impact;
-            }
+            $baseUnitPrice = $baseUnitPrice + $combination->unit_price_impact;
+        }
+
+        if ($baseUnitPrice == 0) {
+            return 0;
         }
 
         // Finally, we apply the currency rate
@@ -5890,10 +5903,6 @@ class ProductCore extends ObjectModel
         $currencyId = Validate::isLoadedObject($context->currency) ? (int) $context->currency->id : $defaultCurrencyId;
         if ($currencyId !== $defaultCurrencyId) {
             $baseUnitPrice = Tools::convertPrice($baseUnitPrice, $currencyId);
-        }
-
-        if ($baseUnitPrice == 0) {
-            return 0;
         }
 
         // Compute price ratio based on initial product price and initial unit price (without taxes, group discount, cart rules)

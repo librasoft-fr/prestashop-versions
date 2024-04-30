@@ -73,7 +73,7 @@ final class LinkBlockQueryBuilder extends AbstractDoctrineQueryBuilder
     public function getCountQueryBuilder(SearchCriteriaInterface $searchCriteria = null)
     {
         $qb = $this->getQueryBuilder($searchCriteria->getFilters());
-        $qb->select('COUNT(lb.id_link_block)');
+        $qb->select('COUNT(DISTINCT(lb.id_link_block))');
 
         return $qb;
     }

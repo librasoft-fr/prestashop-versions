@@ -17,7 +17,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
-if (!defined('_CAN_LOAD_FILES_')) {
+if (!defined('_PS_VERSION_')) {
     exit;
 }
 
@@ -47,7 +47,7 @@ class Ps_Socialfollow extends Module implements WidgetInterface
         $this->name = 'ps_socialfollow';
         $this->tab = 'advertising_marketing';
         $this->author = 'PrestaShop';
-        $this->version = '2.3.0';
+        $this->version = '2.3.2';
 
         $this->bootstrap = true;
         parent::__construct();

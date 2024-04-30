@@ -52,7 +52,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
     {
         $this->name = 'ps_imageslider';
         $this->tab = 'front_office_features';
-        $this->version = '3.1.3';
+        $this->version = '3.1.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->secure_key = Tools::hash($this->name);
@@ -119,9 +119,6 @@ class Ps_ImageSlider extends Module implements WidgetInterface
                 $this->installSamples();
             }
 
-            // Disable on mobiles and tablets
-            $this->disableDevice(Context::DEVICE_MOBILE);
-
             return (bool) $res;
         }
 
@@ -143,9 +140,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
                 $slide->description[$language['id_lang']] = '<h3>EXCEPTEUR OCCAECAT</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tristique in tortor et dignissim. Quisque non tempor leo. Maecenas egestas sem elit</p>';
                 $slide->legend[$language['id_lang']] = 'sample-' . $i;
-                $slide->url[$language['id_lang']] = 'https://www.prestashop-project.org?utm_source=back-office&utm_medium=v17_homeslider'
-                    . '&utm_campaign=back-office-' . Tools::strtoupper($this->context->language->iso_code)
-                    . '&utm_content=' . (defined('_PS_HOST_MODE_') ? 'ondemand' : 'download');
+                $slide->url[$language['id_lang']] = 'https://www.prestashop-project.org';
                 $rtlSuffix = $language['is_rtl'] ? '_rtl' : '';
                 $slide->image[$language['id_lang']] = sprintf('sample-%d%s.jpg', $i, $rtlSuffix);
             }
