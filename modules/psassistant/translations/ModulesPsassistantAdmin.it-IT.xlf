@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="ps-admin" source-language="it-IT" target-language="it-IT" datatype="plaintext">
+    <body>
+      <trans-unit id="22c61800bb9f4cf41a9f7afb049e8709">
+        <source>https://prestashop.com/prestashop-account-terms-conditions/</source>
+        <target>https://prestashop.com/prestashop-account-terms-conditions/</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="3f7b95345636960648f64503f6194e13">
+        <source>https://prestashop.com/prestashop-account-privacy/</source>
+        <target>https://prestashop.com/prestashop-account-privacy/</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="fbab27689f2623ba1bfefd3a96f2f6ab">
+        <source>Enable Back Office access</source>
+        <target>Abilitare l'accesso al Back Office</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354">
+        <source>Save</source>
+        <target>Risparmiare</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="20015706a8cbd457cbb6ea3e7d5dc9b3">
+        <source>Configuration updated</source>
+        <target>Configurazione aggiornata</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="3ec5638f0ef53e6780c12e56dbce882e">
+        <source>By activating this option, we may process your personal data in order to provide our support services. Information about this data processing can be found in our</source>
+        <target>Attivando questa opzione, siamo tenuti a trattare i tuoi dati personali per fornire i nostri servizi di assistenza. Le informazioni relative al trattamento dei dati sono contenute nelle</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="9a8efae1da985119fb0a2aa4345f1984">
+        <source>PrestaShop Account terms and conditions</source>
+        <target>condizioni generali del nostro account PrestaShop</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ce18a78a0e28aabb06a51db6943489c5">
+        <source>(see data processing agreement in the appendix).</source>
+        <target>(contratto di outsourcing dei dati allegato).</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="84504b60eb8115be3dd2ba7ec122ba5c">
+        <source>Learn more about your data and your rights.</source>
+        <target>Per sapere di più sui tuoi dati e sui tuoi diritti.</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

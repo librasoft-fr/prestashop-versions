@@ -1,0 +1,18 @@
+services:
+  _defaults:
+    public: true
+
+  prestashop.module.psxdesign.utility.logo_utility:
+    class: PrestaShop\Module\PsxDesign\Utility\LogoUtility
+    arguments:
+      - '@prestashop.adapter.legacy.configuration'
+
+  prestashop.module.psxdesign.utility.theme_configuration.font_utility:
+    class: PrestaShop\Module\PsxDesign\Utility\ThemeConfiguration\FontUtility
+    arguments:
+      - "@=service('psxdesign.module').getTranslator()"
+
+  prestashop.module.psxdesign.utility.theme_configuration.color_utility:
+    class: PrestaShop\Module\PsxDesign\Utility\ThemeConfiguration\ColorUtility
+    arguments:
+      - "@=service('psxdesign.module').getTranslator()"

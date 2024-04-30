@@ -1,0 +1,4 @@
+parameters:
+  ps_edition_basic.env: "%env(PS_EDITION_BASIC_ENV)%"
+  ps_edition_basic.edition_basic_homepage_js: "%env(PS_EDITION_BASIC_HOMEPAGE_JS)%"
+  ps_edition_basic.edition_basic_admin_css: "%env(PS_EDITION_BASIC_ADMIN_CSS)%"

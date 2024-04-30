@@ -1,0 +1,9 @@
+/* PrestaShop license placeholder */
+
+@mixin clearfix() {
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}

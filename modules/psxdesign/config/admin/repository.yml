@@ -1,0 +1,25 @@
+services:
+  _defaults:
+    public: true
+
+  prestashop.module.psxdesign.repository.psxdesign_logo_repository:
+    class: PrestaShop\Module\PsxDesign\Repository\PsxdesignLogoRepository
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  prestashop.module.psxdesign.repository.psxdesign_color_repository:
+    class: PrestaShop\Module\PsxDesign\Repository\PsxdesignColorRepository
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  prestashop.module.psxdesign.repository.psxdesign_colors_palette_repository:
+    class: PrestaShop\Module\PsxDesign\Repository\PsxdesignColorsPaletteRepository
+    arguments:
+      - '@doctrine.orm.entity_manager'
+      - "@=service('prestashop.core.addon.theme.theme_provider').getCurrentlyUsedTheme().getName()"
+
+  prestashop.module.psxdesign.repository.psxdesign_fonts_repository:
+    class: PrestaShop\Module\PsxDesign\Repository\PsxdesignFontsRepository
+    arguments:
+      - '@doctrine.orm.entity_manager'
+      - "@=service('prestashop.core.addon.theme.theme_provider').getCurrentlyUsedTheme().getName()"

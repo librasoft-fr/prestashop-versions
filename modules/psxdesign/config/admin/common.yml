@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    public: true
+
+  psxdesign.module:
+    class: 'PsxDesign'
+    factory: [ 'Module', 'getInstanceByName' ]
+    arguments:
+      - 'psxdesign'
+
+  psxdesign.context:
+    class: Context
+    factory: [ 'Context', 'getContext' ]
+
+  psxdesign.guzzle.client:
+    class: 'GuzzleHttp\Client'
+    public: true

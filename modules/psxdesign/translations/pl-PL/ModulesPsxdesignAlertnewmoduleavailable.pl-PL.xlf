@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin-dev" source-language="en-US" target-language="pl" datatype="plaintext">
+    <body>
+      <trans-unit id="0bc6ed52e4f26ac8cc6fac6a463e8f4c">
+        <source>We have improved the Design section of your back office</source>
+        <target state="needs-translation">We have improved the Design section of your back office</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="d1f0da1e84ae6ef7220bf674ca996d58">
+        <source>Enjoy a better experience and benefit from the latest improvements. Your settings and data will be preserved.</source>
+        <target state="needs-translation">Enjoy a better experience and benefit from the latest improvements. Your settings and data will be preserved.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="06957d1d0327e88bcde956e59a8bb495">
+        <source>Activate new features</source>
+        <target state="needs-translation">Activate new features</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,19 @@
+theme:
+  resource: "themes.yml"
+  prefix: /improve/design/
+
+logo:
+  resource: "logo.yml"
+  prefix: /improve/design/
+
+colors:
+  resource: "colors.yml"
+  prefix: /improve/design/
+
+fonts:
+  resource: "fonts.yml"
+  prefix: /improve/design/
+
+ajax:
+  resource: "ajax.yml"
+  prefix: /improve/design/

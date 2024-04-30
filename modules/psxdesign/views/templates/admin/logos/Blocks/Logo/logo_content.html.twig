@@ -1,0 +1,61 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+<div class="col-12 col-lg-8">
+    <div class="card">
+        <header>
+            <nav>
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#logo_header" role="tab" data-toggle="tab">{{ 'Header'|trans({}, 'Modules.Psxdesign.Admin') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#logo_email" role="tab" data-toggle="tab">{{ 'Email'|trans({}, 'Modules.Psxdesign.Admin') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#logo_invoice" role="tab" data-toggle="tab">{{ 'Invoice'|trans({}, 'Modules.Psxdesign.Admin') }}</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <div class="tab-content">
+            <div class="tab-pane active" id="logo_header">
+                {% include '@Modules/psxdesign/views/templates/admin/logos/Blocks/Partials/logo_form_tabs.html.twig' with {
+                    form_name: 'header'
+                } %}
+            </div>
+            <div class="tab-pane" id="logo_email">
+                {% include '@Modules/psxdesign/views/templates/admin/logos/Blocks/Partials/logo_form_tabs.html.twig' with {
+                    form_name: 'email'
+                } %}
+            </div>
+            <div class="tab-pane" id="logo_invoice">
+                {% include '@Modules/psxdesign/views/templates/admin/logos/Blocks/Partials/logo_form_tabs.html.twig' with {
+                    form_name: 'invoice'
+                } %}
+            </div>
+        </div>
+    </div>
+</div>

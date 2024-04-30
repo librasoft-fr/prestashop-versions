@@ -1,0 +1,27 @@
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    # Autoriser entrypoint.php
+    <Files "entrypoint.php">
+        Order allow,deny
+        Allow from all
+    </Files>
+
+    # Bloquer tous les fichiers .env (sauf entrypoint.php)
+    <FilesMatch "^\.env">
+        Order deny,allow
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# Apache 2.4
+<IfModule mod_authz_core.c>
+    # Autoriser entrypoint.php
+    <Files "entrypoint.php">
+        Require all granted
+    </Files>
+
+    # Bloquer tous les fichiers .env (sauf entrypoint.php)
+    <FilesMatch "^\.env">
+        Require all denied
+    </FilesMatch>
+</IfModule>

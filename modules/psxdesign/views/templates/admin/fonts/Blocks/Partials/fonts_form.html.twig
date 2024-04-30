@@ -1,0 +1,64 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+<div>
+    <p class="mb-3">
+        {{ data.description }}
+    </p>
+    <input type="hidden" name="{{ form_index }}[variable_name]" value="{{ data.variableName }}"/>
+    <input type="hidden" name="{{ form_index }}[variable_type]" value="{{ data.variableType }}"/>
+    {% if data.id is defined and data.id is not null %}
+        <input type="hidden" name="{{ form_index }}[id]" value="{{ data.id }}"/>
+    {% endif %}
+    {% include '@Modules/psxdesign/views/templates/components/text_editor.html.twig' with {
+        disabled: disabled,
+        fontList: fonts,
+        fontVariants: fontVariants,
+        fontFamily: {
+            id: form_index ~ '_font_family',
+            name: form_index ~ "[font]",
+            value: data.font,
+        },
+        fontStyle: {
+            id: form_index ~ '_font_style',
+            name: form_index ~ "[style]",
+            value: data.style,
+        },
+        fontSize: {
+            id: form_index ~ '_font_size',
+            name: form_index ~ "[size]",
+            min: 10,
+            max: 100,
+            value: data.size,
+        },
+        textArea: {
+            id: form_index ~ '_textarea',
+            ariaLabel: 'Try your font'|trans({}, 'Modules.Psxdesign.Admin'),
+            value: data.placeholder ?? data.label,
+            multiline: false,
+            readonly: true,
+        }
+    } %}
+</div>

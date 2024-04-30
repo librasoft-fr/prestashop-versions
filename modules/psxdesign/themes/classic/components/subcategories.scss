@@ -1,0 +1,91 @@
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+
+#subcategories {
+  margin-bottom: 20px;
+  border-top: 1px solid $gray-light;
+
+  .subcategory-heading {
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 0 -10px;
+
+    li {
+      width: calc(100% / 4 - 20px);
+      min-width: 200px;
+      margin: 10px;
+      text-align: center;
+
+      .subcategory-image {
+        padding: 0 0 8px;
+
+        a {
+          display: block;
+          padding: 9px;
+          border: 1px solid $gray-light;
+
+          img {
+            max-width: 100%;
+            vertical-align: top;
+          }
+        }
+      }
+
+      .subcategory-name {
+        text-transform: uppercase;
+
+        &:hover {
+          color: $brand-primary;
+        }
+      }
+
+      .cat_desc {
+        display: none;
+      }
+
+      &:hover {
+        .subcategory-image {
+          a {
+            padding: 5px;
+            border: 5px solid $brand-primary;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  #subcategories {
+    ul {
+      justify-content: center;
+    }
+  }
+}

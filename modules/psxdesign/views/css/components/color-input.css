@@ -1,0 +1,129 @@
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+.color-input {
+  position: relative;
+}
+.color-input:disabled .color-input__color {
+  opacity: 0.8;
+}
+.color-input:disabled .color-input__hex {
+  background: #eceeef;
+  color: #b3c7cd;
+  border-color: #bbcdd2;
+}
+.color-input:disabled .input_color__copy {
+  pointer-events: none;
+  color: #b3c7cd;
+}
+.color-input:not(:disabled).is-invalid .color-input__hex {
+  border-color: #f54c3e;
+}
+.color-input:not(:disabled).is-invalid .color-input__hex:hover, .color-input:not(:disabled).is-invalid .color-input__hex:active, .color-input:not(:disabled).is-invalid .color-input__hex:focus, .color-input:not(:disabled).is-invalid .color-input__hex:focus-visible {
+  border-color: #f54c3e;
+}
+.color-input:not(:disabled).is-invalid .color-input__error > .error__message {
+  display: block;
+}
+.color-input:not(:disabled) .color-input__color:hover {
+  background: #beeaf3;
+}
+.color-input:not(:disabled) .color-input__color:active {
+  background: #beeaf3;
+}
+.color-input:not(:disabled) .color-input__color:focus, .color-input:not(:disabled) .color-input__color:focus-visible {
+  outline: 2px solid #25b9d7;
+}
+.color-input:not(:disabled) .color-input__hex:hover, .color-input:not(:disabled) .color-input__hex:active, .color-input:not(:disabled) .color-input__hex:focus, .color-input:not(:disabled) .color-input__hex:focus-visible {
+  background: #f4fcfd;
+}
+.color-input:not(:disabled) .color-input__hex:active, .color-input:not(:disabled) .color-input__hex:focus, .color-input:not(:disabled) .color-input__hex:focus-visible {
+  border-color: #25b9d7;
+}
+
+.color-input__color {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 1;
+  border-radius: 4px;
+  border: none;
+  width: 31px;
+  min-width: 31px;
+  height: 31px;
+  background-color: transparent;
+}
+
+.color-input__hex {
+  padding: 0 38px 0 43px;
+  color: #363a41;
+  outline: none;
+  width: 100%;
+  position: relative;
+  border-radius: 4px;
+  border: 1px solid #b3c7cd;
+  height: 39px;
+  background: #ffffff;
+}
+
+.input_color__copy {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 1;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  width: 35px;
+  min-width: 35px;
+  height: 35px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #6c868e;
+}
+.input_color__copy:hover {
+  color: #25b9d7;
+}
+.input_color__copy:active {
+  color: #21a6c1;
+}
+.input_color__copy:focus, .input_color__copy:focus-visible {
+  border-color: #25b9d7;
+}
+.input_color__copy .input_color__copy_icon {
+  font-size: 1.125rem;
+}
+
+.color-input__error {
+  margin-bottom: 0;
+  margin-top: 0.3125rem;
+}
+.color-input__error > .error__message {
+  display: none;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #f54c3e;
+  margin-bottom: 0;
+}

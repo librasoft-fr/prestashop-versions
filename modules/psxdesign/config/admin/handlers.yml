@@ -1,0 +1,76 @@
+services:
+  _defaults:
+    public: true
+
+  #Theme handlers
+  prestashop.module.psxdesign.handler.theme_uploader:
+    class: 'PrestaShop\Module\PsxDesign\Handler\ThemeUploader'
+    arguments:
+      - '@prestashop.core.command_bus'
+      - '@prestashop.core.addon.theme.repository'
+
+  #Logos handlers
+  prestashop.module.psxdesign.handler.logo_text_upload_handler:
+    class: PrestaShop\Module\PsxDesign\Handler\LogoTextUploadHandler
+    arguments:
+      - '@prestashop.adapter.legacy.configuration'
+      - '@prestashop.module.psxdesign.repository.psxdesign_logo_repository'
+      - '@prestashop.module.psxdesign.utility.logo_utility'
+      - !php/const _PS_IMG_DIR_
+
+  prestashop.module.psxdesign.handler.logo_image_uploader:
+    class: PrestaShop\Module\PsxDesign\Handler\LogoImageUploadHandler
+    arguments:
+      - '@prestashop.core.shop.logo_uploader'
+      - '@prestashop.module.psxdesign.repository.psxdesign_logo_repository'
+      - '@prestashop.module.psxdesign.utility.logo_utility'
+      - '@prestashop.adapter.legacy.configuration'
+      - !php/const _PS_IMG_DIR_
+
+  #Colors handlers
+  prestashop.module.psxdesign.handler.color_palette_upsert_handler:
+    class: PrestaShop\Module\PsxDesign\Handler\ColorPaletteUpsertHandler
+    arguments:
+      - '@prestashop.module.psxdesign.validator.color_palette_validator'
+      - '@prestashop.module.psxdesign.repository.psxdesign_color_repository'
+      - '@prestashop.module.psxdesign.repository.psxdesign_colors_palette_repository'
+      - '@prestashop.module.psxdesign.processor.colors_stylesheet_processor'
+      - '@prestashop.module.psxdesign.builder.color_palette_builder'
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+      - '@doctrine.orm.entity_manager'
+
+  prestashop.module.psxdesign.handler.color_stylesheet_updater:
+    class: PrestaShop\Module\PsxDesign\Handler\ColorsStylesheetUpdater
+    arguments:
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+      - "@=service('psxdesign.module').getLocalPath()"
+      - '@filesystem'
+      - '@prestashop.module.psxdesign.processor.colors_stylesheet_processor'
+
+  #Fonts handlers
+  prestashop.module.psxdesign.handler.font_upsert_handler:
+    class: PrestaShop\Module\PsxDesign\Handler\FontUpsertHandler
+    arguments:
+      - '@prestashop.module.psxdesign.repository.psxdesign_fonts_repository'
+      - '@prestashop.module.psxdesign.processor.font_stylesheets_processor'
+      - '@doctrine.orm.entity_manager'
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+
+  prestashop.module.psxdesign.handler.font_stylesheet_updater:
+    class: PrestaShop\Module\PsxDesign\Handler\FontStylesheetUpdater
+    arguments:
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+      - "@=service('psxdesign.module').getLocalPath()"
+      - '@filesystem'
+      - '@prestashop.module.psxdesign.processor.font_stylesheets_processor'
+
+  #Other handlers
+  prestashop.module.psxdesign.exception.handler.sentry_exception_error_handler:
+    class: PrestaShop\Module\PsxDesign\Exception\Handler\SentryExceptionErrorHandler
+    arguments:
+      - '@psxdesign.accounts.data_provider'
+      - '@prestashop.module.manager'
+      - "%psxdesign.sentry_dsn%"
+      - "%psxdesign.sentry_env%"
+      - "@=service('psxdesign.module').name"
+      - "@=service('psxdesign.module').version"

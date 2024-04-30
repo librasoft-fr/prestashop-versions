@@ -1,0 +1,13 @@
+{
+  "admin-config.css": "/css/klaviyops-admin-config.e510d42b.css",
+  "admin-config.js": "/js/klaviyops-admin-config.e510d42b.js",
+  "admin-global.css": "/css/klaviyops-admin-global.e510d42b.css",
+  "admin-global.js": "/js/klaviyops-admin-global.e510d42b.js",
+  "add-to-cart.js": "/js/klaviyops-add-to-cart.e510d42b.js",
+  "identify.js": "/js/klaviyops-identify.e510d42b.js",
+  "started-checkout.js": "/js/klaviyops-started-checkout.e510d42b.js",
+  "viewed-product.js": "/js/klaviyops-viewed-product.e510d42b.js",
+  "chunk-vendors.js": "/js/klaviyops-chunk-vendors.e510d42b.js",
+  "img/klaviyo-edition-logo.svg": "/img/klaviyo-edition-logo.svg",
+  "img/arrow-forward-24px.svg": "/img/arrow-forward-24px.svg"
+}

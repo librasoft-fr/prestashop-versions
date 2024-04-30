@@ -1,0 +1,71 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+{#
+color input parameters
+- disabled: change the state for all the inputs to disabled / enabled
+- color:
+    - name: name use into form
+    - id_color: id used by input color (by default color.name + '_color')
+    - id_hex: id used by input for hex (by default color.name + '_hex')
+    - value: default value of the inputs
+    - required: input color is / is not required (by default false)
+    - aria_label_hex: value of aria-label to input hex (by default 'Hexadecimal color')
+#}
+
+<fieldset class="color-input" {{ disabled is defined and disabled == true ? 'disabled' : '' }}>
+    <input
+            class="color-input__color" name="{{ color.name }}"
+            id="{{ color.id_color is defined ? color.id_color : color.name ~ '_color' }}"
+            type="color" value="{{ color.value }}" {{ color.required is defined and color.required == true ? 'required=""' : '' }}
+    >
+    <input
+            class="color-input__hex" type="text"
+            id="{{ color.id_hex is defined ? color.id_hex : color.name ~ '_hex' }}"
+            maxlength="7"
+            pattern="^#+([a-fA-F0-9]{6})$"
+            value="{{ color.value is defined ? color.value : '#000000' }}"
+            aria-label="{{ color.aria_label_hex is defined ? color.aria_label_hex : 'Hexadecimal color'|trans({}, 'Modules.Psxdesign.Admin') }}"
+            aria-describedby="{{  color.name ~ '_error' }}"
+    >
+    <button
+            type="button"
+            class="input_color__copy"
+            aria-label="{{ 'Copy'|trans({}, 'Modules.Psxdesign.Admin') }}"
+            data-original-title="{{ 'Copy'|trans({}, 'Modules.Psxdesign.Admin') }}"
+            data-updated-title="{{ 'Copied'|trans({}, 'Modules.Psxdesign.Admin') }} <span class='material-icons'>done</span>"
+            data-toggle="pstooltip"
+            data-placement="left"
+    >
+        <span class="material-icons input_color__copy_icon">
+            content_copy
+        </span>
+    </button>
+    <div id="{{  color.name ~ '_error' }}" class="color-input__error" role="alert">
+        <p class="error__message">
+            {{ 'Enter a valid [1]hex code[/1] or use the color picker.'|trans({'[1]': '<a href="https://en.wikipedia.org/wiki/Web_colors#Hex_triplet" class="external-link" target="_blank" rel="noopener">', '[/1]': '</a>'}, 'Modules.Psxdesign.Admin')|striptags('<a>')|raw }}
+        </p>
+    </div>
+</fieldset>

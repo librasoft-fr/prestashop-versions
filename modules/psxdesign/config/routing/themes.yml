@@ -1,0 +1,45 @@
+admin_psxdesign_themes_index:
+  path: /themes
+  methods: [ GET ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignThemeGeneralController::indexAction'
+    _legacy_controller: AdminPsxDesignThemeGeneral
+    _legacy_link: AdminPsxDesignThemeGeneral
+
+admin_psxdesign_upgrade_action:
+  path: /upgrade
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignThemeUpgradeController::psxDesignModuleUpgradeAction'
+
+admin_psxdesign_theme_import_action:
+  path: /themes/import
+  methods: [ GET, POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignThemeGeneralController::importThemeAction'
+    _legacy_controller: AdminThemes
+    _legacy_link: AdminThemes:importtheme
+
+admin_themes_enable:
+  path: /{themeName}/enable
+  methods: [ POST ]
+  defaults:
+    _controller: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignThemeGeneralController::enableAction
+    _legacy_controller: AdminThemes
+    _legacy_link: AdminThemes:enableTheme
+    _legacy_parameters:
+      theme_name: themeName
+  requirements:
+    themeName: "^[a-zA-Z0-9_.-]+$"
+
+admin_themes_delete:
+  path: /{themeName}/delete
+  methods: [ POST ]
+  defaults:
+    _controller: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignThemeGeneralController::deleteAction
+    _legacy_controller: AdminThemes
+    _legacy_link: AdminThemes:deleteTheme
+    _legacy_parameters:
+      theme_name: themeName
+  requirements:
+    themeName: "^[a-zA-Z0-9_.-]+$"

@@ -1,0 +1,8 @@
+ajax_get_admin_user_id:
+  path: /user/userId
+  controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignAjaxController::getUserIdAction'
+  methods: [GET]
+  options:
+    expose: true
+    _legacy_controller: AdminPsxDesignAjax
+    _legacy_link: AdminPsxDesignAjax

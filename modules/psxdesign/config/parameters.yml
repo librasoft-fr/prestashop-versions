@@ -1,0 +1,4 @@
+parameters:
+  psxdesign.sentry_dsn: '%env(PSXDESIGN_SENTRY_DSN)%'
+  psxdesign.sentry_env: '%env(PSXDESIGN_SENTRY_ENV)%'
+  psxdesign.segment_php: '%env(PSXDESIGN_SEGMENT_PHP)%'

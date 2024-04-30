@@ -1,0 +1,66 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+<fieldset
+    class="file-uploader"
+    {% if disabled is defined and disabled == true %}
+        disabled
+    {% endif %}
+>
+    <div class="file-uploader__container">
+        {% block default_message %}
+            <p class="file-uploader__legend">
+                <i class="material-icons file-uploader__legend-icon">file_upload</i>
+                {{ '[1]Select[/1] a file or drag and drop'|trans({'[1]': '<button class="btn btn-link file-uploader__legend-btn" type="button">', '[/1]': '</button>'}, 'Modules.Psxdesign.Admin')|striptags('<button>')|raw  }}
+            </p>
+        {% endblock %}
+
+        <div class="file-uploader__preview-container"></div>
+        <template class="file-uploader__template-previews">
+            {% block preview_template %}
+                {% include '@Modules/psxdesign/views/templates/components/Partials/file_uploader_preview_template.html.twig' %}
+            {% endblock %}
+        </template>
+        <input
+            id="{{ id }}"
+            name="{{ name is defined ? name : id }}"
+            type="file"
+            class="file-uploader__hidden-input"
+            tabindex="-1"
+
+            {% if accept is defined %}
+                accept="{{ accept }}"
+            {% endif %}
+
+            {% if multiple is defined and multiple == true %}
+                multiple
+            {% endif %}
+
+            {% if required is defined and required == true %}
+                required
+            {% endif %}
+        >
+    </div>
+</fieldset>

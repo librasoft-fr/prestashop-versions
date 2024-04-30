@@ -1,0 +1,1062 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="psxdesign.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="9e0b78b73531a6f55d8f50df6837807a">
+        <source>PrestaShop Design</source>
+        <target state="needs-translation">PrestaShop Design</target>
+        <note>Line: 67</note>
+      </trans-unit>
+      <trans-unit id="6e16c09468f55aab97f750479f295295">
+        <source>PrestaShop Design allows you to easily and rapidly customize your website theme and autonomously adapt the appearance of your store, brand image and preferences without needing any technical expertise.</source>
+        <target state="needs-translation">PrestaShop Design allows you to easily and rapidly customize your website theme and autonomously adapt the appearance of your store, brand image and preferences without needing any technical expertise.</target>
+        <note>Line: 74</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Config/ColorCategoryUncategorizedConfig.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="00557e2cda1dde2b52f80d2014af2238">
+        <source>Uncategorized colors</source>
+        <target state="needs-translation">Uncategorized colors</target>
+        <note>Line: 48</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Config/FontCategoryUncategorizedConfig.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="b14d0f52fb18f0137e0ae16fee819636">
+        <source>Uncategorized fonts</source>
+        <target state="needs-translation">Uncategorized fonts</target>
+        <note>Line: 48</note>
+      </trans-unit>
+      <trans-unit id="5c65acb67a8da66f04850bd93d89df83">
+        <source>This font is in your theme but is not specific to any category.</source>
+        <target state="needs-translation">This font is in your theme but is not specific to any category.</target>
+        <note>Line: 49</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignColorsController.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="5d375ab1e88d7fbb9340cff2ee2fc2ea">
+        <source>Classic theme is not installed.</source>
+        <target state="needs-translation">Classic theme is not installed.</target>
+        <note>Line: 143</note>
+      </trans-unit>
+      <trans-unit id="4d96bb69c04067caf77b9ef30b465f07">
+        <source>Enabling theme failed. Please use "Theme" tab to enable theme.</source>
+        <target state="needs-translation">Enabling theme failed. Please use "Theme" tab to enable theme.</target>
+        <note>Line: 163</note>
+      </trans-unit>
+      <trans-unit id="297a60db2a0e39a689c1d47bfbff7d31">
+        <source>The name of the color palette can't be empty.</source>
+        <target state="needs-translation">The name of the color palette can't be empty.</target>
+        <note>Line: 177</note>
+      </trans-unit>
+      <trans-unit id="4bdad1157439cd2d7bfc25c9dfd083cf">
+        <source>Connection with database to update new color palette failed. Please try again.</source>
+        <target state="needs-translation">Connection with database to update new color palette failed. Please try again.</target>
+        <note>Line: 178</note>
+      </trans-unit>
+      <trans-unit id="6e844884ef97f73cec80bd546f81a1cc">
+        <source>Creation of new color styles failed.</source>
+        <target state="needs-translation">Creation of new color styles failed.</target>
+        <note>Line: 179</note>
+      </trans-unit>
+      <trans-unit id="de619bdb3b339e0648dc2e98c0f03519">
+        <source>File in module does not exist or not writable. Please check user permissions in server</source>
+        <target state="needs-translation">File in module does not exist or not writable. Please check user permissions in server</target>
+        <note>Line: 182</note>
+      </trans-unit>
+      <trans-unit id="84fd960662a4d6f15aaea73324e4ca3c">
+        <source>Process of creating new styles file failed. Please try again.</source>
+        <target state="needs-translation">Process of creating new styles file failed. Please try again.</target>
+        <note>Line: 183</note>
+      </trans-unit>
+      <trans-unit id="a2492692e9bf6dab1ecffcf94ef8ca9f">
+        <source>Replacing new theme styles file failed. Please try again. </source>
+        <target state="needs-translation">Replacing new theme styles file failed. Please try again. </target>
+        <note>Line: 184</note>
+      </trans-unit>
+      <trans-unit id="64a02ac42f450f2b51039a356f126224">
+        <source>The color palette update failed. Please try again.</source>
+        <target state="needs-translation">The color palette update failed. Please try again.</target>
+        <note>Line: 189</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignFontsController.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="50741259c23f4a36b933c2d6fdd6df7f">
+        <source>Changes have been saved.</source>
+        <target state="needs-translation">Changes have been saved.</target>
+        <note>Line: 95</note>
+      </trans-unit>
+      <trans-unit id="1ed0b935875a6751e19e66aadb1a2cdc">
+        <source>Failed to add or update the font.</source>
+        <target state="needs-translation">Failed to add or update the font.</target>
+        <note>Line: 142</note>
+      </trans-unit>
+      <trans-unit id="aed07cb7ba3084a2d2443099d2e0f4a2">
+        <source>Failed to delete the font.</source>
+        <target state="needs-translation">Failed to delete the font.</target>
+        <note>Line: 143</note>
+      </trans-unit>
+      <trans-unit id="30ad2cdbb6f0ab67e3b1e45a5dc59c8f">
+        <source>Invalid font style is provided.</source>
+        <target state="needs-translation">Invalid font style is provided.</target>
+        <note>Line: 145</note>
+      </trans-unit>
+      <trans-unit id="30e436b10f7ba4864180292c73bc1c76">
+        <source>The font customization is only available with compatible themes.</source>
+        <target state="needs-translation">The font customization is only available with compatible themes.</target>
+        <note>Line: 146</note>
+      </trans-unit>
+      <trans-unit id="921200f445bab209226637b8dc1529f5">
+        <source>Failed to receive font from google fonts</source>
+        <target state="needs-translation">Failed to receive font from google fonts</target>
+        <note>Line: 149</note>
+      </trans-unit>
+      <trans-unit id="85331501f567fdd68de31504e0eddaed">
+        <source>Failed to generate stylesheet</source>
+        <target state="needs-translation">Failed to generate stylesheet</target>
+        <note>Line: 151</note>
+      </trans-unit>
+      <trans-unit id="3d289570aad3de52a2668c0ec7602510">
+        <source>The fonts update failed. Please try again.</source>
+        <target state="needs-translation">The fonts update failed. Please try again.</target>
+        <note>Line: 155</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignLogosController.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="7f3506987b68a43dda5c38e6eeaa40ff">
+        <source>The %destination% logo has been added.</source>
+        <target state="needs-translation">The %destination% logo has been added.</target>
+        <note>Line: 206</note>
+      </trans-unit>
+      <trans-unit id="fd7bac27c906ef24a55a467c86c05ff3">
+        <source>Use same header logo is unavailable.</source>
+        <target state="needs-translation">Use same header logo is unavailable.</target>
+        <note>Line: 138</note>
+      </trans-unit>
+      <trans-unit id="96cdfe5768f9f4aba553662c334bd329">
+        <source>Header logo applied successfully.</source>
+        <target state="needs-translation">Header logo applied successfully.</target>
+        <note>Line: 148</note>
+      </trans-unit>
+      <trans-unit id="986632f839800f0da226af94d67dc8ad">
+        <source>Favicon updated successfully</source>
+        <target state="needs-translation">Favicon updated successfully</target>
+        <note>Line: 176</note>
+      </trans-unit>
+      <trans-unit id="099fb995346f31c749f6e40db0f395e3">
+        <source>header</source>
+        <target state="needs-translation">header</target>
+        <note>Line: 232</note>
+      </trans-unit>
+      <trans-unit id="0c83f57c786a0b4a39efab23731c7ebc">
+        <source>email</source>
+        <target state="needs-translation">email</target>
+        <note>Line: 234</note>
+      </trans-unit>
+      <trans-unit id="e5f96ae00443877315fbb64fd3d90005">
+        <source>invoice</source>
+        <target state="needs-translation">invoice</target>
+        <note>Line: 236</note>
+      </trans-unit>
+      <trans-unit id="c4f1eda728a586cdcc25e365c04f7998">
+        <source>The image format is not recognized, allowed formats are: %formats%.</source>
+        <target state="needs-translation">The image format is not recognized, allowed formats are: %formats%.</target>
+        <note>Line: 260</note>
+      </trans-unit>
+      <trans-unit id="164d00d1842b08f8561d431da45f4ee1">
+        <source>The image format is not recognized, allowed format is: .%format%.</source>
+        <target state="needs-translation">The image format is not recognized, allowed format is: .%format%.</target>
+        <note>Line: 266</note>
+      </trans-unit>
+      <trans-unit id="c353f67bf4b5d3d00c857ac05255753f">
+        <source>The format is invalid, allowed formats are %allowed_formats%.</source>
+        <target state="needs-translation">The format is invalid, allowed formats are %allowed_formats%.</target>
+        <note>Line: 273</note>
+      </trans-unit>
+      <trans-unit id="940e06283fc0c5421a763fb1cc7bae9e">
+        <source>The logo destination is invalid. Please try again.</source>
+        <target state="needs-translation">The logo destination is invalid. Please try again.</target>
+        <note>Line: 274</note>
+      </trans-unit>
+      <trans-unit id="7e3eec26e3172928c76bd2f230d88484">
+        <source>The .svg format is not compatible.</source>
+        <target state="needs-translation">The .svg format is not compatible.</target>
+        <note>Line: 275</note>
+      </trans-unit>
+      <trans-unit id="ba0817e051da5a65453b7ab18aa65556">
+        <source>The logo upload failed. Please try again.</source>
+        <target state="needs-translation">The logo upload failed. Please try again.</target>
+        <note>Line: 361</note>
+      </trans-unit>
+      <trans-unit id="2abbf97beea1977945a4fdff3f6001dd">
+        <source>The file is too large (limit of %size% bytes).</source>
+        <target state="needs-translation">The file is too large (limit of %size% bytes).</target>
+        <note>Line: 284</note>
+      </trans-unit>
+      <trans-unit id="1bfe05bff7f395b5065ca058659a56e5">
+        <source>Failed to initialize image creation. PHP GD extension missing.</source>
+        <target state="needs-translation">Failed to initialize image creation. PHP GD extension missing.</target>
+        <note>Line: 345</note>
+      </trans-unit>
+      <trans-unit id="bdd2b4703302bbf3fb6c936193c021ad">
+        <source>Failed convert text to image. Please select different font.</source>
+        <target state="needs-translation">Failed convert text to image. Please select different font.</target>
+        <note>Line: 347</note>
+      </trans-unit>
+      <trans-unit id="f8195dd1ec0b38b7072de36a65e8339f">
+        <source>This font does not exist. Please choose another font.</source>
+        <target state="needs-translation">This font does not exist. Please choose another font.</target>
+        <note>Line: 348</note>
+      </trans-unit>
+      <trans-unit id="b320d90237861b30b5555ba391dacbb8">
+        <source>The creation of a temporary directory to store the uploaded font has failed. Please check the user permissions on your system.</source>
+        <target state="needs-translation">The creation of a temporary directory to store the uploaded font has failed. Please check the user permissions on your system.</target>
+        <note>Line: 349</note>
+      </trans-unit>
+      <trans-unit id="60ada82d4c3f9277ddf431cd0a2a69a2">
+        <source>Failed to convert text to logo. Please try again.</source>
+        <target state="needs-translation">Failed to convert text to logo. Please try again.</target>
+        <note>Line: 351</note>
+      </trans-unit>
+      <trans-unit id="5881481e61f5a2b88ab94100d0d20036">
+        <source>Failed to retrieve font. Please use different font.</source>
+        <target state="needs-translation">Failed to retrieve font. Please use different font.</target>
+        <note>Line: 353</note>
+      </trans-unit>
+      <trans-unit id="33233bda1965facb7182fd63ac69e286">
+        <source>The text may not be longer than 64 characters.</source>
+        <target state="needs-translation">The text may not be longer than 64 characters.</target>
+        <note>Line: 356</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignThemeGeneralController.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="d413250759bb6b376da4d75fe2b20cc6">
+        <source>The theme %theme% has been set as active theme.</source>
+        <target state="needs-translation">The theme %theme% has been set as active theme.</target>
+        <note>Line: 145</note>
+      </trans-unit>
+      <trans-unit id="215e7be2ca5dc948e7f4032ddbbb734f">
+        <source>Theme imported successfully</source>
+        <target state="needs-translation">Theme imported successfully</target>
+        <note>Line: 114</note>
+      </trans-unit>
+      <trans-unit id="95bede9bbef66d23fb54916a8da70da5">
+        <source>The theme %theme% cannot be deleted because it's the default Prestashop theme.</source>
+        <target state="needs-translation">The theme %theme% cannot be deleted because it's the default Prestashop theme.</target>
+        <note>Line: 185</note>
+      </trans-unit>
+      <trans-unit id="c7333b0c480bd7283149c49512adbf34">
+        <source>The theme %themeName% has been deleted.</source>
+        <target state="needs-translation">The theme %themeName% has been deleted.</target>
+        <note>Line: 195</note>
+      </trans-unit>
+      <trans-unit id="5adc6116425349d9cf976aaadf7e06f5">
+        <source>Please select correct theme's import source.</source>
+        <target state="needs-translation">Please select correct theme's import source.</target>
+        <note>Line: 244</note>
+      </trans-unit>
+      <trans-unit id="b6b7f8ddf5154dd0718770ad6f10576e">
+        <source>Failed to find imported theme.</source>
+        <target state="needs-translation">Failed to find imported theme.</target>
+        <note>Line: 246</note>
+      </trans-unit>
+      <trans-unit id="ff596a6659892cb72778c3b225444695">
+        <source>File does not exist or bad type uploaded.</source>
+        <target state="needs-translation">File does not exist or bad type uploaded.</target>
+        <note>Line: 248</note>
+      </trans-unit>
+      <trans-unit id="0933caade58197a4ff60c27077f67604">
+        <source>There is already a theme %theme_name% in your themes folder. Remove it if you want to continue.</source>
+        <target state="needs-translation">There is already a theme %theme_name% in your themes folder. Remove it if you want to continue.</target>
+        <note>Line: 250</note>
+      </trans-unit>
+      <trans-unit id="bd19c31e2441f20ecdc17c27959511be">
+        <source>Allowed file size exceeded for uploaded theme.</source>
+        <target state="needs-translation">Allowed file size exceeded for uploaded theme.</target>
+        <note>Line: 257</note>
+      </trans-unit>
+      <trans-unit id="9bd63485a5055f56674bea3c3ea74c3c">
+        <source>The file type is invalid. Allowed file type is .zip.</source>
+        <target state="needs-translation">The file type is invalid. Allowed file type is .zip.</target>
+        <note>Line: 258</note>
+      </trans-unit>
+      <trans-unit id="fcd2705265b5f041cd4b78964c2d0f7e">
+        <source>Unknown error occurred. Please try again.</source>
+        <target state="needs-translation">Unknown error occurred. Please try again.</target>
+        <note>Line: 259</note>
+      </trans-unit>
+      <trans-unit id="3ed761d82d091179b9339d55a2a918eb">
+        <source>Themes can only be imported in single store context.</source>
+        <target state="needs-translation">Themes can only be imported in single store context.</target>
+        <note>Line: 263</note>
+      </trans-unit>
+      <trans-unit id="22c02340d6f7c86c03120d5dfe60eac3">
+        <source>Missing configuration file</source>
+        <target state="needs-translation">Missing configuration file</target>
+        <note>Line: 266</note>
+      </trans-unit>
+      <trans-unit id="85265e940fbb820dd2475946e7bc48d9">
+        <source>Invalid configuration</source>
+        <target state="needs-translation">Invalid configuration</target>
+        <note>Line: 269</note>
+      </trans-unit>
+      <trans-unit id="5992528f236587164ee4f212b9460410">
+        <source>Invalid data</source>
+        <target state="needs-translation">Invalid data</target>
+        <note>Line: 272</note>
+      </trans-unit>
+      <trans-unit id="de203e307b07b7fad83014c6d62ed7e7">
+        <source>The import of your theme failed. Please try again.</source>
+        <target state="needs-translation">The import of your theme failed. Please try again.</target>
+        <note>Line: 283</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignThemeUpgradeController.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="936cfd2c8ab6fed8cc149d71e53ac60c">
+        <source>Module upgrade failed. Please try upgrading it through module manager</source>
+        <target state="needs-translation">Module upgrade failed. Please try upgrading it through module manager</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="22b83e3bc688e3646f2ed2f7d42bbddd">
+        <source>Your module has been successfully upgraded!</source>
+        <target state="needs-translation">Your module has been successfully upgraded!</target>
+        <note>Line: 54</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Install/Tabs/ModuleTabsUninstaller.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="fcf3b725bb6ebb0e635b0f0902ade451">
+        <source><![CDATA[Theme & Logo]]></source>
+        <target state="needs-translation"><![CDATA[Theme & Logo]]></target>
+        <note>Line: 86</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Traits/Hooks/UseActionThemeConfiguration.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="a9ded1e5ce5d75814730bb4caaf49419">
+        <source>Background</source>
+        <target state="needs-translation">Background</target>
+        <note>Line: 52</note>
+      </trans-unit>
+      <trans-unit id="590cfb03d27c7742ee0ca4150e768e4a">
+        <source>Body text</source>
+        <target state="needs-translation">Body text</target>
+        <note>Line: 66</note>
+      </trans-unit>
+      <trans-unit id="6c151bb17f34d26df2becfe7ee6bfd0d">
+        <source>Background and discounted prices</source>
+        <target state="needs-translation">Background and discounted prices</target>
+        <note>Line: 80</note>
+      </trans-unit>
+      <trans-unit id="0245625ee10f9c6c0ed7f50eb1838856">
+        <source>Main title</source>
+        <target state="needs-translation">Main title</target>
+        <note>Line: 95</note>
+      </trans-unit>
+      <trans-unit id="7e7df36c39bae9c954d0b649942ba950">
+        <source>The main title of a page has to use the Heading 1 format (e.g. Product page name).</source>
+        <target state="needs-translation">The main title of a page has to use the Heading 1 format (e.g. Product page name).</target>
+        <note>Line: 94</note>
+      </trans-unit>
+      <trans-unit id="7b058d2a2bc435374b0243f59844e3b1">
+        <source>Section title</source>
+        <target state="needs-translation">Section title</target>
+        <note>Line: 105</note>
+      </trans-unit>
+      <trans-unit id="b656ad889204220969e19d604704e0de">
+        <source>Section titles mark the main sections of your page and use Heading 2 format (e.g. Popular products).</source>
+        <target state="needs-translation">Section titles mark the main sections of your page and use Heading 2 format (e.g. Popular products).</target>
+        <note>Line: 104</note>
+      </trans-unit>
+      <trans-unit id="03173b52d764351522e627ae8ef10cc1">
+        <source>Footer title</source>
+        <target state="needs-translation">Footer title</target>
+        <note>Line: 115</note>
+      </trans-unit>
+      <trans-unit id="4cb6270cef3453033cbf1dd29909641e">
+        <source>Footer titles structure your footer and use Heading 3 format (e.g. Contact us).</source>
+        <target state="needs-translation">Footer titles structure your footer and use Heading 3 format (e.g. Contact us).</target>
+        <note>Line: 114</note>
+      </trans-unit>
+      <trans-unit id="9cc6ec129ceda82358c4f47e9e7031f8">
+        <source>Subcategory title</source>
+        <target state="needs-translation">Subcategory title</target>
+        <note>Line: 125</note>
+      </trans-unit>
+      <trans-unit id="1e8c8bcaa8e9c85361207a84ea1036e4">
+        <source>Subcategory titles help structure your category page and use Heading 5 format (e.g. Men).</source>
+        <target state="needs-translation">Subcategory titles help structure your category page and use Heading 5 format (e.g. Men).</target>
+        <note>Line: 124</note>
+      </trans-unit>
+      <trans-unit id="9982e9bbb8cfb526589e958a672dd1f1">
+        <source>Product attributes</source>
+        <target state="needs-translation">Product attributes</target>
+        <note>Line: 135</note>
+      </trans-unit>
+      <trans-unit id="f82ccb62263f87a237e1708ce50f68b8">
+        <source>Product attributes of your Category page use Heading 6 format (e.g. Size, Color). </source>
+        <target state="needs-translation">Product attributes of your Category page use Heading 6 format (e.g. Size, Color). </target>
+        <note>Line: 134</note>
+      </trans-unit>
+      <trans-unit id="ac9800bdfe4e77ea3f6b6d22a9cf8919">
+        <source>Body copy</source>
+        <target state="needs-translation">Body copy</target>
+        <note>Line: 145</note>
+      </trans-unit>
+      <trans-unit id="61fac42c1093edf7d8094f6412a03e7a">
+        <source>The body copy format is used for the main content in the pages (e.g. Product description).</source>
+        <target state="needs-translation">The body copy format is used for the main content in the pages (e.g. Product description).</target>
+        <note>Line: 144</note>
+      </trans-unit>
+      <trans-unit id="bd908db5ccb07777ced8023dffc802f4">
+        <source>Links</source>
+        <target state="needs-translation">Links</target>
+        <note>Line: 185</note>
+      </trans-unit>
+      <trans-unit id="5e3005455e1b7a48930d49d7834e9308">
+        <source>This is used for links in the page (e.g. All sale products).</source>
+        <target state="needs-translation">This is used for links in the page (e.g. All sale products).</target>
+        <note>Line: 154</note>
+      </trans-unit>
+      <trans-unit id="545b1150d9c178bf41eee6c799b715d7">
+        <source>Headings</source>
+        <target state="needs-translation">Headings</target>
+        <note>Line: 161</note>
+      </trans-unit>
+      <trans-unit id="80b9f96da8e0750a86dca48a656df2c8">
+        <source>Headings are titles that help organize content on a page and can be used to create sections.</source>
+        <target state="needs-translation">Headings are titles that help organize content on a page and can be used to create sections.</target>
+        <note>Line: 162</note>
+      </trans-unit>
+      <trans-unit id="f15c1cae7882448b3fb0404682e17e61">
+        <source>Content</source>
+        <target state="needs-translation">Content</target>
+        <note>Line: 181</note>
+      </trans-unit>
+      <trans-unit id="b486c3211e1a0f3e5ca32c8b6413b5e3">
+        <source>Content refers to any information written within the pages. It is used to instruct, to provide descriptions, to explain the benefits of a product or highlight any feature.</source>
+        <target state="needs-translation">Content refers to any information written within the pages. It is used to instruct, to provide descriptions, to explain the benefits of a product or highlight any feature.</target>
+        <note>Line: 167</note>
+      </trans-unit>
+      <trans-unit id="f71a2953f3c7cd5cdacc13526472d241">
+        <source>Main button</source>
+        <target state="needs-translation">Main button</target>
+        <note>Line: 173</note>
+      </trans-unit>
+      <trans-unit id="17ba88fcdd3edd04a9b30146830089ed">
+        <source>Secondary button</source>
+        <target state="needs-translation">Secondary button</target>
+        <note>Line: 177</note>
+      </trans-unit>
+      <trans-unit id="9d5bf15117441a1b52eb1f0808e4aad3">
+        <source>Discounts</source>
+        <target state="needs-translation">Discounts</target>
+        <note>Line: 189</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Traits/Hooks/UseDisplayBackOfficeHeader.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="375743988b00ef0b7255bec14d58f24e">
+        <source>You are about to import a logo in svg format. This format being incompatible with the email and invoice logos, these will retain the current logo.</source>
+        <target state="needs-translation">You are about to import a logo in svg format. This format being incompatible with the email and invoice logos, these will retain the current logo.</target>
+        <note>Line: 109</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="upgrade/upgrade-1.1.0.php" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="55b8deb25fdc0f8b628027f7d1d21cbe">
+        <source>Theme settings</source>
+        <target state="needs-translation">Theme settings</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="83915d1254927f41241e8630890bec6e">
+        <source>Themes</source>
+        <target state="needs-translation">Themes</target>
+        <note>Line: 56</note>
+      </trans-unit>
+      <trans-unit id="f44ba76b3113bb0f0fcbd52ab002e924">
+        <source>Theme modules</source>
+        <target state="needs-translation">Theme modules</target>
+        <note>Line: 156</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/colors/Blocks/Alerts/color_palette_success_alert.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="545cb8f869b2c6fd111f2e1c6d96cc4d">
+        <source>Use this color palette</source>
+        <target state="needs-translation">Use this color palette</target>
+        <note>Line: 37</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/colors/Blocks/Colors/colors_description.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="5d50889672f6f860d14f502de3de1957">
+        <source>Colors</source>
+        <target state="needs-translation">Colors</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="124282142cdb0d6aaed16f5c0d2d51e1">
+        <source>Customize the colors by writing the [1]hex color code[/1] or by using the color picker.</source>
+        <target state="needs-translation">Customize the colors by writing the [1]hex color code[/1] or by using the color picker.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/colors/Blocks/Gateway/color_feature_disabled_gateway.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="982721c8b726d3e9362b7d29ba7648b2">
+        <source>Customize your theme image</source>
+        <target state="needs-translation">Customize your theme image</target>
+        <note>Line: 25</note>
+      </trans-unit>
+      <trans-unit id="8b6595a0ecbe8ca610fd10a1eab49012">
+        <source>Choose a theme from the list in the Themes page.</source>
+        <target state="needs-translation">Choose a theme from the list in the Themes page.</target>
+        <note>Line: 27</note>
+      </trans-unit>
+      <trans-unit id="0882992c52dd32b0f54beb64d2f0c77e">
+        <source>Go to Themes</source>
+        <target state="needs-translation">Go to Themes</target>
+        <note>Line: 32</note>
+      </trans-unit>
+      <trans-unit id="9094d4bf6f384f8f83d07d7a52bf1977">
+        <source>Use a compatible theme to customize colors</source>
+        <target state="needs-translation">Use a compatible theme to customize colors</target>
+        <note>Line: 22</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/fonts/Blocks/Gateway/font_feature_disabled_gateway.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="65c6e1a43c3978362afb2e53243fbc91">
+        <source>Use a compatible theme to customize fonts</source>
+        <target state="needs-translation">Use a compatible theme to customize fonts</target>
+        <note>Line: 22</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/fonts/Blocks/Partials/fonts_form.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="105768ac96c3080f2437b6ba3130afbf">
+        <source>Try your font</source>
+        <target state="needs-translation">Try your font</target>
+        <note>Line: 51</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Favicon/favicon_content.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="a445ef421b4f5a4b520a8859725131da">
+        <source>Current favicon</source>
+        <target state="needs-translation">Current favicon</target>
+        <note>Line: 24</note>
+      </trans-unit>
+      <trans-unit id="9fc564ed93e89ea6c0669d2c1a533e8e">
+        <source>Import favicon</source>
+        <target state="needs-translation">Import favicon</target>
+        <note>Line: 59</note>
+      </trans-unit>
+      <trans-unit id="98d990458b013d00b7c7a2889eeea71b">
+        <source>Accepted format: .ico.</source>
+        <target state="needs-translation">Accepted format: .ico.</target>
+        <note>Line: 66</note>
+      </trans-unit>
+      <trans-unit id="dc0cf2c6c65995ff50e119c163427cbd">
+        <source>Save favicon</source>
+        <target state="needs-translation">Save favicon</target>
+        <note>Line: 70</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Favicon/favicon_description.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="49e95301d8fcdbc23f623e0f2d1ed1e6">
+        <source>Favicon</source>
+        <target state="needs-translation">Favicon</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="290160d695d2a0d02659506df1c598b3">
+        <source>The favicon is a small icon that appears on the left in the address bar, tabs, favorites, etc.</source>
+        <target state="needs-translation">The favicon is a small icon that appears on the left in the address bar, tabs, favorites, etc.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="3c3779c2d34afccceb20b638c59e0e98">
+        <source>My store</source>
+        <target state="needs-translation">My store</target>
+        <note>Line: 30</note>
+      </trans-unit>
+      <trans-unit id="4c22f5339e90bee6b09da500b68ed198">
+        <source>Create your own with our [1]favicon generator[/1] to reinforce your brand image.</source>
+        <target state="needs-translation">Create your own with our [1]favicon generator[/1] to reinforce your brand image.</target>
+        <note>Line: 42</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Logo/logo_content.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="bf50d5e661106d0abe925af3c2e6f7e7">
+        <source>Header</source>
+        <target state="needs-translation">Header</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="ce8ae9da5b7cd6c3df2929543a9af92d">
+        <source>Email</source>
+        <target state="needs-translation">Email</target>
+        <note>Line: 29</note>
+      </trans-unit>
+      <trans-unit id="466eadd40b3c10580e3ab4e8061161ce">
+        <source>Invoice</source>
+        <target state="needs-translation">Invoice</target>
+        <note>Line: 32</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Logo/logo_description.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="2ada7b483f52be3afc92b8d3b07896d9">
+        <source>Logos</source>
+        <target state="needs-translation">Logos</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="90e1005232911b0ebf32745f3064fc68">
+        <source>The header logo appears on all pages of your store.</source>
+        <target state="needs-translation">The header logo appears on all pages of your store.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="b5bd3b85d3b6ed84eca40504526b4c92">
+        <source>The recommended size for the default theme: height 40 px and width 200 px.</source>
+        <target state="needs-translation">The recommended size for the default theme: height 40 px and width 200 px.</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="3610ba33cdd6de4ef3f2dec47235c14c">
+        <source>Unless you change your mind, the same logo will be used on your emails and invoices.</source>
+        <target state="needs-translation">Unless you change your mind, the same logo will be used on your emails and invoices.</target>
+        <note>Line: 29</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Partials/logo_form_image.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354">
+        <source>Save</source>
+        <target state="needs-translation">Save</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="025d2c418e33eb7781a2d9592f14a78f">
+        <source>Save logo image for %form%</source>
+        <target state="needs-translation">Save logo image for %form%</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="b0caae60eea9126579fbbf6ca35022a4">
+        <source>Current logo</source>
+        <target state="needs-translation">Current logo</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="ecb09d0987cc7e80ccddcec2601004d0">
+        <source>Current logo preview</source>
+        <target state="needs-translation">Current logo preview</target>
+        <note>Line: 28</note>
+      </trans-unit>
+      <trans-unit id="dd4a23dcbb3ac77ee08261137b3dbf7d">
+        <source>Import logo</source>
+        <target state="needs-translation">Import logo</target>
+        <note>Line: 34</note>
+      </trans-unit>
+      <trans-unit id="9d4cd431ad497246e49226243d21b6f9">
+        <source>Accepted formats: %formats%.</source>
+        <target state="needs-translation">Accepted formats: %formats%.</target>
+        <note>Line: 41</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Partials/logo_form_tabs.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="9dffbf69ffba8bc38bc4e01abf4b1675">
+        <source>Text</source>
+        <target state="needs-translation">Text</target>
+        <note>Line: 65</note>
+      </trans-unit>
+      <trans-unit id="1b5f5960a06f4ded944101a2e7d281b6">
+        <source> Use header logo</source>
+        <target state="needs-translation"> Use header logo</target>
+        <note>Line: 33</note>
+      </trans-unit>
+      <trans-unit id="433bda5c0dcc85b222ed996897c2b528">
+        <source>Save the use of header logo for %form%</source>
+        <target state="needs-translation">Save the use of header logo for %form%</target>
+        <note>Line: 38</note>
+      </trans-unit>
+      <trans-unit id="24084bb0290e971012222c5eb528b7b9">
+        <source>Logo type</source>
+        <target state="needs-translation">Logo type</target>
+        <note>Line: 44</note>
+      </trans-unit>
+      <trans-unit id="be53a0541a6d36f6ecb879fa2c584b08">
+        <source>Image</source>
+        <target state="needs-translation">Image</target>
+        <note>Line: 55</note>
+      </trans-unit>
+      <trans-unit id="a2dd963fefd927000740897c818e2e92">
+        <source>Import logo image</source>
+        <target state="needs-translation">Import logo image</target>
+        <note>Line: 56</note>
+      </trans-unit>
+      <trans-unit id="8573e126669782dc953a221fe01ff34a">
+        <source>Create text logo</source>
+        <target state="needs-translation">Create text logo</target>
+        <note>Line: 66</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Partials/logo_form_text.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="5d0007dd14911c40863a740e743a70bc">
+        <source>Text of your logo</source>
+        <target state="needs-translation">Text of your logo</target>
+        <note>Line: 52</note>
+      </trans-unit>
+      <trans-unit id="8d4660d8d39e93976f73e78fccc951bd">
+        <source>Always check the final result on your store as it may differ from the preview, depending on your theme.</source>
+        <target state="needs-translation">Always check the final result on your store as it may differ from the preview, depending on your theme.</target>
+        <note>Line: 59</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Alerts/theme_enable_alert.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="61057a0c84605444201929bdd72014f0">
+        <source>Later</source>
+        <target state="needs-translation">Later</target>
+        <note>Line: 27</note>
+      </trans-unit>
+      <trans-unit id="2b5fb19532abc419b014f08751ce991a">
+        <source>The %s% theme has just been added.</source>
+        <target state="needs-translation">The %s% theme has just been added.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="b6ba229b668e5a7b6700e4d275683084">
+        <source>Use this theme</source>
+        <target state="needs-translation">Use this theme</target>
+        <note>Line: 36</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/CurrentTheme/current_theme_content.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="57f73e4788901990f90b6dd00a56fecc">
+        <source>desktop preview of the theme %theme%</source>
+        <target state="needs-translation">desktop preview of the theme %theme%</target>
+        <note>Line: 42</note>
+      </trans-unit>
+      <trans-unit id="63a78ed4647f7c63c2929e35ec1c95e3">
+        <source>Customize</source>
+        <target state="needs-translation">Customize</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="e145bc7265cc676fa0cf8649321a8b43">
+        <source>mobile preview of the theme %theme%</source>
+        <target state="needs-translation">mobile preview of the theme %theme%</target>
+        <note>Line: 47</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/CurrentTheme/current_theme_description.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="77f1c0bdabe60ab6597cd21b6ba8b9a7">
+        <source>Current theme</source>
+        <target state="needs-translation">Current theme</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="824673ec37551250be94d65a6ea587d2">
+        <source>The theme defines the appearance of your site.</source>
+        <target state="needs-translation">The theme defines the appearance of your site.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/delete_theme_modal.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="f2a6c498fb90ee345d997f888fce3b18">
+        <source>Delete</source>
+        <target state="needs-translation">Delete</target>
+        <note>Line: 42</note>
+      </trans-unit>
+      <trans-unit id="a20cd66c6c13302711252a1b5830f17c">
+        <source>Delete this theme?</source>
+        <target state="needs-translation">Delete this theme?</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="2b6df8b8adc7f02ede51f7122274f6fe">
+        <source>You are about to delete the %theme% theme. This action is irreversible. </source>
+        <target state="needs-translation">You are about to delete the %theme% theme. This action is irreversible. </target>
+        <note>Line: 34</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/import_theme_from_computer_modal.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="6b547daaf04c82fdcdc9af3b8a75338c">
+        <source>Import from computer</source>
+        <target state="needs-translation">Import from computer</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="47e6d3c1ed67377125b62d4c8a0d383d">
+        <source>ZIP file</source>
+        <target state="needs-translation">ZIP file</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="50cd1313cb912366c20d5b9948f12c43">
+        <source>Browse the files on your computer and select the ZIP file containing your new theme.</source>
+        <target state="needs-translation">Browse the files on your computer and select the ZIP file containing your new theme.</target>
+        <note>Line: 43</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/import_theme_from_ftp_modal.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="cd8d9cc19984ccf9d314eee5eebfc2cc">
+        <source>Import from FTP</source>
+        <target state="needs-translation">Import from FTP</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="94f2371003860a92b12bf4c66b2851ac">
+        <source>Select archive</source>
+        <target state="needs-translation">Select archive</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="5d1a21e0059f50a1a841415eb1dba062">
+        <source>This field shows the ZIP files present in the "/themes" folder.</source>
+        <target state="needs-translation">This field shows the ZIP files present in the "/themes" folder.</target>
+        <note>Line: 48</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/import_theme_from_web_modal.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="c35163a24e4834065c72b5a343d3a374">
+        <source>Import from web</source>
+        <target state="needs-translation">Import from web</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="72d6d7a1885885bb55a565fd1070581a">
+        <source>Import</source>
+        <target state="needs-translation">Import</target>
+        <note>Line: 47</note>
+      </trans-unit>
+      <trans-unit id="a33388a338ee2b199d66112369279558">
+        <source>Archive URL</source>
+        <target state="needs-translation">Archive URL</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="85a909ec9c5417427c8a5f6c29b36b55">
+        <source>Specify the full URL of the ZIP file that contains your new theme. For example, "http://example.com/files/theme.zip".</source>
+        <target state="needs-translation">Specify the full URL of the ZIP file that contains your new theme. For example, "http://example.com/files/theme.zip".</target>
+        <note>Line: 39</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/use_theme_modal.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="ad8783089f828b927473fb61d51940ec">
+        <source>Use</source>
+        <target state="needs-translation">Use</target>
+        <note>Line: 57</note>
+      </trans-unit>
+      <trans-unit id="ca4dc1a851769ef30c841b36cd18648a">
+        <source>Use this theme?</source>
+        <target state="needs-translation">Use this theme?</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="716f6b30598ba30945d84485e61c1027">
+        <source>close</source>
+        <target state="needs-translation">close</target>
+        <note>Line: 27</note>
+      </trans-unit>
+      <trans-unit id="b305a5c0488685bca9f1ec70026097ab">
+        <source>Your current %currentTheme% theme will be replaced by the %new_theme% theme.</source>
+        <target state="needs-translation">Your current %currentTheme% theme will be replaced by the %new_theme% theme.</target>
+        <note>Line: 35</note>
+      </trans-unit>
+      <trans-unit id="edf64e69abefcde9d74ce67a20d32215">
+        <source>It is important to check the compatibility of your modules with the %new_theme% theme in a test environment.</source>
+        <target state="needs-translation">It is important to check the compatibility of your modules with the %new_theme% theme in a test environment.</target>
+        <note>Line: 39</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Partials/theme_card.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="135598caf202b9ec4ba7344a1bbafbc7">
+        <source>v%version%</source>
+        <target state="needs-translation">v%version%</target>
+        <note>Line: 28</note>
+      </trans-unit>
+      <trans-unit id="e0b71854a21d45103fc0c775abdd8dbb">
+        <source>Developed by %author%</source>
+        <target state="needs-translation">Developed by %author%</target>
+        <note>Line: 29</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/ThemeLibrary/theme_library_content.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="c76c38de5f1db7d1143336016c1f9cd9">
+        <source>View demo</source>
+        <target state="needs-translation">View demo</target>
+        <note>Line: 31</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/ThemeLibrary/theme_library_description.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="c85bd01d843a227d58246a060d753b6b">
+        <source>Theme library</source>
+        <target state="needs-translation">Theme library</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="61de92eafff44859a223f0d66a882161">
+        <source>Choose the default Classic theme for a simple and minimalist store.</source>
+        <target state="needs-translation">Choose the default Classic theme for a simple and minimalist store.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="f42396af8eb1fbc467db554340961512">
+        <source>You can choose other themes with more advanced customization from this list of themes.</source>
+        <target state="needs-translation">You can choose other themes with more advanced customization from this list of themes.</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="b5c941eace89787ab475237451189eac">
+        <source>Import theme</source>
+        <target state="needs-translation">Import theme</target>
+        <note>Line: 36</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/Partials/file_uploader_preview_template.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="b21f085d08623fc7a5a9da204cc66c8c">
+        <source>Remove file</source>
+        <target state="needs-translation">Remove file</target>
+        <note>Line: 22</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/alert_notification.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="0bc6ed52e4f26ac8cc6fac6a463e8f4c">
+        <source>We have improved the Design section of your back office</source>
+        <target state="needs-translation">We have improved the Design section of your back office</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="d1f0da1e84ae6ef7220bf674ca996d58">
+        <source>Enjoy a better experience and benefit from the latest improvements. Your settings and data will be preserved.</source>
+        <target state="needs-translation">Enjoy a better experience and benefit from the latest improvements. Your settings and data will be preserved.</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="06957d1d0327e88bcde956e59a8bb495">
+        <source>Activate new features</source>
+        <target state="needs-translation">Activate new features</target>
+        <note>Line: 31</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/color_input.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="ed165b334e14bc762233d3fba3e4bff9">
+        <source>Hexadecimal color</source>
+        <target state="needs-translation">Hexadecimal color</target>
+        <note>Line: 44</note>
+      </trans-unit>
+      <trans-unit id="5fb63579fc981698f97d55bfecb213ea">
+        <source>Copy</source>
+        <target state="needs-translation">Copy</target>
+        <note>Line: 51</note>
+      </trans-unit>
+      <trans-unit id="a588b1abc58b8b758c4b34b69b9e10bb">
+        <source>Copied</source>
+        <target state="needs-translation">Copied</target>
+        <note>Line: 52</note>
+      </trans-unit>
+      <trans-unit id="e6de2a53fc1f69460c8846bdbc1fc799">
+        <source>Enter a valid [1]hex code[/1] or use the color picker.</source>
+        <target state="needs-translation">Enter a valid [1]hex code[/1] or use the color picker.</target>
+        <note>Line: 62</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/file_uploader.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="18ed1ac8899dc6ce5e95009eaaa2e818">
+        <source>[1]Select[/1] a file or drag and drop</source>
+        <target state="needs-translation">[1]Select[/1] a file or drag and drop</target>
+        <note>Line: 30</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/save_banner.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="ea4788705e6873b424c65e91c2846b19">
+        <source>Cancel</source>
+        <target state="needs-translation">Cancel</target>
+        <note>Line: 32</note>
+      </trans-unit>
+      <trans-unit id="c227ad77f168e7fd3e21583b324eddf4">
+        <source>Unsaved changes</source>
+        <target state="needs-translation">Unsaved changes</target>
+        <note>Line: 28</note>
+      </trans-unit>
+      <trans-unit id="daa6b483e9f6ca081ec7e0b4a352f9e9">
+        <source>Save changes</source>
+        <target state="needs-translation">Save changes</target>
+        <note>Line: 34</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/text_editor.html.twig" source-language="en-US" target-language="ro" datatype="plaintext">
+    <body>
+      <trans-unit id="194f5394ae2e9c74dc3c441b92862d1d">
+        <source>Font</source>
+        <target state="needs-translation">Font</target>
+        <note>Line: 64</note>
+      </trans-unit>
+      <trans-unit id="ae284f900f9d6e21ba69144cfc91e41b">
+        <source>Style</source>
+        <target state="needs-translation">Style</target>
+        <note>Line: 92</note>
+      </trans-unit>
+      <trans-unit id="6f6cb72d544962fa333e2e34ce64f719">
+        <source>Size</source>
+        <target state="needs-translation">Size</target>
+        <note>Line: 121</note>
+      </trans-unit>
+      <trans-unit id="cb5feb1b7314637725a2e73bdc9f7295">
+        <source>Color</source>
+        <target state="needs-translation">Color</target>
+        <note>Line: 141</note>
+      </trans-unit>
+      <trans-unit id="1cb251ec0d568de6a929b520c4aed8d1">
+        <source>text</source>
+        <target state="needs-translation">text</target>
+        <note>Line: 178</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

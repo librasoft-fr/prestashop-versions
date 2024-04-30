@@ -1,0 +1,53 @@
+services:
+  _defaults:
+    public: true
+
+  #Theme providers
+  prestashop.module.psxdesign.provider.theme_image_provider:
+    class: 'PrestaShop\Module\PsxDesign\Provider\ThemeImagesProvider'
+    arguments:
+      - !php/const _PS_ALL_THEMES_DIR_
+
+  prestashop.module.psxdesign.provider.theme_attributes_provider:
+    class: 'PrestaShop\Module\PsxDesign\Provider\ThemeAttributesProvider'
+    arguments:
+      - '@prestashop.core.addon.theme.theme_provider'
+      - '@prestashop.module.psxdesign.provider.theme_image_provider'
+      - '@prestashop.core.addon.theme.repository'
+      - "@=service('psxdesign.context').link"
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+
+  #Fonts providers
+  prestashop.module.psxdesign.provider.font_data_provider:
+    class: PrestaShop\Module\PsxDesign\Provider\FontDataProvider
+    arguments:
+      - '@psxdesign.guzzle.client'
+      - "@=service('psxdesign.module').getLocalPath()"
+
+#  Theme configuration providers
+
+  prestashop.module.psxdesign.provider.theme_configuration_provider:
+    class: PrestaShop\Module\PsxDesign\Provider\ThemeConfiguration\ThemeConfigurationProvider
+    arguments:
+      - '@prestashop.module.psxdesign.provider.fonts_configuration_provider'
+      - '@prestashop.module.psxdesign.provider.colors_configuration_provider'
+      - '@prestashop.module.psxdesign.provider.global_theme_configuration_provider'
+
+  prestashop.module.psxdesign.provider.fonts_configuration_provider:
+    class: PrestaShop\Module\PsxDesign\Provider\ThemeConfiguration\FontsConfigurationProvider
+    arguments:
+      - '@prestashop.module.psxdesign.repository.psxdesign_fonts_repository'
+      - '@prestashop.module.psxdesign.utility.theme_configuration.font_utility'
+      - '@=service("prestashop.adapter.legacy.context").getContext().shop.id'
+
+  prestashop.module.psxdesign.provider.colors_configuration_provider:
+    class: PrestaShop\Module\PsxDesign\Provider\ThemeConfiguration\ColorsConfigurationProvider
+    arguments:
+      - '@prestashop.module.psxdesign.utility.theme_configuration.color_utility'
+      - '@prestashop.module.psxdesign.repository.psxdesign_colors_palette_repository'
+      - '@=service("prestashop.adapter.legacy.context").getContext().shop.id'
+
+  prestashop.module.psxdesign.provider.global_theme_configuration_provider:
+    class: PrestaShop\Module\PsxDesign\Provider\ThemeConfiguration\GlobalConfigurationProvider
+    arguments:
+      - '@=service("prestashop.adapter.legacy.context").getContext().shop.id'

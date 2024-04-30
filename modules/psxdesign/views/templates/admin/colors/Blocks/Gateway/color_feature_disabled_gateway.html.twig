@@ -1,0 +1,41 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+{% embed '@Modules/psxdesign/views/templates/components/gateway.html.twig' %}
+    {% block gateway_header %}
+        <h2 class="h3 mb-3">{{ 'Use a compatible theme to customize colors'|trans({}, 'Modules.Psxdesign.Admin') }}</h2>
+    {% endblock %}
+    {% block gateway_content %}
+        <img class="d-block mx-auto mb-3" src="{{ asset('../modules/psxdesign/views/img/custom_design.png') }}" alt="{{ 'Customize your theme image'|trans({}, 'Modules.Psxdesign.Admin') }}"/>
+        <p class="text-muted mb-3">
+            {{ 'Choose a theme from the list in the Themes page.'|trans({}, 'Modules.Psxdesign.Admin') }}
+        </p>
+    {% endblock %}
+    {% block gateway_footer %}
+        <div class="d-flex flex-wrap form-group inline-switch-widget mb-0">
+            <a class="btn btn-outline-primary flex-grow-1" href="{{ path('admin_psxdesign_themes_index') }}"><i class="material-icons">arrow_back</i> {{ 'Go to Themes'|trans({}, 'Modules.Psxdesign.Admin') }}</a>
+        </div>
+    {% endblock %}
+{% endembed %}

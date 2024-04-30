@@ -1,0 +1,104 @@
+.theme-preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  align-items: flex-end;
+  padding: 0.59rem 0.59rem 0 0.59rem;
+  margin: 0 auto;
+  max-width: calc(100% - 1.875rem);
+}
+
+.theme-preview {
+  position: relative;
+  border: 1px solid #b7ced3;
+}
+
+.theme-preview-mobile-wrapper {
+  position: relative;
+  z-index: 1;
+  margin-left: -0.688rem;
+}
+
+.theme-preview--desktop, .theme-preview--mobile {
+  transform-style: preserve-3d;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+}
+.theme-preview--desktop:before, .theme-preview--mobile:before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -0.59rem;
+  right: -0.59rem;
+  bottom: 0;
+  left: -0.59rem;
+  border-width: 1px 1px 0 1px;
+  border-color: #b3c7cd;
+  border-style: solid;
+  border-radius: 8px 8px 0 0;
+  transform: translateZ(-1px);
+  background-color: #ffffff;
+}
+
+.theme-preview--desktop {
+  height: 179px;
+  width: 342px;
+}
+
+.theme-preview--mobile {
+  height: 112px;
+  width: 92px;
+}
+
+.theme-preview--single {
+  /* We use the padding trick to keep the aspect ratio to 16/9. aspect-ratio: 16/9; */
+  width: 100%;
+  height: 0;
+  margin: 0 auto;
+  padding-top: 56.25%;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.theme-preview--desktop img, .theme-preview--mobile img, .theme-preview--single img {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: top center;
+     object-position: top center;
+}
+
+.theme-preview--demo-container {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-preview--demo-container .btn {
+  transition: all 0.15s ease-in-out;
+  opacity: 0;
+}
+.theme-preview--demo-container .btn:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.theme-preview--demo-container:hover .btn,
+.theme-preview--demo-container .btn:focus {
+  opacity: 1;
+}

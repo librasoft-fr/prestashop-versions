@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    public: true
+
+  prestashop.module.psxdesign.builder.color_palette_builder:
+    class: 'PrestaShop\Module\PsxDesign\Builder\ColorPaletteBuilder'
+    arguments:
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+      - "@=service('prestashop.core.addon.theme.theme_provider').getCurrentlyUsedTheme().getName()"
+
+  prestashop.module.psxdesign.builder.fonts_stylesheet_builder:
+    class: 'PrestaShop\Module\PsxDesign\Builder\FontsStylesheetBuilder'
+    arguments:
+      - '@prestashop.module.psxdesign.provider.font_data_provider'
+
+  prestashop.module.psxdesign.builder.colors_stylesheet_builder:
+    class: 'PrestaShop\Module\PsxDesign\Builder\ColorsStylesheetBuilder'

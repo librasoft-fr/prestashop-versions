@@ -1,0 +1,12 @@
+/* PrestaShop license placeholder */
+
+@mixin placeholder {
+  @include _bourbon-deprecate-for-prefixing("placeholder");
+
+  $placeholders: ":-webkit-input" ":-moz" "-moz" "-ms-input";
+  @each $placeholder in $placeholders {
+    &:#{$placeholder}-placeholder {
+      @content;
+    }
+  }
+}

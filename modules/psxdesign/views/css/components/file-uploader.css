@@ -1,0 +1,145 @@
+.file-uploader {
+  border: 1px dashed #b3c7cd;
+  border-radius: 4px;
+  padding: 1.25rem;
+}
+.file-uploader:not(.file-uploader.file-uploader--drag-hover):hover {
+  background-color: #fafbfc;
+}
+.file-uploader.file-uploader--drag-hover {
+  border: 1px dashed #25b9d7;
+  background-color: #fafbfc;
+}
+.file-uploader.file-uploader--drag-hover * {
+  pointer-events: none;
+}
+
+.file-uploader__legend {
+  margin: 0;
+}
+
+.file-uploader__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.file-uploader__legend-icon {
+  color: #6c868e;
+}
+
+.file-uploader__legend-btn {
+  font-size: inherit;
+  padding: 0;
+  display: inline;
+  vertical-align: unset;
+}
+
+.file-uploader__preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.file-uploader__preview-container:empty {
+  display: none;
+}
+.file-uploader__preview-container.file-uploader__preview-container--placeholder {
+  margin: 1rem auto;
+  width: 7.5rem;
+  height: 7.5rem;
+  position: relative;
+}
+
+.file-uploader__item {
+  border: 1px solid #b3c7cd;
+  border-radius: 4px;
+  background-color: #fafbfc;
+  position: relative;
+  width: 10rem;
+  text-align: center;
+}
+
+.file-uploader__preview-img {
+  display: none;
+}
+.file-uploader__preview-img[src] {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 7.5rem;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.file-uploader__preview-img[src] + .file-uploader__preview-placeholder {
+  display: none;
+}
+
+.file-uploader__preview-placeholder {
+  color: #6c868e;
+  font-size: 7.5rem;
+  line-height: 7.5rem;
+}
+
+.file-uploader__remove-btn {
+  position: absolute;
+  z-index: 1;
+  cursor: pointer;
+  top: -1.25rem;
+  right: -1.25rem;
+  padding: 0.5rem;
+  color: #6c868e;
+}
+.file-uploader__remove-btn:hover, .file-uploader__remove-btn:focus {
+  color: #363a41;
+}
+.file-uploader__remove-btn .file-uploader__remove-icon {
+  font-size: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 100%;
+  color: inherit;
+}
+
+.file-uploader__name {
+  margin-bottom: 0;
+  padding: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: #ffffff;
+  border-top: 1px solid #b3c7cd;
+  border-radius: 0 0 4px 4px;
+  text-align: left;
+}
+
+.file-uploader__hidden-input {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/**
+ * Disabled state
+ */
+.file-uploader:disabled, .file-uploader.disabled {
+  pointer-events: none;
+  color: #b3c7cd;
+}
+.file-uploader:disabled *, .file-uploader.disabled * {
+  color: inherit;
+}
+.file-uploader:disabled :disabled, .file-uploader:disabled .disabled, .file-uploader.disabled :disabled, .file-uploader.disabled .disabled {
+  background: none;
+}
+.file-uploader:disabled .file-uploader__preview-img, .file-uploader:disabled .file-uploader__preview-img, .file-uploader.disabled .file-uploader__preview-img, .file-uploader.disabled .file-uploader__preview-img {
+  opacity: 50%;
+}

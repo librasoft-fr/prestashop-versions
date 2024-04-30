@@ -1,0 +1,96 @@
+# Check Symfony documentation about service container
+# PrestaShop using Symfony 3.4 for PrestaShop 1.7.x.x
+# PrestaShop using Symfony 4.4 for PrestaShop 8.x.x
+# https://symfony.com/doc/3.4/service_container.html
+# https://symfony.com/doc/4.4/service_container.html
+# https://devdocs.prestashop-project.org/8/modules/concepts/services/
+# In PrestaShop you must configure services manually
+# Add services in this file allow use them in all contexts
+# Services should be added to this file when it's possible
+services:
+  # Module as service
+  klaviyops.module:
+    class: 'KlaviyoPsModule'
+    factory: ['KlaviyoPsModule', 'getInstance']
+    public: true
+
+  # PrestaShop components as service
+  klaviyops.prestashop_components.context:
+    class: Context
+    factory: ['Context', 'getContext']
+    public: true
+
+  # Root services part
+  klaviyops.klaviyo_api_wrapper:
+    class: KlaviyoPs\Classes\KlaviyoApiWrapper
+    public: true
+
+  # UtilServices part
+  klaviyops.util_services.csv:
+    class: KlaviyoPs\Classes\UtilServices\CsvService
+    public: true
+
+  klaviyops.util_services.env:
+    class: KlaviyoPs\Classes\UtilServices\EnvService
+    public: true
+    arguments:
+      - '@klaviyops.module'
+
+  # PrestashopServices part
+  klaviyops.prestashop_services.cart_rule:
+    class: KlaviyoPs\Classes\PrestashopServices\CartRuleService
+    public: true
+
+  klaviyops.prestashop_services.context:
+    class: KlaviyoPs\Classes\PrestashopServices\ContextService
+    public: true
+    arguments:
+      - '@klaviyops.prestashop_components.context'
+
+  klaviyops.prestashop_services.customer:
+    class: KlaviyoPs\Classes\PrestashopServices\CustomerService
+    public: true
+    arguments:
+      - '@klaviyops.prestashop_services.validate'
+
+  klaviyops.prestashop_services.logger:
+    class: KlaviyoPs\Classes\PrestashopServices\LoggerService
+    public: true
+
+  klaviyops.prestashop_services.order:
+    class: KlaviyoPs\Classes\PrestashopServices\OrderService
+    public: true
+    arguments:
+      - '@klaviyops.prestashop_services.context'
+      - '@klaviyops.prestashop_services.product'
+      - '@klaviyops.prestashop_services.customer'
+
+  klaviyops.prestashop_services.product:
+    class: KlaviyoPs\Classes\PrestashopServices\ProductService
+    public: true
+
+  klaviyops.prestashop_services.validate:
+    class: KlaviyoPs\Classes\PrestashopServices\ValidateService
+    public: true
+
+  # KlaviyoServices part
+  klaviyops.klaviyo_service.coupon_generator:
+    class: KlaviyoPs\Classes\KlaviyoServices\CouponGeneratorService
+    public: true
+    arguments:
+      - '@klaviyops.prestashop_services.cart_rule'
+
+  klaviyops.klaviyo_service.customer_event_service:
+    class: KlaviyoPs\Classes\KlaviyoServices\CustomerEventService
+    public: true
+    arguments:
+      - '@klaviyops.prestashop_services.customer'
+
+  klaviyops.klaviyo_service.order_event:
+    class: KlaviyoPs\Classes\KlaviyoServices\OrderEventService
+    public: true
+    arguments:
+      - '@klaviyops.klaviyo_api_wrapper'
+      - '@klaviyops.prestashop_services.order'
+      - '@klaviyops.prestashop_services.product'
+      - '@klaviyops.klaviyo_service.customer_event_service'

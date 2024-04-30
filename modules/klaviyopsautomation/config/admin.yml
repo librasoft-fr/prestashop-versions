@@ -1,0 +1,23 @@
+# Check Symfony documentation about service container
+# PrestaShop using Symfony 3.4 for PrestaShop 1.7.x.x
+# PrestaShop using Symfony 4.4 for PrestaShop 8.x.x
+# https://symfony.com/doc/3.4/service_container.html
+# https://symfony.com/doc/4.4/service_container.html
+# https://devdocs.prestashop-project.org/8/modules/concepts/services/
+# In PrestaShop you must configure services manually
+# Add a service in this file when you want to restrict a service on the back-office side (modern or legacy context)
+services:
+  ######################
+  # PrestaShop Account #
+  ######################
+  klaviyops.ps_accounts.installer:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Installer'
+    public: true
+    arguments:
+      - '5.0'
+
+  klaviyops.ps_accounts.facade:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts'
+    public: true
+    arguments:
+      - '@klaviyops.ps_accounts.installer'

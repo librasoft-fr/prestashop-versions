@@ -1,0 +1,8 @@
+/* PrestaShop license placeholder */
+
+@mixin calc($property, $value) {
+  @include _bourbon-deprecate-for-prefixing("calc");
+
+  #{$property}: -webkit-calc(#{$value});
+  #{$property}: calc(#{$value});
+}

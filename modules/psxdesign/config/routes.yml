@@ -1,0 +1,2 @@
+_psxdesign_routing:
+  resource: "routing/_routes.yml"

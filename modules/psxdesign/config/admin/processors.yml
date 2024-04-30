@@ -1,0 +1,75 @@
+services:
+  _defaults:
+    public: true
+
+  #Logos processors
+  prestashop.module.psxdesign.converter.text_to_logo_converter:
+    class: PrestaShop\Module\PsxDesign\Converter\TextToLogoConverter
+
+  #Colors processors
+  prestashop.module.psxdesign.compiler.classic_theme_stylesheet_compiler:
+    class: PrestaShop\Module\PsxDesign\Compiler\ClassicThemeStylesheetCompiler
+    arguments:
+      - "@=service('psxdesign.module').getLocalPath()"
+      - !php/const _PS_ALL_THEMES_DIR_
+      - '@filesystem'
+
+  prestashop.module.psxdesign.compiler.theme_stylesheet_compiler:
+    class: PrestaShop\Module\PsxDesign\Compiler\ThemeStylesheetCompiler
+    arguments:
+      - "@=service('psxdesign.module').getLocalPath()"
+      - !php/const _PS_ALL_THEMES_DIR_
+      - '@filesystem'
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+      - '@=service("prestashop.adapter.legacy.context").getContext().shop.id'
+
+  prestashop.module.psxdesign.processor.colors_stylesheet_processor:
+    class: PrestaShop\Module\PsxDesign\Processor\ColorsStylesheetsProcessor
+    arguments:
+      - '@prestashop.module.psxdesign.compiler.classic_theme_stylesheet_compiler'
+      - '@prestashop.module.psxdesign.compiler.theme_stylesheet_compiler'
+      - '@filesystem'
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+      - '@prestashop.module.psxdesign.builder.colors_stylesheet_builder'
+      - '@prestashop.module.psxdesign.utility.theme_configuration.color_utility'
+      - "@=service('psxdesign.module').getLocalPath()"
+      - !php/const _PS_ALL_THEMES_DIR_
+      - '@=service("prestashop.adapter.legacy.context").getContext().shop.id'
+
+  #Fonts processors
+  prestashop.module.psxdesign.processor.font_stylesheets_processor:
+    class: PrestaShop\Module\PsxDesign\Processor\FontStylesheetsProcessor
+    arguments:
+      - '@filesystem'
+      - '@prestashop.module.psxdesign.provider.theme_configuration_provider'
+      - '@prestashop.module.psxdesign.repository.psxdesign_fonts_repository'
+      - '@prestashop.module.psxdesign.builder.fonts_stylesheet_builder'
+      - '@prestashop.module.psxdesign.utility.theme_configuration.font_utility'
+      - "@=service('psxdesign.module').getLocalPath()"
+      - '@=service("prestashop.adapter.legacy.context").getContext().shop.id'
+
+  #Other processors
+  prestashop.module.psxdesign.tracker.segment:
+    class: PrestaShop\Module\PsxDesign\Tracker\SegmentTracker
+    arguments:
+      - '@psxdesign.accounts.data_provider'
+      - "@psxdesign.context"
+      - '@prestashop.module.psxdesign.account.provider.token_decoder'
+      - "%psxdesign.segment_php%"
+      - "@=service('psxdesign.module').version"
+      - "@=service('psxdesign.module').name"
+      - "@=service('prestashop.core.addon.theme.theme_provider').getCurrentlyUsedTheme().getName()"
+
+  prestashop.module.psxdesign.service.module_upgrade_service:
+    class: PrestaShop\Module\PsxDesign\Service\ModuleUpgradeService
+    arguments:
+      - '@prestashop.module.manager'
+      - "@=service('psxdesign.module').name"
+
+  prestashop.module.psxdesign.account.provider.token_decoder:
+    class: PrestaShop\Module\PsxDesign\Account\Provider\TokenDecoder
+    arguments:
+      - '@prestashop.module.psxdesign.token_parser'
+
+  prestashop.module.psxdesign.token_parser:
+    class: Lcobucci\JWT\Parser

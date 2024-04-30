@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>psxdesign</name>
+    <displayName><![CDATA[PrestaShop Design]]></displayName>
+    <version><![CDATA[1.6.7]]></version>
+    <description><![CDATA[PrestaShop Design allows you to easily and rapidly customize your website theme and autonomously adapt the appearance of your store, brand image and preferences without needing any technical expertise.]]></description>
+    <author><![CDATA[PrestaShop]]></author>
+    <tab><![CDATA[others]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>1</need_instance>
+</module>

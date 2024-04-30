@@ -1,0 +1,18 @@
+services:
+  _defaults:
+    public: true
+
+  psxdesign.ps_accounts.installer:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Installer'
+    arguments:
+      - "6.0.0"
+
+  psxdesign.ps_accounts.facade:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts'
+    arguments:
+      - "@psxdesign.ps_accounts.installer"
+
+  psxdesign.accounts.data_provider:
+    class: PrestaShop\Module\PsxDesign\Account\Provider\PsAccountDataProvider
+    arguments:
+      - '@psxdesign.ps_accounts.facade'

@@ -1,0 +1,7 @@
+/* PrestaShop license placeholder */
+
+@mixin user-select($value: none) {
+  @include _bourbon-deprecate-for-prefixing("user-select");
+
+  @include prefixer(user-select, $value, webkit moz ms spec);
+}

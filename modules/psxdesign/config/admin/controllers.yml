@@ -1,0 +1,21 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignThemeGeneralController:
+    class: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignThemeGeneralController
+
+  PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignLogosController:
+    class: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignLogosController
+
+  PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignColorsController:
+    class: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignColorsController
+
+  PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignFontsController:
+    class: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignFontsController
+
+  PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignAjaxController:
+    class: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignAjaxController
+    arguments:
+      - '@prestashop.module.psxdesign.account.provider.token_decoder'
+      - '@psxdesign.accounts.data_provider'

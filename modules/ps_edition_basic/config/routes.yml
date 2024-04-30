@@ -1,0 +1,85 @@
+ps_edition_basic_home:
+  path: pseditionbasic/homepage
+  methods: [GET, POST]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\HOME::indexAction
+    _legacy_controller: "HOME"
+    _legacy_link: "HOME"
+
+ps_edition_basic_homepage:
+  path: pseditionbasic/homepage
+  methods: [GET, POST]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicHomepageController::indexAction
+    _legacy_controller: "AdminPsEditionBasicHomepageController"
+    _legacy_link: "AdminPsEditionBasicHomepageController"
+
+ps_edition_basic_settings:
+  path: pseditionbasic/settings
+  methods: [GET, POST]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicSettingsController::indexAction
+    _legacy_controller: "CONFIGURE"
+    _legacy_link: "CONFIGURE"
+
+ps_edition_basic_call_back:
+  path: pseditionbasic/call-back
+  methods: [GET, POST]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicCallBackController::handleRequest
+    _legacy_controller: "AdminPsEditionBasicCallBackController"
+    _legacy_link: "AdminPsEditionBasicCallBackController"
+
+ps_edition_basic_setup_guide_api:
+  path: /pseditionbasic/setup-guide/api/
+  methods: [GET, POST, PUT, PATCH]
+
+ps_edition_basic_setup_guide_api_index:
+  path: pseditionbasic/setup-guide/api/index
+  methods: [GET]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicSetupGuideController::fetchInitialDatas
+
+ps_edition_basic_setup_guide_api_edit:
+  path: pseditionbasic/setup-guide/api/edit
+  methods: [PATCH]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicSetupGuideController::editStep
+
+ps_edition_basic_setup_guide_api_modal_hidden:
+  path: pseditionbasic/setup-guide/api/modal-hidden
+  methods: [POST]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicSetupGuideController::storeModalIsHidden
+
+ps_edition_basic_setup_guide_api_delete:
+  path: pseditionbasic/setup-guide/api/delete/{stepName}
+  methods: [DELETE]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicSetupGuideController::deleteStep
+  requirements:
+    stepName: "[a-z-]+"
+
+ps_edition_basic_clean_mbo_cache:
+  path: pseditionbasic/cache-clear
+  methods: [PATCH]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicCacheController::handleRequest
+    _legacy_controller: "AdminPsEditionBasicCacheController"
+    _legacy_link: "AdminPsEditionBasicCacheController"
+
+ps_edition_basic_get_subscription:
+  path: pseditionbasic/get-subscription
+  methods: [GET]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicHomepageController::getSubscription
+    _legacy_controller: "AdminPsEditionBasicHomepageController"
+    _legacy_link: "AdminPsEditionBasicHomepageController"
+
+ps_edition_basic_ps_academy:
+  path: pseditionbasic/ps-academy
+  methods: [GET]
+  defaults:
+    _controller: PrestaShop\Module\PsEditionBasic\Controller\AdminPsEditionBasicPsAcademyController::getProducts
+    _legacy_controller: "AdminPsEditionBasicPsAcademyController"
+    _legacy_link: "AdminPsEditionBasicPsAcademyController"

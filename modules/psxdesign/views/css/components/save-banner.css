@@ -1,0 +1,72 @@
+.save-banner {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 208px;
+  z-index: 10;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  background: #363a41;
+  color: #ffffff;
+  padding: 1rem;
+  transition: all 0.5s ease-out;
+}
+@media (max-width: 1023px) {
+  .save-banner {
+    left: 0;
+  }
+}
+@media (max-width: 767.98px) {
+  .save-banner {
+    justify-content: flex-end;
+  }
+}
+@media (max-width: 575.98px) {
+  .save-banner {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+.save-banner.save-banner--hidden {
+  display: none;
+}
+.save-banner .save-banner__text {
+  margin: 0 auto 0 0;
+  padding: 0;
+}
+@media (max-width: 575.98px) {
+  .save-banner .save-banner__text {
+    text-align: center;
+    display: block;
+    margin: 0 15px;
+  }
+}
+@media (max-width: 480px) {
+  .save-banner .save-banner__text {
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+.save-banner .save-banner__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+@media (max-width: 480px) {
+  .save-banner .save-banner__actions {
+    justify-content: center;
+  }
+}
+
+/* If sidebar is closes */
+body.page-sidebar-closed .save-banner {
+  left: 48px;
+}
+@media (max-width: 1023px) {
+  body.page-sidebar-closed .save-banner {
+    left: 0;
+  }
+}
