@@ -314,11 +314,11 @@ class CartCore extends ObjectModel
     public function updateAddressId($id_address, $id_address_new)
     {
         $to_update = false;
-        if (!isset($this->id_address_invoice) || $this->id_address_invoice == $id_address) {
+        if (empty($this->id_address_invoice) || $this->id_address_invoice == $id_address) {
             $to_update = true;
             $this->id_address_invoice = $id_address_new;
         }
-        if (!isset($this->id_address_delivery) || $this->id_address_delivery == $id_address) {
+        if (empty($this->id_address_delivery) || $this->id_address_delivery == $id_address) {
             $to_update = true;
             $this->id_address_delivery = $id_address_new;
         }
@@ -347,7 +347,7 @@ class CartCore extends ObjectModel
      */
     public function updateDeliveryAddressId(int $currentAddressId, int $newAddressId)
     {
-        if (!isset($this->id_address_delivery) || (int) $this->id_address_delivery === $currentAddressId) {
+        if (empty($this->id_address_delivery) || (int) $this->id_address_delivery === $currentAddressId) {
             $this->id_address_delivery = $newAddressId;
             $this->update();
         }
@@ -753,6 +753,19 @@ class CartCore extends ObjectModel
                     $reduction_type_row = ['reduction_type' => $specific_price['reduction_type']];
                 } else {
                     $reduction_type_row = ['reduction_type' => 0];
+                }
+
+                /*
+                 * In case of packs, we need to properly calculate the quantity in stock. We can't just use
+                 * the quantity from the query, because stocks can be set to use the quantity of the products
+                 * in them. The quantity in stock_available then has no meaning and could be always zero.
+                 *
+                 * When calling Pack::getQuantity here, you MUST use null for $cart parameter. Otherwise it
+                 * will subtract the quantity that is already in the cart. Basically resulting in a nonsense,
+                 * half of quantity you have. We need the REAL quantity.
+                 */
+                if (Pack::isPack($product['id_product'])) {
+                    $product['quantity_available'] = Pack::getQuantity((int) $product['id_product'], (int) $product['id_product_attribute']);
                 }
 
                 $products[$key] = array_merge($product, $reduction_type_row);
@@ -4063,6 +4076,8 @@ class CartCore extends ObjectModel
         }
 
         foreach ($this->getProducts() as $product) {
+            // This code is not used, because advanced_stock_management is never enabled
+            // on 1.7 and newer.
             if (
                 !$this->allow_seperated_package
                 && !$product['allow_oosp']
@@ -4080,10 +4095,13 @@ class CartCore extends ObjectModel
                 }
             }
 
+            /*
+             * We have an immediate failure if the product is not active or available for order.
+             * @todo The second condition with quantity is not needed because it's checked properly further down.
+             */
             if (
                 !$product['active'] ||
-                !$product['available_for_order'] ||
-                (!$product['allow_oosp'] && $product['stock_quantity'] < $product['cart_quantity'])
+                !$product['available_for_order']
             ) {
                 return $returnProductOnFailure ? $product : false;
             }

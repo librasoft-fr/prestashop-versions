@@ -23,6 +23,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+use PrestaShop\PrestaShop\Core\Security\PasswordPolicyConfiguration;
 use PrestaShop\PrestaShop\Core\Util\InternationalizedDomainNameConverter;
 
 class PasswordControllerCore extends FrontController
@@ -95,7 +96,7 @@ class PasswordControllerCore extends FrontController
                     '{email}' => $customer->email,
                     '{lastname}' => $customer->lastname,
                     '{firstname}' => $customer->firstname,
-                    '{url}' => $this->context->link->getPageLink('password', true, null, 'token=' . $customer->secure_key . '&id_customer=' . (int) $customer->id . '&reset_token=' . $customer->reset_password_token),
+                    '{url}' => $this->context->link->getPageLink('password', null, null, 'token=' . $customer->secure_key . '&id_customer=' . (int) $customer->id . '&reset_token=' . $customer->reset_password_token),
                 ];
 
                 if (
@@ -163,6 +164,34 @@ class PasswordControllerCore extends FrontController
                     if (!Validate::isPlaintextPassword($passwd)) {
                         $this->errors[] = $this->trans('The password is not in a valid format.', [], 'Shop.Notifications.Error');
                     }
+                }
+
+                if (Validate::isAcceptablePasswordLength($passwd) === false) {
+                    $this->errors[] = $this->translator->trans(
+                        'Password must be between %d and %d characters long',
+                        [
+                            Configuration::get(PasswordPolicyConfiguration::CONFIGURATION_MINIMUM_LENGTH),
+                            Configuration::get(PasswordPolicyConfiguration::CONFIGURATION_MAXIMUM_LENGTH),
+                        ],
+                        'Shop.Notifications.Error'
+                    );
+                }
+
+                if (Validate::isAcceptablePasswordScore($passwd) === false) {
+                    $wordingsForScore = [
+                        $this->translator->trans('Very weak', [], 'Shop.Theme.Global'),
+                        $this->translator->trans('Weak', [], 'Shop.Theme.Global'),
+                        $this->translator->trans('Average', [], 'Shop.Theme.Global'),
+                        $this->translator->trans('Strong', [], 'Shop.Theme.Global'),
+                        $this->translator->trans('Very strong', [], 'Shop.Theme.Global'),
+                    ];
+                    $this->errors[] = $this->translator->trans(
+                        'The minimum score must be: %s',
+                        [
+                            $wordingsForScore[(int) Configuration::get(PasswordPolicyConfiguration::CONFIGURATION_MINIMUM_SCORE)],
+                        ],
+                        'Shop.Notifications.Error'
+                    );
                 }
             }
 
@@ -290,5 +319,13 @@ class PasswordControllerCore extends FrontController
         ];
 
         return $breadcrumb;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCanonicalURL()
+    {
+        return $this->context->link->getPageLink('password');
     }
 }

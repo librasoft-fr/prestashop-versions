@@ -24,7 +24,6 @@ use Context;
 use PrestaShop\Module\FacetedSearch\Constraint\UrlSegment;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslatableType;
-use PrestaShopBundle\Translation\DataCollectorTranslator;
 use PrestaShopBundle\Translation\TranslatorComponent;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -47,7 +46,9 @@ class FormModifier
         FormBuilderInterface $formBuilder,
         array $data
     ) {
-        /** @var DataCollectorTranslator|TranslatorComponent $translator */
+        /**
+         * @var TranslatorComponent
+         */
         $translator = $this->context->getTranslator();
         $invalidCharsHint = $translator->trans(
             'Invalid characters: <>;=#{}_',

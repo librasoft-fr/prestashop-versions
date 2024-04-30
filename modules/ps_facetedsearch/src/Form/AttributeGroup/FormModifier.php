@@ -32,21 +32,17 @@ use PrestaShop\Module\FacetedSearch\Constraint\UrlSegment;
 use PrestaShop\PrestaShop\Core\Exception\CoreException;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslatableType;
-use PrestaShopBundle\Translation\DataCollectorTranslator;
 use PrestaShopBundle\Translation\TranslatorComponent;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class FormModifier
 {
     /**
-     * @var DataCollectorTranslator|TranslatorComponent
+     * @var TranslatorComponent
      */
     private $translator;
 
-    /**
-     * @param DataCollectorTranslator|TranslatorComponent $translator
-     */
-    public function __construct($translator)
+    public function __construct(TranslatorComponent $translator)
     {
         $this->translator = $translator;
     }

@@ -20,15 +20,10 @@
 
 namespace PrestaShop\Module\Ps_Googleanalytics\Hooks;
 
-use Category;
 use Configuration;
 use Context;
 use Customer;
-use PrestaShop\Module\Ps_Googleanalytics\Handler\GanalyticsJsHandler;
-use PrestaShop\Module\Ps_Googleanalytics\Handler\ModuleHandler;
-use PrestaShop\Module\Ps_Googleanalytics\Wrapper\ProductWrapper;
 use Ps_Googleanalytics;
-use Shop;
 use Tools;
 
 class HookDisplayHeader implements HookInterface
@@ -62,14 +57,8 @@ class HookDisplayHeader implements HookInterface
             return '';
         }
 
-        $this->context->controller->addJs($this->module->getPathUri() . 'views/js/GoogleAnalyticActionLib.js');
-
-        $shops = Shop::getShops();
-        $isMultistoreActive = Shop::isFeatureActive();
-        $currentShopId = (int) Context::getContext()->shop->id;
+        // Resolve if we should add user ID into the code
         $userId = null;
-        $gaCrossdomainEnabled = false;
-
         if (Configuration::get('GA_USERID_ENABLED')
             && $this->context->customer instanceof Customer
             && $this->context->customer->isLogged()
@@ -77,60 +66,19 @@ class HookDisplayHeader implements HookInterface
             $userId = (int) $this->context->customer->id;
         }
 
-        $gaAnonymizeEnabled = Configuration::get('GA_ANONYMIZE_ENABLED');
-
-        if ((int) Configuration::get('GA_CROSSDOMAIN_ENABLED') && $isMultistoreActive && count($shops) > 1) {
-            $gaCrossdomainEnabled = true;
-        }
-
         $this->context->smarty->assign(
             [
-                'isV4Enabled' => (bool) Configuration::get('GA_V4_ENABLED'),
                 'backOffice' => $this->backOffice,
                 'trackBackOffice' => Configuration::get('GA_TRACK_BACKOFFICE_ENABLED'),
-                'currentShopId' => $currentShopId,
                 'userId' => $userId,
                 'gaAccountId' => Tools::safeOutput(Configuration::get('GA_ACCOUNT_ID')),
-                'shops' => $shops,
-                'gaCrossdomainEnabled' => $gaCrossdomainEnabled,
-                'gaAnonymizeEnabled' => $gaAnonymizeEnabled,
-                'useSecureMode' => Configuration::get('PS_SSL_ENABLED'),
+                'gaAnonymizeEnabled' => Configuration::get('GA_ANONYMIZE_ENABLED'),
             ]
         );
 
         return $this->module->display(
             $this->module->getLocalPath() . $this->module->name,
             'ps_googleanalytics.tpl'
-        ) . $this->displayGaTag();
-    }
-
-    private function displayGaTag()
-    {
-        $moduleHandler = new ModuleHandler();
-        $gaTagHandler = new GanalyticsJsHandler($this->module, $this->context);
-        $gaScripts = '';
-
-        // Home featured products
-        if ($moduleHandler->isModuleEnabledAndHookedOn('ps_featuredproducts', 'displayHome')
-            && $this->context->customer instanceof Customer) {
-            $category = new Category($this->context->shop->getCategory(), $this->context->language->id);
-            $productWrapper = new ProductWrapper($this->context);
-            $homeFeaturedProducts = $productWrapper->wrapProductList(
-                $category->getProducts(
-                    (int) $this->context->language->id,
-                    1,
-                    (Configuration::get('HOME_FEATURED_NBR') ? (int) Configuration::get('HOME_FEATURED_NBR') : 8),
-                    'position'
-                ),
-                [],
-                true
-            );
-            $gaScripts .= $this->module->getTools()->addProductImpression($homeFeaturedProducts);
-            $gaScripts .= $this->module->getTools()->addProductClick($homeFeaturedProducts, $this->context->currency->iso_code);
-        }
-
-        return $gaTagHandler->generate(
-            $this->module->getTools()->filter($gaScripts, $this->module->filterable)
         );
     }
 
@@ -139,14 +87,6 @@ class HookDisplayHeader implements HookInterface
      */
     public function setBackOffice($backOffice)
     {
-        $this->acknowledgeBackOfficeContext($backOffice);
-    }
-
-    /**
-     * @param bool $isBackOffice
-     */
-    public function acknowledgeBackOfficeContext($isBackOffice)
-    {
-        $this->backOffice = $isBackOffice;
+        $this->backOffice = $backOffice;
     }
 }

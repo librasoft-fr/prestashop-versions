@@ -75,7 +75,7 @@
     <value>1</value>
   </configuration>
   <configuration id="PS_SHOP_ENABLE" name="PS_SHOP_ENABLE">
-    <value>0</value>
+    <value>1</value>
   </configuration>
   <configuration id="PS_MAINTENANCE_ALLOW_ADMINS" name="PS_MAINTENANCE_ALLOW_ADMINS">
     <value>1</value>

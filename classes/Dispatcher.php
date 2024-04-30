@@ -705,7 +705,7 @@ class DispatcherCore
          *
          * Use getRoutes, addRoute, removeRoute methods for this purpose.
          */
-        Hook::exec('actionAfterLoadRoutes', ['dispatcher' => $this]);
+        Hook::exec('actionAfterLoadRoutes', ['dispatcher' => $this, 'id_shop' => $id_shop]);
     }
 
     /**
@@ -869,6 +869,10 @@ class DispatcherCore
         }
         if (isset(Context::getContext()->shop) && $id_shop === null) {
             $id_shop = (int) Context::getContext()->shop->id;
+        }
+
+        if (!isset($this->routes[$id_shop])) {
+            $this->loadRoutes($id_shop);
         }
 
         return isset($this->routes[$id_shop][$id_lang][$route_id]);

@@ -30,17 +30,12 @@ class AdminGanalyticsAjaxController extends ModuleAdminController
         $order = new Order($orderId);
 
         if (Validate::isLoadedObject($order) && (isset($this->context->employee->id) && $this->context->employee->id)) {
-            (new GanalyticsRepository())->updateData(
-                [
-                    'sent' => 1,
-                    'date_add' => ['value' => 'NOW()', 'type' => 'sql'],
-                ],
-                'id_order = ' . $orderId
-            );
-
-            $this->ajaxDie('OK');
+            (new GanalyticsRepository())->markOrderAsSent((int) $orderId);
+            $this->ajaxRender('OK');
+            exit;
         }
 
-        $this->ajaxDie('KO');
+        $this->ajaxRender('KO');
+        exit;
     }
 }
