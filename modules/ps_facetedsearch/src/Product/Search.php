@@ -27,11 +27,13 @@ use FrontController;
 use Group;
 use PrestaShop\Module\FacetedSearch\Adapter\AbstractAdapter;
 use PrestaShop\Module\FacetedSearch\Adapter\MySQL as MySQLAdapter;
+use PrestaShop\Module\FacetedSearch\Definition\Availability;
 use PrestaShop\PrestaShop\Core\Product\Search\ProductSearchQuery;
 
 class Search
 {
     const STOCK_MANAGEMENT_FILTER = 'with_stock_management';
+    const HIGHLIGHTS_FILTER = 'extras';
 
     /**
      * @var bool
@@ -124,11 +126,14 @@ class Search
         // Add filters that the user has selected for current query
         $this->addSearchFilters($selectedFilters);
 
-        // Adds filters that specific for category page
+        // Adds filters that specific for this controller
         $this->addControllerSpecificFilters();
 
-        // Add group by and flush it, let's go
+        // Add group by to remove duplicate values
         $this->getSearchAdapter()->addGroupBy('id_product');
+
+        // Move the current search into the "initialPopulation"
+        // This initialPopulation will be used to generate the base table in the final query
         $this->getSearchAdapter()->useFiltersAsInitialPopulation();
     }
 
@@ -169,6 +174,41 @@ class Search
                     $this->addFilter('id_category', $filterValues);
                     break;
 
+                case 'extras':
+                    // Filter for new products
+                    if (in_array('new', $filterValues)) {
+                        $timeCondition = date(
+                            'Y-m-d 00:00:00',
+                            strtotime(
+                                ((int) Configuration::get('PS_NB_DAYS_NEW_PRODUCT') > 0 ?
+                                '-' . ((int) Configuration::get('PS_NB_DAYS_NEW_PRODUCT') - 1) . ' days' :
+                                '+ 1 days')
+                            )
+                        );
+                        // Reset filter to prevent two same filters if we are on new products page
+                        $this->getSearchAdapter()->addFilter('date_add', ["'" . $timeCondition . "'"], '>');
+                    }
+
+                    // Filter for discounts - they must work as OR
+                    $operationsFilter = [];
+                    if (in_array('discount', $filterValues)) {
+                        $operationsFilter[] = [
+                            ['reduction', [0], '>'],
+                        ];
+                    }
+                    if (in_array('sale', $filterValues)) {
+                        $operationsFilter[] = [
+                            ['on_sale', [1], '='],
+                        ];
+                    }
+                    if (!empty($operationsFilter)) {
+                        $this->getSearchAdapter()->addOperationsFilter(
+                            self::HIGHLIGHTS_FILTER,
+                            $operationsFilter
+                        );
+                    }
+                    break;
+
                 case 'availability':
                     /*
                     * $filterValues options can have following values:
@@ -192,13 +232,13 @@ class Search
                     // Simple cases with 1 option selected
                     if (count($filterValues) == 1) {
                         // Not available
-                        if ($filterValues[0] == 0) {
+                        if ($filterValues[0] == Availability::NOT_AVAILABLE) {
                             $operationsFilter[] = [
                                 ['quantity', [0], '<='],
                                 ['out_of_stock', $this->psOrderOutOfStock ? [0] : [0, 2], '='],
                             ];
                         // Available
-                        } elseif ($filterValues[0] == 1) {
+                        } elseif ($filterValues[0] == Availability::AVAILABLE) {
                             $operationsFilter[] = [
                                 ['out_of_stock', $this->psOrderOutOfStock ? [1, 2] : [1], '='],
                             ];
@@ -206,7 +246,7 @@ class Search
                                 ['quantity', [0], '>'],
                             ];
                         // In stock
-                        } elseif ($filterValues[0] == 2) {
+                        } elseif ($filterValues[0] == Availability::IN_STOCK) {
                             $operationsFilter[] = [
                                 ['quantity', [0], '>'],
                             ];
@@ -214,10 +254,10 @@ class Search
                         // Cases with 2 options selected
                     } elseif (count($filterValues) == 2) {
                         // Not available and available, we show everything
-                        if (in_array(0, $filterValues) && in_array(1, $filterValues)) {
+                        if (in_array(Availability::NOT_AVAILABLE, $filterValues) && in_array(Availability::AVAILABLE, $filterValues)) {
                             break;
                         // Not available or in stock
-                        } elseif (in_array(0, $filterValues) && in_array(2, $filterValues)) {
+                        } elseif (in_array(Availability::NOT_AVAILABLE, $filterValues) && in_array(Availability::IN_STOCK, $filterValues)) {
                             $operationsFilter[] = [
                                 ['quantity', [0], '<='],
                                 ['out_of_stock', $this->psOrderOutOfStock ? [0] : [0, 2], '='],
@@ -226,7 +266,7 @@ class Search
                                 ['quantity', [0], '>'],
                             ];
                         // Available or in stock
-                        } elseif (in_array(1, $filterValues) && in_array(2, $filterValues)) {
+                        } elseif (in_array(Availability::AVAILABLE, $filterValues) && in_array(Availability::IN_STOCK, $filterValues)) {
                             $operationsFilter[] = [
                                 ['out_of_stock', $this->psOrderOutOfStock ? [1, 2] : [1], '='],
                             ];
@@ -311,7 +351,7 @@ class Search
     {
         // Category page
         if ($this->query->getQueryType() == 'category') {
-            // If any category filter was user selected, we don't have anything to do here
+            // We check if some specific filter of this type wasn't added before by the customer
             if (!empty($this->getSearchAdapter()->getFilter('id_category'))) {
                 return;
             }
@@ -356,6 +396,11 @@ class Search
          * If there is a zero set to disable this feature, it creates unreachable condition.
          */
         if ($this->query->getQueryType() == 'new-products') {
+            // We check if some specific filter of this type wasn't added before
+            if (!empty($this->getSearchAdapter()->getFilter('date_add'))) {
+                return;
+            }
+
             $timeCondition = date(
                 'Y-m-d 00:00:00',
                 strtotime(
@@ -382,6 +427,11 @@ class Search
          * We are selecting products that have a specific price created meeting certain conditions.
          */
         if ($this->query->getQueryType() == 'prices-drop') {
+            // We check if some specific filter of this type wasn't added before
+            if (!empty($this->getSearchAdapter()->getFilter('reduction'))) {
+                return;
+            }
+
             $this->getSearchAdapter()->addFilter('reduction', [0], '>');
         }
 

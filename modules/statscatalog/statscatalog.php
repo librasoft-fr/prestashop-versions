@@ -42,7 +42,7 @@ class statscatalog extends Module
     {
         $this->name = 'statscatalog';
         $this->tab = 'administration';
-        $this->version = '2.0.3';
+        $this->version = '2.0.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -239,7 +239,7 @@ class statscatalog extends Module
 						<td>' . $product['name'] . '</td>
 						<td class="left">
 							<div class="btn-group btn-group-action">
-								<a class="btn btn-default" href="' . Tools::safeOutput('index.php?tab=AdminProducts&id_product=' . $product['id_product'] . '&addproduct&token=' . $product_token) . '" target="_blank">
+								<a class="btn btn-default" href="' . Tools::safeOutput('index.php?controller=AdminProducts&id_product=' . $product['id_product'] . '&addproduct&token=' . $product_token) . '" target="_blank">
 									<i class="icon-edit"></i> ' . $this->trans('Edit', [], 'Admin.Global') . '
 								</a>
 								<button data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">

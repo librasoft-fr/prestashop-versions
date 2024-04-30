@@ -28,6 +28,7 @@ use Feature;
 use Group;
 use Manufacturer;
 use PrestaShop\Module\FacetedSearch\Adapter\InterfaceAdapter;
+use PrestaShop\Module\FacetedSearch\Definition\Availability;
 use PrestaShop\Module\FacetedSearch\Product\Search;
 use PrestaShop\PrestaShop\Core\Localization\Locale;
 use PrestaShop\PrestaShop\Core\Localization\Specification\NumberSymbolList;
@@ -137,6 +138,9 @@ class Block
                     break;
                 case 'availability':
                     $filterBlocks[] = $this->getAvailabilitiesBlock($filter, $selectedFilters);
+                    break;
+                case 'extras':
+                    $filterBlocks[] = $this->getHighlightsBlock($filter, $selectedFilters);
                     break;
                 case 'manufacturer':
                     $filterBlocks[] = $this->getManufacturersBlock($filter, $selectedFilters, $idLang);
@@ -435,15 +439,15 @@ class Block
         $availabilityOptions = [];
         if ($this->psStockManagement) {
             $availabilityOptions = [
-                0 => [
+                Availability::IN_STOCK => [
                     'name' => $this->context->getTranslator()->trans(
-                        'Not available',
+                        'In stock',
                         [],
                         'Modules.Facetedsearch.Shop'
                     ),
                     'nbr' => 0,
                 ],
-                1 => [
+                Availability::AVAILABLE => [
                     'name' => $this->context->getTranslator()->trans(
                         'Available',
                         [],
@@ -451,9 +455,9 @@ class Block
                     ),
                     'nbr' => 0,
                 ],
-                2 => [
+                Availability::NOT_AVAILABLE => [
                     'name' => $this->context->getTranslator()->trans(
-                        'In stock',
+                        'Not available',
                         [],
                         'Modules.Facetedsearch.Shop'
                     ),
@@ -473,7 +477,7 @@ class Block
                     ],
                 ]
             );
-            $availabilityOptions[0]['nbr'] = $filteredSearchAdapter->count();
+            $availabilityOptions[Availability::NOT_AVAILABLE]['nbr'] = $filteredSearchAdapter->count();
 
             // Products in stock, or with out-of-stock ordering enabled
             $filteredSearchAdapter->addOperationsFilter(
@@ -487,7 +491,7 @@ class Block
                     ],
                 ]
             );
-            $availabilityOptions[1]['nbr'] = $filteredSearchAdapter->count();
+            $availabilityOptions[Availability::AVAILABLE]['nbr'] = $filteredSearchAdapter->count();
 
             // Products in stock
             $filteredSearchAdapter->addOperationsFilter(
@@ -498,7 +502,7 @@ class Block
                     ],
                 ]
             );
-            $availabilityOptions[2]['nbr'] = $filteredSearchAdapter->count();
+            $availabilityOptions[Availability::IN_STOCK]['nbr'] = $filteredSearchAdapter->count();
 
             // If some filter was selected, we want to show only this single filter, it does not make sense to show others
             if (isset($selectedFilters['availability'])) {
@@ -508,6 +512,13 @@ class Block
                         $availabilityOptions[$key]['checked'] = true;
                     }
                 }
+            }
+
+            // Hide Available option if the count is the same as In stock, it doesn't make no sense
+            // Product count is a reliable indicator here, because there can never be product IN STOCK that is not AVAILABLE
+            // So if the counts match, it MUST BE the same products
+            if ($availabilityOptions[Availability::AVAILABLE]['nbr'] == $availabilityOptions[Availability::IN_STOCK]['nbr']) {
+                unset($availabilityOptions[Availability::AVAILABLE]);
             }
         }
 
@@ -522,6 +533,99 @@ class Block
         ];
 
         return $quantityBlock;
+    }
+
+    /**
+     * Gets block for extra product properties like "new", "on sale" and "discounted"
+     *
+     * @param array $filter
+     * @param array $selectedFilters
+     *
+     * @return array
+     */
+    private function getHighlightsBlock($filter, $selectedFilters)
+    {
+        // Prepare array with options
+        $extrasOptions = [];
+
+        // Products on sale - available everywhere
+        $extrasOptions['sale'] = [
+            'name' => $this->context->getTranslator()->trans(
+                'On sale',
+                [],
+                'Modules.Facetedsearch.Shop'
+            ),
+            'nbr' => 0,
+        ];
+        $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter(Search::HIGHLIGHTS_FILTER);
+        $filteredSearchAdapter->addOperationsFilter(
+            Search::HIGHLIGHTS_FILTER,
+            [[['on_sale', [1], '=']]]
+        );
+        $extrasOptions['sale']['nbr'] = $filteredSearchAdapter->count();
+
+        // New products - available everywhere except that page
+        if ($this->query->getQueryType() != 'new-products') {
+            $extrasOptions['new'] = [
+                'name' => $this->context->getTranslator()->trans(
+                    'New product',
+                    [],
+                    'Modules.Facetedsearch.Shop'
+                ),
+                'nbr' => 0,
+            ];
+            $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter('date_add');
+            $timeCondition = date(
+                'Y-m-d 00:00:00',
+                strtotime(
+                    ((int) Configuration::get('PS_NB_DAYS_NEW_PRODUCT') > 0 ?
+                    '-' . ((int) Configuration::get('PS_NB_DAYS_NEW_PRODUCT') - 1) . ' days' :
+                    '+ 1 days')
+                )
+            );
+            $filteredSearchAdapter->addFilter('date_add', ["'" . $timeCondition . "'"], '>');
+            $extrasOptions['new']['nbr'] = $filteredSearchAdapter->count();
+        }
+
+        // Discounted products - available everywhere except that page
+        if ($this->query->getQueryType() != 'prices-drop') {
+            $extrasOptions['discount'] = [
+                'name' => $this->context->getTranslator()->trans(
+                    'Discounted',
+                    [],
+                    'Modules.Facetedsearch.Shop'
+                ),
+                'nbr' => 0,
+            ];
+            $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter(Search::HIGHLIGHTS_FILTER);
+            $filteredSearchAdapter->addOperationsFilter(
+                Search::HIGHLIGHTS_FILTER,
+                [[['reduction', [0], '>']]]
+            );
+            $extrasOptions['discount']['nbr'] = $filteredSearchAdapter->count();
+        }
+
+        // If some filters are selected, we mark them as such
+        if (isset($selectedFilters['extras'])) {
+            // We loop through selected filters and assign it to our options and remove the rest
+            foreach ($extrasOptions as $key => $values) {
+                if (in_array($key, $selectedFilters['extras'], true)) {
+                    $extrasOptions[$key]['checked'] = true;
+                }
+            }
+        }
+
+        $conditionBlock = [
+            'type_lite' => 'extras',
+            'type' => 'extras',
+            'id_key' => 0,
+            'name' => $this->context->getTranslator()->trans('Selections', [], 'Modules.Facetedsearch.Shop'),
+            'values' => $extrasOptions,
+            'filter_show_limit' => (int) $filter['filter_show_limit'],
+            'filter_type' => $filter['filter_type'],
+        ];
+
+        return $conditionBlock;
     }
 
     /**

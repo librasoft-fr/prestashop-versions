@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit25d86928de3f56f5882c1feb19de515c
+class ComposerStaticInite611b55ee3df4836a87c1b9dc1f89454
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
@@ -4049,11 +4049,14 @@ class ComposerStaticInit25d86928de3f56f5882c1feb19de515c
         'PrestaShop\\Module\\FacetedSearch\\Adapter\\MySQL' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Adapter/MySQL.php',
         'PrestaShop\\Module\\FacetedSearch\\Constraint\\UrlSegment' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Constraint/UrlSegment.php',
         'PrestaShop\\Module\\FacetedSearch\\Constraint\\UrlSegmentValidator' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Constraint/UrlSegmentValidator.php',
+        'PrestaShop\\Module\\FacetedSearch\\Definition\\Availability' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Definition/Availability.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Block' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Block.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Converter' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Converter.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\DataAccessor' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/DataAccessor.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Products' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Products.php',
         'PrestaShop\\Module\\FacetedSearch\\Filters\\Provider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Filters/Provider.php',
+        'PrestaShop\\Module\\FacetedSearch\\Form\\FeatureValue\\FormDataProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/FeatureValue/FormDataProvider.php',
+        'PrestaShop\\Module\\FacetedSearch\\Form\\FeatureValue\\FormModifier' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/FeatureValue/FormModifier.php',
         'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormDataProvider' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormDataProvider.php',
         'PrestaShop\\Module\\FacetedSearch\\Form\\Feature\\FormModifier' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Form/Feature/FormModifier.php',
         'PrestaShop\\Module\\FacetedSearch\\HookDispatcher' => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/HookDispatcher.php',
@@ -10270,11 +10273,11 @@ class ComposerStaticInit25d86928de3f56f5882c1feb19de515c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit25d86928de3f56f5882c1feb19de515c::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit25d86928de3f56f5882c1feb19de515c::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit25d86928de3f56f5882c1feb19de515c::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit25d86928de3f56f5882c1feb19de515c::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit25d86928de3f56f5882c1feb19de515c::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInite611b55ee3df4836a87c1b9dc1f89454::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite611b55ee3df4836a87c1b9dc1f89454::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInite611b55ee3df4836a87c1b9dc1f89454::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInite611b55ee3df4836a87c1b9dc1f89454::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInite611b55ee3df4836a87c1b9dc1f89454::$classMap;
 
         }, null, ClassLoader::class);
     }
