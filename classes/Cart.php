@@ -1129,7 +1129,8 @@ class CartCore extends ObjectModel
             isset($productRow['id_product_attribute']) ? (int) $productRow['id_product_attribute'] : 0,
             true,
             false,
-            true
+            true,
+            isset($productRow['id_customization']) ? (int) $productRow['id_customization'] : 0
         );
 
         $orderPrices['price_without_reduction_without_tax'] = Product::getPriceFromOrder(
@@ -1138,7 +1139,8 @@ class CartCore extends ObjectModel
             isset($productRow['id_product_attribute']) ? (int) $productRow['id_product_attribute'] : 0,
             false,
             false,
-            true
+            true,
+            isset($productRow['id_customization']) ? (int) $productRow['id_customization'] : 0
         );
 
         $orderPrices['price_with_reduction'] = Product::getPriceFromOrder(
@@ -1147,7 +1149,8 @@ class CartCore extends ObjectModel
             isset($productRow['id_product_attribute']) ? (int) $productRow['id_product_attribute'] : 0,
             true,
             true,
-            true
+            true,
+            isset($productRow['id_customization']) ? (int) $productRow['id_customization'] : 0
         );
 
         $orderPrices['price'] = $orderPrices['price_with_reduction_without_tax'] = Product::getPriceFromOrder(
@@ -1156,7 +1159,8 @@ class CartCore extends ObjectModel
             isset($productRow['id_product_attribute']) ? (int) $productRow['id_product_attribute'] : 0,
             false,
             true,
-            true
+            true,
+            isset($productRow['id_customization']) ? (int) $productRow['id_customization'] : 0
         );
 
         // If the product price was not found in the order, use cart prices as fallback
@@ -1998,14 +2002,22 @@ class CartCore extends ObjectModel
             WHERE `id_customization` = ' . (int) $id_customization);
 
         if ($customization) {
-            $cust_data = Db::getInstance()->getRow('SELECT *
+            /*
+             * Now we will select all customized files that could be connected to this customization.
+             * One customization can have multiple fields for files, we need to delete all of them.
+             */
+            $cust_datas = Db::getInstance()->executeS('SELECT *
                 FROM `' . _DB_PREFIX_ . 'customized_data`
-                WHERE `id_customization` = ' . (int) $id_customization);
+                WHERE `id_customization` = ' . (int) $id_customization . '
+                AND `type` = ' . (int) Product::CUSTOMIZE_FILE
+            );
 
-            // Delete customization picture if necessary
-            if (isset($cust_data['type']) && $cust_data['type'] == Product::CUSTOMIZE_FILE) {
-                $result &= file_exists(_PS_UPLOAD_DIR_ . $cust_data['value']) ? @unlink(_PS_UPLOAD_DIR_ . $cust_data['value']) : true;
-                $result &= file_exists(_PS_UPLOAD_DIR_ . $cust_data['value'] . '_small') ? @unlink(_PS_UPLOAD_DIR_ . $cust_data['value'] . '_small') : true;
+            // Delete customization pictures if necessary
+            if ($cust_datas) {
+                foreach ($cust_datas as $cust_data) {
+                    $result &= file_exists(_PS_UPLOAD_DIR_ . $cust_data['value']) ? @unlink(_PS_UPLOAD_DIR_ . $cust_data['value']) : true;
+                    $result &= file_exists(_PS_UPLOAD_DIR_ . $cust_data['value'] . '_small') ? @unlink(_PS_UPLOAD_DIR_ . $cust_data['value'] . '_small') : true;
+                }
             }
 
             $result &= Db::getInstance()->execute(

@@ -4,33 +4,33 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a
+class ComposerStaticInitce267f3653936506950ae9448202043a
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
-        '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
-        '6a47392539ca2329373e0d33e1dba053' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/bootstrap.php',
+        'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
+        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
+        'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
         '256c1545158fc915c75e51a931bdba60' => __DIR__ . '/..' . '/lcobucci/jwt/compat/class-aliases.php',
         '0d273777b2b0d96e49fb3d800c6b0e81' => __DIR__ . '/..' . '/lcobucci/jwt/compat/json-exception-polyfill.php',
         'd6b246ac924292702635bb2349f4a64b' => __DIR__ . '/..' . '/lcobucci/jwt/compat/lcobucci-clock-polyfill.php',
-        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
-        'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
-        '791bc9d387c38507eb1a5356530d6424' => __DIR__ . '/..' . '/prestashop/laminas-code-lts/polyfill/ReflectionEnumPolyfill.php',
-        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
+        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        '6a47392539ca2329373e0d33e1dba053' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/bootstrap.php',
+        '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
+        '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
         '72280e2fa915e603a1f900c17186d14b' => __DIR__ . '/..' . '/api-platform/core/src/deprecation.php',
+        'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
         '877d5940585e94b79d9d1f31ecaeb5fe' => __DIR__ . '/..' . '/martinlindhe/php-mb-helpers/src/mb_helpers.php',
+        '791bc9d387c38507eb1a5356530d6424' => __DIR__ . '/..' . '/prestashop/laminas-code-lts/polyfill/ReflectionEnumPolyfill.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -431,8 +431,8 @@ class ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
-            1 => __DIR__ . '/..' . '/league/uri/src',
+            0 => __DIR__ . '/..' . '/league/uri/src',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
         ),
         'League\\Tactician\\Logger\\' => 
         array (
@@ -6303,6 +6303,7 @@ class ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a
         'PrestaShop\\PrestaShop\\Adapter\\Pack\\PackDataProvider' => __DIR__ . '/../..' . '/src/Adapter/Pack/PackDataProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\Preferences\\PreferencesConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Preferences/PreferencesConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Presenter\\AbstractLazyArray' => __DIR__ . '/../..' . '/src/Adapter/Presenter/AbstractLazyArray.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Presenter\\Cart\\CartLazyArray' => __DIR__ . '/../..' . '/src/Adapter/Presenter/Cart/CartLazyArray.php',
         'PrestaShop\\PrestaShop\\Adapter\\Presenter\\Cart\\CartPresenter' => __DIR__ . '/../..' . '/src/Adapter/Presenter/Cart/CartPresenter.php',
         'PrestaShop\\PrestaShop\\Adapter\\Presenter\\Module\\ModulePresenter' => __DIR__ . '/../..' . '/src/Adapter/Presenter/Module/ModulePresenter.php',
         'PrestaShop\\PrestaShop\\Adapter\\Presenter\\Module\\PaymentModulesPresenter' => __DIR__ . '/../..' . '/src/Adapter/Presenter/Module/PaymentModulesPresenter.php',
@@ -9167,6 +9168,7 @@ class ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleInterface' => __DIR__ . '/../..' . '/src/Core/Module/ModuleInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleManager' => __DIR__ . '/../..' . '/src/Core/Module/ModuleManager.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleManagerInterface' => __DIR__ . '/../..' . '/src/Core/Module/ModuleManagerInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Module\\ModuleOverrideChecker' => __DIR__ . '/../..' . '/src/Core/Module/ModuleOverrideChecker.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleRepository' => __DIR__ . '/../..' . '/src/Core/Module/ModuleRepository.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleRepositoryInterface' => __DIR__ . '/../..' . '/src/Core/Module/ModuleRepositoryInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\Exception\\SourceNotHandledException' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/Exception/SourceNotHandledException.php',
@@ -12872,11 +12874,11 @@ class ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitce267f3653936506950ae9448202043a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitce267f3653936506950ae9448202043a::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitce267f3653936506950ae9448202043a::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInitce267f3653936506950ae9448202043a::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInitce267f3653936506950ae9448202043a::$classMap;
 
         }, null, ClassLoader::class);
     }

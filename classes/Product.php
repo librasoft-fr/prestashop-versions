@@ -4057,7 +4057,8 @@ class ProductCore extends ObjectModel
         int $combinationId,
         bool $withTaxes,
         bool $useReduction,
-        bool $withEcoTax
+        bool $withEcoTax,
+        int $customizationId = 0
     ): ?float {
         $sql = new DbQuery();
         $sql->select('od.*, t.rate AS tax_rate');
@@ -4066,6 +4067,9 @@ class ProductCore extends ObjectModel
         $sql->where('od.`product_id` = ' . $productId);
         if (Combination::isFeatureActive()) {
             $sql->where('od.`product_attribute_id` = ' . $combinationId);
+        }
+        if (Customization::isFeatureActive()) {
+            $sql->where('od.`id_customization` = ' . $customizationId);
         }
         $sql->leftJoin('order_detail_tax', 'odt', 'odt.id_order_detail = od.id_order_detail');
         $sql->leftJoin('tax', 't', 't.id_tax = odt.id_tax');
@@ -6217,9 +6221,9 @@ class ProductCore extends ObjectModel
 
                 if ($customization_quantity) {
                     $product_update['total_wt'] = $price_wt * ($product_quantity - $customization_quantity);
-                    $product_update['total_customization_wt'] = $price_wt * $customization_quantity;
+                    $product_update['total_customization_wt'] = $product_update['unit_price_tax_incl'] * $customization_quantity;
                     $product_update['total'] = $price * ($product_quantity - $customization_quantity);
-                    $product_update['total_customization'] = $price * $customization_quantity;
+                    $product_update['total_customization'] = $product_update['unit_price_tax_excl'] * $customization_quantity;
                 }
             }
         }
@@ -7510,7 +7514,7 @@ class ProductCore extends ObjectModel
 
         if (!Cache::isStored($cache_id)) {
             $result = Db::getInstance()->executeS('
-            SELECT a.`id_attribute`, a.`id_attribute_group`, al.`name`, agl.`name` as `group`,
+            SELECT a.`id_attribute`, a.`id_attribute_group`, al.`name`, agl.`name` as `group`, agl.`public_name` as `public_group`,
             pa.`reference`, pa.`ean13`, pa.`isbn`, pa.`upc`, pa.`mpn`,
             pal.`available_now`, pal.`available_later`
             FROM `' . _DB_PREFIX_ . 'attribute` a
@@ -7667,7 +7671,7 @@ class ProductCore extends ObjectModel
             foreach ($a as &$b) {
                 $b = str_replace($sep, '_', Tools::str2url((string) $b));
             }
-            $anchor .= '/' . ($with_id && isset($a['id_attribute']) && $a['id_attribute'] ? (int) $a['id_attribute'] . $sep : '') . $a['group'] . $sep . $a['name'];
+            $anchor .= '/' . ($with_id && isset($a['id_attribute']) && $a['id_attribute'] ? (int) $a['id_attribute'] . $sep : '') . $a['public_group'] . $sep . $a['name'];
         }
 
         return $anchor;

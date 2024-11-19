@@ -37,8 +37,8 @@ class AppKernel extends Kernel
     const VERSION = Version::VERSION;
     const MAJOR_VERSION_STRING = Version::MAJOR_VERSION_STRING;
     const MAJOR_VERSION = 8;
-    const MINOR_VERSION = 1;
-    const RELEASE_VERSION = 7;
+    const MINOR_VERSION = 2;
+    const RELEASE_VERSION = 0;
 
     /**
      * Lock stream is saved as static field, this way if multiple AppKernel are instanciated (this can happen in
