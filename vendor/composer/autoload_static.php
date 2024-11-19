@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf0b3908496c45b79f08f5429bba745db
+class ComposerStaticInit53fa02513e93f8d5b695fa686a20e650
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -431,8 +431,8 @@ class ComposerStaticInitf0b3908496c45b79f08f5429bba745db
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri/src',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            1 => __DIR__ . '/..' . '/league/uri/src',
         ),
         'League\\Tactician\\Logger\\' => 
         array (
@@ -4948,6 +4948,7 @@ class ComposerStaticInitf0b3908496c45b79f08f5429bba745db
         'PrestaShopBundle\\Controller\\Admin\\MultistoreController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/MultistoreController.php',
         'PrestaShopBundle\\Controller\\Admin\\ProductController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/ProductController.php',
         'PrestaShopBundle\\Controller\\Admin\\ProductImageController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/ProductImageController.php',
+        'PrestaShopBundle\\Controller\\Admin\\SecuredFileReaderController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/SecuredFileReaderController.php',
         'PrestaShopBundle\\Controller\\Admin\\SecurityController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/SecurityController.php',
         'PrestaShopBundle\\Controller\\Admin\\Sell\\Address\\AddressController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/Sell/Address/AddressController.php',
         'PrestaShopBundle\\Controller\\Admin\\Sell\\Catalog\\AttachmentController' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Controller/Admin/Sell/Catalog/AttachmentController.php',
@@ -12868,11 +12869,11 @@ class ComposerStaticInitf0b3908496c45b79f08f5429bba745db
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitf0b3908496c45b79f08f5429bba745db::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitf0b3908496c45b79f08f5429bba745db::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitf0b3908496c45b79f08f5429bba745db::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitf0b3908496c45b79f08f5429bba745db::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitf0b3908496c45b79f08f5429bba745db::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$classMap;
 
         }, null, ClassLoader::class);
     }

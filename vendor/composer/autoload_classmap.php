@@ -4288,6 +4288,7 @@ return array(
     'PrestaShopBundle\\Controller\\Admin\\MultistoreController' => $baseDir . '/src/PrestaShopBundle/Controller/Admin/MultistoreController.php',
     'PrestaShopBundle\\Controller\\Admin\\ProductController' => $baseDir . '/src/PrestaShopBundle/Controller/Admin/ProductController.php',
     'PrestaShopBundle\\Controller\\Admin\\ProductImageController' => $baseDir . '/src/PrestaShopBundle/Controller/Admin/ProductImageController.php',
+    'PrestaShopBundle\\Controller\\Admin\\SecuredFileReaderController' => $baseDir . '/src/PrestaShopBundle/Controller/Admin/SecuredFileReaderController.php',
     'PrestaShopBundle\\Controller\\Admin\\SecurityController' => $baseDir . '/src/PrestaShopBundle/Controller/Admin/SecurityController.php',
     'PrestaShopBundle\\Controller\\Admin\\Sell\\Address\\AddressController' => $baseDir . '/src/PrestaShopBundle/Controller/Admin/Sell/Address/AddressController.php',
     'PrestaShopBundle\\Controller\\Admin\\Sell\\Catalog\\AttachmentController' => $baseDir . '/src/PrestaShopBundle/Controller/Admin/Sell/Catalog/AttachmentController.php',
