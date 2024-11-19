@@ -35,7 +35,7 @@ class dashactivity extends Module
     {
         $this->name = 'dashactivity';
         $this->tab = 'administration';
-        $this->version = '2.1.0';
+        $this->version = '2.1.1';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -149,7 +149,7 @@ class dashactivity extends Module
         extract($row);
 
         if ($maintenance_ips = Configuration::get('PS_MAINTENANCE_IP')) {
-            $maintenance_ips = implode(',', array_map('ip2long', array_map('trim', explode(',', $maintenance_ips))));
+            $maintenance_ips = implode(',', array_filter(array_map('ip2long', array_map('trim', explode(',', $maintenance_ips))), '\strlen'));
         }
         if (Configuration::get('PS_STATSDATA_CUSTOMER_PAGESVIEWS')) {
             $sql = 'SELECT c.id_guest, c.ip_address, c.date_add, c.http_referer, pt.name as page

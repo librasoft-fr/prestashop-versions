@@ -40,6 +40,7 @@
 	</section>
 	<section id="dash_live" class="loading">
 		<ul class="data_list_large">
+			{if Module::isEnabled('statslive')}
 			<li>
 				<span class="data_label size_l">
 					<a href="{$link->getAdminLink('AdminStats')|escape:'html':'UTF-8'}&amp;module=statslive">{l s='Online Visitors' d='Modules.Dashactivity.Admin'}</a>
@@ -51,6 +52,7 @@
 					<span id="online_visitor"></span>
 				</span>
 			</li>
+			{/if}
 			<li>
 				<span class="data_label size_l">
 					<a href="{$link->getAdminLink('AdminCarts')|escape:'html':'UTF-8'}">{l s='Active Shopping Carts' d='Modules.Dashactivity.Admin'}</a>
@@ -104,7 +106,7 @@
 					<span id="new_messages"></span>
 				</span>
 			</li>
-			{if Module::isInstalled('productcomments')}
+			{if Module::isEnabled('productcomments')}
 				<li>
 				<span class="data_label"><a href="{$link->getAdminLink('AdminModules')|escape:'html':'UTF-8'}&amp;configure=productcomments&amp;tab_module=front_office_features&amp;module_name=productcomments">{l s='Product Reviews' d='Modules.Dashactivity.Admin'}</a></span>
 					<span class="data_value size_l">
@@ -123,18 +125,22 @@
 					<span id="new_customers"></span>
 				</span>
 			</li>
+			{if Module::isEnabled('statsnewsletter')}
 			<li>
 				<span class="data_label"><a href="{$link->getAdminLink('AdminStats')|escape:'html':'UTF-8'}&amp;module=statsnewsletter">{l s='New Subscriptions' d='Modules.Dashactivity.Admin'}</a></span>
 				<span class="data_value size_md">
 					<span id="new_registrations"></span>
 				</span>
 			</li>
+			{/if}
+			{if Module::isEnabled('ps_emailsubscription')}
 			<li>
 				<span class="data_label"><a href="{$link->getAdminLink('AdminModules')|escape:'html':'UTF-8'}&amp;configure=ps_emailsubscription&amp;module_name=ps_emailsubscription">{l s='Total Subscribers' d='Modules.Dashactivity.Admin'}</a></span>
 				<span class="data_value size_md">
 					<span id="total_suscribers"></span>
 				</span>
 			</li>
+			{/if}
 		</ul>
 	</section>
 	<section id="dash_traffic" class="loading">
@@ -142,18 +148,22 @@
 			<i class="icon-globe"></i> {l s='Traffic' d='Modules.Dashactivity.Admin'} <span class="subtitle small" id="traffic-subtitle"></span>
 		</header>
 		<ul class="data_list">
+			{if Module::isEnabled('statsforecast')}
 			<li>
 				<span class="data_label"><a href="{$link->getAdminLink('AdminStats')|escape:'html':'UTF-8'}&amp;module=statsforecast">{l s='Visits' d='Modules.Dashactivity.Admin'}</a></span>
 				<span class="data_value size_md">
 					<span id="visits"></span>
 				</span>
 			</li>
+			{/if}
+			{if Module::isEnabled('statsvisits')}
 			<li>
 				<span class="data_label"><a href="{$link->getAdminLink('AdminStats')|escape:'html':'UTF-8'}&amp;module=statsvisits">{l s='Unique Visitors' d='Modules.Dashactivity.Admin'}</a></span>
 				<span class="data_value size_md">
 					<span id="unique_visitors"></span>
 				</span>
 			</li>
+			{/if}
 			<li>
 				<span class="data_label">{l s='Traffic Sources' d='Modules.Dashactivity.Admin'}</span>
 				<ul class="data_list_small" id="dash_traffic_source">

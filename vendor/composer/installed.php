@@ -761,12 +761,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/dashactivity' => array(
-            'pretty_version' => 'v2.1.0',
-            'version' => '2.1.0.0',
+            'pretty_version' => 'v2.1.1',
+            'version' => '2.1.1.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/dashactivity',
             'aliases' => array(),
-            'reference' => '21e90c2d98dc797e2ce8927e6f6e510ac60a6159',
+            'reference' => 'e604732a897a26d751afac09936bdcb7eb7b9044',
             'dev_requirement' => false,
         ),
         'prestashop/dashgoals' => array(
@@ -862,12 +862,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/productcomments' => array(
-            'pretty_version' => 'v6.0.2',
-            'version' => '6.0.2.0',
+            'pretty_version' => 'v7.0.0',
+            'version' => '7.0.0.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/productcomments',
             'aliases' => array(),
-            'reference' => '03955f7315f97f9d99fd1bd1675b24f0a97e1938',
+            'reference' => '7287476cb44969af58721cb9ad7b5cb89393b2c8',
             'dev_requirement' => false,
         ),
         'prestashop/ps_banner' => array(
@@ -1015,21 +1015,21 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_emailsubscription' => array(
-            'pretty_version' => 'v2.8.1',
-            'version' => '2.8.1.0',
+            'pretty_version' => 'v2.8.2',
+            'version' => '2.8.2.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_emailsubscription',
             'aliases' => array(),
-            'reference' => '9fe6e3351a5bb1e1c964e004daea1d387b777065',
+            'reference' => 'ce4e159df07b75423abf6804938dddb51b37a1fa',
             'dev_requirement' => false,
         ),
         'prestashop/ps_facetedsearch' => array(
-            'pretty_version' => 'v3.15.0',
-            'version' => '3.15.0.0',
+            'pretty_version' => 'v3.16.0',
+            'version' => '3.16.0.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_facetedsearch',
             'aliases' => array(),
-            'reference' => '6c04ae41fbaca68005e39cadc0e0df5bcbf8f392',
+            'reference' => 'c2652b31019180df1fb509270344e82040e4af22',
             'dev_requirement' => false,
         ),
         'prestashop/ps_faviconnotificationbo' => array(
@@ -1159,12 +1159,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_themecusto' => array(
-            'pretty_version' => 'v1.2.3',
-            'version' => '1.2.3.0',
+            'pretty_version' => 'v1.2.4',
+            'version' => '1.2.4.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_themecusto',
             'aliases' => array(),
-            'reference' => 'cfea8fa485c61a05755eadb5f9764f12e666f2a8',
+            'reference' => 'f6d61045450d0e238c469b15ce699a694ddcf3f7',
             'dev_requirement' => false,
         ),
         'prestashop/ps_viewedproduct' => array(
@@ -1177,12 +1177,12 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_wirepayment' => array(
-            'pretty_version' => 'v2.1.3',
-            'version' => '2.1.3.0',
+            'pretty_version' => 'v2.2.0',
+            'version' => '2.2.0.0',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_wirepayment',
             'aliases' => array(),
-            'reference' => '951906f13fa533bda005342bfea23844e6b719bc',
+            'reference' => '3b75b0c99206b96405248aa82e6a3699dc57993e',
             'dev_requirement' => false,
         ),
         'prestashop/psgdpr' => array(
@@ -1558,25 +1558,25 @@
         'symfony/amazon-mailer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/asset' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/browser-kit' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/cache' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/cache-contracts' => array(
@@ -1594,13 +1594,13 @@
         'symfony/config' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/console' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/contracts' => array(
@@ -1615,25 +1615,25 @@
         'symfony/css-selector' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/debug' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/debug-bundle' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/dependency-injection' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/deprecation-contracts' => array(
@@ -1648,31 +1648,31 @@
         'symfony/doctrine-bridge' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/dom-crawler' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/dotenv' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/error-handler' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/event-dispatcher' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/event-dispatcher-contracts' => array(
@@ -1690,43 +1690,43 @@
         'symfony/expression-language' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/filesystem' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/finder' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/form' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/framework-bundle' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/google-mailer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/http-client' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/http-client-contracts' => array(
@@ -1744,73 +1744,73 @@
         'symfony/http-foundation' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/http-kernel' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/inflector' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/intl' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/ldap' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/lock' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/mailchimp-mailer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/mailer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/mailgun-mailer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/messenger' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/mime' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/monolog-bridge' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/monolog-bundle' => array(
@@ -1825,7 +1825,7 @@
         'symfony/options-resolver' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/polyfill-ctype' => array(
@@ -1921,31 +1921,31 @@
         'symfony/postmark-mailer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/process' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/property-access' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/property-info' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/proxy-manager-bridge' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/psr-http-message-bridge' => array(
@@ -1960,55 +1960,55 @@
         'symfony/routing' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/security' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/security-bundle' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/security-core' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/security-csrf' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/security-guard' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/security-http' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/sendgrid-mailer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/serializer' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/service-contracts' => array(
@@ -2026,7 +2026,7 @@
         'symfony/stopwatch' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/swiftmailer-bundle' => array(
@@ -2039,24 +2039,24 @@
             'dev_requirement' => false,
         ),
         'symfony/symfony' => array(
-            'pretty_version' => 'v4.4.50',
-            'version' => '4.4.50.0',
+            'pretty_version' => 'v4.4.51',
+            'version' => '4.4.51.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/symfony',
             'aliases' => array(),
-            'reference' => '6bc1c2e2506327daa9a2359ec45f7098ca947728',
+            'reference' => '9926d13361941c4a8abef7e8d7cb8a1997409b9f',
             'dev_requirement' => false,
         ),
         'symfony/templating' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/translation' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/translation-contracts' => array(
@@ -2074,61 +2074,61 @@
         'symfony/twig-bridge' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/twig-bundle' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/validator' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/var-dumper' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/var-exporter' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/web-link' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/web-profiler-bundle' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/web-server-bundle' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/workflow' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'symfony/yaml' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => 'v4.4.50',
+                0 => 'v4.4.51',
             ),
         ),
         'tecnickcom/tcpdf' => array(

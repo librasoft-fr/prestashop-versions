@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit53fa02513e93f8d5b695fa686a20e650
+class ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -5771,9 +5771,12 @@ class ComposerStaticInit53fa02513e93f8d5b695fa686a20e650
         'PrestaShop\\Module\\LinkList\\Repository\\LinkBlockRepository' => __DIR__ . '/../..' . '/modules/ps_linklist/src/Repository/LinkBlockRepository.php',
         'PrestaShop\\Module\\ProductComment\\Entity\\ProductComment' => __DIR__ . '/../..' . '/modules/productcomments/src/Entity/ProductComment.php',
         'PrestaShop\\Module\\ProductComment\\Entity\\ProductCommentCriterion' => __DIR__ . '/../..' . '/modules/productcomments/src/Entity/ProductCommentCriterion.php',
+        'PrestaShop\\Module\\ProductComment\\Entity\\ProductCommentCriterionLang' => __DIR__ . '/../..' . '/modules/productcomments/src/Entity/ProductCommentCriterionLang.php',
         'PrestaShop\\Module\\ProductComment\\Entity\\ProductCommentGrade' => __DIR__ . '/../..' . '/modules/productcomments/src/Entity/ProductCommentGrade.php',
         'PrestaShop\\Module\\ProductComment\\Entity\\ProductCommentReport' => __DIR__ . '/../..' . '/modules/productcomments/src/Entity/ProductCommentReport.php',
         'PrestaShop\\Module\\ProductComment\\Entity\\ProductCommentUsefulness' => __DIR__ . '/../..' . '/modules/productcomments/src/Entity/ProductCommentUsefulness.php',
+        'PrestaShop\\Module\\ProductComment\\Form\\ProductCommentCriterionFormDataHandler' => __DIR__ . '/../..' . '/modules/productcomments/src/Form/ProductCommentCriterionFormDataHandler.php',
+        'PrestaShop\\Module\\ProductComment\\Form\\ProductCommentCriterionFormDataProvider' => __DIR__ . '/../..' . '/modules/productcomments/src/Form/ProductCommentCriterionFormDataProvider.php',
         'PrestaShop\\Module\\ProductComment\\Repository\\ProductCommentCriterionRepository' => __DIR__ . '/../..' . '/modules/productcomments/src/Repository/ProductCommentCriterionRepository.php',
         'PrestaShop\\Module\\ProductComment\\Repository\\ProductCommentRepository' => __DIR__ . '/../..' . '/modules/productcomments/src/Repository/ProductCommentRepository.php',
         'PrestaShop\\Module\\Ps_Googleanalytics\\Database\\Install' => __DIR__ . '/../..' . '/modules/ps_googleanalytics/classes/Database/Install.php',
@@ -12869,11 +12872,11 @@ class ComposerStaticInit53fa02513e93f8d5b695fa686a20e650
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit53fa02513e93f8d5b695fa686a20e650::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit1944fccab8732aa0b3fa9c548c8e945a::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -555,8 +555,8 @@ class ProductCore extends ObjectModel
                 ],
             ],
             'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCatalogName', 'required' => false, 'size' => ProductSettings::MAX_NAME_LENGTH],
-            'description' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
-            'description_short' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'description' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 4194303],
+            'description_short' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 4194303],
             'available_now' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => ProductSettings::MAX_AVAILABLE_NOW_LABEL_LENGTH],
             'available_later' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'IsGenericName', 'size' => ProductSettings::MAX_AVAILABLE_LATER_LABEL_LENGTH],
         ],
@@ -4324,7 +4324,7 @@ class ProductCore extends ObjectModel
      * @param int|null $idProductAttribute Product attribute id (optional)
      * @param bool|null $cacheIsPack (unused, you can pass null)
      * @param CartCore|null $cart Pass if you want to reduce the quantity by amount in cart
-     * @param int|null $idCustomization Product customization id (optional)
+     * @param int|bool|null $idCustomization Product customization id (optional)
      *
      * @return int Available quantities
      */
@@ -5794,7 +5794,8 @@ class ProductCore extends ObjectModel
             (int) $row['id_product'],
             0,
             isset($row['cache_is_pack']) ? $row['cache_is_pack'] : null,
-            $context->cart
+            $context->cart,
+            false
         );
 
         $row['quantity_all_versions'] = $row['quantity'];
@@ -5805,7 +5806,8 @@ class ProductCore extends ObjectModel
                 (int) $row['id_product'],
                 $id_product_attribute,
                 isset($row['cache_is_pack']) ? $row['cache_is_pack'] : null,
-                $context->cart
+                $context->cart,
+                false
             );
 
             $row['available_date'] = Product::getAvailableDate(
