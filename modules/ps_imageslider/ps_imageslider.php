@@ -52,7 +52,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
     {
         $this->name = 'ps_imageslider';
         $this->tab = 'front_office_features';
-        $this->version = '3.1.4';
+        $this->version = '3.2.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->secure_key = Tools::hash($this->name);
@@ -62,7 +62,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
 
         $this->displayName = $this->trans('Image slider', [], 'Modules.Imageslider.Admin');
         $this->description = $this->trans('Add sliding images to your homepage to welcome your visitors in a visual and friendly way.', [], 'Modules.Imageslider.Admin');
-        $this->ps_versions_compliancy = ['min' => '1.7.4.0', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '1.7.5.0', 'max' => _PS_VERSION_];
 
         $this->templateFile = 'module:ps_imageslider/views/templates/hook/slider.tpl';
     }
@@ -75,6 +75,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
         /* Adds Module */
         if (
             parent::install() &&
+            $this->installTab() &&
             $this->registerHook('displayHeader') &&
             $this->registerHook('displayHome') &&
             $this->registerHook('actionShopDataDuplication')
@@ -125,6 +126,21 @@ class Ps_ImageSlider extends Module implements WidgetInterface
         return false;
     }
 
+    public function installTab()
+    {
+        $tab = new Tab();
+        $tab->class_name = 'AdminConfigureSlides';
+        $tab->module = $this->name;
+        $tab->active = true;
+        $tab->id_parent = -1;
+        $tab->name = array_fill_keys(
+            Language::getIDs(false),
+            $this->displayName
+        );
+
+        return $tab->add();
+    }
+
     /**
      * Adds samples
      */
@@ -158,6 +174,9 @@ class Ps_ImageSlider extends Module implements WidgetInterface
             /* Deletes tables */
             $res = $this->deleteTables();
 
+            /* Delete hidden tab */
+            $res &= $this->uninstallTab();
+
             /* Unsets configuration */
             $res &= Configuration::deleteByName('HOMESLIDER_SPEED');
             $res &= Configuration::deleteByName('HOMESLIDER_PAUSE_ON_HOVER');
@@ -167,6 +186,18 @@ class Ps_ImageSlider extends Module implements WidgetInterface
         }
 
         return false;
+    }
+
+    public function uninstallTab()
+    {
+        $result = true;
+        $id_tab = (int) Tab::getIdFromClassName('AdminConfigureSlides');
+        $tab = new Tab($id_tab);
+        if (Validate::isLoadedObject($tab)) {
+            $result = $tab->delete();
+        }
+
+        return $result;
     }
 
     /**
@@ -215,7 +246,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
      */
     protected function deleteTables()
     {
-        $slides = $this->getSlides();
+        $slides = $this->getSlides(null, true);
         foreach ($slides as $slide) {
             $to_del = new Ps_HomeSlide($slide['id_slide']);
             $to_del->delete();
@@ -613,30 +644,51 @@ class Ps_ImageSlider extends Module implements WidgetInterface
 
     public function headerHTML()
     {
-        if ('AdminModules' !== Tools::getValue('controller') ||
-            Tools::getValue('configure') !== $this->name ||
-            Tools::getIsset('id_slide')) {
+        // Run only on module configuration page
+        if (Tools::getValue('controller') != 'AdminModules' || Tools::getValue('configure') !== $this->name) {
             return;
         }
 
-        $this->context->controller->addJS($this->_path . 'js/Sortable.min.js');
-        /* Style & js for fieldset 'slides configuration' */
-        $html = '<script type="text/javascript">
-              $(function() {
-                var $mySlides = $("#slides");
-                new Sortable($mySlides[0], {
-                  animation: 150,
-                  onUpdate: function(event) {
-                    var order = this.toArray().join("&") + "&action=updateSlidesPosition";
-                    $.post("' . $this->context->shop->physical_uri . $this->context->shop->virtual_uri . 'modules/' . $this->name . '/ajax_' . $this->name . '.php?secure_key=' . $this->secure_key . '", order);
-                  }
+        // Add sortable library
+        $this->context->controller->addJS($this->_path . 'js/Sortable.min.js?v=' . $this->version);
+
+        // Add sorting scripts
+        $html = '
+        <script type="text/javascript">
+            $(function () {
+                var slideList = $("#slides");
+            
+                // Check if the list exists, so we dont run it on edit page
+                if (!slideList.length) {
+                return;
+                }
+            
+                new Sortable(slideList[0], {
+                animation: 150,
+                onUpdate: function (event) {
+                    var slideIdList = this.toArray();
+                    var ajaxCallParameters = {
+                    ajax: true,
+                    action: "updateSlidesPosition",
+                    slides: slideIdList
+                    };
+                    $.ajax({
+                    type: "POST",
+                    cache: false,
+                    url: "' . $this->context->link->getAdminLink('AdminConfigureSlides') . '",
+                    data: ajaxCallParameters
+                    });
+                }
                 });
-                $mySlides.hover(function() {
-                    $(this).css("cursor","move");
-                    },
-                    function() {
-                    $(this).css("cursor","auto");
-                });
+            
+                slideList.hover(
+                function () {
+                    $(this).css("cursor", "move");
+                },
+                function () {
+                    $(this).css("cursor", "auto");
+                }
+                );
             });
         </script>';
 
@@ -654,7 +706,15 @@ class Ps_ImageSlider extends Module implements WidgetInterface
         return ++$row['next_position'];
     }
 
-    public function getSlides($active = null)
+    /**
+     * Get slides
+     *
+     * @param bool $active
+     * @param bool $forceShowAll Include all slides, even those without image for a given language
+     *
+     * @return array
+     */
+    public function getSlides($active = null, $forceShowAll = false)
     {
         $this->context = Context::getContext();
         $id_shop = $this->context->shop->id;
@@ -667,8 +727,8 @@ class Ps_ImageSlider extends Module implements WidgetInterface
             LEFT JOIN ' . _DB_PREFIX_ . 'homeslider_slides hss ON (hs.id_homeslider_slides = hss.id_homeslider_slides)
             LEFT JOIN ' . _DB_PREFIX_ . 'homeslider_slides_lang hssl ON (hss.id_homeslider_slides = hssl.id_homeslider_slides)
             WHERE id_shop = ' . (int) $id_shop . '
-            AND hssl.id_lang = ' . (int) $id_lang . '
-            AND hssl.`image` <> ""' .
+            AND hssl.id_lang = ' . (int) $id_lang .
+            ($forceShowAll ? '' : ' AND hssl.`image` <> ""') .
             ($active ? ' AND hss.`active` = 1' : ' ') . '
             ORDER BY hss.position'
         );
@@ -731,7 +791,7 @@ class Ps_ImageSlider extends Module implements WidgetInterface
 
     public function renderList()
     {
-        $slides = $this->getSlides();
+        $slides = $this->getSlides(null, true);
         foreach ($slides as $key => $slide) {
             $slides[$key]['status'] = $this->displayStatus($slide['id_slide'], $slide['active']);
             $associated_shop_ids = Ps_HomeSlide::getAssociatedIdsShop((int) $slide['id_slide']);

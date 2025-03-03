@@ -1,6 +1,6 @@
 name: classic
 display_name: Classic
-version: 2.1.3
+version: 2.2.0
 author:
   name: "PrestaShop SA and Contributors"
   email: "contact@prestashop.com"
@@ -8,7 +8,7 @@ author:
 
 meta:
   compatibility:
-    from: 8.1.0
+    from: 8.2.1
     to: ~
 
   available_layouts:

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitce267f3653936506950ae9448202043a
+class ComposerStaticInit10e8f0356cabcf4138745ad7d303c0b9
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -431,8 +431,8 @@ class ComposerStaticInitce267f3653936506950ae9448202043a
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri/src',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces/src',
+            1 => __DIR__ . '/..' . '/league/uri/src',
         ),
         'League\\Tactician\\Logger\\' => 
         array (
@@ -8949,6 +8949,8 @@ class ComposerStaticInitce267f3653936506950ae9448202043a
         'PrestaShop\\PrestaShop\\Core\\Hook\\HookDispatcherAwareTrait' => __DIR__ . '/../..' . '/src/Core/Hook/HookDispatcherAwareTrait.php',
         'PrestaShop\\PrestaShop\\Core\\Hook\\HookDispatcherInterface' => __DIR__ . '/../..' . '/src/Core/Hook/HookDispatcherInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Hook\\HookInterface' => __DIR__ . '/../..' . '/src/Core/Hook/HookInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Hook\\HookModuleFilter' => __DIR__ . '/../..' . '/src/Core/Hook/HookModuleFilter.php',
+        'PrestaShop\\PrestaShop\\Core\\Hook\\HookModuleFilterInterface' => __DIR__ . '/../..' . '/src/Core/Hook/HookModuleFilterInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Hook\\Provider\\GridDefinitionHookByServiceIdsProvider' => __DIR__ . '/../..' . '/src/Core/Hook/Provider/GridDefinitionHookByServiceIdsProvider.php',
         'PrestaShop\\PrestaShop\\Core\\Hook\\Provider\\HookByFormTypeProviderInterface' => __DIR__ . '/../..' . '/src/Core/Hook/Provider/HookByFormTypeProviderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Hook\\Provider\\HookByServiceIdsProviderInterface' => __DIR__ . '/../..' . '/src/Core/Hook/Provider/HookByServiceIdsProviderInterface.php',
@@ -12874,11 +12876,11 @@ class ComposerStaticInitce267f3653936506950ae9448202043a
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitce267f3653936506950ae9448202043a::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitce267f3653936506950ae9448202043a::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitce267f3653936506950ae9448202043a::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitce267f3653936506950ae9448202043a::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitce267f3653936506950ae9448202043a::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit10e8f0356cabcf4138745ad7d303c0b9::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit10e8f0356cabcf4138745ad7d303c0b9::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit10e8f0356cabcf4138745ad7d303c0b9::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit10e8f0356cabcf4138745ad7d303c0b9::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit10e8f0356cabcf4138745ad7d303c0b9::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -206,7 +206,8 @@ class PreferencesType extends TranslatorAwareType
                     ),
                 ])
             ->add('multishop_feature_active', SwitchType::class, [
-                'disabled' => !$this->isContextDependantOptionEnabled(),
+                // Disable the checkbox if multistore feature is active and at least 2 shops exist (@see PrestaShop/PrestaShop/Adapter/Feature/MultistoreFeature)
+                'disabled' => $this->isMultistoreUsed,
                 'label' => $this->trans('Enable Multistore', 'Admin.Shopparameters.Feature'),
                 'help' => $this->trans(
                     'The multistore feature allows you to manage several front offices from a single back office. If this feature is enabled, a Multistore page is available in the Advanced Parameters menu.',

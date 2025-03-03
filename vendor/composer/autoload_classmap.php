@@ -8289,6 +8289,8 @@ return array(
     'PrestaShop\\PrestaShop\\Core\\Hook\\HookDispatcherAwareTrait' => $baseDir . '/src/Core/Hook/HookDispatcherAwareTrait.php',
     'PrestaShop\\PrestaShop\\Core\\Hook\\HookDispatcherInterface' => $baseDir . '/src/Core/Hook/HookDispatcherInterface.php',
     'PrestaShop\\PrestaShop\\Core\\Hook\\HookInterface' => $baseDir . '/src/Core/Hook/HookInterface.php',
+    'PrestaShop\\PrestaShop\\Core\\Hook\\HookModuleFilter' => $baseDir . '/src/Core/Hook/HookModuleFilter.php',
+    'PrestaShop\\PrestaShop\\Core\\Hook\\HookModuleFilterInterface' => $baseDir . '/src/Core/Hook/HookModuleFilterInterface.php',
     'PrestaShop\\PrestaShop\\Core\\Hook\\Provider\\GridDefinitionHookByServiceIdsProvider' => $baseDir . '/src/Core/Hook/Provider/GridDefinitionHookByServiceIdsProvider.php',
     'PrestaShop\\PrestaShop\\Core\\Hook\\Provider\\HookByFormTypeProviderInterface' => $baseDir . '/src/Core/Hook/Provider/HookByFormTypeProviderInterface.php',
     'PrestaShop\\PrestaShop\\Core\\Hook\\Provider\\HookByServiceIdsProviderInterface' => $baseDir . '/src/Core/Hook/Provider/HookByServiceIdsProviderInterface.php',

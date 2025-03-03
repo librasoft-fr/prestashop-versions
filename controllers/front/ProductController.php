@@ -544,7 +544,11 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
                 false,
                 false,
                 true,
-                $this->isPreview() ? ['preview' => '1'] : []
+                $this->isPreview() ? [
+                    'preview' => '1',
+                    'id_employee' => Tools::getValue('id_employee'),
+                    'adtoken' => Tools::getValue('adtoken'),
+                ] : []
             ),
             'product_minimal_quantity' => $minimalProductQuantity,
             'product_has_combinations' => !empty($this->combinations),

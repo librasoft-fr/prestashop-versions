@@ -25,3 +25,7 @@ services:
     PrestaShopBundle\DependencyInjection\RuntimeConstEnvVarProcessor:
         public: false
         tags: ['container.env_var_processor']
+
+    PrestaShop\PrestaShop\Core\Hook\HookModuleFilter:
+      arguments:
+        - !tagged core.hook_module_exec_filter

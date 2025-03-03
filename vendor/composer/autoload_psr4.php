@@ -67,7 +67,7 @@ return array(
     'MatthiasMullie\\PathConverter\\' => array($vendorDir . '/matthiasmullie/path-converter/src'),
     'MatthiasMullie\\Minify\\' => array($vendorDir . '/matthiasmullie/minify/src'),
     'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),
-    'League\\Uri\\' => array($vendorDir . '/league/uri/src', $vendorDir . '/league/uri-interfaces/src'),
+    'League\\Uri\\' => array($vendorDir . '/league/uri-interfaces/src', $vendorDir . '/league/uri/src'),
     'League\\Tactician\\Logger\\' => array($vendorDir . '/league/tactician-logger/src'),
     'League\\Tactician\\Container\\' => array($vendorDir . '/league/tactician-container/src'),
     'League\\Tactician\\Bundle\\' => array($vendorDir . '/league/tactician-bundle/src'),

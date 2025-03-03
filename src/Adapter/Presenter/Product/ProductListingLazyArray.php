@@ -57,7 +57,7 @@ class ProductListingLazyArray extends ProductLazyArray
     protected function shouldEnableAddToCartButton(array $product, ProductPresentationSettings $settings)
     {
         if (isset($product['attributes'])
-            && count($product['attributes']) > 0
+            && !empty($product['attributes'])
             && !$settings->allow_add_variant_to_cart_from_listing) {
             return false;
         }

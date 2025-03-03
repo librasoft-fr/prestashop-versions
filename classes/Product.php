@@ -3893,7 +3893,7 @@ class ProductCore extends ObjectModel
             !(
                 $specific_price['price'] >= 0 &&
                 $specific_price['id_currency'] &&
-                $id_currency === $specific_price['id_currency']
+                (int) $id_currency === (int) $specific_price['id_currency']
             )
         ) {
             $price = Tools::convertPrice($price, $id_currency);
@@ -7267,11 +7267,12 @@ class ProductCore extends ObjectModel
             return false;
         }
 
-        // result is indexed by recordset order and not position. positions start at index 1 so we need an empty element
-        array_unshift($result, null);
+        // result is indexed by recordset order and not position.
         foreach ($result as &$value) {
             $value = $value['id_product'];
         }
+        // positions start at index 1 so we need an empty element
+        array_unshift($result, null);
 
         $current_position = $this->getWsPositionInCategory();
 

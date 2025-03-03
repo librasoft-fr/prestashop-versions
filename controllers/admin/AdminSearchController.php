@@ -104,7 +104,7 @@ class AdminSearchControllerCore extends AdminController
                 if ($searchType == 1 && Validate::isUnsignedInt((int) $this->query)) {
                     $product = new Product((int) $this->query);
                     if (Validate::isLoadedObject($product)) {
-                        Tools::redirectAdmin('index.php?tab=AdminProducts&id_product=' . (int) ($product->id) . '&token=' . Tools::getAdminTokenLite('AdminProducts'));
+                        Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts', true, ['id_product' => (int) $product->id, 'updateproduct' => '1']));
                     }
                 }
 

@@ -993,7 +993,7 @@ class OrderCore extends ObjectModel
         WHERE o.`id_customer` = ' . (int) $id_customer .
             Shop::addSqlRestriction(Shop::SHARE_ORDER) . '
         GROUP BY o.`id_order`
-        ORDER BY o.`date_add` DESC');
+        ORDER BY o.`date_add` DESC, o.`id_order` ASC');
 
         if (!$res) {
             return [];

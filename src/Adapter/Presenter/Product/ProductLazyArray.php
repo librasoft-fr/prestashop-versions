@@ -575,10 +575,6 @@ class ProductLazyArray extends AbstractLazyArray
      */
     public function getSpecificReferences()
     {
-        if (isset($this->product['cart_quantity'])) {
-            return null;
-        }
-
         $specificReferences = null;
 
         // Get data of this combination, it contains other stuff, we will extract only what we need
@@ -839,6 +835,11 @@ class ProductLazyArray extends AbstractLazyArray
     {
         // If the product is disabled, we disable add to cart button
         if ($product['active'] != 1) {
+            return false;
+        }
+
+        // Do not enable add to cart button if prices are hidden
+        if (!$this->shouldShowPrice($settings, $product)) {
             return false;
         }
 

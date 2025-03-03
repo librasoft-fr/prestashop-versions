@@ -2107,6 +2107,13 @@ class ToolsCore
      */
     public static function createFileFromUrl($url)
     {
+        //TODO use Validate::isUrl instead when it will be less permissive and also allows schemes to be validated
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+
+        // Check if the scheme is allowed
+        if (!in_array(strtolower($scheme), ['http', 'https'], true)) {
+            return false;
+        }
         $remoteFile = fopen($url, 'rb');
         if (!$remoteFile) {
             return false;
