@@ -1,0 +1,175 @@
+home:
+  path: /psshipping
+  methods: [GET, POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingHomeController::renderApp'
+    _legacy_controller: PsshippingHomeController
+    _legacy_link: PsshippingHomeController
+
+register_hooks:
+  path: /psshipping/hooks
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingHomeController::activateHooks'
+    _legacy_controller: PsshippingHomeController
+    _legacy_link: PsshippingHomeController
+
+carrier_create:
+  path: /psshipping/carrier/create
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingCarrierController::createAction'
+    _legacy_controller: PsshippingCarrierController
+    _legacy_link: PsshippingCarrierController
+
+carrier_list:
+  path: /psshipping/carrier
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingCarrierController::listAction'
+    _legacy_controller: PsshippingCarrierController
+    _legacy_link: PsshippingCarrierController
+
+carrier_toggle_status:
+  path: /psshipping/carrier/toggle-status
+  methods: [GET, POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingCarrierController::toggleStatusAction'
+    _legacy_controller: PsshippingCarrierController
+    _legacy_link: PsshippingCarrierController
+
+carrier_admin_link:
+  path: /psshipping/carrier/admin-link
+  methods: [GET, POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingCarrierController::getAdminLinkAction'
+    _legacy_controller: PsshippingCarrierController
+    _legacy_link: PsshippingCarrierController
+
+onboarding_toggle_status:
+  path: /psshipping/onboarding/toggle-status
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::toggleOnboardingStatusAction'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+get_italy_state:
+  path: /psshipping/configuration/get-italy-state
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::getStateForItaly'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+callback_oauth_keycloak:
+  path: /psshipping/keycloak/oauth
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingKeycloakAuthController::oauthCallback'
+    _legacy_controller: PsshippingKeycloakAuthController
+    _legacy_link: PsshippingKeycloakAuthController
+
+list_orders:
+  path: /psshipping/orders
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingOrdersController::listOrdersAction'
+    _legacy_controller: PsshippingOrdersController
+    _legacy_link: PsshippingOrdersController
+
+get_orders_status:
+  path: /psshipping/orders-status
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingOrdersController::getOrdersStatusAction'
+    _legacy_controller: PsshippingOrdersController
+    _legacy_link: PsshippingOrdersController
+
+get_last_tracking_number:
+  path: /psshipping/orders/last_tracking_number
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingOrdersController::getTrackingNumberAction'
+    _legacy_controller: PsshippingOrdersController
+    _legacy_link: PsshippingOrdersController
+
+save_tracking_number:
+  path: /psshipping/orders/trackingNumber
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingOrdersController::saveTrackingNumberAction'
+    _legacy_controller: PsshippingOrdersController
+    _legacy_link: PsshippingOrdersController
+
+save_dimensions_per_packages:
+  path: /psshipping/configuration/setDimensionPerPage
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::setPackagesDimensions'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+set_order_status_mapping:
+  path: /psshipping/configuration/setOrderStatusMapping
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::setOrderStatusMapping'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+set_status_for_order_status_mapping:
+  path: /psshipping/configuration/setStatusForOrderStatusMapping
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::setStatusForOrderStatusMapping'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+get_status_order_status_mapping:
+  path: /psshipping/configuration/getStatusOrderStatusMapping
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::getStatusOrderStatusMapping'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+get_dimensions_per_packages:
+  path: /psshipping/configuration/getDimensionPerPage
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::getPackagesDimensions'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+get_advanced_setting:
+  path: /psshipping/configuration/getAdvancedSetting
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::getAdvancedSetting'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+save_advanced_setting:
+  path: /psshipping/configuration/saveAdvancedSetting
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::setAdvancedSetting'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
+mbe_login:
+  path: /psshipping/mbe/login
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingKeycloakAuthController::oauthCallback'
+    _legacy_controller: PsshippingKeycloakAuthController
+    _legacy_link: PsshippingKeycloakAuthController
+
+faq_list:
+  path: /psshipping/faq/list
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingFaqController::getFaq'
+    _legacy_controller: PsshippingFaqController
+    _legacy_link: PsshippingFaqController

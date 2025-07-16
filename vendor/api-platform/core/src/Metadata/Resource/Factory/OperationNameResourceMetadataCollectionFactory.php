@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Resource\Factory;
 
-use ApiPlatform\Metadata\CollectionOperationInterface;
-use ApiPlatform\Metadata\HttpOperation;
 use ApiPlatform\Metadata\Resource\ResourceMetadataCollection;
 
 /**
@@ -24,11 +22,10 @@ use ApiPlatform\Metadata\Resource\ResourceMetadataCollection;
  */
 final class OperationNameResourceMetadataCollectionFactory implements ResourceMetadataCollectionFactoryInterface
 {
-    private $decorated;
+    use OperationDefaultsTrait;
 
-    public function __construct(ResourceMetadataCollectionFactoryInterface $decorated = null)
+    public function __construct(private readonly ?ResourceMetadataCollectionFactoryInterface $decorated = null)
     {
-        $this->decorated = $decorated;
     }
 
     /**
@@ -55,18 +52,11 @@ final class OperationNameResourceMetadataCollectionFactory implements ResourceMe
                     continue;
                 }
 
-                $newOperationName = sprintf('_api_%s_%s%s', $operation->getUriTemplate() ?: $operation->getShortName(), strtolower($operation->getMethod() ?? HttpOperation::METHOD_GET), $operation instanceof CollectionOperationInterface ? '_collection' : '');
-
-                // TODO: remove in 3.0 this is used in the IRI converter to avoid a bc break
-                if (($extraProperties = $operation->getExtraProperties()) && isset($extraProperties['is_legacy_subresource'])) {
-                    $extraProperties['legacy_subresource_operation_name'] = $newOperationName;
-                    $operation = $operation->withExtraProperties($extraProperties);
-                }
-
+                $newOperationName = $this->getDefaultOperationName($operation, $resourceClass);
                 $operations->remove($operationName)->add($newOperationName, $operation->withName($newOperationName));
             }
 
-            $resourceMetadataCollection[$i] = $resource->withOperations($operations->sort());
+            $resourceMetadataCollection[$i] = $resource->withOperations($operations);
         }
 
         return $resourceMetadataCollection;

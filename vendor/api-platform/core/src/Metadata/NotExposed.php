@@ -13,6 +13,10 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata;
 
+use ApiPlatform\OpenApi\Attributes\Webhook;
+use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
+use ApiPlatform\State\OptionsInterface;
+
 /**
  * A NotExposed operation is an operation declared for internal usage,
  * for example to generate an IRI on a resource without item operations.
@@ -27,7 +31,7 @@ final class NotExposed extends HttpOperation
      * {@inheritdoc}
      */
     public function __construct(
-        string $method = self::METHOD_GET,
+        string $method = 'GET',
         ?string $uriTemplate = null,
         ?array $types = null,
         $formats = null,
@@ -42,19 +46,23 @@ final class NotExposed extends HttpOperation
         ?bool $stateless = null,
         ?string $sunset = null,
         ?string $acceptPatch = null,
-        $status = null,
+        $status = 404,
         ?string $host = null,
         ?array $schemes = null,
         ?string $condition = null,
         ?string $controller = 'api_platform.action.not_exposed',
+        ?array $headers = null,
         ?array $cacheHeaders = null,
+        ?array $paginationViaCursor = null,
 
         ?array $hydraContext = null,
         ?array $openapiContext = null,
-        ?bool $openapi = false,
+        bool|OpenApiOperation|Webhook|null $openapi = false,
         ?array $exceptionToStatus = null,
 
         ?bool $queryParameterValidationEnabled = null,
+        ?array $links = null,
+        ?array $errors = null,
 
         ?string $shortName = null,
         ?string $class = null,
@@ -68,16 +76,16 @@ final class NotExposed extends HttpOperation
         ?bool $paginationClientPartial = null,
         ?bool $paginationFetchJoinCollection = null,
         ?bool $paginationUseOutputWalkers = null,
-        ?array $paginationViaCursor = null,
         ?array $order = null,
         ?string $description = null,
         ?array $normalizationContext = null,
         ?array $denormalizationContext = null,
-        ?string $security = null,
+        ?bool $collectDenormalizationErrors = null,
+        string|\Stringable|null $security = null,
         ?string $securityMessage = null,
-        ?string $securityPostDenormalize = null,
+        string|\Stringable|null $securityPostDenormalize = null,
         ?string $securityPostDenormalizeMessage = null,
-        ?string $securityPostValidation = null,
+        string|\Stringable|null $securityPostValidation = null,
         ?string $securityPostValidationMessage = null,
         ?string $deprecationReason = null,
         ?array $filters = null,
@@ -99,14 +107,85 @@ final class NotExposed extends HttpOperation
         ?string $name = null,
         $provider = null,
         $processor = null,
-        array $extraProperties = []
+        array $extraProperties = [],
+        ?OptionsInterface $stateOptions = null,
     ) {
-        parent::__construct(...\func_get_args());
-
-        // Declare overridden parameters because "func_get_args" does not handle default values
-        $this->controller = $controller;
-        $this->output = $output;
-        $this->read = $read;
-        $this->openapi = $openapi;
+        parent::__construct(
+            method: $method,
+            uriTemplate: $uriTemplate,
+            types: $types,
+            formats: $formats,
+            inputFormats: $inputFormats,
+            outputFormats: $outputFormats,
+            uriVariables: $uriVariables,
+            routePrefix: $routePrefix,
+            routeName: $routeName,
+            defaults: $defaults,
+            requirements: $requirements,
+            options: $options,
+            stateless: $stateless,
+            sunset: $sunset,
+            acceptPatch: $acceptPatch,
+            status: $status,
+            host: $host,
+            schemes: $schemes,
+            condition: $condition,
+            controller: $controller,
+            headers: $headers,
+            cacheHeaders: $cacheHeaders,
+            paginationViaCursor: $paginationViaCursor,
+            hydraContext: $hydraContext,
+            openapiContext: $openapiContext,
+            openapi: $openapi,
+            exceptionToStatus: $exceptionToStatus,
+            queryParameterValidationEnabled: $queryParameterValidationEnabled,
+            links: $links,
+            errors: $errors,
+            shortName: $shortName,
+            class: $class,
+            paginationEnabled: $paginationEnabled,
+            paginationType: $paginationType,
+            paginationItemsPerPage: $paginationItemsPerPage,
+            paginationMaximumItemsPerPage: $paginationMaximumItemsPerPage,
+            paginationPartial: $paginationPartial,
+            paginationClientEnabled: $paginationClientEnabled,
+            paginationClientItemsPerPage: $paginationClientItemsPerPage,
+            paginationClientPartial: $paginationClientPartial,
+            paginationFetchJoinCollection: $paginationFetchJoinCollection,
+            paginationUseOutputWalkers: $paginationUseOutputWalkers,
+            order: $order,
+            description: $description,
+            normalizationContext: $normalizationContext,
+            denormalizationContext: $denormalizationContext,
+            collectDenormalizationErrors: $collectDenormalizationErrors,
+            security: $security,
+            securityMessage: $securityMessage,
+            securityPostDenormalize: $securityPostDenormalize,
+            securityPostDenormalizeMessage: $securityPostDenormalizeMessage,
+            securityPostValidation: $securityPostValidation,
+            securityPostValidationMessage: $securityPostValidationMessage,
+            deprecationReason: $deprecationReason,
+            filters: $filters,
+            validationContext: $validationContext,
+            input: $input,
+            output: $output,
+            mercure: $mercure,
+            messenger: $messenger,
+            elasticsearch: $elasticsearch,
+            urlGenerationStrategy: $urlGenerationStrategy,
+            read: $read,
+            deserialize: $deserialize,
+            validate: $validate,
+            write: $write,
+            serialize: $serialize,
+            fetchPartial: $fetchPartial,
+            forceEager: $forceEager,
+            priority: $priority,
+            name: $name,
+            provider: $provider,
+            processor: $processor,
+            stateOptions: $stateOptions,
+            extraProperties: $extraProperties,
+        );
     }
 }

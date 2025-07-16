@@ -15,20 +15,24 @@ namespace ApiPlatform\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\Pagination\PartialPaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Retrieves data from a persistence layer.
  *
- * @author Antoine Bluchet <soyuka@gmail.com>
- *
  * @template T of object
+ *
+ * @author Antoine Bluchet <soyuka@gmail.com>
  */
 interface ProviderInterface
 {
     /**
      * Provides data.
      *
+     * @param array<string, mixed>                                                   $uriVariables
+     * @param array<string, mixed>|array{request?: Request, resource_class?: string} $context
+     *
      * @return T|PartialPaginatorInterface<T>|iterable<T>|null
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []);
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null;
 }

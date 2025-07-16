@@ -17,9 +17,9 @@ namespace ApiPlatform\Exception;
  * Item not found exception.
  *
  * @author Amrouche Hamza <hamza.simperfit@gmail.com>
+ *
+ * @deprecated use ApiPlatform\Metadata\Exception\ItemNotFoundException
  */
 class ItemNotFoundException extends InvalidArgumentException
 {
 }
-
-class_alias(ItemNotFoundException::class, \ApiPlatform\Core\Exception\ItemNotFoundException::class);

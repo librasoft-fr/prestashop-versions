@@ -1,4 +1,4 @@
-(()=>{"use strict";var e={r:e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},n={};e.r(n);
+(()=>{"use strict";
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -23,4 +23,4 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-const{$:o}=window;const t=class{constructor(){this.handle(),o('input[name="general[enable_tos]"]').on("change",(()=>this.handle()))}handle(){const e=o('input[name="general[enable_tos]"]:checked').val(),n=parseInt(e,10);this.handleTermsAndConditionsCmsSelect(n)}handleTermsAndConditionsCmsSelect(e){o("#form_general_tos_cms_id").prop("disabled",!e)}},{$:s}=window;s((()=>{new t,window.prestashop.component.initComponents(["MultistoreConfigField"])})),window.order_preferences=n})();
+const{$:e}=window;const n=class{constructor(){this.handle(),e('input[name="general[enable_tos]"]').on("change",(()=>this.handle()))}handle(){const n=e('input[name="general[enable_tos]"]:checked').val(),s=parseInt(n,10);this.handleTermsAndConditionsCmsSelect(s)}handleTermsAndConditionsCmsSelect(n){e("#form_general_tos_cms_id").prop("disabled",!n)}},{$:s}=window;s((()=>{new n,window.prestashop.component.initComponents(["MultistoreConfigField"])})),window.order_preferences={}})();

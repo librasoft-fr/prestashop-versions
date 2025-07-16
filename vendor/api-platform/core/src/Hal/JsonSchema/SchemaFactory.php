@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace ApiPlatform\Hal\JsonSchema;
 
 use ApiPlatform\JsonSchema\Schema;
+use ApiPlatform\JsonSchema\SchemaFactoryAwareInterface;
 use ApiPlatform\JsonSchema\SchemaFactoryInterface;
 use ApiPlatform\Metadata\Operation;
 
@@ -23,7 +24,7 @@ use ApiPlatform\Metadata\Operation;
  * @author Kévin Dunglas <dunglas@gmail.com>
  * @author Jachim Coudenys <jachimcoudenys@gmail.com>
  */
-final class SchemaFactory implements SchemaFactoryInterface
+final class SchemaFactory implements SchemaFactoryInterface, SchemaFactoryAwareInterface
 {
     private const HREF_PROP = [
         'href' => [
@@ -43,13 +44,11 @@ final class SchemaFactory implements SchemaFactoryInterface
         ],
     ];
 
-    private $schemaFactory;
-
-    public function __construct(SchemaFactoryInterface $schemaFactory)
+    public function __construct(private readonly SchemaFactoryInterface $schemaFactory)
     {
-        $this->schemaFactory = $schemaFactory;
-
-        $this->addDistinctFormat('jsonhal');
+        if ($this->schemaFactory instanceof SchemaFactoryAwareInterface) {
+            $this->schemaFactory->setSchemaFactory($this);
+        }
     }
 
     /**
@@ -79,8 +78,18 @@ final class SchemaFactory implements SchemaFactoryInterface
             $schema['type'] = 'object';
             $schema['properties'] = [
                 '_embedded' => [
-                    'type' => 'array',
-                    'items' => $items,
+                    'anyOf' => [
+                        [
+                            'type' => 'object',
+                            'properties' => [
+                                'item' => [
+                                    'type' => 'array',
+                                    'items' => $items,
+                                ],
+                            ],
+                        ],
+                        ['type' => 'object'],
+                    ],
                 ],
                 'totalItems' => [
                     'type' => 'integer',
@@ -127,10 +136,10 @@ final class SchemaFactory implements SchemaFactoryInterface
         return $schema;
     }
 
-    public function addDistinctFormat(string $format): void
+    public function setSchemaFactory(SchemaFactoryInterface $schemaFactory): void
     {
-        if (method_exists($this->schemaFactory, 'addDistinctFormat')) {
-            $this->schemaFactory->addDistinctFormat($format);
+        if ($this->schemaFactory instanceof SchemaFactoryAwareInterface) {
+            $this->schemaFactory->setSchemaFactory($schemaFactory);
         }
     }
 }

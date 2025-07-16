@@ -29,6 +29,7 @@ declare(strict_types=1);
 namespace PrestaShop\CircuitBreaker;
 
 use DateTime;
+use PrestaShop\CircuitBreaker\Client\GuzzleClient;
 use PrestaShop\CircuitBreaker\Contract\CircuitBreakerInterface;
 use PrestaShop\CircuitBreaker\Contract\ClientInterface;
 use PrestaShop\CircuitBreaker\Contract\PlaceInterface;
@@ -73,7 +74,7 @@ abstract class PartialCircuitBreaker implements CircuitBreakerInterface
     /**
      * {@inheritdoc}
      */
-    abstract public function call(string $service, array $serviceParameters = [], callable $fallback = null): string;
+    abstract public function call(string $service, array $serviceParameters = [], ?callable $fallback = null): string;
 
     /**
      * {@inheritdoc}
@@ -107,7 +108,7 @@ abstract class PartialCircuitBreaker implements CircuitBreakerInterface
         return State::CLOSED_STATE === $this->currentPlace->getState();
     }
 
-    protected function callFallback(callable $fallback = null): string
+    protected function callFallback(?callable $fallback = null): string
     {
         if (null === $fallback) {
             return '';
@@ -178,12 +179,15 @@ abstract class PartialCircuitBreaker implements CircuitBreakerInterface
      */
     protected function request(string $service, array $parameters = []): string
     {
+        $forcedParameters = ['timeout' => $this->currentPlace->getTimeout()];
+
+        if ($this->client instanceof GuzzleClient) {
+            $forcedParameters['connect_timeout'] = $this->currentPlace->getTimeout();
+        }
+
         return $this->client->request(
             $service,
-            array_merge($parameters, [
-                'connect_timeout' => $this->currentPlace->getTimeout(),
-                'timeout' => $this->currentPlace->getTimeout(),
-            ])
+            array_merge($parameters, $forcedParameters)
         );
     }
 }

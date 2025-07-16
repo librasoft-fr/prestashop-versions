@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Api;
 
+use ApiPlatform\Exception\InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -20,21 +21,24 @@ use Psr\Container\ContainerInterface;
  *
  * @author Baptiste Meyer <baptiste.meyer@gmail.com>
  *
+ * @deprecated
+ *
  * @internal
  */
 trait FilterLocatorTrait
 {
-    /** @var ContainerInterface */
-    private $filterLocator;
+    private ?ContainerInterface $filterLocator = null;
 
     /**
      * Sets a filter locator with a backward compatibility.
-     *
-     * @param ContainerInterface|null $filterLocator
      */
-    private function setFilterLocator($filterLocator, bool $allowNull = false): void
+    private function setFilterLocator(?ContainerInterface $filterLocator, bool $allowNull = false): void
     {
-        $this->filterLocator = $filterLocator;
+        if ($filterLocator instanceof ContainerInterface || (null === $filterLocator && $allowNull)) {
+            $this->filterLocator = $filterLocator;
+        } else {
+            throw new InvalidArgumentException(\sprintf('The "$filterLocator" argument is expected to be an implementation of the "%s" interface%s.', ContainerInterface::class, $allowNull ? ' or null' : ''));
+        }
     }
 
     /**
@@ -42,7 +46,7 @@ trait FilterLocatorTrait
      */
     private function getFilter(string $filterId): ?FilterInterface
     {
-        if ($this->filterLocator instanceof ContainerInterface && $this->filterLocator->has($filterId)) {
+        if ($this->filterLocator && $this->filterLocator->has($filterId)) {
             return $this->filterLocator->get($filterId);
         }
 

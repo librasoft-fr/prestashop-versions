@@ -213,7 +213,7 @@ class BuilderFactory
     /**
      * Creates node a for a literal value.
      *
-     * @param Expr|bool|null|int|float|string|array $value $value
+     * @param Expr|bool|null|int|float|string|array|\UnitEnum $value $value
      *
      * @return Expr
      */
@@ -349,15 +349,15 @@ class BuilderFactory
     /**
      * Creates a class constant fetch node.
      *
-     * @param string|Name|Expr  $class Class name
-     * @param string|Identifier $name  Constant name
+     * @param string|Name|Expr $class Class name
+     * @param string|Identifier|Expr $name  Constant name
      *
      * @return Expr\ClassConstFetch
      */
     public function classConstFetch($class, $name): Expr\ClassConstFetch {
         return new Expr\ClassConstFetch(
             BuilderHelpers::normalizeNameOrExpr($class),
-            BuilderHelpers::normalizeIdentifier($name)
+            BuilderHelpers::normalizeIdentifierOrExpr($name)
         );
     }
 

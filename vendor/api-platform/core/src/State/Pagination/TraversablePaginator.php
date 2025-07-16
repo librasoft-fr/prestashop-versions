@@ -13,19 +13,10 @@ declare(strict_types=1);
 
 namespace ApiPlatform\State\Pagination;
 
-final class TraversablePaginator implements \IteratorAggregate, PaginatorInterface
+final class TraversablePaginator implements \IteratorAggregate, PaginatorInterface, HasNextPagePaginatorInterface
 {
-    private $traversable;
-    private $currentPage;
-    private $itemsPerPage;
-    private $totalItems;
-
-    public function __construct(\Traversable $iterator, float $currentPage, float $itemsPerPage, float $totalItems)
+    public function __construct(private readonly \Traversable $traversable, private readonly float $currentPage, private readonly float $itemsPerPage, private readonly float $totalItems)
     {
-        $this->traversable = $iterator;
-        $this->currentPage = $currentPage;
-        $this->itemsPerPage = $itemsPerPage;
-        $this->totalItems = $totalItems;
     }
 
     /**
@@ -77,6 +68,10 @@ final class TraversablePaginator implements \IteratorAggregate, PaginatorInterfa
             return (int) ceil($this->totalItems);
         }
 
+        if ($this->totalItems === $this->itemsPerPage) {
+            return (int) ceil($this->totalItems);
+        }
+
         return $this->totalItems % $this->itemsPerPage;
     }
 
@@ -87,6 +82,12 @@ final class TraversablePaginator implements \IteratorAggregate, PaginatorInterfa
     {
         return $this->traversable;
     }
-}
 
-class_alias(TraversablePaginator::class, \ApiPlatform\Core\DataProvider\TraversablePaginator::class);
+    /**
+     * {@inheritdoc}
+     */
+    public function hasNextPage(): bool
+    {
+        return $this->getCurrentPage() < $this->getLastPage();
+    }
+}

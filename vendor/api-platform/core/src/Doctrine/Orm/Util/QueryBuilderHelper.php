@@ -31,7 +31,7 @@ final class QueryBuilderHelper
     /**
      * Adds a join to the QueryBuilder if none exists.
      */
-    public static function addJoinOnce(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $alias, string $association, string $joinType = null, string $conditionType = null, string $condition = null, string $originAlias = null, string $newAlias = null): string
+    public static function addJoinOnce(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $alias, string $association, ?string $joinType = null, ?string $conditionType = null, ?string $condition = null, ?string $originAlias = null, ?string $newAlias = null): string
     {
         $join = self::getExistingJoin($queryBuilder, $alias, $association, $originAlias);
 
@@ -57,7 +57,7 @@ final class QueryBuilderHelper
     public static function getEntityClassByAlias(string $alias, QueryBuilder $queryBuilder, ManagerRegistry $managerRegistry): string
     {
         if (!\in_array($alias, $queryBuilder->getAllAliases(), true)) {
-            throw new \LogicException(sprintf('The alias "%s" does not exist in the QueryBuilder.', $alias));
+            throw new \LogicException(\sprintf('The alias "%s" does not exist in the QueryBuilder.', $alias));
         }
 
         $rootAliasMap = self::mapRootAliases($queryBuilder->getRootAliases(), $queryBuilder->getRootEntities());
@@ -73,7 +73,7 @@ final class QueryBuilderHelper
         }
 
         if (null === $metadata) {
-            throw new \LogicException(sprintf('The alias "%s" does not exist in the QueryBuilder.', $alias));
+            throw new \LogicException(\sprintf('The alias "%s" does not exist in the QueryBuilder.', $alias));
         }
 
         return $metadata->getName();
@@ -96,7 +96,7 @@ final class QueryBuilderHelper
             }
         }
 
-        throw new \LogicException(sprintf('The alias "%s" does not exist in the QueryBuilder.', $alias));
+        throw new \LogicException(\sprintf('The alias "%s" does not exist in the QueryBuilder.', $alias));
     }
 
     /**
@@ -113,7 +113,7 @@ final class QueryBuilderHelper
 
         $joinAliasMap = self::mapJoinAliases($joinParts[$rootAlias]);
 
-        $aliasMap = array_merge($rootAliasMap, $joinAliasMap);
+        $aliasMap = [...$rootAliasMap, ...$joinAliasMap];
 
         $apexEntityClass = null;
         $associationStack = [];
@@ -122,7 +122,7 @@ final class QueryBuilderHelper
 
         while (null === $apexEntityClass) {
             if (!isset($aliasMap[$currentAlias])) {
-                throw new \LogicException(sprintf('Unknown alias "%s".', $currentAlias));
+                throw new \LogicException(\sprintf('Unknown alias "%s".', $currentAlias));
             }
 
             if (\is_string($aliasMap[$currentAlias])) {
@@ -160,7 +160,7 @@ final class QueryBuilderHelper
     /**
      * Gets the existing join from QueryBuilder DQL parts.
      */
-    public static function getExistingJoin(QueryBuilder $queryBuilder, string $alias, string $association, string $originAlias = null): ?Join
+    public static function getExistingJoin(QueryBuilder $queryBuilder, string $alias, string $association, ?string $originAlias = null): ?Join
     {
         $parts = $queryBuilder->getDQLPart('join');
         $rootAlias = $originAlias ?? $queryBuilder->getRootAliases()[0];
@@ -171,7 +171,7 @@ final class QueryBuilderHelper
 
         foreach ($parts[$rootAlias] as $join) {
             /** @var Join $join */
-            if (sprintf('%s.%s', $alias, $association) === $join->getJoin()) {
+            if (\sprintf('%s.%s', $alias, $association) === $join->getJoin()) {
                 return $join;
             }
         }
@@ -208,8 +208,8 @@ final class QueryBuilderHelper
             $alias = $join->getAlias();
             $relationship = $join->getJoin();
 
-            if (false !== strpos($relationship, '.')) {
-                $aliasMap[$alias] = explode('.', $relationship);
+            if (str_contains((string) $relationship, '.')) {
+                $aliasMap[$alias] = explode('.', (string) $relationship);
             } else {
                 $aliasMap[$alias] = $relationship;
             }
@@ -218,5 +218,3 @@ final class QueryBuilderHelper
         return $aliasMap;
     }
 }
-
-class_alias(QueryBuilderHelper::class, \ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryBuilderHelper::class);

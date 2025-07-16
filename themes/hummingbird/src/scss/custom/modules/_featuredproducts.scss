@@ -1,0 +1,13 @@
+.all-product-link.btn {
+  i {
+    color: var(--bs-primary);
+  }
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    i {
+      color: var(--bs-white);
+    }
+  }
+}

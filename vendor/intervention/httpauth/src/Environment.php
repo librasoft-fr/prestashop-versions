@@ -13,7 +13,7 @@ class Environment
      */
     protected $tokenClassnames = [
         Token\PhpAuthUser::class,
-        Token\HttpAuthorization::class,
+        Token\HttpAuthentification::class,
         Token\RedirectHttpAuthorization::class,
         Token\PhpAuthDigest::class,
         Token\HttpAuthorization::class,
@@ -32,7 +32,7 @@ class Environment
             }
         }
 
-        return new Token\NullToken;
+        return new Token\NullToken();
     }
 
     /**
@@ -45,7 +45,7 @@ class Environment
     private function getActiveTokenOrNull($classname)
     {
         try {
-            $auth = new $classname;
+            $auth = new $classname();
         } catch (Exception $e) {
             $auth = null;
         }

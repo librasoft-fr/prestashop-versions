@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Doctrine\Odm\Filter;
 
+use ApiPlatform\Doctrine\Common\Filter\PropertyAwareFilterInterface;
 use ApiPlatform\Doctrine\Common\PropertyHelperTrait;
 use ApiPlatform\Doctrine\Odm\PropertyHelperTrait as MongoDbOdmPropertyHelperTrait;
 use ApiPlatform\Metadata\Operation;
@@ -29,32 +30,21 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
  *
  * @author Alan Poulain <contact@alanpoulain.eu>
  */
-abstract class AbstractFilter implements FilterInterface
+abstract class AbstractFilter implements FilterInterface, PropertyAwareFilterInterface
 {
     use MongoDbOdmPropertyHelperTrait;
     use PropertyHelperTrait;
+    protected LoggerInterface $logger;
 
-    /** @var ManagerRegistry */
-    protected $managerRegistry;
-    /** @var LoggerInterface */
-    protected $logger;
-    /** @var array|null */
-    protected $properties;
-    /** @var NameConverterInterface|null */
-    protected $nameConverter;
-
-    public function __construct(ManagerRegistry $managerRegistry, LoggerInterface $logger = null, array $properties = null, NameConverterInterface $nameConverter = null)
+    public function __construct(protected ManagerRegistry $managerRegistry, ?LoggerInterface $logger = null, protected ?array $properties = null, protected ?NameConverterInterface $nameConverter = null)
     {
-        $this->managerRegistry = $managerRegistry;
         $this->logger = $logger ?? new NullLogger();
-        $this->properties = $properties;
-        $this->nameConverter = $nameConverter;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function apply(Builder $aggregationBuilder, string $resourceClass, Operation $operation = null, array &$context = [])
+    public function apply(Builder $aggregationBuilder, string $resourceClass, ?Operation $operation = null, array &$context = []): void
     {
         foreach ($context['filters'] as $property => $value) {
             $this->filterProperty($this->denormalizePropertyName($property), $value, $aggregationBuilder, $resourceClass, $operation, $context);
@@ -63,10 +53,8 @@ abstract class AbstractFilter implements FilterInterface
 
     /**
      * Passes a property through the filter.
-     *
-     * @param mixed $value
      */
-    abstract protected function filterProperty(string $property, $value, Builder $aggregationBuilder, string $resourceClass, Operation $operation = null, array &$context = []);
+    abstract protected function filterProperty(string $property, $value, Builder $aggregationBuilder, string $resourceClass, ?Operation $operation = null, array &$context = []): void;
 
     protected function getManagerRegistry(): ManagerRegistry
     {
@@ -76,6 +64,14 @@ abstract class AbstractFilter implements FilterInterface
     protected function getProperties(): ?array
     {
         return $this->properties;
+    }
+
+    /**
+     * @param string[] $properties
+     */
+    public function setProperties(array $properties): void
+    {
+        $this->properties = $properties;
     }
 
     protected function getLogger(): LoggerInterface
@@ -96,21 +92,21 @@ abstract class AbstractFilter implements FilterInterface
         return \array_key_exists($property, $this->properties);
     }
 
-    protected function denormalizePropertyName($property): string
+    protected function denormalizePropertyName(string|int $property): string
     {
         if (!$this->nameConverter instanceof NameConverterInterface) {
-            return $property;
+            return (string) $property;
         }
 
-        return implode('.', array_map([$this->nameConverter, 'denormalize'], explode('.', (string) $property)));
+        return implode('.', array_map($this->nameConverter->denormalize(...), explode('.', (string) $property)));
     }
 
-    protected function normalizePropertyName($property): string
+    protected function normalizePropertyName(string $property): string
     {
         if (!$this->nameConverter instanceof NameConverterInterface) {
             return $property;
         }
 
-        return implode('.', array_map([$this->nameConverter, 'normalize'], explode('.', (string) $property)));
+        return implode('.', array_map($this->nameConverter->normalize(...), explode('.', $property)));
     }
 }

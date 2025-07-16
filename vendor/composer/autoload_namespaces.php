@@ -14,9 +14,6 @@ return array(
     'JsonpCallbackValidator' => array($vendorDir . '/willdurand/jsonp-callback-validator/src'),
     'JSMin\\' => array($vendorDir . '/mrclay/jsmin-php/src'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
-    'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),
     'Curl' => array($vendorDir . '/curl/curl/src'),
-    'Console' => array($vendorDir . '/pear/console_getopt'),
-    'Archive_Tar' => array($vendorDir . '/pear/archive_tar'),
-    '' => array($vendorDir . '/cssjanus/cssjanus/src', $vendorDir . '/pear/pear-core-minimal/src'),
+    '' => array($vendorDir . '/cssjanus/cssjanus/src'),
 );

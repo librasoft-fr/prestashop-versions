@@ -13,14 +13,13 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata;
 
+use ApiPlatform\OpenApi\Attributes\Webhook;
+use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
+use ApiPlatform\State\OptionsInterface;
+
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 final class Post extends HttpOperation
 {
-    private $itemUriTemplate;
-
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(
         ?string $uriTemplate = null,
         ?array $types = null,
@@ -41,16 +40,17 @@ final class Post extends HttpOperation
         ?array $schemes = null,
         ?string $condition = null,
         ?string $controller = null,
+        ?array $headers = null,
         ?array $cacheHeaders = null,
-
+        ?array $paginationViaCursor = null,
         ?array $hydraContext = null,
         ?array $openapiContext = null,
-        ?bool $openapi = null,
+        bool|OpenApiOperation|Webhook|null $openapi = null,
         ?array $exceptionToStatus = null,
-
         ?bool $queryParameterValidationEnabled = null,
+        ?array $links = null,
+        ?array $errors = null,
 
-        // abstract operation arguments
         ?string $shortName = null,
         ?string $class = null,
         ?bool $paginationEnabled = null,
@@ -63,16 +63,16 @@ final class Post extends HttpOperation
         ?bool $paginationClientPartial = null,
         ?bool $paginationFetchJoinCollection = null,
         ?bool $paginationUseOutputWalkers = null,
-        ?array $paginationViaCursor = null,
         ?array $order = null,
         ?string $description = null,
         ?array $normalizationContext = null,
         ?array $denormalizationContext = null,
-        ?string $security = null,
+        ?bool $collectDenormalizationErrors = null,
+        string|\Stringable|null $security = null,
         ?string $securityMessage = null,
-        ?string $securityPostDenormalize = null,
+        string|\Stringable|null $securityPostDenormalize = null,
         ?string $securityPostDenormalizeMessage = null,
-        ?string $securityPostValidation = null,
+        string|\Stringable|null $securityPostValidation = null,
         ?string $securityPostValidationMessage = null,
         ?string $deprecationReason = null,
         ?array $filters = null,
@@ -94,11 +94,89 @@ final class Post extends HttpOperation
         ?string $name = null,
         $provider = null,
         $processor = null,
+        ?OptionsInterface $stateOptions = null,
+        array|Parameters|null $parameters = null,
         array $extraProperties = [],
-        ?string $itemUriTemplate = null
+        private ?string $itemUriTemplate = null,
     ) {
-        parent::__construct(self::METHOD_POST, ...\func_get_args());
-        $this->itemUriTemplate = $itemUriTemplate;
+        parent::__construct(
+            method: 'POST',
+            uriTemplate: $uriTemplate,
+            types: $types,
+            formats: $formats,
+            inputFormats: $inputFormats,
+            outputFormats: $outputFormats,
+            uriVariables: $uriVariables,
+            routePrefix: $routePrefix,
+            routeName: $routeName,
+            defaults: $defaults,
+            requirements: $requirements,
+            options: $options,
+            stateless: $stateless,
+            sunset: $sunset,
+            acceptPatch: $acceptPatch,
+            status: $status,
+            host: $host,
+            schemes: $schemes,
+            condition: $condition,
+            controller: $controller,
+            headers: $headers,
+            cacheHeaders: $cacheHeaders,
+            paginationViaCursor: $paginationViaCursor,
+            hydraContext: $hydraContext,
+            openapiContext: $openapiContext,
+            openapi: $openapi,
+            exceptionToStatus: $exceptionToStatus,
+            queryParameterValidationEnabled: $queryParameterValidationEnabled,
+            links: $links,
+            errors: $errors,
+            shortName: $shortName,
+            class: $class,
+            paginationEnabled: $paginationEnabled,
+            paginationType: $paginationType,
+            paginationItemsPerPage: $paginationItemsPerPage,
+            paginationMaximumItemsPerPage: $paginationMaximumItemsPerPage,
+            paginationPartial: $paginationPartial,
+            paginationClientEnabled: $paginationClientEnabled,
+            paginationClientItemsPerPage: $paginationClientItemsPerPage,
+            paginationClientPartial: $paginationClientPartial,
+            paginationFetchJoinCollection: $paginationFetchJoinCollection,
+            paginationUseOutputWalkers: $paginationUseOutputWalkers,
+            order: $order,
+            description: $description,
+            normalizationContext: $normalizationContext,
+            denormalizationContext: $denormalizationContext,
+            collectDenormalizationErrors: $collectDenormalizationErrors,
+            security: $security,
+            securityMessage: $securityMessage,
+            securityPostDenormalize: $securityPostDenormalize,
+            securityPostDenormalizeMessage: $securityPostDenormalizeMessage,
+            securityPostValidation: $securityPostValidation,
+            securityPostValidationMessage: $securityPostValidationMessage,
+            deprecationReason: $deprecationReason,
+            filters: $filters,
+            validationContext: $validationContext,
+            input: $input,
+            output: $output,
+            mercure: $mercure,
+            messenger: $messenger,
+            elasticsearch: $elasticsearch,
+            urlGenerationStrategy: $urlGenerationStrategy,
+            read: $read,
+            deserialize: $deserialize,
+            validate: $validate,
+            write: $write,
+            serialize: $serialize,
+            fetchPartial: $fetchPartial,
+            forceEager: $forceEager,
+            priority: $priority,
+            name: $name,
+            provider: $provider,
+            processor: $processor,
+            stateOptions: $stateOptions,
+            parameters: $parameters,
+            extraProperties: $extraProperties
+        );
     }
 
     public function getItemUriTemplate(): ?string

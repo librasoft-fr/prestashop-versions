@@ -26,13 +26,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 final class DoctrineMongoDbOdmPropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
-    private $decorated;
-    private $managerRegistry;
-
-    public function __construct(ManagerRegistry $managerRegistry, PropertyMetadataFactoryInterface $decorated)
+    public function __construct(private readonly ManagerRegistry $managerRegistry, private readonly PropertyMetadataFactoryInterface $decorated)
     {
-        $this->managerRegistry = $managerRegistry;
-        $this->decorated = $decorated;
     }
 
     /**

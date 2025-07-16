@@ -14,18 +14,24 @@ declare(strict_types=1);
 namespace ApiPlatform\Doctrine\Odm\State;
 
 use ApiPlatform\Doctrine\Common\State\LinksHandlerTrait as CommonLinksHandlerTrait;
-use ApiPlatform\Exception\RuntimeException;
+use ApiPlatform\Metadata\Exception\RuntimeException;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Operation;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @internal
+ */
 trait LinksHandlerTrait
 {
     use CommonLinksHandlerTrait;
 
-    private function handleLinks(Builder $aggregationBuilder, array $identifiers, array $context, string $resourceClass, Operation $operation): void
+    private ManagerRegistry $managerRegistry;
+
+    private function handleLinks(Builder $aggregationBuilder, array $identifiers, array $context, string $resourceClass, ?Operation $operation = null): void
     {
         if (!$identifiers) {
             return;
@@ -45,14 +51,18 @@ trait LinksHandlerTrait
 
         $executeOptions = $operation->getExtraProperties()['doctrine_mongodb']['execute_options'] ?? [];
 
-        $this->buildAggregation($resourceClass, array_reverse($links), array_reverse($identifiers), $context, $executeOptions, $resourceClass, $aggregationBuilder);
+        $this->buildAggregation($resourceClass, array_reverse($links), array_reverse($identifiers), $context, $executeOptions, $resourceClass, $aggregationBuilder, $operation);
     }
 
     /**
      * @throws RuntimeException
      */
-    private function buildAggregation(string $toClass, array $links, array $identifiers, array $context, array $executeOptions, string $previousAggregationClass, Builder $previousAggregationBuilder): Builder
+    private function buildAggregation(string $toClass, array $links, array $identifiers, array $context, array $executeOptions, string $previousAggregationClass, Builder $previousAggregationBuilder, ?Operation $operation = null): Builder
     {
+        if (!$operation) {
+            trigger_deprecation('api-platform/core', '3.2', 'In API Platform 4 the last argument "operation" will be required and this trait will be internal. Use the "handleLinks" feature instead.');
+        }
+
         if (\count($links) <= 0) {
             return $previousAggregationBuilder;
         }
@@ -70,18 +80,26 @@ trait LinksHandlerTrait
         if ($toProperty) {
             $aggregationClass = $toClass;
         }
+
         $lookupProperty = $toProperty ?? $fromProperty;
         $lookupPropertyAlias = $lookupProperty ? "{$lookupProperty}_lkup" : null;
 
         $manager = $this->managerRegistry->getManagerForClass($aggregationClass);
         if (!$manager instanceof DocumentManager) {
-            throw new RuntimeException(sprintf('The manager for "%s" must be an instance of "%s".', $aggregationClass, DocumentManager::class));
+            if ($operation) {
+                $aggregationClass = $this->getLinkFromClass($link, $operation);
+                $manager = $this->managerRegistry->getManagerForClass($aggregationClass);
+            }
+
+            if (!$manager instanceof DocumentManager) {
+                throw new RuntimeException(\sprintf('The manager for "%s" must be an instance of "%s".', $aggregationClass, DocumentManager::class));
+            }
         }
 
         $classMetadata = $manager->getClassMetadata($aggregationClass);
 
         if (!$classMetadata instanceof ClassMetadata) {
-            throw new RuntimeException(sprintf('The class metadata for "%s" must be an instance of "%s".', $aggregationClass, ClassMetadata::class));
+            throw new RuntimeException(\sprintf('The class metadata for "%s" must be an instance of "%s".', $aggregationClass, ClassMetadata::class));
         }
 
         $aggregation = $previousAggregationBuilder;
@@ -95,7 +113,7 @@ trait LinksHandlerTrait
 
         if ($toProperty) {
             foreach ($identifierProperties as $identifierProperty) {
-                $aggregation->match()->field(sprintf('%s.%s', $lookupPropertyAlias, 'id' === $identifierProperty ? '_id' : $identifierProperty))->equals($this->getIdentifierValue($identifiers, $hasCompositeIdentifiers ? $identifierProperty : null));
+                $aggregation->match()->field(\sprintf('%s.%s', $lookupPropertyAlias, 'id' === $identifierProperty ? '_id' : $identifierProperty))->equals($this->getIdentifierValue($identifiers, $hasCompositeIdentifiers ? $identifierProperty : null));
             }
         } else {
             foreach ($identifierProperties as $identifierProperty) {
@@ -104,7 +122,7 @@ trait LinksHandlerTrait
         }
 
         // Recurse aggregations
-        $aggregation = $this->buildAggregation($fromClass, $links, $identifiers, $context, $executeOptions, $aggregationClass, $aggregation);
+        $aggregation = $this->buildAggregation($fromClass, $links, $identifiers, $context, $executeOptions, $aggregationClass, $aggregation, $operation);
 
         if (null === $fromProperty || null !== $toProperty) {
             return $aggregation;
@@ -120,5 +138,30 @@ trait LinksHandlerTrait
         $previousAggregationBuilder->match()->field('_id')->in($in);
 
         return $previousAggregationBuilder;
+    }
+
+    private function getLinkFromClass(Link $link, Operation $operation): string
+    {
+        $fromClass = $link->getFromClass();
+        if ($fromClass === $operation->getClass() && $documentClass = $this->getStateOptionsDocumentClass($operation)) {
+            return $documentClass;
+        }
+
+        $operation = $this->resourceMetadataCollectionFactory->create($fromClass)->getOperation();
+
+        if ($documentClass = $this->getStateOptionsDocumentClass($operation)) {
+            return $documentClass;
+        }
+
+        throw new \Exception('Can not found a doctrine class for this link.');
+    }
+
+    private function getStateOptionsDocumentClass(Operation $operation): ?string
+    {
+        if (($options = $operation->getStateOptions()) && $options instanceof Options && $documentClass = $options->getDocumentClass()) {
+            return $documentClass;
+        }
+
+        return null;
     }
 }

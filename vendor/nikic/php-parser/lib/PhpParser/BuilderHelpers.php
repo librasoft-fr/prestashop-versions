@@ -6,6 +6,7 @@ use PhpParser\Node\ComplexType;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Scalar;
 use PhpParser\Node\Stmt;
@@ -178,7 +179,20 @@ final class BuilderHelpers
         }
 
         $builtinTypes = [
-            'array', 'callable', 'string', 'int', 'float', 'bool', 'iterable', 'void', 'object', 'mixed', 'never',
+            'array',
+            'callable',
+            'bool',
+            'int',
+            'float',
+            'string',
+            'iterable',
+            'void',
+            'object',
+            'null',
+            'false',
+            'mixed',
+            'never',
+            'true',
         ];
 
         $lowerType = strtolower($type);
@@ -202,7 +216,7 @@ final class BuilderHelpers
      * Normalizes a value: Converts nulls, booleans, integers,
      * floats, strings and arrays into their respective nodes
      *
-     * @param Node\Expr|bool|null|int|float|string|array $value The value to normalize
+     * @param Node\Expr|bool|null|int|float|string|array|\UnitEnum $value The value to normalize
      *
      * @return Expr The normalized value
      */
@@ -254,6 +268,10 @@ final class BuilderHelpers
             }
 
             return new Expr\Array_($items);
+        }
+
+        if ($value instanceof \UnitEnum) {
+            return new Expr\ClassConstFetch(new FullyQualified(\get_class($value)), new Identifier($value->name));
         }
 
         throw new \LogicException('Invalid value');
@@ -309,5 +327,14 @@ final class BuilderHelpers
     public static function addModifier(int $modifiers, int $modifier) : int {
         Stmt\Class_::verifyModifier($modifiers, $modifier);
         return $modifiers | $modifier;
+    }
+
+    /**
+     * Adds a modifier and returns new modifier bitmask.
+     * @return int New modifiers
+     */
+    public static function addClassModifier(int $existingModifiers, int $modifierToSet) : int {
+        Stmt\Class_::verifyClassModifier($existingModifiers, $modifierToSet);
+        return $existingModifiers | $modifierToSet;
     }
 }

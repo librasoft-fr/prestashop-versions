@@ -1,0 +1,11 @@
+$component-name: language-selector;
+
+.#{$component-name}__wrapper {
+  @include media-breakpoint-down(md) {
+    margin-bottom: 1rem;
+  }
+
+  select {
+    cursor: pointer;
+  }
+}

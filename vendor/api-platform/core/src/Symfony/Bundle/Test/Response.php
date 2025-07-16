@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\Bundle\Test;
 
-use ApiPlatform\Util\ResponseTrait;
 use Symfony\Component\BrowserKit\Response as BrowserKitResponse;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\Exception\JsonException;
@@ -34,31 +33,20 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 final class Response implements ResponseInterface
 {
-    use ResponseTrait;
+    private readonly array $headers;
+    private array $info;
+    private readonly string $content;
+    private ?array $jsonData = null;
 
-    private $httpFoundationResponse;
-    private $browserKitResponse;
-    private $headers;
-
-    /**
-     * @var array
-     */
-    private $info;
-    private $content;
-    private $jsonData;
-
-    public function __construct(HttpFoundationResponse $httpFoundationResponse, BrowserKitResponse $browserKitResponse, array $info)
+    public function __construct(private readonly HttpFoundationResponse $httpFoundationResponse, private readonly BrowserKitResponse $browserKitResponse, array $info)
     {
-        $this->httpFoundationResponse = $httpFoundationResponse;
-        $this->browserKitResponse = $browserKitResponse;
-
         $this->headers = $httpFoundationResponse->headers->all();
 
         // Compute raw headers
         $responseHeaders = [];
         foreach ($this->headers as $key => $values) {
             foreach ($values as $value) {
-                $responseHeaders[] = sprintf('%s: %s', $key, $value);
+                $responseHeaders[] = \sprintf('%s: %s', $key, $value);
             }
         }
 
@@ -68,6 +56,15 @@ final class Response implements ResponseInterface
             'error' => null,
             'response_headers' => $responseHeaders,
         ] + $info;
+    }
+
+    public function getInfo(?string $type = null): mixed
+    {
+        if ($type) {
+            return $this->info[$type] ?? null;
+        }
+
+        return $this->info;
     }
 
     /**
@@ -136,21 +133,17 @@ final class Response implements ResponseInterface
         $contentType = $this->headers['content-type'][0] ?? 'application/json';
 
         if (!preg_match('/\bjson\b/i', $contentType)) {
-            throw new JsonException(sprintf('Response content-type is "%s" while a JSON-compatible one was expected.', $contentType));
+            throw new JsonException(\sprintf('Response content-type is "%s" while a JSON-compatible one was expected.', $contentType));
         }
 
         try {
-            $content = json_decode($content, true, 512, \JSON_BIGINT_AS_STRING | (\PHP_VERSION_ID >= 70300 ? \JSON_THROW_ON_ERROR : 0));
+            $content = json_decode($content, true, 512, \JSON_BIGINT_AS_STRING | \JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             throw new JsonException($e->getMessage(), $e->getCode());
         }
 
-        if (\PHP_VERSION_ID < 70300 && \JSON_ERROR_NONE !== json_last_error()) {
-            throw new JsonException(json_last_error_msg(), json_last_error());
-        }
-
         if (!\is_array($content)) {
-            throw new JsonException(sprintf('JSON content was expected to decode to an array, %s returned.', \gettype($content)));
+            throw new JsonException(\sprintf('JSON content was expected to decode to an array, %s returned.', \gettype($content)));
         }
 
         return $this->jsonData = $content;
@@ -180,5 +173,3 @@ final class Response implements ResponseInterface
         $this->info['error'] = 'Response has been canceled.';
     }
 }
-
-class_alias(Response::class, \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\Response::class);

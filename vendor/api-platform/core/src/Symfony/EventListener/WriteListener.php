@@ -13,16 +13,25 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\EventListener;
 
-use ApiPlatform\Api\IriConverterInterface;
-use ApiPlatform\Api\ResourceClassResolverInterface;
-use ApiPlatform\Api\UriVariablesConverterInterface;
-use ApiPlatform\Exception\InvalidIdentifierException;
+use ApiPlatform\Api\IriConverterInterface as LegacyIriConverterInterface;
+use ApiPlatform\Api\ResourceClassResolverInterface as LegacyResourceClassResolverInterface;
+use ApiPlatform\Api\UriVariablesConverterInterface as LegacyUriVariablesConverterInterface;
+use ApiPlatform\Metadata\Error;
+use ApiPlatform\Metadata\Exception\InvalidIdentifierException;
+use ApiPlatform\Metadata\Exception\InvalidUriVariableException;
+use ApiPlatform\Metadata\HttpOperation;
+use ApiPlatform\Metadata\IriConverterInterface;
 use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
+use ApiPlatform\Metadata\ResourceClassResolverInterface;
+use ApiPlatform\Metadata\UriVariablesConverterInterface;
+use ApiPlatform\Metadata\Util\ClassInfoTrait;
+use ApiPlatform\Metadata\Util\CloneTrait;
+use ApiPlatform\State\CallableProcessor;
+use ApiPlatform\State\Processor\WriteProcessor;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\State\UriVariablesResolverTrait;
-use ApiPlatform\Util\OperationRequestInitiatorTrait;
-use ApiPlatform\Util\RequestAttributesExtractor;
-use ApiPlatform\Util\ResourceClassInfoTrait;
+use ApiPlatform\State\Util\OperationRequestInitiatorTrait;
+use ApiPlatform\Symfony\Util\RequestAttributesExtractor;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -35,25 +44,37 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 final class WriteListener
 {
+    use ClassInfoTrait;
+    use CloneTrait;
     use OperationRequestInitiatorTrait;
-    use ResourceClassInfoTrait;
-
     use UriVariablesResolverTrait;
 
-    public const OPERATION_ATTRIBUTE_KEY = 'write';
+    private LegacyIriConverterInterface|IriConverterInterface|null $iriConverter = null;
 
-    private $processor;
-    private $iriConverter;
-
-    public function __construct(ProcessorInterface $processor, IriConverterInterface $iriConverter, ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory, ResourceClassResolverInterface $resourceClassResolver, ?UriVariablesConverterInterface $uriVariablesConverter = null)
-    {
-        $this->processor = $processor;
-        $this->iriConverter = $iriConverter;
-        $this->resourceMetadataCollectionFactory = $resourceMetadataCollectionFactory;
-        // TODO 3.0: see ResourceClassInfoTrait
-        $this->resourceMetadataFactory = $resourceMetadataCollectionFactory;
-        $this->resourceClassResolver = $resourceClassResolver;
+    /**
+     * @param ProcessorInterface<mixed, mixed> $processor
+     */
+    public function __construct(
+        private readonly ProcessorInterface $processor,
+        LegacyIriConverterInterface|IriConverterInterface|ResourceMetadataCollectionFactoryInterface|null $iriConverter = null,
+        private readonly ResourceClassResolverInterface|LegacyResourceClassResolverInterface|null $resourceClassResolver = null,
+        ?ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory = null,
+        LegacyUriVariablesConverterInterface|UriVariablesConverterInterface|null $uriVariablesConverter = null,
+    ) {
         $this->uriVariablesConverter = $uriVariablesConverter;
+
+        if ($processor instanceof CallableProcessor) {
+            trigger_deprecation('api-platform/core', '3.3', 'Use a "%s" as first argument in "%s" instead of "%s".', WriteProcessor::class, self::class, $processor::class);
+        }
+
+        if ($iriConverter instanceof ResourceMetadataCollectionFactoryInterface) {
+            $resourceMetadataCollectionFactory = $iriConverter;
+        } else {
+            $this->iriConverter = $iriConverter;
+            trigger_deprecation('api-platform/core', '3.3', 'Use a "%s" as second argument in "%s" instead of "%s".', ResourceMetadataCollectionFactoryInterface::class, self::class, IriConverterInterface::class);
+        }
+
+        $this->resourceMetadataCollectionFactory = $resourceMetadataCollectionFactory;
     }
 
     /**
@@ -65,6 +86,45 @@ final class WriteListener
         $request = $event->getRequest();
         $operation = $this->initializeOperation($request);
 
+        if (!($attributes = RequestAttributesExtractor::extractAttributes($request)) || !$attributes['persist']) {
+            return;
+        }
+
+        if ($operation && (!$this->processor instanceof CallableProcessor && !$this->iriConverter)) {
+            if (null === $operation->canWrite()) {
+                $operation = $operation->withWrite(!$request->isMethodSafe());
+            }
+
+            $uriVariables = $request->attributes->get('_api_uri_variables') ?? [];
+            if (!$uriVariables && !$operation instanceof Error && $operation instanceof HttpOperation) {
+                try {
+                    $uriVariables = $this->getOperationUriVariables($operation, $request->attributes->all(), $operation->getClass());
+                } catch (InvalidIdentifierException|InvalidUriVariableException $e) {
+                    throw new NotFoundHttpException('Invalid identifier value or configuration.', $e);
+                }
+            }
+
+            $data = $this->processor->process($controllerResult, $operation, $uriVariables, [
+                'request' => $request,
+                'uri_variables' => $uriVariables,
+                'resource_class' => $operation->getClass(),
+                'previous_data' => false === $operation->canRead() ? null : $request->attributes->get('previous_data'),
+            ]);
+
+            if ($data) {
+                $request->attributes->set('original_data', $data);
+            }
+
+            $event->setControllerResult($data);
+
+            return;
+        }
+
+        // API Platform 3.2 has a MainController where everything is handled by processors/providers
+        if ('api_platform.symfony.main_controller' === $operation?->getController() || $request->attributes->get('_api_platform_disable_listeners')) {
+            return;
+        }
+
         if (
             $controllerResult instanceof Response
             || $request->isMethodSafe()
@@ -73,15 +133,20 @@ final class WriteListener
             return;
         }
 
-        if (!$operation || ($operation->getExtraProperties()['is_legacy_resource_metadata'] ?? false) || !($operation->canWrite() ?? true) || !$attributes['persist']) {
+        if (!$attributes['persist'] || !($operation?->canWrite() ?? true)) {
             return;
         }
 
-        if (!$operation->getProcessor()) {
+        if (!$operation?->getProcessor()) {
             return;
         }
 
-        $context = ['operation' => $operation, 'resource_class' => $attributes['resource_class'], 'previous_data' => $attributes['previous_data'] ?? null];
+        $context = [
+            'operation' => $operation,
+            'resource_class' => $attributes['resource_class'],
+            'previous_data' => $attributes['previous_data'] ?? null,
+        ];
+
         try {
             $uriVariables = $this->getOperationUriVariables($operation, $request->attributes->all(), $attributes['resource_class']);
         } catch (InvalidIdentifierException $e) {
@@ -109,7 +174,7 @@ final class WriteListener
                     break;
                 }
 
-                if ($this->isResourceClass($this->getObjectClass($controllerResult))) {
+                if ($this->resourceClassResolver->isResourceClass($this->getObjectClass($controllerResult))) {
                     $request->attributes->set('_api_write_item_iri', $this->iriConverter->getIriFromResource($controllerResult));
                 }
 

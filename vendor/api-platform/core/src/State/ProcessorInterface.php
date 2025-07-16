@@ -14,20 +14,26 @@ declare(strict_types=1);
 namespace ApiPlatform\State;
 
 use ApiPlatform\Metadata\Operation;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Process data: send an email, persist to storage, add to queue etc.
+ * Processes data: sends an email, persists to storage, adds to queue etc.
+ *
+ * @template T1
+ * @template T2
  *
  * @author Antoine Bluchet <soyuka@gmail.com>
  */
 interface ProcessorInterface
 {
     /**
-     * Handle the state.
+     * Handles the state.
      *
-     * @param mixed $data
+     * @param T1                                                                                                                   $data
+     * @param array<string, mixed>                                                                                                 $uriVariables
+     * @param array<string, mixed>&array{request?: Request, previous_data?: mixed, resource_class?: string, original_data?: mixed} $context
      *
-     * @return mixed
+     * @return T2
      */
-    public function process($data, Operation $operation, array $uriVariables = [], array $context = []);
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []);
 }

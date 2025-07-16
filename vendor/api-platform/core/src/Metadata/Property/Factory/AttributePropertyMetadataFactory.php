@@ -13,9 +13,10 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Property\Factory;
 
-use ApiPlatform\Exception\PropertyNotFoundException;
+use ApiPlatform\JsonSchema\Metadata\Property\Factory\SchemaPropertyMetadataFactory;
 use ApiPlatform\Metadata\ApiProperty;
-use ApiPlatform\Util\Reflection;
+use ApiPlatform\Metadata\Exception\PropertyNotFoundException;
+use ApiPlatform\Metadata\Util\Reflection;
 
 /**
  * Creates a property metadata from {@see ApiProperty} attribute.
@@ -24,11 +25,8 @@ use ApiPlatform\Util\Reflection;
  */
 final class AttributePropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
-    private $decorated;
-
-    public function __construct(PropertyMetadataFactoryInterface $decorated = null)
+    public function __construct(private readonly ?PropertyMetadataFactoryInterface $decorated = null)
     {
-        $this->decorated = $decorated;
     }
 
     /**
@@ -40,37 +38,62 @@ final class AttributePropertyMetadataFactory implements PropertyMetadataFactoryI
         if ($this->decorated) {
             try {
                 $parentPropertyMetadata = $this->decorated->create($resourceClass, $property, $options);
-            } catch (PropertyNotFoundException $propertyNotFoundException) {
+            } catch (PropertyNotFoundException) {
                 // Ignore not found exception from decorated factories
             }
         }
 
+        $reflectionClass = null;
+        $reflectionEnum = null;
+
         try {
             $reflectionClass = new \ReflectionClass($resourceClass);
-        } catch (\ReflectionException $reflectionException) {
+        } catch (\ReflectionException) {
+        }
+        try {
+            $reflectionEnum = new \ReflectionEnum($resourceClass);
+        } catch (\ReflectionException) {
+        }
+
+        if (!$reflectionClass && !$reflectionEnum) {
             return $this->handleNotFound($parentPropertyMetadata, $resourceClass, $property);
+        }
+
+        if ($reflectionEnum && $reflectionEnum->hasCase($property)) {
+            $reflectionCase = $reflectionEnum->getCase($property);
+            if ($attributes = $reflectionCase->getAttributes(ApiProperty::class)) {
+                return $this->createMetadata($attributes[0]->newInstance(), $parentPropertyMetadata);
+            }
         }
 
         if ($reflectionClass->hasProperty($property)) {
             $reflectionProperty = $reflectionClass->getProperty($property);
-            if (\PHP_VERSION_ID >= 80000 && $attributes = $reflectionProperty->getAttributes(ApiProperty::class)) {
+            if ($attributes = $reflectionProperty->getAttributes(ApiProperty::class)) {
                 return $this->createMetadata($attributes[0]->newInstance(), $parentPropertyMetadata);
             }
         }
 
         foreach (array_merge(Reflection::ACCESSOR_PREFIXES, Reflection::MUTATOR_PREFIXES) as $prefix) {
             $methodName = $prefix.ucfirst($property);
-            if (!$reflectionClass->hasMethod($methodName)) {
+            if (!$reflectionClass->hasMethod($methodName) && !$reflectionEnum?->hasMethod($methodName)) {
                 continue;
             }
 
-            $reflectionMethod = $reflectionClass->getMethod($methodName);
+            $reflectionMethod = $reflectionClass->hasMethod($methodName) ? $reflectionClass->getMethod($methodName) : $reflectionEnum?->getMethod($methodName);
             if (!$reflectionMethod->isPublic()) {
                 continue;
             }
 
-            if (\PHP_VERSION_ID >= 80000 && $attributes = $reflectionMethod->getAttributes(ApiProperty::class)) {
+            if ($attributes = $reflectionMethod->getAttributes(ApiProperty::class)) {
                 return $this->createMetadata($attributes[0]->newInstance(), $parentPropertyMetadata);
+            }
+        }
+
+        $attributes = $reflectionClass->getAttributes(ApiProperty::class);
+        foreach ($attributes as $attribute) {
+            $instance = $attribute->newInstance();
+            if ($instance->getProperty() === $property) {
+                return $this->createMetadata($instance, $parentPropertyMetadata);
             }
         }
 
@@ -80,39 +103,39 @@ final class AttributePropertyMetadataFactory implements PropertyMetadataFactoryI
     /**
      * Returns the metadata from the decorated factory if available or throws an exception.
      *
-     * @param ApiProperty|null $parentPropertyMetadata
-     *
      * @throws PropertyNotFoundException
      */
-    private function handleNotFound($parentPropertyMetadata, string $resourceClass, string $property): ApiProperty
+    private function handleNotFound(?ApiProperty $parentPropertyMetadata, string $resourceClass, string $property): ApiProperty
     {
         if (null !== $parentPropertyMetadata) {
             return $parentPropertyMetadata;
         }
 
-        throw new PropertyNotFoundException(sprintf('Property "%s" of class "%s" not found.', $property, $resourceClass));
+        throw new PropertyNotFoundException(\sprintf('Property "%s" of class "%s" not found.', $property, $resourceClass));
     }
 
-    private function createMetadata(ApiProperty $attribute, ApiProperty $propertyMetadata = null): ApiProperty
+    private function createMetadata(ApiProperty $attribute, ?ApiProperty $propertyMetadata = null): ApiProperty
     {
         if (null === $propertyMetadata) {
-            return $attribute;
+            return $this->handleUserDefinedSchema($attribute);
         }
 
         foreach (get_class_methods(ApiProperty::class) as $method) {
-            if (
-                // TODO: remove these checks for deprecated methods in 3.0
-                'getAttribute' !== $method &&
-                'isChildInherited' !== $method &&
-                'getSubresource' !== $method &&
-                'getAttributes' !== $method &&
-                // end of deprecated methods
-
-                preg_match('/^(?:get|is)(.*)/', $method, $matches) &&
-                null !== $val = $attribute->{$method}()
-            ) {
+            if (preg_match('/^(?:get|is)(.*)/', (string) $method, $matches) && null !== $val = $attribute->{$method}()) {
                 $propertyMetadata = $propertyMetadata->{"with{$matches[1]}"}($val);
             }
+        }
+
+        return $this->handleUserDefinedSchema($propertyMetadata);
+    }
+
+    private function handleUserDefinedSchema(ApiProperty $propertyMetadata): ApiProperty
+    {
+        // can't know later if the schema has been defined by the user or by API Platform
+        // store extra key to make this difference
+        if (null !== $propertyMetadata->getSchema()) {
+            $extraProperties = $propertyMetadata->getExtraProperties() ?? [];
+            $propertyMetadata = $propertyMetadata->withExtraProperties([SchemaPropertyMetadataFactory::JSON_SCHEMA_USER_DEFINED => true] + $extraProperties);
         }
 
         return $propertyMetadata;

@@ -1,0 +1,8 @@
+psassistant_autologin:
+  path: /psassistant/autologin
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\Assistant\Controller\Admin\AutoLoginController::index'
+    _anonymous_controller: true
+    _legacy_controller: AutoLoginController
+    _legacy_link: AutoLoginController

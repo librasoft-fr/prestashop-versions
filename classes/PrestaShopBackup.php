@@ -167,18 +167,18 @@ class PrestaShopBackupCore
     {
         // Additionnal parameters (action, filename, ajax) are kept for backward compatibility, in case we disable the new controller
         return Context::getContext()->link->getAdminLink(
-                'AdminBackup',
-                true,
-                [
-                    'route' => 'admin_backup_download',
-                    'downloadFileName' => basename($this->id),
-                ],
-                [
-                    'action' => 'backupContent',
-                    'ajax' => 1,
-                    'filename' => basename($this->id),
-                ]
-            );
+            'AdminBackup',
+            true,
+            [
+                'route' => 'admin_backup_download',
+                'downloadFileName' => basename($this->id),
+            ],
+            [
+                'action' => 'backupContent',
+                'ajax' => 1,
+                'filename' => basename($this->id),
+            ]
+        );
     }
 
     /**
@@ -203,7 +203,7 @@ class PrestaShopBackupCore
      *
      * @return bool True on success
      */
-    public function deleteSelection($list)
+    public function deleteSelection(array $list)
     {
         foreach ($list as $file) {
             $backup = new PrestaShopBackup($file);

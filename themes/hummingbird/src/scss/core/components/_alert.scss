@@ -1,0 +1,9 @@
+.alert {
+  p,
+  ul,
+  ol {
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+}

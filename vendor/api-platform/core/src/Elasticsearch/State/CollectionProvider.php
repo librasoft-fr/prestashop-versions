@@ -14,53 +14,42 @@ declare(strict_types=1);
 namespace ApiPlatform\Elasticsearch\State;
 
 use ApiPlatform\Elasticsearch\Extension\RequestBodySearchCollectionExtensionInterface;
+use ApiPlatform\Elasticsearch\Metadata\Document\DocumentMetadata;
 use ApiPlatform\Elasticsearch\Metadata\Document\Factory\DocumentMetadataFactoryInterface;
 use ApiPlatform\Elasticsearch\Paginator;
-use ApiPlatform\Elasticsearch\Util\ElasticsearchVersion;
+use ApiPlatform\Metadata\InflectorInterface;
 use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Metadata\Util\Inflector;
+use ApiPlatform\State\ApiResource\Error;
 use ApiPlatform\State\Pagination\Pagination;
 use ApiPlatform\State\ProviderInterface;
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
+use Elastic\Elasticsearch\Response\Elasticsearch;
+use Elasticsearch\Client as LegacyClient;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
  * Collection provider for Elasticsearch.
- *
- * @experimental
  *
  * @author Baptiste Meyer <baptiste.meyer@gmail.com>
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  */
 final class CollectionProvider implements ProviderInterface
 {
-    private $client;
-    private $documentMetadataFactory;
-    private $denormalizer;
-    private $pagination;
-    private $collectionExtensions;
-
     /**
      * @param RequestBodySearchCollectionExtensionInterface[] $collectionExtensions
      */
-    public function __construct(Client $client, DocumentMetadataFactoryInterface $documentMetadataFactory, DenormalizerInterface $denormalizer, Pagination $pagination, iterable $collectionExtensions = [])
+    public function __construct(private readonly LegacyClient|Client $client, private readonly ?DocumentMetadataFactoryInterface $documentMetadataFactory = null, private readonly ?DenormalizerInterface $denormalizer = null, private readonly ?Pagination $pagination = null, private readonly iterable $collectionExtensions = [], private readonly ?InflectorInterface $inflector = new Inflector()) // @phpstan-ignore-line
     {
-        $this->client = $client;
-        $this->documentMetadataFactory = $documentMetadataFactory;
-
-        $this->denormalizer = $denormalizer;
-        $this->pagination = $pagination;
-
-        $this->collectionExtensions = $collectionExtensions;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = [])
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): Paginator
     {
         $resourceClass = $operation->getClass();
-        $operationName = $operation->getName();
-        $documentMetadata = $this->documentMetadataFactory->create($resourceClass);
         $body = [];
 
         foreach ($this->collectionExtensions as $collectionExtension) {
@@ -71,19 +60,31 @@ final class CollectionProvider implements ProviderInterface
             $body['query'] = ['match_all' => new \stdClass()];
         }
 
-        $limit = $body['size'] = $body['size'] ?? $this->pagination->getLimit($operation, $context);
-        $offset = $body['from'] = $body['from'] ?? $this->pagination->getOffset($operation, $context);
+        $limit = $body['size'] ??= $this->pagination->getLimit($operation, $context);
+        $offset = $body['from'] ??= $this->pagination->getOffset($operation, $context);
+
+        $options = $operation->getStateOptions() instanceof Options ? $operation->getStateOptions() : new Options(index: $this->getIndex($operation));
+
+        // TODO: remove in 4.x
+        if ($this->documentMetadataFactory && $operation->getElasticsearch() && !$operation->getStateOptions()) {
+            $options = $this->convertDocumentMetadata($this->documentMetadataFactory->create($resourceClass));
+        }
 
         $params = [
-            'index' => $documentMetadata->getIndex(),
+            'index' => $options->getIndex() ?? $this->getIndex($operation),
             'body' => $body,
         ];
 
-        if (ElasticsearchVersion::supportsMappingType()) {
-            $params['type'] = $documentMetadata->getType();
+        try {
+            $documents = $this->client->search($params); // @phpstan-ignore-line
+        } catch (ClientResponseException $e) {
+            $response = $e->getResponse();
+            throw new Error(status: $response->getStatusCode(), detail: (string) $response->getBody(), title: $response->getReasonPhrase(), originalTrace: $e->getTrace());
         }
 
-        $documents = $this->client->search($params);
+        if ($documents instanceof Elasticsearch) {
+            $documents = $documents->asArray();
+        }
 
         return new Paginator(
             $this->denormalizer,
@@ -93,5 +94,15 @@ final class CollectionProvider implements ProviderInterface
             $offset,
             $context
         );
+    }
+
+    private function convertDocumentMetadata(DocumentMetadata $documentMetadata): Options
+    {
+        return new Options($documentMetadata->getIndex(), $documentMetadata->getType());
+    }
+
+    private function getIndex(Operation $operation): string
+    {
+        return $this->inflector->tableize($operation->getShortName());
     }
 }

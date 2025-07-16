@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace ApiPlatform\Doctrine\Common\Filter;
 
 use ApiPlatform\Doctrine\Common\PropertyHelperTrait;
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -30,7 +30,7 @@ trait ExistsFilterTrait
     /**
      * @var string Keyword used to retrieve the value
      */
-    private $existsParameterName;
+    private readonly string $existsParameterName;
 
     /**
      * {@inheritdoc}
@@ -49,7 +49,7 @@ trait ExistsFilterTrait
                 continue;
             }
             $propertyName = $this->normalizePropertyName($property);
-            $description[sprintf('%s[%s]', $this->existsParameterName, $propertyName)] = [
+            $description[\sprintf('%s[%s]', $this->existsParameterName, $propertyName)] = [
                 'property' => $propertyName,
                 'type' => 'bool',
                 'required' => false,
@@ -68,18 +68,10 @@ trait ExistsFilterTrait
 
     abstract protected function getLogger(): LoggerInterface;
 
-    abstract protected function normalizePropertyName($property): string;
+    abstract protected function normalizePropertyName(string $property): string;
 
     private function normalizeValue($value, string $property): ?bool
     {
-        if (\is_array($value) && isset($value[self::QUERY_PARAMETER_KEY])) {
-            @trigger_error(
-                sprintf('The ExistsFilter syntax "%s[exists]=true/false" is deprecated since 2.5. Use the syntax "%s[%s]=true/false" instead.', $property, $this->existsParameterName, $property),
-                \E_USER_DEPRECATED
-            );
-            $value = $value[self::QUERY_PARAMETER_KEY];
-        }
-
         if (\in_array($value, [true, 'true', '1', '', null], true)) {
             return true;
         }
@@ -89,7 +81,7 @@ trait ExistsFilterTrait
         }
 
         $this->getLogger()->notice('Invalid filter ignored', [
-            'exception' => new InvalidArgumentException(sprintf('Invalid value for "%s[%s]", expected one of ( "%s" )', $this->existsParameterName, $property, implode('" | "', [
+            'exception' => new InvalidArgumentException(\sprintf('Invalid value for "%s[%s]", expected one of ( "%s" )', $this->existsParameterName, $property, implode('" | "', [
                 'true',
                 'false',
                 '1',

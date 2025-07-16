@@ -13,14 +13,18 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Extractor;
 
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Elasticsearch\State\Options;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\GraphQl\DeleteMutation;
-use ApiPlatform\Metadata\GraphQl\Mutation;
-use ApiPlatform\Metadata\GraphQl\Query;
-use ApiPlatform\Metadata\GraphQl\QueryCollection;
-use ApiPlatform\Metadata\GraphQl\Subscription;
+use ApiPlatform\Metadata\HeaderParameter;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\QueryParameter;
+use ApiPlatform\OpenApi\Model\ExternalDocumentation;
+use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
+use ApiPlatform\OpenApi\Model\Parameter;
+use ApiPlatform\OpenApi\Model\RequestBody;
+use ApiPlatform\State\OptionsInterface;
+use Symfony\Component\WebLink\Link;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -39,7 +43,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
     /**
      * {@inheritdoc}
      */
-    protected function extractPath(string $path)
+    protected function extractPath(string $path): void
     {
         try {
             $resourcesYaml = Yaml::parse((string) file_get_contents($path), Yaml::PARSE_CONSTANT);
@@ -54,7 +58,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
         }
 
         if (!\is_array($resourcesYaml)) {
-            throw new InvalidArgumentException(sprintf('"resources" setting is expected to be null or an array, %s given in "%s".', \gettype($resourcesYaml), $path));
+            throw new InvalidArgumentException(\sprintf('"resources" setting is expected to be null or an array, %s given in "%s".', \gettype($resourcesYaml), $path));
         }
 
         $this->buildResources($resourcesYaml, $path);
@@ -85,7 +89,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
                         'graphQlOperations' => $this->buildGraphQlOperations($resourceYamlDatum, $base),
                     ]);
                 } catch (InvalidArgumentException $exception) {
-                    throw new InvalidArgumentException(sprintf('%s in "%s" (%s).', $exception->getMessage(), $resourceName, $path));
+                    throw new InvalidArgumentException(\sprintf('%s in "%s" (%s).', $exception->getMessage(), $resourceName, $path));
                 }
             }
         }
@@ -106,7 +110,8 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             'types' => $this->buildArrayValue($resource, 'types'),
             'cacheHeaders' => $this->buildArrayValue($resource, 'cacheHeaders'),
             'hydraContext' => $this->buildArrayValue($resource, 'hydraContext'),
-            'openapiContext' => $this->buildArrayValue($resource, 'openapiContext'),
+            'openapiContext' => $this->buildArrayValue($resource, 'openapiContext'), // TODO Remove in 4.0
+            'openapi' => $this->buildOpenapi($resource),
             'paginationViaCursor' => $this->buildArrayValue($resource, 'paginationViaCursor'),
             'exceptionToStatus' => $this->buildArrayValue($resource, 'exceptionToStatus'),
             'defaults' => $this->buildArrayValue($resource, 'defaults'),
@@ -118,6 +123,10 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             'uriVariables' => $this->buildUriVariables($resource),
             'inputFormats' => $this->buildArrayValue($resource, 'inputFormats'),
             'outputFormats' => $this->buildArrayValue($resource, 'outputFormats'),
+            'stateOptions' => $this->buildStateOptions($resource),
+            'links' => $this->buildLinks($resource),
+            'headers' => $this->buildHeaders($resource),
+            'parameters' => $this->buildParameters($resource),
         ]);
     }
 
@@ -153,6 +162,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             'output' => $this->phpize($resource, 'output', 'bool|string'),
             'normalizationContext' => $this->buildArrayValue($resource, 'normalizationContext'),
             'denormalizationContext' => $this->buildArrayValue($resource, 'denormalizationContext'),
+            'collectDenormalizationErrors' => $this->phpize($resource, 'collectDenormalizationErrors', 'bool'),
             'validationContext' => $this->buildArrayValue($resource, 'validationContext'),
             'filters' => $this->buildArrayValue($resource, 'filters'),
             'order' => $this->buildArrayValue($resource, 'order'),
@@ -177,19 +187,19 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
                 continue;
             }
 
-            if (2 === \count($data) && isset($data[0]) && isset($data[1])) {
+            if (2 === (is_countable($data) ? \count($data) : 0) && isset($data[0]) && isset($data[1])) {
                 $data['fromClass'] = $data[0];
                 $data['fromProperty'] = $data[1];
                 unset($data[0], $data[1]);
             }
             if (isset($data['fromClass'])) {
-                $uriVariables[$parameterName]['from_class'] = $data['fromClass'];
+                $uriVariables[$parameterName]['from_class'] = $this->resolve($data['fromClass']);
             }
             if (isset($data['fromProperty'])) {
                 $uriVariables[$parameterName]['from_property'] = $data['fromProperty'];
             }
             if (isset($data['toClass'])) {
-                $uriVariables[$parameterName]['to_class'] = $data['toClass'];
+                $uriVariables[$parameterName]['to_class'] = $this->resolve($data['toClass']);
             }
             if (isset($data['toProperty'])) {
                 $uriVariables[$parameterName]['to_property'] = $data['toProperty'];
@@ -205,10 +215,62 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
         return $uriVariables;
     }
 
+    private function buildOpenapi(array $resource): bool|OpenApiOperation|null
+    {
+        if (!\array_key_exists('openapi', $resource)) {
+            return null;
+        }
+
+        if (!\is_array($resource['openapi'])) {
+            return $this->phpize($resource, 'openapi', 'bool');
+        }
+
+        $allowedProperties = array_map(fn (\ReflectionProperty $reflProperty): string => $reflProperty->getName(), (new \ReflectionClass(OpenApiOperation::class))->getProperties());
+        foreach ($resource['openapi'] as $key => $value) {
+            $resource['openapi'][$key] = match ($key) {
+                'externalDocs' => new ExternalDocumentation(description: $value['description'] ?? '', url: $value['url'] ?? ''),
+                'requestBody' => new RequestBody(description: $value['description'] ?? '', content: isset($value['content']) ? new \ArrayObject($value['content'] ?? []) : null, required: $value['required'] ?? false),
+                'callbacks' => new \ArrayObject($value ?? []),
+                default => $value,
+            };
+
+            if (\in_array($key, $allowedProperties, true)) {
+                continue;
+            }
+
+            $resource['openapi']['extensionProperties'][$key] = $value;
+            unset($resource['openapi'][$key]);
+        }
+
+        if (\array_key_exists('parameters', $resource['openapi']) && \is_array($openapiParameters = $resource['openapi']['parameters'] ?? [])) {
+            $parameters = [];
+            foreach ($openapiParameters as $parameter) {
+                $parameters[] = new Parameter(
+                    name: $parameter['name'],
+                    in: $parameter['in'],
+                    description: $parameter['description'] ?? '',
+                    required: $parameter['required'] ?? false,
+                    deprecated: $parameter['deprecated'] ?? false,
+                    allowEmptyValue: $parameter['allowEmptyValue'] ?? false,
+                    schema: $parameter['schema'] ?? [],
+                    style: $parameter['style'] ?? null,
+                    explode: $parameter['explode'] ?? false,
+                    allowReserved: $parameter['allowReserved '] ?? false,
+                    example: $parameter['example'] ?? null,
+                    examples: isset($parameter['examples']) ? new \ArrayObject($parameter['examples']) : null,
+                    content: isset($parameter['content']) ? new \ArrayObject($parameter['content']) : null
+                );
+            }
+            $resource['openapi']['parameters'] = $parameters;
+        }
+
+        return new OpenApiOperation(...$resource['openapi']);
+    }
+
     /**
      * @return bool|string|string[]|null
      */
-    private function buildMercure(array $resource)
+    private function buildMercure(array $resource): array|bool|string|null
     {
         if (!\array_key_exists('mercure', $resource)) {
             return null;
@@ -221,10 +283,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
         return $resource['mercure'];
     }
 
-    /**
-     * @return array|bool|string|null
-     */
-    private function buildMessenger(array $resource)
+    private function buildMessenger(array $resource): bool|array|string|null
     {
         if (!\array_key_exists('messenger', $resource)) {
             return null;
@@ -257,7 +316,7 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
             }
 
             if (!class_exists($class)) {
-                throw new InvalidArgumentException(sprintf('Operation class "%s" does not exist', $class));
+                throw new InvalidArgumentException(\sprintf('Operation class "%s" does not exist', $class));
             }
 
             $datum = $this->buildExtendedBase($operation);
@@ -269,12 +328,13 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
 
             if (\in_array((string) $class, [GetCollection::class, Post::class], true)) {
                 $datum['itemUriTemplate'] = $this->phpize($operation, 'itemUriTemplate', 'string');
+            } elseif (isset($operation['itemUriTemplate'])) {
+                throw new InvalidArgumentException(\sprintf('"itemUriTemplate" option is not allowed on a %s operation.', $class));
             }
 
             $data[] = array_merge($datum, [
                 'read' => $this->phpize($operation, 'read', 'bool'),
                 'deserialize' => $this->phpize($operation, 'deserialize', 'bool'),
-                'openapi' => $this->phpize($operation, 'openapi', 'bool'),
                 'validate' => $this->phpize($operation, 'validate', 'bool'),
                 'write' => $this->phpize($operation, 'write', 'bool'),
                 'serialize' => $this->phpize($operation, 'serialize', 'bool'),
@@ -295,44 +355,147 @@ final class YamlResourceExtractor extends AbstractResourceExtractor
         }
 
         $data = [];
-        foreach (['mutations' => Mutation::class, 'queries' => Query::class, 'subscriptions' => Subscription::class] as $type => $class) {
-            if (!\array_key_exists($type, $resource['graphQlOperations'])) {
-                continue;
+        foreach ($resource['graphQlOperations'] as $class => $operation) {
+            if (null === $operation) {
+                $operation = [];
             }
 
-            foreach ($resource['graphQlOperations'][$type] as $operation) {
-                $datum = $this->buildBase($operation);
-                foreach ($datum as $key => $value) {
-                    if (null === $value) {
-                        $datum[$key] = $root[$key];
-                    }
+            if (\array_key_exists('class', $operation)) {
+                if (!\array_key_exists('name', $operation) && \is_string($class)) {
+                    $operation['name'] = $class;
                 }
-
-                $collection = $this->phpize($operation, 'collection', 'bool', false);
-                if (Query::class === $class && $collection) {
-                    $class = QueryCollection::class;
-                }
-
-                $delete = $this->phpize($operation, 'delete', 'bool', false);
-                if (Mutation::class === $class && $delete) {
-                    $class = DeleteMutation::class;
-                }
-
-                $data[] = array_merge($datum, [
-                    'graphql_operation_class' => $class,
-                    'resolver' => $this->phpize($operation, 'resolver', 'string'),
-                    'args' => $operation['args'] ?? null,
-                    'class' => $this->phpize($operation, 'class', 'string'),
-                    'read' => $this->phpize($operation, 'read', 'bool'),
-                    'deserialize' => $this->phpize($operation, 'deserialize', 'bool'),
-                    'validate' => $this->phpize($operation, 'validate', 'bool'),
-                    'write' => $this->phpize($operation, 'write', 'bool'),
-                    'serialize' => $this->phpize($operation, 'serialize', 'bool'),
-                    'priority' => $this->phpize($operation, 'priority', 'integer'),
-                ]);
+                $class = $operation['class'];
             }
+
+            if (empty($class)) {
+                throw new InvalidArgumentException('Missing "class" attribute');
+            }
+
+            if (!class_exists($class)) {
+                throw new InvalidArgumentException(\sprintf('Operation class "%s" does not exist', $class));
+            }
+
+            $datum = $this->buildBase($operation);
+            foreach ($datum as $key => $value) {
+                if (null === $value) {
+                    $datum[$key] = $root[$key];
+                }
+            }
+
+            $data[] = array_merge($datum, [
+                'resolver' => $this->phpize($operation, 'resolver', 'string'),
+                'args' => $operation['args'] ?? null,
+                'extraArgs' => $operation['extraArgs'] ?? null,
+                'class' => (string) $class,
+                'read' => $this->phpize($operation, 'read', 'bool'),
+                'deserialize' => $this->phpize($operation, 'deserialize', 'bool'),
+                'validate' => $this->phpize($operation, 'validate', 'bool'),
+                'write' => $this->phpize($operation, 'write', 'bool'),
+                'serialize' => $this->phpize($operation, 'serialize', 'bool'),
+                'priority' => $this->phpize($operation, 'priority', 'integer'),
+                'name' => $this->phpize($operation, 'name', 'string'),
+            ]);
         }
 
         return $data ?: null;
+    }
+
+    private function buildStateOptions(array $resource): ?OptionsInterface
+    {
+        $stateOptions = $resource['stateOptions'] ?? [];
+        if (!\is_array($stateOptions)) {
+            return null;
+        }
+
+        if (!$stateOptions) {
+            return null;
+        }
+
+        $configuration = reset($stateOptions);
+        switch (key($stateOptions)) {
+            case 'elasticsearchOptions':
+                if (class_exists(Options::class)) {
+                    return new Options($configuration['index'] ?? null, $configuration['type'] ?? null);
+                }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Link[]
+     */
+    private function buildLinks(array $resource): ?array
+    {
+        if (!isset($resource['links']) || !\is_array($resource['links'])) {
+            return null;
+        }
+
+        $links = [];
+        foreach ($resource['links'] as $link) {
+            $links[] = new Link(rel: $link['rel'], href: $link['href']);
+        }
+
+        return $links;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function buildHeaders(array $resource): ?array
+    {
+        if (!isset($resource['headers']) || !\is_array($resource['headers'])) {
+            return null;
+        }
+
+        $headers = [];
+        foreach ($resource['headers'] as $key => $value) {
+            $headers[$key] = $value;
+        }
+
+        return $headers;
+    }
+
+    /**
+     * @return array<string, \ApiPlatform\Metadata\Parameter>
+     */
+    private function buildParameters(array $resource): ?array
+    {
+        if (!isset($resource['parameters']) || !\is_array($resource['parameters'])) {
+            return null;
+        }
+
+        $parameters = [];
+        foreach ($resource['parameters'] as $key => $parameter) {
+            $cl = ($parameter['in'] ?? 'query') === 'header' ? HeaderParameter::class : QueryParameter::class;
+            $parameters[$key] = new $cl(
+                key: $key,
+                required: $this->phpize($parameter, 'required', 'bool'),
+                schema: $parameter['schema'] ?? null,
+                openApi: ($parameter['openapi'] ?? null) ? new Parameter(
+                    name: $parameter['openapi']['name'],
+                    in: $parameter['in'] ?? 'query',
+                    description: $parameter['openapi']['description'] ?? '',
+                    required: $parameter['openapi']['required'] ?? $parameter['required'] ?? false,
+                    deprecated: $parameter['openapi']['deprecated'] ?? false,
+                    allowEmptyValue: $parameter['openapi']['allowEmptyValue'] ?? false,
+                    schema: $parameter['openapi']['schema'] ?? $parameter['schema'] ?? [],
+                    style: $parameter['openapi']['style'] ?? null,
+                    explode: $parameter['openapi']['explode'] ?? false,
+                    allowReserved: $parameter['openapi']['allowReserved '] ?? false,
+                    example: $parameter['openapi']['example'] ?? null,
+                    examples: isset($parameter['openapi']['examples']) ? new \ArrayObject($parameter['openapi']['examples']) : null,
+                    content: isset($parameter['openapi']['content']) ? new \ArrayObject($parameter['openapi']['content']) : null
+                ) : null,
+                provider: $this->phpize($parameter, 'provider', 'string'),
+                filter: $this->phpize($parameter, 'filter', 'string'),
+                property: $this->phpize($parameter, 'property', 'string'),
+                description: $this->phpize($parameter, 'description', 'string'),
+                priority: $this->phpize($parameter, 'priority', 'integer'),
+                extraProperties: $this->buildArrayValue($parameter, 'extraProperties') ?? [],
+            );
+        }
+
+        return $parameters;
     }
 }

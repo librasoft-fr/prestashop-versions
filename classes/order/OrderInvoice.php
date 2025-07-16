@@ -23,6 +23,9 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+
+use PrestaShopBundle\Form\Admin\Type\FormattedTextareaType;
+
 class OrderInvoiceCore extends ObjectModel
 {
     public const TAX_EXCL = 0;
@@ -60,6 +63,9 @@ class OrderInvoiceCore extends ObjectModel
     public $total_products_wt;
 
     /** @var float */
+    public $total_shipping;
+
+    /** @var float */
     public $total_shipping_tax_excl;
 
     /** @var float */
@@ -89,6 +95,9 @@ class OrderInvoiceCore extends ObjectModel
     /** @var Order|null */
     private $order;
 
+    /** @var bool|null */
+    public $is_delivery;
+
     /**
      * @see ObjectModel::$definition
      */
@@ -111,8 +120,8 @@ class OrderInvoiceCore extends ObjectModel
             'shipping_tax_computation_method' => ['type' => self::TYPE_INT],
             'total_wrapping_tax_excl' => ['type' => self::TYPE_FLOAT],
             'total_wrapping_tax_incl' => ['type' => self::TYPE_FLOAT],
-            'shop_address' => ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'size' => 4194303],
-            'note' => ['type' => self::TYPE_HTML, 'size' => 4194303],
+            'shop_address' => ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'size' => FormattedTextareaType::LIMIT_MEDIUMTEXT_UTF8_MB4],
+            'note' => ['type' => self::TYPE_HTML, 'size' => FormattedTextareaType::LIMIT_MEDIUMTEXT_UTF8_MB4],
             'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
         ],
     ];
@@ -255,9 +264,6 @@ class OrderInvoiceCore extends ObjectModel
             $row['total_price_tax_excl_including_ecotax'] = $row['total_price_tax_excl'];
             $row['total_price_tax_incl_including_ecotax'] = $row['total_price_tax_incl'];
 
-            if ($customized_datas) {
-                Product::addProductCustomizationPrice($row, $customized_datas);
-            }
             /* Stock product */
             $result_array[(int) $row['id_order_detail']] = $row;
         }
@@ -270,8 +276,6 @@ class OrderInvoiceCore extends ObjectModel
         $product['customizedDatas'] = null;
         if (isset($customized_datas[$product['product_id']][$product['product_attribute_id']])) {
             $product['customizedDatas'] = $customized_datas[$product['product_id']][$product['product_attribute_id']];
-        } else {
-            $product['customizationQuantityTotal'] = 0;
         }
     }
 
@@ -282,13 +286,8 @@ class OrderInvoiceCore extends ObjectModel
      */
     protected function setProductCurrentStock(&$product)
     {
-        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')
-            && (int) $product['advanced_stock_management'] == 1
-            && (int) $product['id_warehouse'] > 0) {
-            $product['current_stock'] = StockManagerFactory::getManager()->getProductPhysicalQuantities($product['product_id'], $product['product_attribute_id'], null, true);
-        } else {
-            $product['current_stock'] = '--';
-        }
+        $product['current_stock'] = StockAvailable::getQuantityAvailableByProduct((int) $product['product_id'], (int) $product['product_attribute_id'], (int) $product['id_shop']);
+        $product['location'] = StockAvailable::getLocation((int) $product['product_id'], (int) $product['product_attribute_id'], (int) $product['id_shop']);
     }
 
     /**
@@ -342,7 +341,7 @@ class OrderInvoiceCore extends ObjectModel
     		AND od.`tax_computation_method` = ' . (int) TaxCalculator::ONE_AFTER_ANOTHER_METHOD)
             || Configuration::get(
                 'PS_INVOICE_TAXES_BREAKDOWN'
-        );
+            );
     }
 
     public function displayTaxBasesInProductTaxesBreakdown()
@@ -744,7 +743,7 @@ class OrderInvoiceCore extends ObjectModel
             return 0;
         }
 
-        return round($this->total_paid_tax_incl + $this->getSiblingTotal() - $this->getTotalPaid(), 2);
+        return round($this->total_paid_tax_incl + (float) $this->getSiblingTotal() - $this->getTotalPaid(), 2);
     }
 
     /**

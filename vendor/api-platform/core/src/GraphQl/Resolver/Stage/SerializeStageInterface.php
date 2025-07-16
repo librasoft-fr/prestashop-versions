@@ -19,11 +19,10 @@ use ApiPlatform\Metadata\GraphQl\Operation;
  * Serialize stage of GraphQL resolvers.
  *
  * @author Alan Poulain <contact@alanpoulain.eu>
+ *
+ * @deprecated
  */
 interface SerializeStageInterface
 {
-    /**
-     * @param object|iterable|null $itemOrCollection
-     */
-    public function __invoke($itemOrCollection, string $resourceClass, Operation $operation, array $context): ?array;
+    public function __invoke(object|array|null $itemOrCollection, string $resourceClass, Operation $operation, array $context): ?array;
 }

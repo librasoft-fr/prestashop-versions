@@ -1,4 +1,4 @@
-(()=>{"use strict";var e={9567:e=>{e.exports=window.jQuery}},o={};function r(t){var n=o[t];if(void 0!==n)return n.exports;var i=o[t]={exports:{}};return e[t](i,i.exports,r),i.exports}r.r=e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})};var t={};(()=>{r.r(t);
+(()=>{"use strict";var e={428:e=>{e.exports=window.jQuery}},o={};
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -22,7 +22,7 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */const e="#configurationFormAlertMessageOptin",o="#form_enable_offers",n='input[name="form[enable_offers]"]:checked';var i=r(9567);
+ */const r="#configurationFormAlertMessageOptin",n="#form_enable_offers",t='input[name="form[enable_offers]"]:checked';var s=function r(n){var t=o[n];if(void 0!==t)return t.exports;var s=o[n]={exports:{}};return e[n](s,s.exports,r),s.exports}(428);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -46,4 +46,4 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */i((()=>{window.prestashop.component.initComponents(["MultistoreConfigField"]),i(o).on("click",(()=>{i(e).toggleClass("d-none","1"===i(n).val())}))}))})(),window.customer_preferences=t})();
+ */s((()=>{window.prestashop.component.initComponents(["MultistoreConfigField"]),s(n).on("click",(()=>{s(r).toggleClass("d-none","1"===s(t).val())}))})),window.customer_preferences={}})();

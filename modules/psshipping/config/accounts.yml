@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    public: true
+
+  ps_accounts.installer:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Installer'
+    arguments:
+      - "5.0"
+
+  ps_accounts.facade:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts'
+    arguments:
+      - "@ps_accounts.installer"

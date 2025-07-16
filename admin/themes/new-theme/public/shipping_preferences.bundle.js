@@ -1,4 +1,4 @@
-(()=>{"use strict";var e={9567:e=>{e.exports=window.jQuery}},r={};function o(t){var n=r[t];if(void 0!==n)return n.exports;var i=r[t]={exports:{}};return e[t](i,i.exports,o),i.exports}
+(()=>{"use strict";var r={428:r=>{r.exports=window.jQuery}},e={};var o=function o(t){var n=e[t];if(void 0!==n)return n.exports;var i=e[t]={exports:{}};return r[t](i,i.exports,o),i.exports}(428);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -23,4 +23,4 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-o(9567)((()=>{window.prestashop.component.initComponents(["MultistoreConfigField"])})),window.shipping_preferences={}})();
+o((()=>{window.prestashop.component.initComponents(["MultistoreConfigField"])})),window.shipping_preferences={}})();

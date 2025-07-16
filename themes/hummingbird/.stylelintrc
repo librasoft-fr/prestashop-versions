@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "stylelint-config-prestashop"
+  ],
+  "customSyntax": "postcss-scss",
+  "rules": {
+    "selector-id-pattern": null,
+    "selector-max-id": null,
+    "selector-max-class": null,
+    "selector-max-type": null,
+    "selector-max-compound-selectors": null,
+    "selector-no-qualifying-type": null,
+    "selector-max-combinators": null,
+    "selector-class-pattern": null,
+    "function-disallowed-list": null,
+    "scss/dollar-variable-default": null,
+    "property-disallowed-list": null
+  }
+}

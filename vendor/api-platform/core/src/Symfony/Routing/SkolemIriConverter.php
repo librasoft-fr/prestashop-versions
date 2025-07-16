@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\Routing;
 
-use ApiPlatform\Api\IriConverterInterface;
-use ApiPlatform\Api\UrlGeneratorInterface;
-use ApiPlatform\Exception\ItemNotFoundException;
+use ApiPlatform\Metadata\Exception\ItemNotFoundException;
+use ApiPlatform\Metadata\IriConverterInterface;
 use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Metadata\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -41,31 +41,31 @@ final class SkolemIriConverter implements IriConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function getResourceFromIri(string $iri, array $context = [], ?Operation $operation = null)
+    public function getResourceFromIri(string $iri, array $context = [], ?Operation $operation = null): object
     {
-        throw new ItemNotFoundException(sprintf('Item not found for "%s".', $iri));
+        throw new ItemNotFoundException(\sprintf('Item not found for "%s".', $iri));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getIriFromResource($item, int $referenceType = UrlGeneratorInterface::ABS_PATH, Operation $operation = null, array $context = []): ?string
+    public function getIriFromResource(object|string $resource, int $referenceType = UrlGeneratorInterface::ABS_PATH, ?Operation $operation = null, array $context = []): ?string
     {
         $referenceType = $operation ? ($operation->getUrlGenerationStrategy() ?? $referenceType) : $referenceType;
-        if (($isObject = \is_object($item)) && $this->objectHashMap->contains($item)) {
-            return $this->router->generate('api_genid', ['id' => $this->objectHashMap[$item]], $referenceType);
+        if (($isObject = \is_object($resource)) && $this->objectHashMap->contains($resource)) {
+            return $this->router->generate('api_genid', ['id' => $this->objectHashMap[$resource]], $referenceType);
         }
 
-        if (\is_string($item) && isset($this->classHashMap[$item])) {
-            return $this->router->generate('api_genid', ['id' => $this->classHashMap[$item]], $referenceType);
+        if (\is_string($resource) && isset($this->classHashMap[$resource])) {
+            return $this->router->generate('api_genid', ['id' => $this->classHashMap[$resource]], $referenceType);
         }
 
         $id = bin2hex(random_bytes(10));
 
         if ($isObject) {
-            $this->objectHashMap[$item] = $id;
+            $this->objectHashMap[$resource] = $id;
         } else {
-            $this->classHashMap[$item] = $id;
+            $this->classHashMap[$resource] = $id;
         }
 
         return $this->router->generate('api_genid', ['id' => $id], $referenceType);

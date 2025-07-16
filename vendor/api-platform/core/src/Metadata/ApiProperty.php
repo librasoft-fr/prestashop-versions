@@ -20,166 +20,207 @@ use Symfony\Component\PropertyInfo\Type;
  *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::TARGET_PARAMETER)]
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::TARGET_PARAMETER | \Attribute::TARGET_CLASS_CONSTANT)]
 final class ApiProperty
 {
     /**
-     * @var string
-     */
-    private $description;
-
-    /**
-     * @var bool
-     */
-    private $readable;
-
-    /**
-     * @var bool
-     */
-    private $writable;
-
-    /**
-     * @var bool
-     */
-    private $readableLink;
-
-    /**
-     * @var bool
-     */
-    private $writableLink;
-
-    /**
-     * @var bool
-     */
-    private $required;
-
-    /**
-     * @var bool
-     */
-    private $identifier;
-
-    /**
-     * @var string|int|float|bool|array|null
-     */
-    private $default;
-
-    /**
-     * @var string|int|float|bool|array|null
-     */
-    private $example;
-
-    private $deprecationReason;
-    private $fetchable;
-    private $fetchEager;
-    private $jsonldContext;
-    private $openapiContext;
-    private $jsonSchemaContext;
-    private $push;
-    private $security;
-    private $securityPostDenormalize;
-
-    /**
-     * @var string|string[]|null
-     */
-    private $types;
-
-    /**
-     * The related php types.
-     *
-     * @var Type[]
-     */
-    private $builtinTypes;
-
-    private $schema;
-    private $initializable;
-    private $genId;
-
-    /**
-     * @var string[]
-     */
-    private $iris;
-
-    /**
-     * @var array
-     */
-    private $extraProperties;
-
-    /**
-     * @param bool|null            $readableLink            https://api-platform.com/docs/core/serialization/#force-iri-with-relations-of-the-same-type-parentchilds-relations
-     * @param bool|null            $writableLink            https://api-platform.com/docs/core/serialization/#force-iri-with-relations-of-the-same-type-parentchilds-relations
-     * @param bool|null            $required                https://api-platform.com/docs/admin/validation/#client-side-validation
-     * @param bool|null            $identifier              https://api-platform.com/docs/core/identifiers/
-     * @param string|null          $default
-     * @param string|null          $example                 https://api-platform.com/docs/core/openapi/#using-the-openapi-and-swagger-contexts
-     * @param string|null          $deprecationReason       https://api-platform.com/docs/core/deprecations/#deprecating-resource-classes-operations-and-properties
-     * @param bool|null            $fetchEager              https://api-platform.com/docs/core/performance/#eager-loading
-     * @param array|null           $jsonldContext           https://api-platform.com/docs/core/extending-jsonld-context/#extending-json-ld-and-hydra-contexts
-     * @param array|null           $openapiContext          https://api-platform.com/docs/core/openapi/#using-the-openapi-and-swagger-contexts
-     * @param bool|null            $push                    https://api-platform.com/docs/core/push-relations/
-     * @param string|null          $security                https://api-platform.com/docs/core/security
-     * @param string|null          $securityPostDenormalize https://api-platform.com/docs/core/security/#executing-access-control-rules-after-denormalization
-     * @param array|null           $types                   the RDF types of this property
-     * @param string|string[]|null $iris
+     * @param bool|null               $readableLink            https://api-platform.com/docs/core/serialization/#force-iri-with-relations-of-the-same-type-parentchilds-relations
+     * @param bool|null               $writableLink            https://api-platform.com/docs/core/serialization/#force-iri-with-relations-of-the-same-type-parentchilds-relations
+     * @param bool|null               $required                https://api-platform.com/docs/admin/validation/#client-side-validation
+     * @param bool|null               $identifier              https://api-platform.com/docs/core/identifiers/
+     * @param mixed                   $example                 https://api-platform.com/docs/core/openapi/#using-the-openapi-and-swagger-contexts
+     * @param string|null             $deprecationReason       https://api-platform.com/docs/core/deprecations/#deprecating-resource-classes-operations-and-properties
+     * @param bool|null               $fetchEager              https://api-platform.com/docs/core/performance/#eager-loading
+     * @param array|null              $jsonldContext           https://api-platform.com/docs/core/extending-jsonld-context/#extending-json-ld-and-hydra-contexts
+     * @param array|null              $openapiContext          https://api-platform.com/docs/core/openapi/#using-the-openapi-and-swagger-contexts
+     * @param bool|null               $push                    https://api-platform.com/docs/core/push-relations/
+     * @param string|\Stringable|null $security                https://api-platform.com/docs/core/security
+     * @param string|\Stringable|null $securityPostDenormalize https://api-platform.com/docs/core/security/#executing-access-control-rules-after-denormalization
+     * @param string[]                $types                   the RDF types of this property
+     * @param string[]                $iris
+     * @param Type[]                  $builtinTypes
+     * @param string|null             $uriTemplate             (experimental) whether to return the subRessource collection IRI instead of an iterable of IRI
      */
     public function __construct(
-        ?string $description = null,
-        ?bool $readable = null,
-        ?bool $writable = null,
-        ?bool $readableLink = null,
-        ?bool $writableLink = null,
-        ?bool $required = null,
-        ?bool $identifier = null,
-
-        $default = null,
-        $example = null,
-
-        ?string $deprecationReason = null,
-        ?bool $fetchable = null,
-        ?bool $fetchEager = null,
-        ?array $jsonldContext = null,
-        ?array $openapiContext = null,
-        ?array $jsonSchemaContext = null,
-        ?bool $push = null,
-        ?string $security = null,
-        ?string $securityPostDenormalize = null,
-
-        $types = null,
-        ?array $builtinTypes = null,
-        ?array $schema = null,
-        ?bool $initializable = null,
-        ?bool $genId = null,
-
-        $iris = null,
-
-        // attributes
-        array $extraProperties = []
+        private ?string $description = null,
+        private ?bool $readable = null,
+        private ?bool $writable = null,
+        private ?bool $readableLink = null,
+        private ?bool $writableLink = null,
+        private ?bool $required = null,
+        private ?bool $identifier = null,
+        private mixed $default = null,
+        private mixed $example = null,
+        /**
+         * The `deprecationReason` option deprecates the current operation with a deprecation message.
+         *
+         * <div data-code-selector>
+         *
+         * ```php
+         * <?php
+         * // api/src/Entity/Review.php
+         * use ApiPlatform\Metadata\ApiProperty;
+         * use ApiPlatform\Metadata\ApiResource;
+         *
+         * #[ApiResource]
+         * class Review
+         * {
+         *     #[ApiProperty(deprecationReason: "Use the rating property instead")]
+         *     public string $letter;
+         * }
+         * ```
+         *
+         * ```yaml
+         * # api/config/api_platform/properties.yaml
+         * properties:
+         *     App\Entity\Review:
+         *         letter:
+         *             deprecationReason: 'Create a Book instead'
+         * ```
+         *
+         * ```xml
+         * <?xml version="1.0" encoding="UTF-8" ?>
+         * <!-- api/config/api_platform/properties.xml -->
+         *
+         * <properties
+         *         xmlns="https://api-platform.com/schema/metadata/properties-3.0"
+         *         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         *         xsi:schemaLocation="https://api-platform.com/schema/metadata/properties-3.0
+         *         https://api-platform.com/schema/metadata/properties-3.0.xsd">
+         *     <property resource="App\Entity\Review" name="letter" deprecationReason="Create a Book instead" />
+         * </properties>
+         * ```
+         *
+         * </div>
+         *
+         * - With JSON-lD / Hydra, [an `owl:deprecated` annotation property](https://www.w3.org/TR/owl2-syntax/#Annotation_Properties) will be added to the appropriate data structure
+         * - With Swagger / OpenAPI, [a `deprecated` property](https://swagger.io/docs/specification/2-0/paths-and-operations/) will be added
+         * - With GraphQL, the [`isDeprecated` and `deprecationReason` properties](https://facebook.github.io/graphql/June2018/#sec-Deprecation) will be added to the schema
+         */
+        private ?string $deprecationReason = null,
+        private ?bool $fetchable = null,
+        private ?bool $fetchEager = null,
+        private ?array $jsonldContext = null,
+        private ?array $openapiContext = null,
+        private ?array $jsonSchemaContext = null,
+        private ?bool $push = null,
+        /**
+         * The `security` option defines the access to the current property, on normalization process, based on Symfony Security.
+         * It receives an `object` variable related to the current object, and a `property` variable related to the current property.
+         *
+         * <div data-code-selector>
+         *
+         * ```php
+         * <?php
+         * // api/src/Entity/Review.php
+         * use ApiPlatform\Metadata\ApiProperty;
+         * use ApiPlatform\Metadata\ApiResource;
+         *
+         * #[ApiResource]
+         * class Review
+         * {
+         *     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
+         *     public string $letter;
+         * }
+         * ```
+         *
+         * ```yaml
+         * # api/config/api_platform/properties.yaml
+         * properties:
+         *     App\Entity\Review:
+         *         letter:
+         *             security: 'is_granted("ROLE_ADMIN")'
+         * ```
+         *
+         * ```xml
+         * <?xml version="1.0" encoding="UTF-8" ?>
+         * <!-- api/config/api_platform/properties.xml -->
+         *
+         * <properties
+         *         xmlns="https://api-platform.com/schema/metadata/properties-3.0"
+         *         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         *         xsi:schemaLocation="https://api-platform.com/schema/metadata/properties-3.0
+         *         https://api-platform.com/schema/metadata/properties-3.0.xsd">
+         *     <property resource="App\Entity\Review" name="letter" security="is_granted('ROLE_ADMIN')" />
+         * </properties>
+         * ```
+         *
+         * </div>
+         */
+        private string|\Stringable|null $security = null,
+        /**
+         * The `securityPostDenormalize` option defines access to the current property after the denormalization process, based on Symfony Security.
+         * It receives an `object` variable related to the current object, and a `property` variable related to the current property.
+         *
+         * <div data-code-selector>
+         *
+         * ```php
+         * <?php
+         * // api/src/Entity/Review.php
+         * use ApiPlatform\Metadata\ApiProperty;
+         * use ApiPlatform\Metadata\ApiResource;
+         *
+         * #[ApiResource]
+         * class Review
+         * {
+         *     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
+         *     public string $letter;
+         * }
+         * ```
+         *
+         * ```yaml
+         * # api/config/api_platform/properties.yaml
+         * properties:
+         *     App\Entity\Review:
+         *         letter:
+         *             securityPostDenormalize: 'is_granted("ROLE_ADMIN")'
+         * ```
+         *
+         * ```xml
+         * <?xml version="1.0" encoding="UTF-8" ?>
+         * <!-- api/config/api_platform/properties.xml -->
+         *
+         * <properties
+         *         xmlns="https://api-platform.com/schema/metadata/properties-3.0"
+         *         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         *         xsi:schemaLocation="https://api-platform.com/schema/metadata/properties-3.0
+         *         https://api-platform.com/schema/metadata/properties-3.0.xsd">
+         *     <property resource="App\Entity\Review" name="letter" securityPostDenormalize="is_granted('ROLE_ADMIN')" />
+         * </properties>
+         * ```
+         *
+         * </div>
+         */
+        private string|\Stringable|null $securityPostDenormalize = null,
+        private array|string|null $types = null,
+        /*
+         * The related php types.
+         */
+        private ?array $builtinTypes = null,
+        private ?array $schema = null,
+        private ?bool $initializable = null,
+        private $iris = null,
+        private ?bool $genId = null,
+        private ?string $uriTemplate = null,
+        private ?string $property = null,
+        private array $extraProperties = [],
     ) {
-        $this->description = $description;
-        $this->readable = $readable;
-        $this->writable = $writable;
-        $this->readableLink = $readableLink;
-        $this->writableLink = $writableLink;
-        $this->required = $required;
-        $this->identifier = $identifier;
-        $this->default = $default;
-        $this->example = $example;
-        $this->deprecationReason = $deprecationReason;
-        $this->fetchable = $fetchable;
-        $this->fetchEager = $fetchEager;
-        $this->jsonldContext = $jsonldContext;
-        $this->openapiContext = $openapiContext;
-        $this->jsonSchemaContext = $jsonSchemaContext;
-        $this->push = $push;
-        $this->security = $security;
-        $this->openapiContext = $openapiContext;
-        $this->securityPostDenormalize = $securityPostDenormalize;
-        $this->types = null === $types ? null : (array) $types;
-        $this->builtinTypes = $builtinTypes;
-        $this->schema = $schema;
-        $this->initializable = $initializable;
-        $this->genId = $genId;
-        $this->iris = $iris;
-        $this->extraProperties = $extraProperties;
+        if (\is_string($types)) {
+            $this->types = (array) $types;
+        }
+    }
+
+    public function getProperty(): ?string
+    {
+        return $this->property;
+    }
+
+    public function withProperty(string $property): self
+    {
+        $self = clone $this;
+        $self->property = $property;
+
+        return $self;
     }
 
     public function getDescription(): ?string
@@ -286,12 +327,12 @@ final class ApiProperty
         return $self;
     }
 
-    public function getExample()
+    public function getExample(): mixed
     {
         return $this->example;
     }
 
-    public function withExample($example): self
+    public function withExample(mixed $example): self
     {
         $self = clone $this;
         $self->example = $example;
@@ -392,7 +433,7 @@ final class ApiProperty
 
     public function getSecurity(): ?string
     {
-        return $this->security;
+        return $this->security instanceof \Stringable ? (string) $this->security : $this->security;
     }
 
     public function withSecurity($security): self
@@ -405,7 +446,7 @@ final class ApiProperty
 
     public function getSecurityPostDenormalize(): ?string
     {
-        return $this->securityPostDenormalize;
+        return $this->securityPostDenormalize instanceof \Stringable ? (string) $this->securityPostDenormalize : $this->securityPostDenormalize;
     }
 
     public function withSecurityPostDenormalize($securityPostDenormalize): self
@@ -424,7 +465,7 @@ final class ApiProperty
     /**
      * @param string[]|string $types
      */
-    public function withTypes($types = []): self
+    public function withTypes(array|string $types = []): self
     {
         $self = clone $this;
         $self->types = (array) $types;
@@ -503,7 +544,7 @@ final class ApiProperty
      *
      * @param string|string[] $iris
      */
-    public function withIris($iris): self
+    public function withIris(string|array $iris): self
     {
         $metadata = clone $this;
         $metadata->iris = (array) $iris;
@@ -523,6 +564,24 @@ final class ApiProperty
     {
         $metadata = clone $this;
         $metadata->genId = $genId;
+
+        return $metadata;
+    }
+
+    /**
+     * Whether to return the subRessource collection IRI instead of an iterable of IRI.
+     *
+     * @experimental
+     */
+    public function getUriTemplate(): ?string
+    {
+        return $this->uriTemplate;
+    }
+
+    public function withUriTemplate(?string $uriTemplate): self
+    {
+        $metadata = clone $this;
+        $metadata->uriTemplate = $uriTemplate;
 
         return $metadata;
     }

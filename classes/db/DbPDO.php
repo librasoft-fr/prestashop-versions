@@ -72,8 +72,6 @@ class DbPDOCore extends Db
                 PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',
                 PDO::MYSQL_ATTR_MULTI_STATEMENTS => _PS_ALLOW_MULTI_STATEMENTS_QUERIES_,
-                // FIX This option keeps all data as strings and stops automatic casting to integers, floats and other types
-                PDO::ATTR_STRINGIFY_FETCHES => true,
             ]
         );
     }

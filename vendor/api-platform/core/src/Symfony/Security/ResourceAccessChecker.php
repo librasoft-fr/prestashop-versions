@@ -19,7 +19,6 @@ use Symfony\Component\Security\Core\Authentication\Token\NullToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 
 /**
@@ -29,25 +28,8 @@ use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
  */
 final class ResourceAccessChecker implements ResourceAccessCheckerInterface
 {
-    private $expressionLanguage;
-    private $authenticationTrustResolver;
-    private $roleHierarchy;
-    private $tokenStorage;
-    private $authorizationChecker;
-    private $exceptionOnNoToken;
-
-    public function __construct(ExpressionLanguage $expressionLanguage = null, AuthenticationTrustResolverInterface $authenticationTrustResolver = null, RoleHierarchyInterface $roleHierarchy = null, TokenStorageInterface $tokenStorage = null, AuthorizationCheckerInterface $authorizationChecker = null, bool $exceptionOnNoToken = true)
+    public function __construct(private readonly ?ExpressionLanguage $expressionLanguage = null, private readonly ?AuthenticationTrustResolverInterface $authenticationTrustResolver = null, private readonly ?RoleHierarchyInterface $roleHierarchy = null, private readonly ?TokenStorageInterface $tokenStorage = null, private readonly ?AuthorizationCheckerInterface $authorizationChecker = null)
     {
-        $this->expressionLanguage = $expressionLanguage;
-        $this->authenticationTrustResolver = $authenticationTrustResolver;
-        $this->roleHierarchy = $roleHierarchy;
-        $this->tokenStorage = $tokenStorage;
-        $this->authorizationChecker = $authorizationChecker;
-
-        if (5 < \func_num_args()) {
-            $this->exceptionOnNoToken = $exceptionOnNoToken;
-            trigger_deprecation('api-platform/core', '2.7', 'The $exceptionOnNoToken parameter in "%s()" is deprecated and will always be false in 3.0, you should stop using it.', __METHOD__);
-        }
     }
 
     public function isGranted(string $resourceClass, string $expression, array $extraVariables = []): bool
@@ -55,15 +37,7 @@ final class ResourceAccessChecker implements ResourceAccessCheckerInterface
         if (null === $this->tokenStorage || null === $this->authenticationTrustResolver) {
             throw new \LogicException('The "symfony/security" library must be installed to use the "security" attribute.');
         }
-        if (null === $token = $this->tokenStorage->getToken()) {
-            if ($this->exceptionOnNoToken) {
-                throw new \LogicException('The current token must be set to use the "security" attribute (is the URL behind a firewall?).');
-            }
 
-            if (class_exists(NullToken::class)) {
-                $token = new NullToken();
-            }
-        }
         if (null === $this->expressionLanguage) {
             throw new \LogicException('The "symfony/expression-language" library must be installed to use the "security" attribute.');
         }
@@ -73,9 +47,11 @@ final class ResourceAccessChecker implements ResourceAccessCheckerInterface
             'auth_checker' => $this->authorizationChecker, // needed for the is_granted expression function
         ]);
 
-        if ($token) {
-            $variables = array_merge($variables, $this->getVariables($token));
+        if (null === $token = $this->tokenStorage->getToken()) {
+            $token = new NullToken();
         }
+
+        $variables = array_merge($variables, $this->getVariables($token));
 
         return (bool) $this->expressionLanguage->evaluate($expression, $variables);
     }
@@ -100,17 +76,9 @@ final class ResourceAccessChecker implements ResourceAccessCheckerInterface
     private function getEffectiveRoles(TokenInterface $token): array
     {
         if (null === $this->roleHierarchy) {
-            return method_exists($token, 'getRoleNames') ? $token->getRoleNames() : array_map('strval', $token->getRoles()); // @phpstan-ignore-line
+            return $token->getRoleNames();
         }
 
-        if (method_exists($this->roleHierarchy, 'getReachableRoleNames')) {
-            return $this->roleHierarchy->getReachableRoleNames($token->getRoleNames());
-        }
-
-        return array_map(static function (Role $role): string {
-            return $role->getRole(); // @phpstan-ignore-line
-        }, $this->roleHierarchy->getReachableRoles($token->getRoles())); // @phpstan-ignore-line
+        return $this->roleHierarchy->getReachableRoleNames($token->getRoleNames());
     }
 }
-
-class_alias(ResourceAccessChecker::class, \ApiPlatform\Core\Security\ResourceAccessChecker::class);

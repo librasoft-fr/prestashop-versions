@@ -1,4 +1,4 @@
-(()=>{"use strict";var e={r:e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},o={};e.r(o);
+(()=>{"use strict";
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -22,4 +22,4 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */const r="#forward_customer_thread_someone_else_email",t="#forward_customer_thread_employee_id",{$:n}=window;n((()=>{n(t).on("change",(e=>{const o=n(r).closest(".form-group"),t=n(e.currentTarget).val();0===parseInt(t,10)?o.removeClass("d-none"):o.addClass("d-none")}))})),window.customer_thread_view=o})();
+ */const e="#forward_customer_thread_someone_else_email",o="#forward_customer_thread_employee_id",{$:r}=window;r((()=>{r(o).on("change",(o=>{const s=r(e).closest(".form-group"),t=r(o.currentTarget).val();0===parseInt(t,10)?s.removeClass("d-none"):s.addClass("d-none")}))})),window.customer_thread_view={}})();

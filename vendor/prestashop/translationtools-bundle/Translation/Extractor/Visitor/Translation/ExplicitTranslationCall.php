@@ -24,9 +24,6 @@ class ExplicitTranslationCall extends AbstractTranslationNodeVisitor
         $this->translations->add($this->extractFrom($node));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function extractFrom(Node $node)
     {
         if (!$this->appliesFor($node)) {
@@ -88,9 +85,7 @@ class ExplicitTranslationCall extends AbstractTranslationNodeVisitor
     }
 
     /**
-     * @param Node|\PhpParser\Node\Expr\MethodCall|\PhpParser\Node\Expr\FuncCall $node
-     *
-     * @return mixed
+     * @param Node|Node\Expr\MethodCall|Node\Expr\FuncCall $node
      */
     private function getNodeName(Node $node)
     {

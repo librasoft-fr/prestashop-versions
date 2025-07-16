@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="views/templates/admin/error.html.twig" source-language="en-US" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="8a5560b05facacdbc10e870b1152e41b">
+        <source>It looks like we have trouble connecting to Addons. Please refresh the page or check your firewall configuration.</source>
+        <target>It looks like we have trouble connecting to Addons. Please refresh the page or check your firewall configuration.</target>
+        <note>Line: 32</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

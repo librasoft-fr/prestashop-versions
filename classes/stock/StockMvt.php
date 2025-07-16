@@ -25,7 +25,8 @@
  */
 
 /**
- * @since 1.5.0 It now defines stock movements when the advanced stock management system is available
+ * @since 1.5.0 Defines stock movements
+ * @deprecated since 9.0 and will be removed in 10.0, this object model is no longer needed
  */
 class StockMvtCore extends ObjectModel
 {
@@ -129,8 +130,8 @@ class StockMvtCore extends ObjectModel
         'primary' => 'id_stock_mvt',
         'fields' => [
             'id_employee' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'employee_firstname' => ['type' => self::TYPE_STRING, 'validate' => 'isName'],
-            'employee_lastname' => ['type' => self::TYPE_STRING, 'validate' => 'isName'],
+            'employee_firstname' => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'size' => 255],
+            'employee_lastname' => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'size' => 255],
             'id_stock' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'physical_quantity' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
             'id_stock_mvt_reason' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>psassistant</name>
+    <displayName><![CDATA[Assistance By PrestaShop]]></displayName>
+    <version><![CDATA[1.1.0]]></version>
+    <description><![CDATA[Allow Prestashop support to access some parts of your store.]]></description>
+    <author><![CDATA[PrestaShop]]></author>
+    <tab><![CDATA[administration]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

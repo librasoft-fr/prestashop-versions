@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin-dev" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="6149631c687b5866fcbd9133254e1015">
+        <source>PrestaShop Classic Edition</source>
+        <target>PrestaShop Classic Edition</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="4c6c4199f559fc0cb998c11097002ee7">
+        <source>PrestaShop Classic Edition.</source>
+        <target>PrestaShop Classic Edition.</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

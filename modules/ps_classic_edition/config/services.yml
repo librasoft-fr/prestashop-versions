@@ -1,0 +1,26 @@
+imports:
+  - { resource: ./presenters.yml }
+
+services:
+  _defaults:
+    public: true
+
+  ps_classic_edition.module:
+    class: ps_classic_edition
+    factory: ["Module", "getInstanceByName"]
+    arguments:
+      - "ps_classic_edition"
+
+  ps_classic_edition.ps_accounts.installer:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Installer'
+    arguments:
+      - "5.2.5"
+
+  ps_classic_edition.ps_accounts.facade:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts'
+    arguments:
+      - "@ps_classic_edition.ps_accounts.installer"
+
+  PrestaShop\Module\PsClassicEdition\Helper\PsAccountHelper:
+    autowire: true
+    public: true

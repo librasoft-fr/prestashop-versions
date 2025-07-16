@@ -1,0 +1,15 @@
+.pagination {
+  margin-bottom: 0;
+
+  .page-link i {
+    width: auto;
+    height: auto;
+    font-size: 1.25rem;
+  }
+
+  &-container {
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}

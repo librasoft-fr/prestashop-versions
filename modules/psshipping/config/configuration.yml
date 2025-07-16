@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\Psshipping\Domain\Carriers\StandardCarrierConfiguration:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\StandardCarrierConfiguration'
+    arguments:
+      - 'prestashop.core.command_bus'
+
+  PrestaShop\Module\Psshipping\Domain\Carriers\PickupCarrierConfiguration:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\PickupCarrierConfiguration'
+    arguments:
+      - 'prestashop.core.command_bus'

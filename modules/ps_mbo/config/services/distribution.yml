@@ -1,0 +1,40 @@
+parameters:
+  ps_cache_dir: !php/const _PS_CACHE_DIR_
+
+services:
+  _defaults:
+    public: true
+
+  mbo_doctrine_cache_provider: '@Doctrine\Common\Cache\Psr6\DoctrineProvider'
+
+  Symfony\Component\Cache\Adapter\FilesystemAdapter:
+    autowire: true
+    arguments:
+      $namespace: ''
+      $defaultLifetime: 0
+      $directory: "%ps_cache_dir%%/ps_mbo"
+
+  Doctrine\Common\Cache\Psr6\DoctrineProvider:
+    autowire: true
+    autoconfigure: true
+    factory: [ Doctrine\Common\Cache\Psr6\DoctrineProvider, wrap ]
+    arguments:
+      $pool: '@Symfony\Component\Cache\Adapter\FilesystemAdapter'
+
+  # Distribution API Client
+  PrestaShop\Module\Mbo\Distribution\Client:
+    autowire: true
+    arguments:
+      $apiUrl: "%env(DISTRIBUTION_API_URL)%"
+      $httpClient: '@Psr\Http\Client\ClientInterface'
+      $requestFactory: '@Psr\Http\Message\ServerRequestFactoryInterface'
+      $cacheProvider: '@Doctrine\Common\Cache\Psr6\DoctrineProvider'
+
+  # Distribution API Client with addons user
+  PrestaShop\Module\Mbo\Distribution\ConnectedClient:
+    autowire: true
+    arguments:
+      $apiUrl: "%env(DISTRIBUTION_API_URL)%"
+      $httpClient: '@Psr\Http\Client\ClientInterface'
+      $requestFactory: '@Psr\Http\Message\ServerRequestFactoryInterface'
+      $cacheProvider: '@Doctrine\Common\Cache\Psr6\DoctrineProvider'

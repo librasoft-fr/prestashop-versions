@@ -25,12 +25,8 @@ use Psr\Container\ContainerInterface;
  */
 abstract class AbstractFilterExtension implements RequestBodySearchCollectionExtensionInterface
 {
-    /** @var ContainerInterface */
-    private $filterLocator;
-
-    public function __construct(ContainerInterface $filterLocator)
+    public function __construct(private readonly ContainerInterface $filterLocator)
     {
-        $this->filterLocator = $filterLocator;
     }
 
     /**
@@ -38,13 +34,13 @@ abstract class AbstractFilterExtension implements RequestBodySearchCollectionExt
      */
     public function applyToCollection(array $requestBody, string $resourceClass, ?Operation $operation = null, array $context = []): array
     {
-        $resourceFilters = $operation ? $operation->getFilters() : null;
+        $resourceFilters = $operation?->getFilters();
 
         if (!$resourceFilters) {
             return $requestBody;
         }
 
-        $context['filters'] = $context['filters'] ?? [];
+        $context['filters'] ??= [];
         $clauseBody = [];
 
         foreach ($resourceFilters as $filterId) {

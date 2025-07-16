@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\Bundle\Command;
 
-use ApiPlatform\Core\GraphQl\Type\SchemaBuilderInterface as SchemaBuilderLegacyInterface;
 use ApiPlatform\GraphQl\Type\SchemaBuilderInterface;
 use GraphQL\Utils\SchemaPrinter;
 use Symfony\Component\Console\Command\Command;
@@ -29,13 +28,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class GraphQlExportCommand extends Command
 {
-    /** @var SchemaBuilderLegacyInterface|SchemaBuilderInterface */
-    private $schemaBuilder;
-
-    public function __construct($schemaBuilder)
+    public function __construct(private readonly SchemaBuilderInterface $schemaBuilder)
     {
-        $this->schemaBuilder = $schemaBuilder;
-
         parent::__construct();
     }
 
@@ -46,23 +40,26 @@ class GraphQlExportCommand extends Command
     {
         $this
             ->setDescription('Export the GraphQL schema in Schema Definition Language (SDL)')
-            ->addOption('comment-descriptions', null, InputOption::VALUE_NONE, 'Use preceding comments as the description')
+            ->addOption('comment-descriptions', null, InputOption::VALUE_NONE, 'Use preceding comments as the description (deprecated: graphql-php < 15)')
+            ->addOption('sort-types', null, InputOption::VALUE_NONE, 'Order types alphabetically')
             ->addOption('output', 'o', InputOption::VALUE_REQUIRED, 'Write output to file');
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         $options = [];
 
+        // Removed in graphql-php 15
         if ($input->getOption('comment-descriptions')) {
             $options['commentDescriptions'] = true;
+        }
+        if ($input->getOption('sort-types')) {
+            $options['sortTypes'] = true;
         }
 
         $schemaExport = SchemaPrinter::doPrint($this->schemaBuilder->getSchema(), $options);
@@ -70,7 +67,7 @@ class GraphQlExportCommand extends Command
         $filename = $input->getOption('output');
         if (\is_string($filename)) {
             file_put_contents($filename, $schemaExport);
-            $io->success(sprintf('Data written to %s.', $filename));
+            $io->success(\sprintf('Data written to %s.', $filename));
         } else {
             $output->writeln($schemaExport);
         }
@@ -83,5 +80,3 @@ class GraphQlExportCommand extends Command
         return 'api:graphql:export';
     }
 }
-
-class_alias(GraphQlExportCommand::class, \ApiPlatform\Core\Bridge\Symfony\Bundle\Command\GraphQlExportCommand::class);

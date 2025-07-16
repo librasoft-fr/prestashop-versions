@@ -1,0 +1,19 @@
+includes:
+    - %currentWorkingDirectory%/vendor/prestashop/php-dev-tools/phpstan/ps-module-extension.neon
+
+parameters:
+    phpVersion: 70400
+    level: 6
+    paths:
+        - src
+        - ps_classic_edition.php
+    reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false
+    dynamicConstantNames:
+        - PS_CLASSIC_EDITION_SETTINGS_WHITE_LIST
+        - PS_CLASSIC_EDITION_SETTINGS_BLACK_LIST
+        - PS_CLASSIC_EDITION_MENU_WHITE_LIST
+    ignoreErrors:
+        - '#Constant PS_CLASSIC_EDITION_SETTINGS_WHITE_LIST not found.#'
+        - '#Constant PS_CLASSIC_EDITION_SETTINGS_BLACK_LIST not found.#'
+        - '#Constant PS_CLASSIC_EDITION_MENU_WHITE_LIST not found.#'

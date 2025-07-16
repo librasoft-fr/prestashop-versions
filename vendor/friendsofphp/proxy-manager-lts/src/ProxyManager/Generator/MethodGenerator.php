@@ -6,9 +6,11 @@ namespace ProxyManager\Generator;
 
 use Laminas\Code\Generator\DocBlockGenerator;
 use Laminas\Code\Generator\MethodGenerator as LaminasMethodGenerator;
+use Laminas\Code\Generator\ParameterGenerator;
 use Laminas\Code\Reflection\MethodReflection;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionParameter;
 
 /**
  * Method generator that fixes minor quirks in ZF2's method generator
@@ -23,7 +25,7 @@ class MethodGenerator extends LaminasMethodGenerator
     public static function fromReflectionWithoutBodyAndDocBlock(MethodReflection $reflectionMethod): self
     {
         /** @var static $method */
-        $method = parent::copyMethodSignature($reflectionMethod);
+        $method = static::copyMethodSignature($reflectionMethod);
 
         $method->setInterface(false);
         $method->setBody('');
@@ -50,6 +52,29 @@ class MethodGenerator extends LaminasMethodGenerator
             } catch (ReflectionException $e) {
                 break;
             }
+        }
+
+        return $method;
+    }
+
+    public static function copyMethodSignature(MethodReflection $reflectionMethod): parent
+    {
+        $method = parent::copyMethodSignature($reflectionMethod);
+
+        foreach ($reflectionMethod->getParameters() as $reflectionParameter) {
+            $parameter = ParameterGenerator::fromReflection($reflectionParameter);
+            $default = $parameter->getDefaultValue();
+
+            if ($default !== null) {
+                $parameter->setDefaultValue(new ValueGenerator($default, $reflectionParameter));
+                $type = $parameter->getType();
+
+                if ($default->getValue() === null && strpos($type ?? '?', '?') !== 0 && strpos($type, '|') === false && $type !== 'mixed') {
+                    $parameter->setType('?' . $type);
+                }
+            }
+
+            $method->setParameter($parameter);
         }
 
         return $method;

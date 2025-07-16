@@ -1,0 +1,45 @@
+ps_classic_edition_homepage:
+  path: psclassicedition/homepage
+  methods: [GET, POST]
+  defaults:
+    _controller: PrestaShop\Module\PsClassicEdition\Controller\AdminPsClassicEditionHomepageController::indexAction
+    _legacy_controller: "AdminPsClassicEditionHomepageController"
+    _legacy_link: "AdminPsClassicEditionHomepageController"
+
+ps_classic_edition_setup_guide_api:
+  path: /psclassicedition/setup-guide/api/
+  methods: [GET, POST, PUT, PATCH]
+
+ps_classic_edition_setup_guide_api_index:
+  path: psclassicedition/setup-guide/api/index
+  methods: [GET]
+  defaults:
+    _controller: PrestaShop\Module\PsClassicEdition\Controller\AdminPsClassicEditionSetupGuideController::fetchInitialDatas
+
+ps_classic_edition_setup_guide_api_edit:
+  path: psclassicedition/setup-guide/api/edit
+  methods: [PATCH]
+  defaults:
+    _controller: PrestaShop\Module\PsClassicEdition\Controller\AdminPsClassicEditionSetupGuideController::editStep
+
+ps_classic_edition_setup_guide_api_modal_hidden:
+  path: psclassicedition/setup-guide/api/modal-hidden
+  methods: [POST]
+  defaults:
+    _controller: PrestaShop\Module\PsClassicEdition\Controller\AdminPsClassicEditionSetupGuideController::storeModalIsHidden
+
+ps_classic_edition_setup_guide_api_delete:
+  path: psclassicedition/setup-guide/api/delete/{stepName}
+  methods: [DELETE]
+  defaults:
+    _controller: PrestaShop\Module\PsClassicEdition\Controller\AdminPsClassicEditionSetupGuideController::deleteStep
+  requirements:
+    stepName: "[a-z-]+"
+
+ps_classic_edition_ps_academy:
+  path: psclassicedition/ps-academy
+  methods: [GET]
+  defaults:
+    _controller: PrestaShop\Module\PsClassicEdition\Controller\AdminPsClassicEditionPsAcademyController::getProducts
+    _legacy_controller: "AdminPsClassicEditionPsAcademyController"
+    _legacy_link: "AdminPsClassicEditionPsAcademyController"

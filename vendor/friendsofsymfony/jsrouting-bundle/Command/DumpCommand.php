@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the FOSJsRoutingBundle package.
  *
@@ -13,6 +15,7 @@ namespace FOS\JsRoutingBundle\Command;
 
 use FOS\JsRoutingBundle\Extractor\ExposedRoutesExtractorInterface;
 use FOS\JsRoutingBundle\Response\RoutesResponse;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,41 +27,20 @@ use Symfony\Component\Serializer\SerializerInterface;
  *
  * @author Benjamin Dulau <benjamin.dulau@anonymation.com>
  */
+#[AsCommand('fos:js-routing:dump', 'Dumps exposed routes to the filesystem')]
 class DumpCommand extends Command
 {
-    protected static $defaultName = 'fos:js-routing:dump';
-
-    /**
-     * @var ExposedRoutesExtractorInterface
-     */
-    private $extractor;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * @var string
-     */
-    private $projectDir;
-
-    /**
-     * @var string
-     */
-    private $requestContextBaseUrl;
-
-    public function __construct(ExposedRoutesExtractorInterface $extractor, SerializerInterface $serializer, $projectDir, $requestContextBaseUrl = null)
-    {
-        $this->extractor = $extractor;
-        $this->serializer = $serializer;
-        $this->projectDir = $projectDir;
-        $this->requestContextBaseUrl = $requestContextBaseUrl;
-
+    public function __construct(
+        private RoutesResponse $routesResponse,
+        private ExposedRoutesExtractorInterface $extractor,
+        private SerializerInterface $serializer,
+        private string $projectDir,
+        private ?string $requestContextBaseUrl = null,
+    ) {
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('fos:js-routing:dump')
@@ -81,7 +63,7 @@ class DumpCommand extends Command
                 'target',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Override the target directory to dump routes in.'
+                'Override the target file to dump routes in.'
             )
             ->addOption(
                 'locale',
@@ -101,21 +83,23 @@ class DumpCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'Specify expose domain',
-                array()
+                []
             )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if(!in_array($input->getOption('format'), array('js', 'json'))) {
+        if (!in_array($input->getOption('format'), ['js', 'json'])) {
             $output->writeln('<error>Invalid format specified. Use js or json.</error>');
+
             return 1;
         }
 
         $callback = $input->getOption('callback');
-        if(empty($callback)) {
+        if (empty($callback)) {
             $output->writeln('<error>If you include --callback it must not be empty. Do you perhaps want --format=json</error>');
+
             return 1;
         }
 
@@ -123,16 +107,14 @@ class DumpCommand extends Command
         $output->writeln('');
 
         $this->doDump($input, $output);
+
         return 0;
     }
 
     /**
      * Performs the routes dump.
-     *
-     * @param InputInterface  $input  The command input
-     * @param OutputInterface $output The command output
      */
-    private function doDump(InputInterface $input, OutputInterface $output)
+    private function doDump(InputInterface $input, OutputInterface $output): void
     {
         $domain = $input->getOption('domain');
 
@@ -140,53 +122,47 @@ class DumpCommand extends Command
         $serializer = $this->serializer;
         $targetPath = $input->getOption('target') ?:
             sprintf(
-                '%s/web/js/fos_js_routes%s.%s',
+                '%s/public/js/fos_js_routes%s.%s',
                 $this->projectDir,
-                empty($domain) ? '' : ('_' . implode('_', $domain)),
+                empty($domain) ? '' : ('_'.implode('_', $domain)),
                 $input->getOption('format')
             );
-        
+
         if (!is_dir($dir = dirname($targetPath))) {
-            $output->writeln('<info>[dir+]</info>  ' . $dir);
+            $output->writeln('<info>[dir+]</info>  '.$dir);
             if (false === @mkdir($dir, 0777, true)) {
-                throw new \RuntimeException('Unable to create directory ' . $dir);
+                throw new \RuntimeException('Unable to create directory '.$dir);
             }
         }
 
-        $output->writeln('<info>[file+]</info> ' . $targetPath);
+        $output->writeln('<info>[file+]</info> '.$targetPath);
 
-        $baseUrl = null !== $this->requestContextBaseUrl ?
-            $this->requestContextBaseUrl :
-            $this->extractor->getBaseUrl()
+        $baseUrl = $this->requestContextBaseUrl ?? $this->extractor->getBaseUrl()
         ;
 
         if ($input->getOption('pretty-print')) {
-            $params = array('json_encode_options' => JSON_PRETTY_PRINT);
+            $params = ['json_encode_options' => JSON_PRETTY_PRINT];
         } else {
-            $params = array();
+            $params = [];
         }
 
-        $content = $serializer->serialize(
-            new RoutesResponse(
-                $baseUrl,
-                $extractor->getRoutes(),
-                $extractor->getPrefix($input->getOption('locale')),
-                $extractor->getHost(),
-                $extractor->getPort(),
-                $extractor->getScheme(),
-                $input->getOption('locale'),
-                $domain
-            ),
-            'json',
-            $params
-        );
+        $this->routesResponse->setBaseUrl($baseUrl);
+        $this->routesResponse->setRoutes($extractor->getRoutes());
+        $this->routesResponse->setPrefix($extractor->getPrefix($input->getOption('locale')));
+        $this->routesResponse->setHost($extractor->getHost());
+        $this->routesResponse->setPort($extractor->getPort());
+        $this->routesResponse->setScheme($extractor->getScheme());
+        $this->routesResponse->setLocale($input->getOption('locale'));
+        $this->routesResponse->setDomains($domain);
 
-        if('js' == $input->getOption('format')) {
-            $content = sprintf("%s(%s);", $input->getOption('callback'), $content);
+        $content = $serializer->serialize($this->routesResponse, 'json', $params);
+
+        if ('js' == $input->getOption('format')) {
+            $content = sprintf('%s(%s);', $input->getOption('callback'), $content);
         }
 
         if (false === @file_put_contents($targetPath, $content)) {
-            throw new \RuntimeException('Unable to write file ' . $targetPath);
+            throw new \RuntimeException('Unable to write file '.$targetPath);
         }
     }
 }

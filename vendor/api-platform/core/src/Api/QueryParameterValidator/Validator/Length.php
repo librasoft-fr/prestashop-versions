@@ -13,8 +13,16 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Api\QueryParameterValidator\Validator;
 
+use ApiPlatform\ParameterValidator\Validator\CheckFilterDeprecationsTrait;
+use ApiPlatform\ParameterValidator\Validator\ValidatorInterface;
+
+/**
+ * @deprecated use \ApiPlatform\ParameterValidator\Validator\Length instead
+ */
 final class Length implements ValidatorInterface
 {
+    use CheckFilterDeprecationsTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -25,21 +33,21 @@ final class Length implements ValidatorInterface
             return [];
         }
 
-        $maxLength = $filterDescription['swagger']['maxLength'] ?? null;
-        $minLength = $filterDescription['swagger']['minLength'] ?? null;
+        $this->checkFilterDeprecations($filterDescription);
+
+        $maxLength = $filterDescription['openapi']['maxLength'] ?? $filterDescription['swagger']['maxLength'] ?? null;
+        $minLength = $filterDescription['openapi']['minLength'] ?? $filterDescription['swagger']['minLength'] ?? null;
 
         $errorList = [];
 
         if (null !== $maxLength && mb_strlen($value) > $maxLength) {
-            $errorList[] = sprintf('Query parameter "%s" length must be lower than or equal to %s', $name, $maxLength);
+            $errorList[] = \sprintf('Query parameter "%s" length must be lower than or equal to %s', $name, $maxLength);
         }
 
         if (null !== $minLength && mb_strlen($value) < $minLength) {
-            $errorList[] = sprintf('Query parameter "%s" length must be greater than or equal to %s', $name, $minLength);
+            $errorList[] = \sprintf('Query parameter "%s" length must be greater than or equal to %s', $name, $minLength);
         }
 
         return $errorList;
     }
 }
-
-class_alias(Length::class, \ApiPlatform\Core\Filter\Validator\Length::class);

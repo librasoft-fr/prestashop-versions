@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    public: true
+
+  psshipping.ps_billings_context_wrapper:
+    class: 'PrestaShopCorp\Billing\Wrappers\BillingContextWrapper'
+    arguments:
+    - '@ps_accounts.facade'
+    - '@psshipping.context'
+    - "%psshipping.ps_billing_sandbox%"
+
+  psshipping.ps_billings_facade:
+    class: 'PrestaShopCorp\Billing\Presenter\BillingPresenter'
+    arguments:
+    - '@psshipping.ps_billings_context_wrapper'
+    - '@psshipping'
+
+  # Remove this if you do not need BillingService
+  psshipping.ps_billings_service:
+    class: 'PrestaShopCorp\Billing\Services\BillingService'
+    arguments:
+    - '@psshipping.ps_billings_context_wrapper'
+    - '@psshipping'

@@ -27,7 +27,7 @@
     <span class="control-label">{l s='Quantity' d='Shop.Theme.Catalog'}</span>
 
     {block name='product_quantity'}
-      <div class="product-quantity clearfix">
+      <div class="product-quantity">
         <div class="qty">
           <input
             type="number"
@@ -66,18 +66,35 @@
     {/block}
 
     {block name='product_availability'}
-      <span id="product-availability" class="js-product-availability">
+      <div id="product-availability" class="product-availability js-product-availability">
         {if $product.show_availability && $product.availability_message}
-          {if $product.availability == 'available'}
-            <i class="material-icons rtl-no-flip product-available">&#xE5CA;</i>
-          {elseif $product.availability == 'last_remaining_items'}
-            <i class="material-icons product-last-items">&#xE002;</i>
+
+          {** First, we prepare the icons and colors we want to use *}
+          {if $product.availability == 'in_stock'}
+            {assign 'availability_icon' 'E5CA'}
+            {assign 'availability_color' 'success'}
+          {elseif $product.availability == 'available' || $product.availability == 'last_remaining_items'}
+            {assign 'availability_icon' 'E002'}
+            {assign 'availability_color' 'warning'}
           {else}
-            <i class="material-icons product-unavailable">&#xE14B;</i>
+            {assign 'availability_icon' 'E14B'}
+            {assign 'availability_color' 'danger'}
           {/if}
-          {$product.availability_message}
+
+          {** And render the availability message with icon *}
+          <div class="alert alert-{$availability_color}" role="alert">
+            <div class="alert-content-wrapper">
+              <div><i class="material-icons rtl-no-flip">&#x{$availability_icon};</i></div>
+              <div>
+                <div>{$product.availability_message}</div>
+                {if !empty($product.availability_submessage)}
+                  <div><small>{$product.availability_submessage}</small></div>
+                {/if}
+              </div>
+            </div>
+          </div>
         {/if}
-      </span>
+      </div>
     {/block}
 
     {block name='product_minimal_quantity'}

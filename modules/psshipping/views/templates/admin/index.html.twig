@@ -1,0 +1,61 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ *#}
+
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+  <div id="psshipping-app"></div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }} 
+<style>
+  body {
+    background-color: white!important;
+  }
+</style>
+{% if hotReloadModeEnabled == false %}
+  <link rel="stylesheet" href="{{ appCss }}" type="text/css" media="all">
+{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+{% if hotReloadModeEnabled %}
+  <script type="module" src="http://localhost:5173/@vite/client"></script>
+  <script type="module" src="http://localhost:5173/src/main.ts"></script>
+{% else %}
+  <script src="{{ appLink }}" type="module"></script>
+{% endif %}
+<script>
+  var defaultIsoCode = '{{ defaultIsoCode|raw }}'
+  var psxShippingApiUrl = '{{ psxShippingApiUrl|raw }}'
+  var isOnboardingDone = {{ isOnboardingDone|json_encode }}
+  var contextPsAccounts = {{ contextPsAccounts|json_encode|raw }}
+  var tokenPsAccounts = '{{ tokenPsAccounts|raw }}'
+  var psBillingContext = {{ psBillingContext|json_encode|raw }}
+  var isMultiShopContext = {{ isMultiShopContext|json_encode }}
+  var shops = {{ shops|json_encode|raw }}
+  var routes = {{ routes|json_encode|raw }}
+  var phpVersion = '{{ phpVersion|raw }}'
+  var moduleVersion = '{{ moduleVersion|raw }}'
+  var cdnUrl = '{{ cdnUrl|raw }}'
+  var psVersion = '{{ psVersion|raw }}'
+  var activeHooks = {{ activeHooks|json_encode|raw }}
+</script>
+{% endblock %}

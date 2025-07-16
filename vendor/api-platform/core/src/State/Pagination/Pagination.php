@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace ApiPlatform\State\Pagination;
 
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use ApiPlatform\Metadata\Operation;
 
 /**
@@ -23,8 +23,8 @@ use ApiPlatform\Metadata\Operation;
  */
 final class Pagination
 {
-    private $options;
-    private $graphQlOptions;
+    private readonly array $options;
+    private readonly array $graphQlOptions;
 
     public function __construct(array $options = [], array $graphQlOptions = [])
     {
@@ -70,7 +70,7 @@ final class Pagination
     /**
      * Gets the current offset.
      */
-    public function getOffset(Operation $operation = null, array $context = []): int
+    public function getOffset(?Operation $operation = null, array $context = []): int
     {
         $graphql = (bool) ($context['graphql_operation_name'] ?? false);
 
@@ -102,17 +102,12 @@ final class Pagination
      *
      * @throws InvalidArgumentException
      */
-    public function getLimit(Operation $operation = null, array $context = []): int
+    public function getLimit(?Operation $operation = null, array $context = []): int
     {
         $graphql = (bool) ($context['graphql_operation_name'] ?? false);
 
-        $limit = $this->options['items_per_page'];
-        $clientLimit = $this->options['client_items_per_page'];
-
-        if ($operation) {
-            $limit = $operation->getPaginationItemsPerPage() ?? $this->options['items_per_page'];
-            $clientLimit = $operation->getPaginationClientItemsPerPage() ?? $this->options['client_items_per_page'];
-        }
+        $limit = $operation?->getPaginationItemsPerPage() ?? $this->options['items_per_page'];
+        $clientLimit = $operation?->getPaginationClientItemsPerPage() ?? $this->options['client_items_per_page'];
 
         if ($graphql && null !== ($first = $this->getParameterFromContext($context, 'first'))) {
             $limit = $first;
@@ -129,11 +124,7 @@ final class Pagination
 
         if ($clientLimit) {
             $limit = (int) $this->getParameterFromContext($context, $this->options['items_per_page_parameter_name'], $limit);
-            $maxItemsPerPage = $this->options['maximum_items_per_page'];
-
-            if ($operation) {
-                $maxItemsPerPage = $operation->getPaginationMaximumItemsPerPage() ?? $this->options['maximum_items_per_page'];
-            }
+            $maxItemsPerPage = $operation?->getPaginationMaximumItemsPerPage() ?? $this->options['maximum_items_per_page'];
 
             if (null !== $maxItemsPerPage && $limit > $maxItemsPerPage) {
                 $limit = $maxItemsPerPage;
@@ -151,13 +142,13 @@ final class Pagination
      * Gets info about the pagination.
      *
      * Returns an array with the following info as values:
-     *   - the page {@see Pagination::getPage()}
-     *   - the offset {@see Pagination::getOffset()}
-     *   - the limit {@see Pagination::getLimit()}
+     *   - the page {@see Pagination::getPage}
+     *   - the offset {@see Pagination::getOffset}
+     *   - the limit {@see Pagination::getLimit}
      *
      * @throws InvalidArgumentException
      */
-    public function getPagination(Operation $operation = null, array $context = []): array
+    public function getPagination(?Operation $operation = null, array $context = []): array
     {
         $page = $this->getPage($context);
         $limit = $this->getLimit($operation, $context);
@@ -172,7 +163,7 @@ final class Pagination
     /**
      * Is the pagination enabled?
      */
-    public function isEnabled(Operation $operation = null, array $context = []): bool
+    public function isEnabled(?Operation $operation = null, array $context = []): bool
     {
         return $this->getEnabled($context, $operation);
     }
@@ -188,7 +179,7 @@ final class Pagination
     /**
      * Is the partial pagination enabled?
      */
-    public function isPartialEnabled(Operation $operation = null, array $context = []): bool
+    public function isPartialEnabled(?Operation $operation = null, array $context = []): bool
     {
         return $this->getEnabled($context, $operation, true);
     }
@@ -206,15 +197,13 @@ final class Pagination
     /**
      * Is the classic or partial pagination enabled?
      */
-    private function getEnabled(array $context, Operation $operation = null, bool $partial = false): bool
+    private function getEnabled(array $context, ?Operation $operation = null, bool $partial = false): bool
     {
         $enabled = $this->options[$partial ? 'partial' : 'enabled'];
         $clientEnabled = $this->options[$partial ? 'client_partial' : 'client_enabled'];
 
-        if ($operation) {
-            $enabled = ($partial ? $operation->getPaginationPartial() : $operation->getPaginationEnabled()) ?? $enabled;
-            $clientEnabled = ($partial ? $operation->getPaginationClientPartial() : $operation->getPaginationClientEnabled()) ?? $clientEnabled;
-        }
+        $enabled = ($partial ? $operation?->getPaginationPartial() : $operation?->getPaginationEnabled()) ?? $enabled;
+        $clientEnabled = ($partial ? $operation?->getPaginationClientPartial() : $operation?->getPaginationClientEnabled()) ?? $clientEnabled;
 
         if ($clientEnabled) {
             return filter_var($this->getParameterFromContext($context, $this->options[$partial ? 'partial_parameter_name' : 'enabled_parameter_name'], $enabled), \FILTER_VALIDATE_BOOLEAN);
@@ -227,19 +216,13 @@ final class Pagination
     {
         $enabled = $this->graphQlOptions['enabled'];
 
-        if (!$operation) {
-            return $enabled;
-        }
-
-        return $operation->getPaginationEnabled() ?? $enabled;
+        return $operation?->getPaginationEnabled() ?? $enabled;
     }
 
     /**
      * Gets the given pagination parameter name from the given context.
-     *
-     * @param mixed|null $default
      */
-    private function getParameterFromContext(array $context, string $parameterName, $default = null)
+    private function getParameterFromContext(array $context, string $parameterName, mixed $default = null)
     {
         $filters = $context['filters'] ?? [];
 

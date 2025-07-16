@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\Validator;
 
-use ApiPlatform\Symfony\Validator\Exception\ValidationException;
+use ApiPlatform\Symfony\Validator\Exception\ValidationException as LegacyValidationException;
+use ApiPlatform\Validator\Exception\ValidationException;
 use ApiPlatform\Validator\ValidatorInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\Constraints\GroupSequence;
@@ -28,32 +29,23 @@ use Symfony\Component\Validator\Validator\ValidatorInterface as SymfonyValidator
  */
 class Validator implements ValidatorInterface
 {
-    private $validator;
-    private $container;
-
-    public function __construct(SymfonyValidatorInterface $validator, ContainerInterface $container = null)
+    public function __construct(private readonly SymfonyValidatorInterface $validator, private readonly ?ContainerInterface $container = null, private readonly ?bool $legacyValidationException = true)
     {
-        $this->validator = $validator;
-        $this->container = $container;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validate($data, array $context = [])
+    public function validate(object $data, array $context = []): void
     {
         if (null !== $validationGroups = $context['groups'] ?? null) {
             if (
-                $this->container &&
-                \is_string($validationGroups) &&
-                $this->container->has($validationGroups) &&
-                ($service = $this->container->get($validationGroups)) &&
-                \is_callable($service)
+                $this->container
+                && \is_string($validationGroups)
+                && $this->container->has($validationGroups)
+                && ($service = $this->container->get($validationGroups))
+                && \is_callable($service)
             ) {
-                if (!$service instanceof ValidationGroupsGeneratorInterface) {
-                    @trigger_error(sprintf('Using a public validation groups generator service not implementing "%s" is deprecated since 2.6 and will be removed in 3.0.', ValidationGroupsGeneratorInterface::class), \E_USER_DEPRECATED);
-                }
-
                 $validationGroups = $service($data);
             } elseif (\is_callable($validationGroups)) {
                 $validationGroups = $validationGroups($data);
@@ -66,9 +58,10 @@ class Validator implements ValidatorInterface
 
         $violations = $this->validator->validate($data, null, $validationGroups);
         if (0 !== \count($violations)) {
+            if (true === $this->legacyValidationException) {
+                throw new LegacyValidationException($violations);
+            }
             throw new ValidationException($violations);
         }
     }
 }
-
-class_alias(Validator::class, \ApiPlatform\Core\Bridge\Symfony\Validator\Validator::class);

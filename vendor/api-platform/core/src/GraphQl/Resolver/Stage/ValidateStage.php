@@ -20,20 +20,19 @@ use ApiPlatform\Validator\ValidatorInterface;
  * Validate stage of GraphQL resolvers.
  *
  * @author Alan Poulain <contact@alanpoulain.eu>
+ *
+ * @deprecated
  */
 final class ValidateStage implements ValidateStageInterface
 {
-    private $validator;
-
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __invoke($object, string $resourceClass, Operation $operation, array $context): void
+    public function __invoke(object $object, string $resourceClass, Operation $operation, array $context): void
     {
         if (!($operation->canValidate() ?? true)) {
             return;

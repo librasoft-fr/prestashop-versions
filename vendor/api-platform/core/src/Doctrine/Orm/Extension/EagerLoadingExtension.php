@@ -15,15 +15,14 @@ namespace ApiPlatform\Doctrine\Orm\Extension;
 
 use ApiPlatform\Doctrine\Orm\Util\QueryBuilderHelper;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
-use ApiPlatform\Exception\InvalidArgumentException;
-use ApiPlatform\Exception\PropertyNotFoundException;
-use ApiPlatform\Exception\ResourceClassNotFoundException;
-use ApiPlatform\Exception\RuntimeException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\PropertyNotFoundException;
+use ApiPlatform\Metadata\Exception\ResourceClassNotFoundException;
+use ApiPlatform\Metadata\Exception\RuntimeException;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use ApiPlatform\Metadata\Property\Factory\PropertyNameCollectionFactoryInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Expr\Select;
 use Doctrine\ORM\QueryBuilder;
@@ -41,40 +40,22 @@ use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
  */
 final class EagerLoadingExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
-    /** @var PropertyNameCollectionFactoryInterface */
-    private $propertyNameCollectionFactory;
-    /** @var PropertyMetadataFactoryInterface */
-    private $propertyMetadataFactory;
-    /** @var ClassMetadataFactoryInterface|null */
-    private $classMetadataFactory;
-    private $maxJoins;
-    private $forceEager;
-    private $fetchPartial;
-
-    public function __construct(PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory, PropertyMetadataFactoryInterface $propertyMetadataFactory, int $maxJoins = 30, bool $forceEager = true, bool $fetchPartial = false, ClassMetadataFactoryInterface $classMetadataFactory = null)
+    public function __construct(private readonly PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory, private readonly PropertyMetadataFactoryInterface $propertyMetadataFactory, private readonly int $maxJoins = 30, private readonly bool $forceEager = true, private readonly bool $fetchPartial = false, private readonly ?ClassMetadataFactoryInterface $classMetadataFactory = null)
     {
-        $this->propertyNameCollectionFactory = $propertyNameCollectionFactory;
-        $this->propertyMetadataFactory = $propertyMetadataFactory;
-        $this->classMetadataFactory = $classMetadataFactory;
-        $this->maxJoins = $maxJoins;
-        $this->forceEager = $forceEager;
-        $this->fetchPartial = $fetchPartial;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass = null, Operation $operation = null, array $context = []): void
+    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, ?string $resourceClass = null, ?Operation $operation = null, array $context = []): void
     {
         $this->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operation, $context);
     }
 
     /**
-     * {@inheritdoc}
-     *
      * The context may contain serialization groups which helps defining joined entities that are readable.
      */
-    public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, Operation $operation = null, array $context = []): void
+    public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?Operation $operation = null, array $context = []): void
     {
         $this->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operation, $context);
     }
@@ -87,13 +68,8 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
 
         $options = [];
 
-        $forceEager = $this->forceEager;
-        $fetchPartial = $this->fetchPartial;
-
-        if ($operation) {
-            $forceEager = $operation->getForceEager() ?? $this->forceEager;
-            $fetchPartial = $operation->getFetchPartial() ?? $this->fetchPartial;
-        }
+        $forceEager = $operation?->getForceEager() ?? $this->forceEager;
+        $fetchPartial = $operation?->getFetchPartial() ?? $this->fetchPartial;
 
         if (!isset($context['groups']) && !isset($context['attributes'])) {
             $contextType = isset($context['api_denormalize']) ? 'denormalization_context' : 'normalization_context';
@@ -130,7 +106,7 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
      *
      * @throws RuntimeException when the max number of joins has been reached
      */
-    private function joinRelations(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, bool $forceEager, bool $fetchPartial, string $parentAlias, array $options = [], array $normalizationContext = [], bool $wasLeftJoin = false, int &$joinCount = 0, int $currentDepth = null, string $parentAssociation = null): void
+    private function joinRelations(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, bool $forceEager, bool $fetchPartial, string $parentAlias, array $options = [], array $normalizationContext = [], bool $wasLeftJoin = false, int &$joinCount = 0, ?int $currentDepth = null, ?string $parentAssociation = null): void
     {
         if ($joinCount > $this->maxJoins) {
             throw new RuntimeException('The total number of joined relations has exceeded the specified maximum. Raise the limit if necessary with the "api_platform.eager_loading.max_joins" configuration key (https://api-platform.com/docs/core/performance/#eager-loading), or limit the maximum serialization depth using the "enable_max_depth" option of the Symfony serializer (https://symfony.com/doc/current/components/serializer.html#handling-serialization-depth).');
@@ -139,7 +115,7 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
         $currentDepth = $currentDepth > 0 ? $currentDepth - 1 : $currentDepth;
         $entityManager = $queryBuilder->getEntityManager();
         $classMetadata = $entityManager->getClassMetadata($resourceClass);
-        $attributesMetadata = $this->classMetadataFactory ? $this->classMetadataFactory->getMetadataFor($resourceClass)->getAttributesMetadata() : [];
+        $attributesMetadata = $this->classMetadataFactory?->getMetadataFor($resourceClass)->getAttributesMetadata();
 
         foreach ($classMetadata->associationMappings as $association => $mapping) {
             // Don't join if max depth is enabled and the current depth limit is reached
@@ -149,20 +125,20 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
 
             try {
                 $propertyMetadata = $this->propertyMetadataFactory->create($resourceClass, $association, $options);
-            } catch (PropertyNotFoundException $propertyNotFoundException) {
+            } catch (PropertyNotFoundException) {
                 // skip properties not found
                 continue;
                 // @phpstan-ignore-next-line indeed this can be thrown by the SerializerPropertyMetadataFactory
-            } catch (ResourceClassNotFoundException $resourceClassNotFoundException) {
+            } catch (ResourceClassNotFoundException) {
                 // skip associations that are not resource classes
                 continue;
             }
 
             if (
                 // Always skip extra lazy associations
-                ClassMetadataInfo::FETCH_EXTRA_LAZY === $mapping['fetch'] ||
+                ClassMetadata::FETCH_EXTRA_LAZY === $mapping['fetch']
                 // We don't want to interfere with doctrine on this association
-                (false === $forceEager && ClassMetadataInfo::FETCH_EAGER !== $mapping['fetch'])
+                || (false === $forceEager && ClassMetadata::FETCH_EAGER !== $mapping['fetch'])
             ) {
                 continue;
             }
@@ -178,8 +154,9 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
             }
 
             $fetchEager = $propertyMetadata->getFetchEager();
+            $uriTemplate = $propertyMetadata->getUriTemplate();
 
-            if (false === $fetchEager) {
+            if (false === $fetchEager || null !== $uriTemplate) {
                 continue;
             }
 
@@ -189,10 +166,11 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
 
             // Avoid joining back to the parent that we just came from, but only on *ToOne relations
             if (
-                null !== $parentAssociation &&
-                isset($mapping['inversedBy']) &&
-                $mapping['inversedBy'] === $parentAssociation &&
-                $mapping['type'] & ClassMetadata::TO_ONE
+                null !== $parentAssociation
+                && isset($mapping['inversedBy'])
+                && $mapping['sourceEntity'] === $mapping['targetEntity']
+                && $mapping['inversedBy'] === $parentAssociation
+                && $mapping['type'] & ClassMetadata::TO_ONE
             ) {
                 continue;
             }
@@ -208,14 +186,14 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
                 $method = $isLeftJoin ? 'leftJoin' : 'innerJoin';
 
                 $associationAlias = $queryNameGenerator->generateJoinAlias($association);
-                $queryBuilder->{$method}(sprintf('%s.%s', $parentAlias, $association), $associationAlias);
+                $queryBuilder->{$method}(\sprintf('%s.%s', $parentAlias, $association), $associationAlias);
                 ++$joinCount;
             }
 
             if (true === $fetchPartial) {
                 try {
                     $this->addSelect($queryBuilder, $mapping['targetEntity'], $associationAlias, $options);
-                } catch (ResourceClassNotFoundException $resourceClassNotFoundException) {
+                } catch (ResourceClassNotFoundException) {
                     continue;
                 }
             } else {
@@ -286,14 +264,12 @@ final class EagerLoadingExtension implements QueryCollectionExtensionInterface, 
             }
         }
 
-        $queryBuilder->addSelect(sprintf('partial %s.{%s}', $associationAlias, implode(',', $select)));
+        $queryBuilder->addSelect(\sprintf('partial %s.{%s}', $associationAlias, implode(',', $select)));
     }
 
     private function addSelectOnce(QueryBuilder $queryBuilder, string $alias): void
     {
-        $existingSelects = array_reduce($queryBuilder->getDQLPart('select') ?? [], function ($existing, $dqlSelect) {
-            return ($dqlSelect instanceof Select) ? array_merge($existing, $dqlSelect->getParts()) : $existing;
-        }, []);
+        $existingSelects = array_reduce($queryBuilder->getDQLPart('select') ?? [], fn ($existing, $dqlSelect) => ($dqlSelect instanceof Select) ? array_merge($existing, $dqlSelect->getParts()) : $existing, []);
 
         if (!\in_array($alias, $existingSelects, true)) {
             $queryBuilder->addSelect($alias);

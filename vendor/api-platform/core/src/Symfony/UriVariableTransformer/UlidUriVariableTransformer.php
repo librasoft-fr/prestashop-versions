@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\UriVariableTransformer;
 
-use ApiPlatform\Api\UriVariableTransformerInterface;
-use ApiPlatform\Exception\InvalidUriVariableException;
+use ApiPlatform\Metadata\Exception\InvalidUriVariableException;
+use ApiPlatform\Metadata\UriVariableTransformerInterface;
 use Symfony\Component\Uid\Ulid;
 
 /**
@@ -25,7 +25,7 @@ final class UlidUriVariableTransformer implements UriVariableTransformerInterfac
     /**
      * {@inheritdoc}
      */
-    public function transform($value, array $types, array $context = [])
+    public function transform(mixed $value, array $types, array $context = []): Ulid
     {
         try {
             return Ulid::fromString($value);
@@ -37,7 +37,7 @@ final class UlidUriVariableTransformer implements UriVariableTransformerInterfac
     /**
      * {@inheritdoc}
      */
-    public function supportsTransformation($value, array $types, array $context = []): bool
+    public function supportsTransformation(mixed $value, array $types, array $context = []): bool
     {
         return \is_string($value) && is_a($types[0], Ulid::class, true);
     }

@@ -24,8 +24,9 @@ use ApiPlatform\GraphQl\Resolver\Stage\ValidateStageInterface;
 use ApiPlatform\GraphQl\Resolver\Stage\WriteStageInterface;
 use ApiPlatform\Metadata\DeleteOperationInterface;
 use ApiPlatform\Metadata\GraphQl\Operation;
-use ApiPlatform\Util\ClassInfoTrait;
-use ApiPlatform\Util\CloneTrait;
+use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
+use ApiPlatform\Metadata\Util\ClassInfoTrait;
+use ApiPlatform\Metadata\Util\CloneTrait;
 use GraphQL\Type\Definition\ResolveInfo;
 use Psr\Container\ContainerInterface;
 
@@ -34,38 +35,21 @@ use Psr\Container\ContainerInterface;
  *
  * @author Alan Poulain <contact@alanpoulain.eu>
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * @deprecated
  */
 final class ItemMutationResolverFactory implements ResolverFactoryInterface
 {
     use ClassInfoTrait;
     use CloneTrait;
 
-    private $readStage;
-    private $securityStage;
-    private $securityPostDenormalizeStage;
-    private $serializeStage;
-    private $deserializeStage;
-    private $writeStage;
-    private $validateStage;
-    private $mutationResolverLocator;
-    private $securityPostValidationStage;
-
-    public function __construct(ReadStageInterface $readStage, SecurityStageInterface $securityStage, SecurityPostDenormalizeStageInterface $securityPostDenormalizeStage, SerializeStageInterface $serializeStage, DeserializeStageInterface $deserializeStage, WriteStageInterface $writeStage, ValidateStageInterface $validateStage, ContainerInterface $mutationResolverLocator, SecurityPostValidationStageInterface $securityPostValidationStage)
+    public function __construct(private readonly ReadStageInterface $readStage, private readonly SecurityStageInterface $securityStage, private readonly SecurityPostDenormalizeStageInterface $securityPostDenormalizeStage, private readonly SerializeStageInterface $serializeStage, private readonly DeserializeStageInterface $deserializeStage, private readonly WriteStageInterface $writeStage, private readonly ValidateStageInterface $validateStage, private readonly ContainerInterface $mutationResolverLocator, private readonly SecurityPostValidationStageInterface $securityPostValidationStage)
     {
-        $this->readStage = $readStage;
-        $this->securityStage = $securityStage;
-        $this->securityPostDenormalizeStage = $securityPostDenormalizeStage;
-        $this->serializeStage = $serializeStage;
-        $this->deserializeStage = $deserializeStage;
-        $this->writeStage = $writeStage;
-        $this->validateStage = $validateStage;
-        $this->mutationResolverLocator = $mutationResolverLocator;
-        $this->securityPostValidationStage = $securityPostValidationStage;
     }
 
-    public function __invoke(?string $resourceClass = null, ?string $rootClass = null, ?Operation $operation = null): callable
+    public function __invoke(?string $resourceClass = null, ?string $rootClass = null, ?Operation $operation = null, ?PropertyMetadataFactoryInterface $propertyMetadataFactory = null): callable
     {
-        return function (?array $source, array $args, $context, ResolveInfo $info) use ($resourceClass, $rootClass, $operation) {
+        return function (?array $source, array $args, $context, ResolveInfo $info) use ($resourceClass, $rootClass, $operation): ?array {
             if (null === $resourceClass || null === $operation) {
                 return null;
             }
@@ -103,7 +87,7 @@ final class ItemMutationResolverFactory implements ResolverFactoryInterface
                 $mutationResolver = $this->mutationResolverLocator->get($mutationResolverId);
                 $item = $mutationResolver($item, $resolverContext);
                 if (null !== $item && $resourceClass !== $itemClass = $this->getObjectClass($item)) {
-                    throw new \LogicException(sprintf('Custom mutation resolver "%s" has to return an item of class %s but returned an item of class %s.', $mutationResolverId, $operation->getShortName(), (new \ReflectionClass($itemClass))->getShortName()));
+                    throw new \LogicException(\sprintf('Custom mutation resolver "%s" has to return an item of class %s but returned an item of class %s.', $mutationResolverId, $operation->getShortName(), (new \ReflectionClass($itemClass))->getShortName()));
                 }
             }
 

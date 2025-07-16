@@ -26,20 +26,16 @@ use Psr\Container\ContainerInterface;
  */
 final class FilterExtension implements AggregationCollectionExtensionInterface
 {
-    /** @var ContainerInterface */
-    private $filterLocator;
-
-    public function __construct(ContainerInterface $filterLocator)
+    public function __construct(private readonly ContainerInterface $filterLocator)
     {
-        $this->filterLocator = $filterLocator;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function applyToCollection(Builder $aggregationBuilder, string $resourceClass, Operation $operation = null, array &$context = []): void
+    public function applyToCollection(Builder $aggregationBuilder, string $resourceClass, ?Operation $operation = null, array &$context = []): void
     {
-        $resourceFilters = $operation ? $operation->getFilters() : null;
+        $resourceFilters = $operation?->getFilters();
 
         if (empty($resourceFilters)) {
             return;
@@ -48,7 +44,7 @@ final class FilterExtension implements AggregationCollectionExtensionInterface
         foreach ($resourceFilters as $filterId) {
             $filter = $this->filterLocator->has($filterId) ? $this->filterLocator->get($filterId) : null;
             if ($filter instanceof FilterInterface) {
-                $context['filters'] = $context['filters'] ?? [];
+                $context['filters'] ??= [];
                 $filter->apply($aggregationBuilder, $resourceClass, $operation, $context);
             }
         }

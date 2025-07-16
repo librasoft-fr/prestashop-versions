@@ -13,9 +13,11 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Property\Factory;
 
-use ApiPlatform\Exception\PropertyNotFoundException;
 use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\Exception\PropertyNotFoundException;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
+use Symfony\Component\PropertyInfo\Type;
 
 /**
  * PropertyInfo metadata loader decorator.
@@ -24,13 +26,8 @@ use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
  */
 final class PropertyInfoPropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
-    private $propertyInfo;
-    private $decorated;
-
-    public function __construct(PropertyInfoExtractorInterface $propertyInfo, PropertyMetadataFactoryInterface $decorated = null)
+    public function __construct(private readonly PropertyInfoExtractorInterface $propertyInfo, private readonly ?PropertyMetadataFactoryInterface $decorated = null)
     {
-        $this->propertyInfo = $propertyInfo;
-        $this->decorated = $decorated;
     }
 
     /**
@@ -43,13 +40,22 @@ final class PropertyInfoPropertyMetadataFactory implements PropertyMetadataFacto
         } else {
             try {
                 $propertyMetadata = $this->decorated->create($resourceClass, $property, $options);
-            } catch (PropertyNotFoundException $propertyNotFoundException) {
+            } catch (PropertyNotFoundException) {
                 $propertyMetadata = new ApiProperty();
             }
         }
 
         if (!$propertyMetadata->getBuiltinTypes()) {
-            $propertyMetadata = $propertyMetadata->withBuiltinTypes($this->propertyInfo->getTypes($resourceClass, $property, $options) ?? []);
+            $types = $this->propertyInfo->getTypes($resourceClass, $property, $options) ?? [];
+
+            foreach ($types as $i => $type) {
+                // Temp fix for https://github.com/symfony/symfony/pull/52699
+                if (ArrayCollection::class === $type->getClassName()) {
+                    $types[$i] = new Type($type->getBuiltinType(), $type->isNullable(), $type->getClassName(), true, $type->getCollectionKeyTypes(), $type->getCollectionValueTypes());
+                }
+            }
+
+            $propertyMetadata = $propertyMetadata->withBuiltinTypes($types);
         }
 
         if (null === $propertyMetadata->getDescription() && null !== $description = $this->propertyInfo->getShortDescription($resourceClass, $property, $options)) {
@@ -64,20 +70,9 @@ final class PropertyInfoPropertyMetadataFactory implements PropertyMetadataFacto
             $propertyMetadata = $propertyMetadata->withWritable($writable);
         }
 
-        if (method_exists($this->propertyInfo, 'isInitializable')) {
-            if (null === $propertyMetadata->isInitializable() && null !== $initializable = $this->propertyInfo->isInitializable($resourceClass, $property, $options)) {
-                $propertyMetadata = $propertyMetadata->withInitializable($initializable);
-            }
-        } else {
-            // BC layer for Symfony < 4.2
-            $ref = new \ReflectionClass($resourceClass);
-            if ($ref->isInstantiable() && $constructor = $ref->getConstructor()) {
-                foreach ($constructor->getParameters() as $constructorParameter) {
-                    if ($constructorParameter->name === $property && null === $propertyMetadata->isInitializable()) {
-                        $propertyMetadata = $propertyMetadata->withInitializable(true);
-                    }
-                }
-            }
+        /* @phpstan-ignore-next-line */
+        if (null === $propertyMetadata->isInitializable() && null !== $initializable = $this->propertyInfo->isInitializable($resourceClass, $property, $options)) {
+            $propertyMetadata = $propertyMetadata->withInitializable($initializable);
         }
 
         return $propertyMetadata;

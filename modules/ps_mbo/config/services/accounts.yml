@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\PsAccountsInstaller\Installer\Installer:
+    autowire: true
+    arguments:
+      $psAccountsVersion: "7.1.2"
+
+  PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Accounts\Provider\AccountsDataProvider:
+    autowire: true
+    autoconfigure: true
+    arguments:
+      $psAccountsVersion: "7.1.2"

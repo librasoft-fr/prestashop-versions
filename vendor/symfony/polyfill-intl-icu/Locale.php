@@ -147,7 +147,7 @@ abstract class Locale
      *
      * @throws MethodNotImplementedException
      */
-    public static function getDisplayLanguage(string $locale, string $displayLocale = null)
+    public static function getDisplayLanguage(string $locale, ?string $displayLocale = null)
     {
         throw new MethodNotImplementedException(__METHOD__);
     }
@@ -161,7 +161,7 @@ abstract class Locale
      *
      * @throws MethodNotImplementedException
      */
-    public static function getDisplayName(string $locale, string $displayLocale = null)
+    public static function getDisplayName(string $locale, ?string $displayLocale = null)
     {
         throw new MethodNotImplementedException(__METHOD__);
     }
@@ -175,7 +175,7 @@ abstract class Locale
      *
      * @throws MethodNotImplementedException
      */
-    public static function getDisplayRegion(string $locale, string $displayLocale = null)
+    public static function getDisplayRegion(string $locale, ?string $displayLocale = null)
     {
         throw new MethodNotImplementedException(__METHOD__);
     }
@@ -189,7 +189,7 @@ abstract class Locale
      *
      * @throws MethodNotImplementedException
      */
-    public static function getDisplayScript(string $locale, string $displayLocale = null)
+    public static function getDisplayScript(string $locale, ?string $displayLocale = null)
     {
         throw new MethodNotImplementedException(__METHOD__);
     }
@@ -203,7 +203,7 @@ abstract class Locale
      *
      * @throws MethodNotImplementedException
      */
-    public static function getDisplayVariant(string $locale, string $displayLocale = null)
+    public static function getDisplayVariant(string $locale, ?string $displayLocale = null)
     {
         throw new MethodNotImplementedException(__METHOD__);
     }
@@ -271,7 +271,7 @@ abstract class Locale
      *
      * @throws MethodNotImplementedException
      */
-    public static function lookup(array $languageTag, string $locale, bool $canonicalize = false, string $defaultLocale = null)
+    public static function lookup(array $languageTag, string $locale, bool $canonicalize = false, ?string $defaultLocale = null)
     {
         throw new MethodNotImplementedException(__METHOD__);
     }
@@ -279,7 +279,7 @@ abstract class Locale
     /**
      * Not supported. Returns an associative array of locale identifier subtags.
      *
-     * @return array Associative array with the extracted subtags
+     * @return array|null Associative array with the extracted subtags
      *
      * @see https://php.net/locale.parselocale
      *

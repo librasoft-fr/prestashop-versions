@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the FOSJsRoutingBundle package.
  *
@@ -15,48 +17,35 @@ use Symfony\Component\Routing\RouteCollection;
 
 class RoutesResponse
 {
-    private $baseUrl;
-    private $routes;
-    private $prefix;
-    private $host;
-    private $port;
-    private $scheme;
-    private $locale;
-    private $domains;
+    protected $routes;
 
-    public function __construct($baseUrl, RouteCollection $routes = null, $prefix = null, $host = null, $port = null,
-                                $scheme = null, $locale = null, $domains = array())
-    {
-        $this->baseUrl = $baseUrl;
-        $this->routes  = $routes ?: new RouteCollection();
-        $this->prefix  = $prefix;
-        $this->host    = $host;
-        $this->port    = $port;
-        $this->scheme  = $scheme;
-        $this->locale  = $locale;
-        $this->domains = $domains;
+    public function __construct(
+        protected ?string $baseUrl = null,
+        ?RouteCollection $routes = null,
+        protected ?string $prefix = null,
+        protected ?string $host = null,
+        protected ?string $port = null,
+        protected ?string $scheme = null,
+        protected ?string $locale = null,
+        protected array $domains = [],
+    ) {
+        $this->routes = $routes ?: new RouteCollection();
     }
 
-    public function getBaseUrl()
+    public function getRoutes(): array
     {
-        return $this->baseUrl;
-    }
+        $exposedRoutes = [];
 
-    public function getRoutes()
-    {
-        $exposedRoutes = array();
         foreach ($this->routes->all() as $name => $route) {
-
             if (!$route->hasOption('expose')) {
                 $domain = 'default';
             } else {
                 $domain = $route->getOption('expose');
-                $domain = is_string($domain) ? ($domain === 'true' ? 'default' : $domain) : 'default';
+                $domain = is_string($domain) ? ('true' === $domain ? 'default' : $domain) : 'default';
             }
 
-
-            if (count($this->domains) === 0) {
-                if ($domain !== 'default') {
+            if (0 === count($this->domains)) {
+                if ('default' !== $domain) {
                     continue;
                 }
             } elseif (!in_array($domain, $this->domains, true)) {
@@ -64,7 +53,7 @@ class RoutesResponse
             }
 
             $compiledRoute = $route->compile();
-            $defaults      = array_intersect_key(
+            $defaults = array_intersect_key(
                 $route->getDefaults(),
                 array_fill_keys($compiledRoute->getVariables(), null)
             );
@@ -73,41 +62,91 @@ class RoutesResponse
                 $defaults['_locale'] = $this->locale;
             }
 
-            $exposedRoutes[$name] = array(
-                'tokens'       => $compiledRoute->getTokens(),
-                'defaults'     => $defaults,
+            $exposedRoutes[$name] = [
+                'tokens' => $compiledRoute->getTokens(),
+                'defaults' => $defaults,
                 'requirements' => $route->getRequirements(),
-                'hosttokens'   => method_exists($compiledRoute, 'getHostTokens') ? $compiledRoute->getHostTokens() : array(),
-                'methods'      => $route->getMethods(),
-                'schemes'      => $route->getSchemes(),
-            );
+                'hosttokens' => method_exists($compiledRoute, 'getHostTokens') ? $compiledRoute->getHostTokens() : [],
+                'methods' => $route->getMethods(),
+                'schemes' => $route->getSchemes(),
+            ];
         }
 
         return $exposedRoutes;
     }
 
-    public function getPrefix()
+    public function setRoutes(RouteCollection $routes): void
+    {
+        $this->routes = $routes;
+    }
+
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    public function setBaseUrl(string $baseUrl): void
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }
 
-    public function getHost()
+    public function setPrefix(?string $prefix): void
+    {
+        $this->prefix = $prefix;
+    }
+
+    public function getHost(): ?string
     {
         return $this->host;
     }
 
-    public function getPort()
+    public function setHost(?string $host): void
+    {
+        $this->host = $host;
+    }
+
+    public function getPort(): ?string
     {
         return $this->port;
     }
 
-    public function getScheme()
+    public function setPort(?string $port): void
+    {
+        $this->port = $port;
+    }
+
+    public function getScheme(): ?string
     {
         return $this->scheme;
     }
 
-    public function getLocale()
+    public function setScheme(?string $scheme): void
+    {
+        $this->scheme = $scheme;
+    }
+
+    public function getLocale(): ?string
     {
         return $this->locale;
+    }
+
+    public function setLocale(?string $locale): void
+    {
+        $this->locale = $locale;
+    }
+
+    public function getDomains(): array
+    {
+        return $this->domains;
+    }
+
+    public function setDomains(array $domains): void
+    {
+        $this->domains = $domains;
     }
 }

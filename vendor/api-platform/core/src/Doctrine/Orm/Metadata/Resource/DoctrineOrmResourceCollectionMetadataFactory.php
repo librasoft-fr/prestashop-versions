@@ -15,6 +15,8 @@ namespace ApiPlatform\Doctrine\Orm\Metadata\Resource;
 
 use ApiPlatform\Doctrine\Orm\State\CollectionProvider;
 use ApiPlatform\Doctrine\Orm\State\ItemProvider;
+use ApiPlatform\Doctrine\Orm\State\Options;
+use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\DeleteOperationInterface;
 use ApiPlatform\Metadata\Operation;
@@ -25,35 +27,30 @@ use Doctrine\Persistence\ManagerRegistry;
 
 final class DoctrineOrmResourceCollectionMetadataFactory implements ResourceMetadataCollectionFactoryInterface
 {
-    /**
-     * @var ManagerRegistry
-     */
-    private $managerRegistry;
-
-    /**
-     * @var ResourceMetadataCollectionFactoryInterface
-     */
-    private $decorated;
-
-    public function __construct(ManagerRegistry $managerRegistry, ResourceMetadataCollectionFactoryInterface $decorated)
+    public function __construct(private readonly ManagerRegistry $managerRegistry, private readonly ResourceMetadataCollectionFactoryInterface $decorated)
     {
-        $this->decorated = $decorated;
-        $this->managerRegistry = $managerRegistry;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function create(string $resourceClass): ResourceMetadataCollection
     {
         $resourceMetadataCollection = $this->decorated->create($resourceClass);
 
+        /** @var ApiResource $resourceMetadata */
         foreach ($resourceMetadataCollection as $i => $resourceMetadata) {
             $operations = $resourceMetadata->getOperations();
 
             if ($operations) {
+                /** @var Operation $operation */
                 foreach ($resourceMetadata->getOperations() as $operationName => $operation) {
-                    if (!$this->managerRegistry->getManagerForClass($operation->getClass()) instanceof EntityManagerInterface) {
+                    $entityClass = $operation->getClass();
+                    if (($options = $operation->getStateOptions()) && $options instanceof Options && $options->getEntityClass()) {
+                        $entityClass = $options->getEntityClass();
+                    }
+
+                    if (!$this->managerRegistry->getManagerForClass($entityClass) instanceof EntityManagerInterface) {
                         continue;
                     }
 
@@ -67,7 +64,12 @@ final class DoctrineOrmResourceCollectionMetadataFactory implements ResourceMeta
 
             if ($graphQlOperations) {
                 foreach ($graphQlOperations as $operationName => $graphQlOperation) {
-                    if (!$this->managerRegistry->getManagerForClass($graphQlOperation->getClass()) instanceof EntityManagerInterface) {
+                    $entityClass = $graphQlOperation->getClass();
+                    if (($options = $graphQlOperation->getStateOptions()) && $options instanceof Options && $options->getEntityClass()) {
+                        $entityClass = $options->getEntityClass();
+                    }
+
+                    if (!$this->managerRegistry->getManagerForClass($entityClass) instanceof EntityManagerInterface) {
                         continue;
                     }
 
@@ -83,10 +85,16 @@ final class DoctrineOrmResourceCollectionMetadataFactory implements ResourceMeta
         return $resourceMetadataCollection;
     }
 
-    private function addDefaults($operation): Operation
+    private function addDefaults(Operation $operation): Operation
     {
         if (null === $operation->getProvider()) {
             $operation = $operation->withProvider($this->getProvider($operation));
+        }
+
+        $options = $operation->getStateOptions() ?: new Options();
+        if ($options instanceof Options && null === $options->getHandleLinks()) {
+            $options = $options->withHandleLinks('api_platform.doctrine.orm.links_handler');
+            $operation = $operation->withStateOptions($options);
         }
 
         if (null === $operation->getProcessor()) {

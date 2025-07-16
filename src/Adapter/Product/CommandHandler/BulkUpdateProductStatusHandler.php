@@ -30,16 +30,19 @@ namespace PrestaShop\PrestaShop\Adapter\Product\CommandHandler;
 
 use PrestaShop\PrestaShop\Adapter\Product\Repository\ProductRepository;
 use PrestaShop\PrestaShop\Adapter\Product\Update\ProductIndexationUpdater;
+use PrestaShop\PrestaShop\Core\CommandBus\Attributes\AsCommandHandler;
 use PrestaShop\PrestaShop\Core\Domain\Product\Command\BulkUpdateProductStatusCommand;
 use PrestaShop\PrestaShop\Core\Domain\Product\CommandHandler\BulkUpdateProductStatusHandlerInterface;
 use PrestaShop\PrestaShop\Core\Domain\Product\Exception\BulkProductException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Exception\CannotBulkUpdateProductException;
 use PrestaShop\PrestaShop\Core\Domain\Product\Exception\CannotUpdateProductException;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopCollection;
 
 /**
  * Handles command which deletes addresses in bulk action
  */
+#[AsCommandHandler]
 class BulkUpdateProductStatusHandler extends AbstractBulkHandler implements BulkUpdateProductStatusHandlerInterface
 {
     /**
@@ -89,14 +92,16 @@ class BulkUpdateProductStatusHandler extends AbstractBulkHandler implements Bulk
         );
 
         // Reindexing is costly operation, so we check if properties impacting indexation have changed and then reindex if needed.
+        $shopConstraint = $command->getShopConstraint();
         if (
             $wasVisibleOnSearch !== $this->productIndexationUpdater->isVisibleOnSearch($product)
             || $wasActive !== (bool) $product->active
             // If multiple shops are impacted it's safer to update indexation, it's more complicated to check if it's needed
-            || $command->getShopConstraint()->forAllShops()
-            || $command->getShopConstraint()->getShopGroupId()
+            || $shopConstraint->forAllShops()
+            || $shopConstraint->getShopGroupId()
+            || ($shopConstraint instanceof ShopCollection && $shopConstraint->hasShopIds())
         ) {
-            $this->productIndexationUpdater->updateIndexation($product, $command->getShopConstraint());
+            $this->productIndexationUpdater->updateIndexation($product, $shopConstraint);
         }
     }
 

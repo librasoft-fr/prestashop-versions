@@ -13,11 +13,10 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\EventListener;
 
-use ApiPlatform\Util\RequestAttributesExtractor;
-use Psr\Log\LoggerInterface;
+use ApiPlatform\Metadata\Error;
+use ApiPlatform\State\Util\RequestAttributesExtractor;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
-use Symfony\Component\HttpKernel\EventListener\ExceptionListener as LegacyExceptionListener;
 
 /**
  * Handles requests errors.
@@ -27,32 +26,27 @@ use Symfony\Component\HttpKernel\EventListener\ExceptionListener as LegacyExcept
  */
 final class ExceptionListener
 {
-    /**
-     * @phpstan-ignore-next-line legacy may not exist
-     *
-     * @var ErrorListener|LegacyExceptionListener
-     */
-    private $exceptionListener;
-
-    public function __construct($controller, LoggerInterface $logger = null, $debug = false, ErrorListener $errorListener = null)
+    public function __construct(private readonly ErrorListener $errorListener, public bool $handleSymfonyErrors = false)
     {
-        // @phpstan-ignore-next-line legacy may not exist
-        $this->exceptionListener = $errorListener ?: new LegacyExceptionListener($controller, $logger, $debug);
     }
 
     public function onKernelException(ExceptionEvent $event): void
     {
         $request = $event->getRequest();
+
         // Normalize exceptions only for routes managed by API Platform
         if (
-            'html' === $request->getRequestFormat('') ||
-            !((RequestAttributesExtractor::extractAttributes($request)['respond'] ?? $request->attributes->getBoolean('_api_respond', false)) || $request->attributes->getBoolean('_graphql', false))
+            false === $this->handleSymfonyErrors
+            && !((RequestAttributesExtractor::extractAttributes($request)['respond'] ?? $request->attributes->getBoolean('_api_respond', false)) || $request->attributes->getBoolean('_graphql', false))
         ) {
             return;
         }
 
-        $this->exceptionListener->onKernelException($event); // @phpstan-ignore-line
+        // Don't loop on errors leave it to Symfony as we could not handle this properly
+        if (($operation = $request->attributes->get('_api_operation')) && $operation instanceof Error) {
+            return;
+        }
+
+        $this->errorListener->onKernelException($event);
     }
 }
-
-class_alias(ExceptionListener::class, \ApiPlatform\Core\EventListener\ExceptionListener::class);

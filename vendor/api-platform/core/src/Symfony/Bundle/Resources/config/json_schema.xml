@@ -16,12 +16,14 @@
         <service id="ApiPlatform\JsonSchema\TypeFactoryInterface" alias="api_platform.json_schema.type_factory" />
 
         <service id="api_platform.json_schema.schema_factory" class="ApiPlatform\JsonSchema\SchemaFactory">
-            <argument type="service" id="api_platform.json_schema.type_factory"></argument>
-            <argument type="service" id="api_platform.metadata.resource.metadata_collection_factory.retro_compatible" />
+            <argument type="service" id="api_platform.json_schema.type_factory" on-invalid="ignore"></argument>
+            <argument type="service" id="api_platform.metadata.resource.metadata_collection_factory" />
             <argument type="service" id="api_platform.metadata.property.name_collection_factory" />
             <argument type="service" id="api_platform.metadata.property.metadata_factory" />
             <argument type="service" id="api_platform.name_converter" on-invalid="ignore" />
             <argument type="service" id="api_platform.resource_class_resolver" />
+            <argument on-invalid="ignore">%api_platform.jsonschema_formats%</argument>
+            <argument type="service" id="api_platform.json_schema.definition_name_factory" on-invalid="ignore"/>
         </service>
         <service id="ApiPlatform\JsonSchema\SchemaFactoryInterface" alias="api_platform.json_schema.schema_factory" />
 
@@ -30,6 +32,20 @@
             <argument>%api_platform.formats%</argument>
             <tag name="console.command" />
         </service>
+
+        <service id="api_platform.json_schema.metadata.property.metadata_factory.schema" decorates="api_platform.metadata.property.metadata_factory" decoration-priority="10" class="ApiPlatform\JsonSchema\Metadata\Property\Factory\SchemaPropertyMetadataFactory" public="false">
+            <argument type="service" id="api_platform.resource_class_resolver" />
+            <argument type="service" id="api_platform.json_schema.metadata.property.metadata_factory.schema.inner" />
+        </service>
+
+        <service id="api_platform.json_schema.backward_compatible_schema_factory" decorates="api_platform.json_schema.schema_factory" decoration-priority="-2" class="ApiPlatform\JsonSchema\BackwardCompatibleSchemaFactory">
+            <argument type="service" id="api_platform.json_schema.backward_compatible_schema_factory.inner" />
+        </service>
+
+        <service id="api_platform.json_schema.definition_name_factory" class="ApiPlatform\JsonSchema\DefinitionNameFactory">
+            <argument on-invalid="ignore">%api_platform.jsonschema_formats%</argument>
+        </service>
+
     </services>
 
 </container>

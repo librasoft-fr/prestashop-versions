@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Doctrine\Common;
 
-use Doctrine\DBAL\Types\Type;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
@@ -26,7 +24,10 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
  */
 trait PropertyHelperTrait
 {
-    abstract protected function getManagerRegistry(): ManagerRegistry;
+    /**
+     * Gets class metadata for the given resource.
+     */
+    abstract protected function getClassMetadata(string $resourceClass): ClassMetadata;
 
     /**
      * Determines whether the given property is mapped.
@@ -98,10 +99,8 @@ trait PropertyHelperTrait
 
     /**
      * Gets the Doctrine Type of a given property/resourceClass.
-     *
-     * @return Type|string|null
      */
-    protected function getDoctrineFieldType(string $property, string $resourceClass)
+    protected function getDoctrineFieldType(string $property, string $resourceClass): ?string
     {
         $propertyParts = $this->splitPropertyParts($property, $resourceClass);
         $metadata = $this->getNestedMetadata($resourceClass, $propertyParts['associations']);
@@ -127,16 +126,5 @@ trait PropertyHelperTrait
         }
 
         return $metadata;
-    }
-
-    /**
-     * Gets class metadata for the given resource.
-     */
-    protected function getClassMetadata(string $resourceClass): ClassMetadata
-    {
-        return $this
-            ->getManagerRegistry()
-            ->getManagerForClass($resourceClass)
-            ->getClassMetadata($resourceClass);
     }
 }

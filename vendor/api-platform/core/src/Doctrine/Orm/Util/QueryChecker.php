@@ -92,8 +92,8 @@ final class QueryChecker
     public static function hasOrderByOnFetchJoinedToManyAssociation(QueryBuilder $queryBuilder, ManagerRegistry $managerRegistry): bool
     {
         if (
-            0 === \count($queryBuilder->getDQLPart('join')) ||
-            0 === \count($orderByParts = $queryBuilder->getDQLPart('orderBy'))
+            0 === \count($queryBuilder->getDQLPart('join'))
+            || 0 === \count($orderByParts = $queryBuilder->getDQLPart('orderBy'))
         ) {
             return false;
         }
@@ -104,8 +104,8 @@ final class QueryChecker
 
         foreach ($orderByParts as $orderBy) {
             foreach ($orderBy->getParts() as $part) {
-                if (false !== strpos($part, '.')) {
-                    [$alias] = explode('.', $part);
+                if (str_contains((string) $part, '.')) {
+                    [$alias] = explode('.', (string) $part);
 
                     $orderByAliases[] = $alias;
                 }
@@ -158,7 +158,7 @@ final class QueryChecker
     public static function hasJoinedToManyAssociation(QueryBuilder $queryBuilder, ManagerRegistry $managerRegistry): bool
     {
         if (
-            0 === \count($queryBuilder->getDQLPart('join'))
+            0 === (is_countable($queryBuilder->getDQLPart('join')) ? \count($queryBuilder->getDQLPart('join')) : 0)
         ) {
             return false;
         }

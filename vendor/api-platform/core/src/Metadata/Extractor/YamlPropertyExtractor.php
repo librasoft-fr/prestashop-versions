@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Extractor;
 
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -27,7 +27,7 @@ final class YamlPropertyExtractor extends AbstractPropertyExtractor
     /**
      * {@inheritdoc}
      */
-    protected function extractPath(string $path)
+    protected function extractPath(string $path): void
     {
         try {
             $propertiesYaml = Yaml::parse((string) file_get_contents($path), Yaml::PARSE_CONSTANT);
@@ -42,7 +42,7 @@ final class YamlPropertyExtractor extends AbstractPropertyExtractor
         }
 
         if (!\is_array($propertiesYaml)) {
-            throw new InvalidArgumentException(sprintf('"properties" setting is expected to be null or an array, %s given in "%s".', \gettype($propertiesYaml), $path));
+            throw new InvalidArgumentException(\sprintf('"properties" setting is expected to be null or an array, %s given in "%s".', \gettype($propertiesYaml), $path));
         }
 
         $this->buildProperties($propertiesYaml);
@@ -64,7 +64,7 @@ final class YamlPropertyExtractor extends AbstractPropertyExtractor
                 }
 
                 if (!\is_array($propertyValues)) {
-                    throw new InvalidArgumentException(sprintf('"%s" setting is expected to be null or an array, %s given.', $propertyName, \gettype($propertyValues)));
+                    throw new InvalidArgumentException(\sprintf('"%s" setting is expected to be null or an array, %s given.', $propertyName, \gettype($propertyValues)));
                 }
 
                 $this->properties[$resourceName][$propertyName] = [
@@ -93,19 +93,21 @@ final class YamlPropertyExtractor extends AbstractPropertyExtractor
                     'builtinTypes' => $this->buildAttribute($propertyValues, 'builtinTypes'),
                     'schema' => $this->buildAttribute($propertyValues, 'schema'),
                     'genId' => $this->phpize($propertyValues, 'genId', 'bool'),
+                    'uriTemplate' => $this->phpize($propertyValues, 'uriTemplate', 'string'),
+                    'property' => $this->phpize($propertyValues, 'property', 'string'),
                 ];
             }
         }
     }
 
-    private function buildAttribute(array $resource, string $key, $default = null)
+    private function buildAttribute(array $resource, string $key, mixed $default = null)
     {
         if (empty($resource[$key])) {
             return $default;
         }
 
         if (!\is_array($resource[$key])) {
-            throw new InvalidArgumentException(sprintf('"%s" setting is expected to be an array, %s given', $key, \gettype($resource[$key])));
+            throw new InvalidArgumentException(\sprintf('"%s" setting is expected to be an array, %s given', $key, \gettype($resource[$key])));
         }
 
         return $resource[$key];
@@ -113,28 +115,19 @@ final class YamlPropertyExtractor extends AbstractPropertyExtractor
 
     /**
      * Transforms an XML attribute's value in a PHP value.
-     *
-     * @param mixed|null $default
-     *
-     * @return string|int|bool|array|null
      */
-    private function phpize(?array $resource, string $key, string $type, $default = null)
+    private function phpize(?array $resource, string $key, string $type, mixed $default = null): array|bool|int|string|null
     {
         if (!isset($resource[$key])) {
             return $default;
         }
 
-        switch ($type) {
-            case 'bool|string':
-                return \in_array($resource[$key], ['1', '0', 1, 0, 'true', 'false', true, false], true) ? $this->phpize($resource, $key, 'bool') : $this->phpize($resource, $key, 'string');
-            case 'string':
-                return (string) $resource[$key];
-            case 'integer':
-                return (int) $resource[$key];
-            case 'bool':
-                return \in_array($resource[$key], ['1', 'true', 1, true], false);
-        }
-
-        throw new InvalidArgumentException(sprintf('The property "%s" must be a "%s", "%s" given.', $key, $type, \gettype($resource[$key])));
+        return match ($type) {
+            'bool|string' => \in_array($resource[$key], ['1', '0', 1, 0, 'true', 'false', true, false], true) ? $this->phpize($resource, $key, 'bool') : $this->phpize($resource, $key, 'string'),
+            'string' => (string) $resource[$key],
+            'integer' => (int) $resource[$key],
+            'bool' => \in_array($resource[$key], ['1', 'true', 1, true], false),
+            default => throw new InvalidArgumentException(\sprintf('The property "%s" must be a "%s", "%s" given.', $key, $type, \gettype($resource[$key]))),
+        };
     }
 }

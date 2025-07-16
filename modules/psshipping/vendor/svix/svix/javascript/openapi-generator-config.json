@@ -1,0 +1,5 @@
+{
+  "npmName": "svix",
+  "useObjectParameters": true,
+  "supportsES6": true
+}

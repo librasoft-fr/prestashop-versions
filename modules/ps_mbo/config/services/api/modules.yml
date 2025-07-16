@@ -1,0 +1,20 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\Mbo\Module\SourceRetriever\AddonsUrlSourceRetriever:
+    autowire: true
+    properties:
+      cacheDir: "%kernel.cache_dir%"
+
+  PrestaShop\Module\Mbo\Module\Workflow\TransitionsManager:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Module\Workflow\TransitionBuilder:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Module\Workflow\TransitionApplier:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Module\CommandHandler\ModuleStatusTransitionCommandHandler:
+    autowire: true

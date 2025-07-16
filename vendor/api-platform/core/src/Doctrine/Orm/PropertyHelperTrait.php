@@ -15,8 +15,11 @@ namespace ApiPlatform\Doctrine\Orm;
 
 use ApiPlatform\Doctrine\Orm\Util\QueryBuilderHelper;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
+use Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * Helper trait regarding a property in an entity using the resource metadata.
@@ -26,10 +29,28 @@ use Doctrine\ORM\QueryBuilder;
  */
 trait PropertyHelperTrait
 {
+    abstract protected function getManagerRegistry(): ManagerRegistry;
+
     /**
      * Splits the given property into parts.
      */
     abstract protected function splitPropertyParts(string $property, string $resourceClass): array;
+
+    /**
+     * Gets class metadata for the given resource.
+     */
+    protected function getClassMetadata(string $resourceClass): ClassMetadata
+    {
+        $manager = $this
+            ->getManagerRegistry()
+            ->getManagerForClass($resourceClass);
+
+        if ($manager) {
+            return $manager->getClassMetadata($resourceClass);
+        }
+
+        return new ClassMetadataInfo($resourceClass);
+    }
 
     /**
      * Adds the necessary joins for a nested property.
@@ -52,7 +73,7 @@ trait PropertyHelperTrait
         }
 
         if (null === $alias) {
-            throw new InvalidArgumentException(sprintf('Cannot add joins for property "%s" - property is not nested.', $property));
+            throw new InvalidArgumentException(\sprintf('Cannot add joins for property "%s" - property is not nested.', $property));
         }
 
         return [$alias, $propertyParts['field'], $propertyParts['associations']];

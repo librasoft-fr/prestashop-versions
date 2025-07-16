@@ -37,14 +37,12 @@ class ChainExtractor extends BaseChaineExtractor
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function extract($directory, MessageCatalogue $catalogue)
     {
         $finder = new Finder();
 
         $finder->ignoreUnreadableDirs();
+        $finder->sortByName(true);
 
         foreach (Configuration::getPaths() as $item) {
             $finder->path('{^' . $item . '}');

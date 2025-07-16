@@ -17,9 +17,9 @@ namespace ApiPlatform\Exception;
  * Identifier is not valid exception.
  *
  * @author Antoine Bluchet <soyuka@gmail.com>
+ *
+ * @deprecated use ApiPlatform\Metadata\Exception\InvalidIdentifierException
  */
-final class InvalidIdentifierException extends \Exception implements ExceptionInterface
+class InvalidIdentifierException extends \Exception implements ExceptionInterface
 {
 }
-
-class_alias(InvalidIdentifierException::class, \ApiPlatform\Core\Exception\InvalidIdentifierException::class);

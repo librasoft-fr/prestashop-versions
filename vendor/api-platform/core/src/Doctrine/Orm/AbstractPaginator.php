@@ -13,17 +13,17 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Doctrine\Orm;
 
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use ApiPlatform\State\Pagination\PartialPaginatorInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 
 abstract class AbstractPaginator implements \IteratorAggregate, PartialPaginatorInterface
 {
-    protected $paginator;
-    protected $iterator;
-    protected $firstResult;
-    protected $maxResults;
+    protected DoctrinePaginator $paginator;
+    protected array|\Traversable $iterator;
+    protected ?int $firstResult;
+    protected ?int $maxResults;
 
     /**
      * @throws InvalidArgumentException
@@ -32,8 +32,8 @@ abstract class AbstractPaginator implements \IteratorAggregate, PartialPaginator
     {
         $query = $paginator->getQuery();
 
-        if (null === ($firstResult = $query->getFirstResult()) || null === $maxResults = $query->getMaxResults()) {
-            throw new InvalidArgumentException(sprintf('"%1$s::setFirstResult()" or/and "%1$s::setMaxResults()" was/were not applied to the query.', Query::class));
+        if (null === ($firstResult = $query->getFirstResult()) || $firstResult < 0 || null === $maxResults = $query->getMaxResults()) { // @phpstan-ignore-line
+            throw new InvalidArgumentException(\sprintf('"%1$s::setFirstResult()" or/and "%1$s::setMaxResults()" was/were not applied to the query.', Query::class));
         }
 
         $this->paginator = $paginator;
@@ -77,5 +77,3 @@ abstract class AbstractPaginator implements \IteratorAggregate, PartialPaginator
         return iterator_count($this->getIterator());
     }
 }
-
-class_alias(AbstractPaginator::class, \ApiPlatform\Core\Bridge\Doctrine\Orm\AbstractPaginator::class);

@@ -1,0 +1,48 @@
+---
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\Mbo\Module\Repository:
+    autowire: true
+    arguments:
+      $cacheProvider: '@Doctrine\Common\Cache\Psr6\DoctrineProvider'
+      $localeCode: "@=service('translator').getLocale()"
+      $dbPrefix: "@=service('prestashop.adapter.legacy.configuration').get('_DB_PREFIX_')"
+
+  PrestaShop\Module\Mbo\Module\FiltersFactory:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Module\CollectionFactory:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Module\ModuleBuilder:
+    autowire: true
+    arguments:
+      $moduleDirectory: "@=service('prestashop.adapter.legacy.configuration').get('_PS_MODULE_DIR_')"
+      $router: '@prestashop.router'
+
+  PrestaShop\Module\Mbo\Module\FilesManager:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Module\ActionsManager:
+    autowire: true
+
+  mbo.modules.actions_manager:
+    alias: PrestaShop\Module\Mbo\Module\ActionsManager
+
+  PrestaShop\Module\Mbo\Module\SourceHandler\AddonsUrlSourceHandler:
+    autowire: true
+    autoconfigure: true
+    tags: [ core.module.source_handler ]
+
+  PrestaShop\Module\Mbo\Service\ModulesHelper:
+    autowire: true
+    arguments:
+      $router: '@prestashop.router'
+
+  PrestaShop\Module\Mbo\Service\HookExceptionHolder:
+    autowire: true
+
+  mbo.hook_exception_holder:
+    alias: PrestaShop\Module\Mbo\Service\HookExceptionHolder

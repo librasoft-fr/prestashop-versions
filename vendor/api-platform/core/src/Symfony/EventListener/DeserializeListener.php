@@ -14,18 +14,27 @@ declare(strict_types=1);
 namespace ApiPlatform\Symfony\EventListener;
 
 use ApiPlatform\Api\FormatMatcher;
-use ApiPlatform\Core\Api\FormatsProviderInterface;
-use ApiPlatform\Core\Metadata\Resource\Factory\ResourceMetadataFactoryInterface;
-use ApiPlatform\Core\Metadata\Resource\ToggleableOperationAttributeTrait;
+use ApiPlatform\Metadata\HttpOperation;
 use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
-use ApiPlatform\Serializer\SerializerContextBuilderInterface;
-use ApiPlatform\Util\OperationRequestInitiatorTrait;
-use ApiPlatform\Util\RequestAttributesExtractor;
+use ApiPlatform\Serializer\SerializerContextBuilderInterface as LegacySerializerContextBuilderInterface;
+use ApiPlatform\State\ProviderInterface;
+use ApiPlatform\State\SerializerContextBuilderInterface;
+use ApiPlatform\State\Util\OperationRequestInitiatorTrait;
+use ApiPlatform\Symfony\Util\RequestAttributesExtractor;
+use ApiPlatform\Symfony\Validator\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
+use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\Type;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Contracts\Translation\LocaleAwareInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorTrait;
 
 /**
  * Updates the entity retrieved by the data provider with data contained in the request body.
@@ -35,43 +44,36 @@ use Symfony\Component\Serializer\SerializerInterface;
 final class DeserializeListener
 {
     use OperationRequestInitiatorTrait;
-    use ToggleableOperationAttributeTrait;
 
     public const OPERATION_ATTRIBUTE_KEY = 'deserialize';
+    private SerializerInterface $serializer;
+    private ?ProviderInterface $provider = null;
 
-    private $serializer;
-    private $serializerContextBuilder;
-    private $formats;
-    private $formatsProvider;
-
-    /**
-     * @param ResourceMetadataCollectionFactoryInterface|ResourceMetadataFactoryInterface|FormatsProviderInterface|array $resourceMetadataFactory
-     */
-    public function __construct(SerializerInterface $serializer, SerializerContextBuilderInterface $serializerContextBuilder, $resourceMetadataFactory)
-    {
-        $this->serializer = $serializer;
-        $this->serializerContextBuilder = $serializerContextBuilder;
-
-        $this->resourceMetadataFactory = $resourceMetadataFactory;
-
-        if ($resourceMetadataFactory) {
-            if (!$resourceMetadataFactory instanceof ResourceMetadataFactoryInterface && !$resourceMetadataFactory instanceof ResourceMetadataCollectionFactoryInterface) {
-                @trigger_error(sprintf('Passing an array or an instance of "%s" as 3rd parameter of the constructor of "%s" is deprecated since API Platform 2.5, pass an instance of "%s" instead', FormatsProviderInterface::class, __CLASS__, ResourceMetadataFactoryInterface::class), \E_USER_DEPRECATED);
-            }
-
-            if ($resourceMetadataFactory instanceof ResourceMetadataFactoryInterface && !$resourceMetadataFactory instanceof ResourceMetadataCollectionFactoryInterface) {
-                trigger_deprecation('api-platform/core', '2.7', sprintf('Use "%s" instead of "%s".', ResourceMetadataCollectionFactoryInterface::class, ResourceMetadataFactoryInterface::class));
-            }
-
-            if ($resourceMetadataFactory instanceof ResourceMetadataCollectionFactoryInterface) {
-                $this->resourceMetadataCollectionFactory = $resourceMetadataFactory;
-            }
+    public function __construct(
+        ProviderInterface|SerializerInterface $serializer,
+        private readonly LegacySerializerContextBuilderInterface|SerializerContextBuilderInterface|ResourceMetadataCollectionFactoryInterface|null $serializerContextBuilder = null,
+        ?ResourceMetadataCollectionFactoryInterface $resourceMetadataFactory = null,
+        private ?TranslatorInterface $translator = null,
+    ) {
+        if ($serializer instanceof ProviderInterface) {
+            $this->provider = $serializer;
+        } else {
+            trigger_deprecation('api-platform/core', '3.3', 'Use a "%s" as first argument in "%s" instead of "%s".', ProviderInterface::class, self::class, SerializerInterface::class);
+            $this->serializer = $serializer;
         }
 
-        if (\is_array($resourceMetadataFactory)) {
-            $this->formats = $resourceMetadataFactory;
-        } elseif ($resourceMetadataFactory instanceof FormatsProviderInterface) {
-            $this->formatsProvider = $resourceMetadataFactory;
+        if ($serializerContextBuilder instanceof ResourceMetadataCollectionFactoryInterface) {
+            $resourceMetadataFactory = $serializerContextBuilder;
+        } else {
+            trigger_deprecation('api-platform/core', '3.3', 'Use a "%s" as second argument in "%s" instead of "%s".', ResourceMetadataCollectionFactoryInterface::class, self::class, SerializerContextBuilderInterface::class);
+        }
+
+        $this->resourceMetadataCollectionFactory = $resourceMetadataFactory;
+        if (null === $this->translator) {
+            $this->translator = new class implements TranslatorInterface, LocaleAwareInterface {
+                use TranslatorTrait;
+            };
+            $this->translator->setLocale('en');
         }
     }
 
@@ -85,57 +87,88 @@ final class DeserializeListener
         $request = $event->getRequest();
         $method = $request->getMethod();
 
+        if (
+            !($attributes = RequestAttributesExtractor::extractAttributes($request))
+            || !$attributes['receive']
+        ) {
+            return;
+        }
+
         $operation = $this->initializeOperation($request);
 
+        if ($operation && $this->provider) {
+            if (null === $operation->canDeserialize() && $operation instanceof HttpOperation) {
+                $operation = $operation->withDeserialize(\in_array($operation->getMethod(), ['POST', 'PUT', 'PATCH'], true));
+            }
+
+            if (!$operation->canDeserialize()) {
+                return;
+            }
+
+            $data = $this->provider->provide($operation, $request->attributes->get('_api_uri_variables') ?? [], [
+                'request' => $request,
+                'uri_variables' => $request->attributes->get('_api_uri_variables') ?? [],
+                'resource_class' => $operation->getClass(),
+            ]);
+
+            $request->attributes->set('data', $data);
+
+            return;
+        }
+
+        // TODO: the code below needs to be removed in 4.x
         if (
             'DELETE' === $method
             || $request->isMethodSafe()
-            || !($attributes = RequestAttributesExtractor::extractAttributes($request))
+            || $request->attributes->get('_api_platform_disable_listeners')
         ) {
             return;
         }
 
-        if ($this->resourceMetadataFactory instanceof ResourceMetadataCollectionFactoryInterface &&
-            (!$operation || !($operation->canDeserialize() ?? true) || !$attributes['receive'])
-        ) {
+        if ('api_platform.symfony.main_controller' === $operation?->getController()) {
             return;
         }
 
-        if ($this->resourceMetadataFactory instanceof ResourceMetadataFactoryInterface && (
-            !$attributes['receive']
-            || $this->isOperationAttributeDisabled($attributes, self::OPERATION_ATTRIBUTE_KEY)
-        )) {
+        if (!($operation?->canDeserialize() ?? true)) {
             return;
         }
 
         $context = $this->serializerContextBuilder->createFromRequest($request, false, $attributes);
 
-        $formats = $operation ? $operation->getInputFormats() ?? null : null;
-
-        if (!$formats) {
-            // BC check to be removed in 3.0
-            if ($this->resourceMetadataFactory instanceof ResourceMetadataFactoryInterface) {
-                @trigger_error('When using a "route_name", be sure to define the "_api_operation" route defaults as we will not rely on metadata in API Platform 3.0.', \E_USER_DEPRECATED);
-                $formats = $this->resourceMetadataFactory
-                    ->create($attributes['resource_class'])
-                    ->getOperationAttribute($attributes, 'input_formats', [], true);
-            } elseif ($this->formatsProvider instanceof FormatsProviderInterface) {
-                $formats = $this->formatsProvider->getFormatsFromAttributes($attributes);
-            } else {
-                $formats = $this->formats;
-            }
-        }
-
-        $format = $this->getFormat($request, $formats);
+        $format = $this->getFormat($request, $operation?->getInputFormats() ?? []);
         $data = $request->attributes->get('data');
-        if (null !== $data) {
+        if (
+            null !== $data
+            && (
+                'POST' === $method
+                || 'PATCH' === $method
+                || ('PUT' === $method && !($operation->getExtraProperties()['standard_put'] ?? false))
+            )
+        ) {
             $context[AbstractNormalizer::OBJECT_TO_POPULATE] = $data;
         }
-
-        $request->attributes->set(
-            'data',
-            $this->serializer->deserialize($request->getContent(), $context['resource_class'], $format, $context)
-        );
+        try {
+            $request->attributes->set(
+                'data',
+                $this->serializer->deserialize($request->getContent(), $context['resource_class'], $format, $context)
+            );
+        } catch (PartialDenormalizationException $e) {
+            $violations = new ConstraintViolationList();
+            foreach ($e->getErrors() as $exception) {
+                if (!$exception instanceof NotNormalizableValueException) {
+                    continue;
+                }
+                $message = (new Type($exception->getExpectedTypes() ?? []))->message;
+                $parameters = [];
+                if ($exception->canUseMessageForUser()) {
+                    $parameters['hint'] = $exception->getMessage();
+                }
+                $violations->add(new ConstraintViolation($this->translator->trans($message, ['{{ type }}' => implode('|', $exception->getExpectedTypes() ?? [])], 'validators'), $message, $parameters, null, $exception->getPath(), null, null, Type::INVALID_TYPE_ERROR));
+            }
+            if (0 !== \count($violations)) {
+                throw new ValidationException($violations);
+            }
+        }
     }
 
     /**
@@ -145,11 +178,9 @@ final class DeserializeListener
      */
     private function getFormat(Request $request, array $formats): string
     {
-        /**
-         * @var string|null
-         */
+        /** @var ?string $contentType */
         $contentType = $request->headers->get('CONTENT_TYPE');
-        if (null === $contentType) {
+        if (null === $contentType || '' === $contentType) {
             throw new UnsupportedMediaTypeHttpException('The "Content-Type" header must exist.');
         }
 
@@ -163,11 +194,9 @@ final class DeserializeListener
                 }
             }
 
-            throw new UnsupportedMediaTypeHttpException(sprintf('The content-type "%s" is not supported. Supported MIME types are "%s".', $contentType, implode('", "', $supportedMimeTypes)));
+            throw new UnsupportedMediaTypeHttpException(\sprintf('The content-type "%s" is not supported. Supported MIME types are "%s".', $contentType, implode('", "', $supportedMimeTypes)));
         }
 
         return $format;
     }
 }
-
-class_alias(DeserializeListener::class, \ApiPlatform\Core\EventListener\DeserializeListener::class);

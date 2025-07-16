@@ -20,8 +20,9 @@ use ApiPlatform\GraphQl\Resolver\Stage\SecurityStageInterface;
 use ApiPlatform\GraphQl\Resolver\Stage\SerializeStageInterface;
 use ApiPlatform\Metadata\GraphQl\Operation;
 use ApiPlatform\Metadata\GraphQl\Query;
-use ApiPlatform\Util\ClassInfoTrait;
-use ApiPlatform\Util\CloneTrait;
+use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
+use ApiPlatform\Metadata\Util\ClassInfoTrait;
+use ApiPlatform\Metadata\Util\CloneTrait;
 use GraphQL\Type\Definition\ResolveInfo;
 use Psr\Container\ContainerInterface;
 
@@ -31,28 +32,19 @@ use Psr\Container\ContainerInterface;
  * @author Alan Poulain <contact@alanpoulain.eu>
  * @author Kévin Dunglas <dunglas@gmail.com>
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
+ *
+ * @deprecated
  */
 final class ItemResolverFactory implements ResolverFactoryInterface
 {
     use ClassInfoTrait;
     use CloneTrait;
 
-    private $readStage;
-    private $securityStage;
-    private $securityPostDenormalizeStage;
-    private $serializeStage;
-    private $queryResolverLocator;
-
-    public function __construct(ReadStageInterface $readStage, SecurityStageInterface $securityStage, SecurityPostDenormalizeStageInterface $securityPostDenormalizeStage, SerializeStageInterface $serializeStage, ContainerInterface $queryResolverLocator)
+    public function __construct(private readonly ReadStageInterface $readStage, private readonly SecurityStageInterface $securityStage, private readonly SecurityPostDenormalizeStageInterface $securityPostDenormalizeStage, private readonly SerializeStageInterface $serializeStage, private readonly ContainerInterface $queryResolverLocator)
     {
-        $this->readStage = $readStage;
-        $this->securityStage = $securityStage;
-        $this->securityPostDenormalizeStage = $securityPostDenormalizeStage;
-        $this->serializeStage = $serializeStage;
-        $this->queryResolverLocator = $queryResolverLocator;
     }
 
-    public function __invoke(?string $resourceClass = null, ?string $rootClass = null, ?Operation $operation = null): callable
+    public function __invoke(?string $resourceClass = null, ?string $rootClass = null, ?Operation $operation = null, ?PropertyMetadataFactoryInterface $propertyMetadataFactory = null): callable
     {
         return function (?array $source, array $args, $context, ResolveInfo $info) use ($resourceClass, $rootClass, $operation) {
             // Data already fetched and normalized (field or nested resource)
@@ -71,6 +63,7 @@ final class ItemResolverFactory implements ResolverFactoryInterface
                 throw new \LogicException('Item from read stage should be a nullable object.');
             }
 
+            $resourceClass = $operation->getOutput()['class'] ?? $resourceClass;
             // The item retrieved can be of another type when using an identifier (see Relay Nodes at query.feature:23)
             $resourceClass = $this->getResourceClass($item, $resourceClass);
             $queryResolverId = $operation->getResolver();
@@ -78,7 +71,7 @@ final class ItemResolverFactory implements ResolverFactoryInterface
                 /** @var QueryItemResolverInterface $queryResolver */
                 $queryResolver = $this->queryResolverLocator->get($queryResolverId);
                 $item = $queryResolver($item, $resolverContext);
-                $resourceClass = $this->getResourceClass($item, $resourceClass, sprintf('Custom query resolver "%s"', $queryResolverId).' has to return an item of class %s but returned an item of class %s.');
+                $resourceClass = $this->getResourceClass($item, $resourceClass, \sprintf('Custom query resolver "%s"', $queryResolverId).' has to return an item of class %s but returned an item of class %s.');
             }
 
             ($this->securityStage)($resourceClass, $operation, $resolverContext + [
@@ -98,11 +91,9 @@ final class ItemResolverFactory implements ResolverFactoryInterface
     }
 
     /**
-     * @param object|null $item
-     *
      * @throws \UnexpectedValueException
      */
-    private function getResourceClass($item, ?string $resourceClass, string $errorMessage = 'Resolver only handles items of class %s but retrieved item is of class %s.'): string
+    private function getResourceClass(?object $item, ?string $resourceClass, string $errorMessage = 'Resolver only handles items of class %s but retrieved item is of class %s.'): string
     {
         if (null === $item) {
             if (null === $resourceClass) {
@@ -118,8 +109,8 @@ final class ItemResolverFactory implements ResolverFactoryInterface
             return $itemClass;
         }
 
-        if ($resourceClass !== $itemClass) {
-            throw new \UnexpectedValueException(sprintf($errorMessage, (new \ReflectionClass($resourceClass))->getShortName(), (new \ReflectionClass($itemClass))->getShortName()));
+        if ($resourceClass !== $itemClass && !$item instanceof $resourceClass) {
+            throw new \UnexpectedValueException(\sprintf($errorMessage, (new \ReflectionClass($resourceClass))->getShortName(), (new \ReflectionClass($itemClass))->getShortName()));
         }
 
         return $resourceClass;

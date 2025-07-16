@@ -20,13 +20,13 @@ use GraphQL\Error\Error;
  * Validate stage of GraphQL resolvers.
  *
  * @author Alan Poulain <contact@alanpoulain.eu>
+ *
+ * @deprecated
  */
 interface ValidateStageInterface
 {
     /**
-     * @param object $object
-     *
      * @throws Error
      */
-    public function __invoke($object, string $resourceClass, Operation $operation, array $context): void;
+    public function __invoke(object $object, string $resourceClass, Operation $operation, array $context): void;
 }

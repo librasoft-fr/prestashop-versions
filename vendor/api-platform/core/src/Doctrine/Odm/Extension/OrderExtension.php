@@ -33,19 +33,14 @@ final class OrderExtension implements AggregationCollectionExtensionInterface
     use MongoDbOdmPropertyHelperTrait;
     use PropertyHelperTrait;
 
-    private $order;
-    private $managerRegistry;
-
-    public function __construct(string $order = null, ManagerRegistry $managerRegistry = null)
+    public function __construct(private readonly ?string $order = null, private readonly ?ManagerRegistry $managerRegistry = null)
     {
-        $this->order = $order;
-        $this->managerRegistry = $managerRegistry;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function applyToCollection(Builder $aggregationBuilder, string $resourceClass, Operation $operation = null, array &$context = []): void
+    public function applyToCollection(Builder $aggregationBuilder, string $resourceClass, ?Operation $operation = null, array &$context = []): void
     {
         // Do not apply order if already defined on $aggregationBuilder
         if ($this->hasSortStage($aggregationBuilder)) {
@@ -54,7 +49,11 @@ final class OrderExtension implements AggregationCollectionExtensionInterface
 
         $classMetaData = $this->getClassMetadata($resourceClass);
         $identifiers = $classMetaData->getIdentifier();
-        $defaultOrder = $operation ? $operation->getOrder() : null;
+        if (isset($context['operation'])) {
+            $defaultOrder = $context['operation']->getOrder() ?? [];
+        } else {
+            $defaultOrder = $operation?->getOrder();
+        }
 
         if ($defaultOrder) {
             foreach ($defaultOrder as $field => $order) {
@@ -65,7 +64,7 @@ final class OrderExtension implements AggregationCollectionExtensionInterface
                 }
 
                 if ($this->isPropertyNested($field, $resourceClass)) {
-                    [$field] = $this->addLookupsForNestedProperty($field, $aggregationBuilder, $resourceClass);
+                    [$field] = $this->addLookupsForNestedProperty($field, $aggregationBuilder, $resourceClass, true);
                 }
                 $aggregationBuilder->sort(
                     $context['mongodb_odm_sort_fields'] = ($context['mongodb_odm_sort_fields'] ?? []) + [$field => $order]

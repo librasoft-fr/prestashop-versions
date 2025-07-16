@@ -14,24 +14,22 @@ declare(strict_types=1);
 namespace ApiPlatform\Symfony\Bundle\ArgumentResolver;
 
 use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
-use ApiPlatform\Serializer\SerializerContextBuilderInterface;
-use ApiPlatform\Util\OperationRequestInitiatorTrait;
-use ApiPlatform\Util\RequestAttributesExtractor;
+use ApiPlatform\State\SerializerContextBuilderInterface;
+use ApiPlatform\State\Util\OperationRequestInitiatorTrait;
+use ApiPlatform\Symfony\Util\RequestAttributesExtractor;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
+use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-final class PayloadArgumentResolver implements ArgumentValueResolverInterface
+final class PayloadArgumentResolver implements CompatibleValueResolverInterface
 {
     use OperationRequestInitiatorTrait;
-    private $serializationContextBuilder;
 
     public function __construct(
         ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory,
-        SerializerContextBuilderInterface $serializationContextBuilder
+        private readonly SerializerContextBuilderInterface $serializationContextBuilder,
     ) {
         $this->resourceMetadataCollectionFactory = $resourceMetadataCollectionFactory;
-        $this->serializationContextBuilder = $serializationContextBuilder;
     }
 
     public function supports(Request $request, ArgumentMetadata $argument): bool
@@ -61,13 +59,19 @@ final class PayloadArgumentResolver implements ArgumentValueResolverInterface
 
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if (interface_exists(ValueResolverInterface::class)) {
+            if (!$this->supports($request, $argument)) {
+                return [];
+            }
+        }
+
         yield $request->attributes->get('data');
     }
 
     private function getExpectedInputClass(Request $request): ?string
     {
         $operation = $this->initializeOperation($request);
-        if (Request::METHOD_DELETE === $request->getMethod() || $request->isMethodSafe() || !($operation->canDeserialize() ?? true)) {
+        if (Request::METHOD_DELETE === $request->getMethod() || $request->isMethodSafe() || !($operation?->canDeserialize() ?? true)) {
             return null;
         }
 
@@ -76,5 +80,3 @@ final class PayloadArgumentResolver implements ArgumentValueResolverInterface
         return $context['input']['class'] ?? $context['resource_class'] ?? null;
     }
 }
-
-class_alias(PayloadArgumentResolver::class, \ApiPlatform\Core\Bridge\Symfony\Bundle\ArgumentResolver\PayloadArgumentResolver::class);

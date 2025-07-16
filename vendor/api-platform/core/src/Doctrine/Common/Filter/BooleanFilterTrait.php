@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace ApiPlatform\Doctrine\Common\Filter;
 
 use ApiPlatform\Doctrine\Common\PropertyHelperTrait;
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -65,7 +65,7 @@ trait BooleanFilterTrait
 
     abstract protected function getLogger(): LoggerInterface;
 
-    abstract protected function normalizePropertyName($property): string;
+    abstract protected function normalizePropertyName(string $property): string;
 
     /**
      * Determines whether the given property refers to a boolean field.
@@ -86,7 +86,7 @@ trait BooleanFilterTrait
         }
 
         $this->getLogger()->notice('Invalid filter ignored', [
-            'exception' => new InvalidArgumentException(sprintf('Invalid boolean value for "%s" property, expected one of ( "%s" )', $property, implode('" | "', [
+            'exception' => new InvalidArgumentException(\sprintf('Invalid boolean value for "%s" property, expected one of ( "%s" )', $property, implode('" | "', [
                 'true',
                 'false',
                 '1',

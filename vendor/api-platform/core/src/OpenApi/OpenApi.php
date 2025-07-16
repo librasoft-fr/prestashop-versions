@@ -13,43 +13,23 @@ declare(strict_types=1);
 
 namespace ApiPlatform\OpenApi;
 
-use ApiPlatform\Documentation\DocumentationInterface;
 use ApiPlatform\OpenApi\Model\Components;
 use ApiPlatform\OpenApi\Model\ExtensionTrait;
 use ApiPlatform\OpenApi\Model\Info;
 use ApiPlatform\OpenApi\Model\Paths;
 
-final class OpenApi implements DocumentationInterface
+final class OpenApi
 {
     use ExtensionTrait;
 
-    // We're actually supporting 3.1 but swagger ui has a version constraint
-    // public const VERSION = '3.1.0';
-    public const VERSION = '3.0.0';
+    public const VERSION = '3.1.0';
 
-    private $openapi;
-    private $info;
-    private $servers;
-    private $paths;
-    private $components;
-    private $security;
-    private $tags;
-    private $externalDocs;
-    private $jsonSchemaDialect;
-    private $webhooks;
+    private string $openapi = self::VERSION;
+    private Components $components;
 
-    public function __construct(Info $info, array $servers, Paths $paths, Components $components = null, array $security = [], array $tags = [], $externalDocs = null, string $jsonSchemaDialect = null, \ArrayObject $webhooks = null)
+    public function __construct(private Info $info, private array $servers, private Paths $paths, ?Components $components = null, private array $security = [], private array $tags = [], private $externalDocs = null, private ?string $jsonSchemaDialect = null, private readonly ?\ArrayObject $webhooks = null)
     {
-        $this->openapi = self::VERSION;
-        $this->info = $info;
-        $this->servers = $servers;
-        $this->paths = $paths;
-        $this->components = $components;
-        $this->security = $security;
-        $this->tags = $tags;
-        $this->externalDocs = $externalDocs;
-        $this->jsonSchemaDialect = $jsonSchemaDialect;
-        $this->webhooks = $webhooks;
+        $this->components = $components ?? new Components();
     }
 
     public function getOpenapi(): string
@@ -174,5 +154,3 @@ final class OpenApi implements DocumentationInterface
         return $clone;
     }
 }
-
-class_alias(OpenApi::class, \ApiPlatform\Core\OpenApi\OpenApi::class);

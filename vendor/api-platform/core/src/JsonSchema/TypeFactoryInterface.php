@@ -18,6 +18,8 @@ use Symfony\Component\PropertyInfo\Type;
 /**
  * Factory for creating the JSON Schema document which specifies the data type corresponding to a PHP type.
  *
+ * @deprecated
+ *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
 interface TypeFactoryInterface
@@ -25,5 +27,5 @@ interface TypeFactoryInterface
     /**
      * Gets the JSON Schema document which specifies the data type corresponding to the given PHP type, and recursively adds needed new schema to the current schema if provided.
      */
-    public function getType(Type $type, string $format = 'json', ?bool $readableLink = null, ?array $serializerContext = null, Schema $schema = null): array;
+    public function getType(Type $type, string $format = 'json', ?bool $readableLink = null, ?array $serializerContext = null, ?Schema $schema = null): array;
 }

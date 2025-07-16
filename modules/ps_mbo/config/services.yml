@@ -1,0 +1,38 @@
+imports:
+    - { resource: services/*.yml }
+    - { resource: services/addons.php }
+
+services:
+  _defaults:
+    public: true
+
+  Symfony\Contracts\Translation\TranslatorInterface: '@PrestaShopBundle\Translation\TranslatorInterface'
+
+  PrestaShop\Module\Mbo\Service\ExternalContentProvider\ExternalContentProviderInterface: '@PrestaShop\Module\Mbo\Service\ExternalContentProvider\ExternalContentProvider'
+
+  PrestaShop\Module\Mbo\Service\ExternalContentProvider\ExternalContentProvider:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Addons\Provider\LinksProvider:
+    autowire: true
+    arguments:
+      $router: '@prestashop.router'
+      $categoriesProvider: '@prestashop.categories_provider'
+
+  PrestaShop\Module\Mbo\Controller\Admin\ModuleCatalogController:
+    autowire: true
+    autoconfigure: true
+
+  PrestaShop\Module\Mbo\Controller\Admin\ModuleSelectionController:
+    autowire: true
+
+  PrestaShop\Module\Mbo\Controller\Admin\ModuleRecommendedController:
+    autowire: true
+    autoconfigure: true
+
+  PrestaShop\Module\Mbo\Controller\Admin\ThemeCatalogController:
+    autowire: true
+    autoconfigure: true
+
+  PrestaShop\Module\Mbo\Controller\Admin\AddonsController:
+    autowire: true

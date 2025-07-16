@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Extractor;
 
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use Symfony\Component\Config\Util\XmlUtils;
 
 /**
@@ -23,13 +23,7 @@ use Symfony\Component\Config\Util\XmlUtils;
  */
 trait ResourceExtractorTrait
 {
-    /**
-     * @param array|\SimpleXMLElement|null $resource
-     * @param mixed|null                   $default
-     *
-     * @return array|null
-     */
-    private function buildArrayValue($resource, string $key, $default = null)
+    private function buildArrayValue(\SimpleXMLElement|array|null $resource, string $key, mixed $default = null): ?array
     {
         if (\is_object($resource) && $resource instanceof \SimpleXMLElement) {
             if (!isset($resource->{$key.'s'}->{$key})) {
@@ -44,7 +38,7 @@ trait ResourceExtractorTrait
         }
 
         if (!\is_array($resource[$key])) {
-            throw new InvalidArgumentException(sprintf('"%s" setting is expected to be an array, %s given', $key, \gettype($resource[$key])));
+            throw new InvalidArgumentException(\sprintf('"%s" setting is expected to be an array, %s given', $key, \gettype($resource[$key])));
         }
 
         return $resource[$key];
@@ -52,13 +46,8 @@ trait ResourceExtractorTrait
 
     /**
      * Transforms an attribute's value in a PHP value.
-     *
-     * @param array|\SimpleXMLElement|null $resource
-     * @param mixed|null                   $default
-     *
-     * @return string|int|bool|array|null
      */
-    private function phpize($resource, string $key, string $type, $default = null)
+    private function phpize(\SimpleXMLElement|array|null $resource, string $key, string $type, mixed $default = null): array|bool|int|string|null
     {
         if (!isset($resource[$key])) {
             return $default;
@@ -79,7 +68,7 @@ trait ResourceExtractorTrait
                 return \in_array($resource[$key], ['1', 'true', 1, true], false);
         }
 
-        throw new InvalidArgumentException(sprintf('The property "%s" must be a "%s", "%s" given.', $key, $type, \gettype($resource[$key])));
+        throw new InvalidArgumentException(\sprintf('The property "%s" must be a "%s", "%s" given.', $key, $type, \gettype($resource[$key])));
     }
 
     private function buildArgs(\SimpleXMLElement $resource): ?array
@@ -90,6 +79,20 @@ trait ResourceExtractorTrait
 
         $data = [];
         foreach ($resource->args->arg as $arg) {
+            $data[(string) $arg['id']] = $this->buildValues($arg->values);
+        }
+
+        return $data;
+    }
+
+    private function buildExtraArgs(\SimpleXMLElement $resource): ?array
+    {
+        if (!isset($resource->extraArgs->arg)) {
+            return null;
+        }
+
+        $data = [];
+        foreach ($resource->extraArgs->arg as $arg) {
             $data[(string) $arg['id']] = $this->buildValues($arg->values);
         }
 

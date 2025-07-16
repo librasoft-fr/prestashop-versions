@@ -27,10 +27,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 interface QueryResultCollectionExtensionInterface extends QueryCollectionExtensionInterface
 {
-    public function supportsResult(string $resourceClass, Operation $operation = null, array $context = []): bool;
+    public function supportsResult(string $resourceClass, ?Operation $operation = null, array $context = []): bool;
 
-    /**
-     * @return iterable<T>
-     */
-    public function getResult(QueryBuilder $queryBuilder, string $resourceClass = null, Operation $operation = null, array $context = []);
+    public function getResult(QueryBuilder $queryBuilder, ?string $resourceClass = null, ?Operation $operation = null, array $context = []): iterable;
 }

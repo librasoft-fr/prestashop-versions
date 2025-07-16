@@ -19,11 +19,10 @@ use ApiPlatform\Metadata\GraphQl\Operation;
  * Read stage of GraphQL resolvers.
  *
  * @author Alan Poulain <contact@alanpoulain.eu>
+ *
+ * @deprecated
  */
 interface ReadStageInterface
 {
-    /**
-     * @return object|iterable|null
-     */
-    public function __invoke(?string $resourceClass, ?string $rootClass, Operation $operation, array $context);
+    public function __invoke(?string $resourceClass, ?string $rootClass, Operation $operation, array $context): object|array|null;
 }

@@ -31,8 +31,7 @@ final class PropertySchemaGreaterThanRestriction implements PropertySchemaRestri
     public function create(Constraint $constraint, ApiProperty $propertyMetadata): array
     {
         return [
-            'minimum' => $constraint->value,
-            'exclusiveMinimum' => true,
+            'exclusiveMinimum' => $constraint->value,
         ];
     }
 
@@ -41,6 +40,11 @@ final class PropertySchemaGreaterThanRestriction implements PropertySchemaRestri
      */
     public function supports(Constraint $constraint, ApiProperty $propertyMetadata): bool
     {
-        return $constraint instanceof GreaterThan && is_numeric($constraint->value) && null !== ($type = $propertyMetadata->getBuiltinTypes()[0] ?? null) && \in_array($type->getBuiltinType(), [Type::BUILTIN_TYPE_INT, Type::BUILTIN_TYPE_FLOAT], true);
+        $types = array_map(fn (Type $type) => $type->getBuiltinType(), $propertyMetadata->getBuiltinTypes() ?? []);
+        if ($propertyMetadata->getExtraProperties()['nested_schema'] ?? false) {
+            $types = [Type::BUILTIN_TYPE_INT];
+        }
+
+        return $constraint instanceof GreaterThan && is_numeric($constraint->value) && \count($types) && array_intersect($types, [Type::BUILTIN_TYPE_INT, Type::BUILTIN_TYPE_FLOAT]);
     }
 }

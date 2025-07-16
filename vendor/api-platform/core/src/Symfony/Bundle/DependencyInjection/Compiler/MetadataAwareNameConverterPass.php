@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Symfony\Bundle\DependencyInjection\Compiler;
 
-use ApiPlatform\Exception\RuntimeException;
+use ApiPlatform\Metadata\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -32,26 +32,30 @@ final class MetadataAwareNameConverterPass implements CompilerPassInterface
      *
      * @throws RuntimeException
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition('serializer.name_converter.metadata_aware')) {
             return;
         }
 
         $definition = $container->getDefinition('serializer.name_converter.metadata_aware');
-        $num = \count($definition->getArguments());
+        $key = '$fallbackNameConverter';
+        $arguments = $definition->getArguments();
+        if (false === \array_key_exists($key, $arguments)) {
+            $key = 1;
+        }
 
         if ($container->hasAlias('api_platform.name_converter')) {
             $nameConverter = new Reference((string) $container->getAlias('api_platform.name_converter'));
-            if (1 === $num) {
+
+            // old symfony versions
+            if (false === \array_key_exists($key, $arguments)) {
                 $definition->addArgument($nameConverter);
-            } elseif (1 < $num && null === $definition->getArgument(1)) {
-                $definition->setArgument(1, $nameConverter);
+            } elseif (null === $definition->getArgument($key)) {
+                $definition->setArgument($key, $nameConverter);
             }
         }
 
         $container->setAlias('api_platform.name_converter', 'serializer.name_converter.metadata_aware');
     }
 }
-
-class_alias(MetadataAwareNameConverterPass::class, \ApiPlatform\Core\Bridge\Symfony\Bundle\DependencyInjection\Compiler\MetadataAwareNameConverterPass::class);

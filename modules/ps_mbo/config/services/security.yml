@@ -1,0 +1,20 @@
+services:
+  _defaults:
+    public: true
+
+#  security.authorization_checker: '@Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface'
+
+  PrestaShop\Module\Mbo\Api\Security\AdminAuthenticationProvider:
+    autowire: true
+    arguments:
+      $cacheProvider: '@Doctrine\Common\Cache\Psr6\DoctrineProvider'
+
+  PrestaShop\Module\Mbo\Api\Security\AuthorizationChecker:
+    autowire: true
+    arguments:
+      $cacheProvider: '@Doctrine\Common\Cache\Psr6\DoctrineProvider'
+
+  PrestaShop\Module\Mbo\Security\PermissionCheckerInterface: '@PrestaShop\Module\Mbo\Security\PermissionChecker'
+
+  PrestaShop\Module\Mbo\Security\PermissionChecker:
+    autowire: true

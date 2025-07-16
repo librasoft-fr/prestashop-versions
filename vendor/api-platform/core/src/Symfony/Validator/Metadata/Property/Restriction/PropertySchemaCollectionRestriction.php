@@ -25,16 +25,10 @@ use Symfony\Component\Validator\Constraints\Required;
 final class PropertySchemaCollectionRestriction implements PropertySchemaRestrictionMetadataInterface
 {
     /**
-     * @var iterable<PropertySchemaRestrictionMetadataInterface>
-     */
-    private $restrictionsMetadata;
-
-    /**
      * @param iterable<PropertySchemaRestrictionMetadataInterface> $restrictionsMetadata
      */
-    public function __construct(iterable $restrictionsMetadata = [])
+    public function __construct(private readonly iterable $restrictionsMetadata = [])
     {
-        $this->restrictionsMetadata = $restrictionsMetadata;
     }
 
     /**
@@ -46,7 +40,7 @@ final class PropertySchemaCollectionRestriction implements PropertySchemaRestric
     {
         $restriction = [
             'type' => 'object',
-            'properties' => [],
+            'properties' => new \ArrayObject(),
             'additionalProperties' => $constraint->allowExtraFields,
         ];
         $required = [];
@@ -75,22 +69,19 @@ final class PropertySchemaCollectionRestriction implements PropertySchemaRestric
         return $constraint instanceof Collection;
     }
 
-    /**
-     * @param Required|Optional $constraint
-     */
-    private function mergeConstraintRestrictions(Constraint $constraint, ApiProperty $propertyMetadata): array
+    private function mergeConstraintRestrictions(Required|Optional $constraint, ApiProperty $propertyMetadata): array|\ArrayObject
     {
         $propertyRestrictions = [];
-        $nestedConstraints = method_exists($constraint, 'getNestedContraints') ? $constraint->getNestedContraints() : $constraint->constraints;
+        $nestedConstraints = $constraint->constraints;
 
         foreach ($nestedConstraints as $nestedConstraint) {
             foreach ($this->restrictionsMetadata as $restrictionMetadata) {
-                if ($restrictionMetadata->supports($nestedConstraint, $propertyMetadata) && !empty($nestedConstraintRestriction = $restrictionMetadata->create($nestedConstraint, $propertyMetadata))) {
+                if ($restrictionMetadata->supports($nestedConstraint, $propertyMetadata->withExtraProperties(($propertyMetadata->getExtraProperties() ?? []) + ['nested_schema' => true])) && !empty($nestedConstraintRestriction = $restrictionMetadata->create($nestedConstraint, $propertyMetadata))) {
                     $propertyRestrictions[] = $nestedConstraintRestriction;
                 }
             }
         }
 
-        return array_merge([], ...$propertyRestrictions);
+        return array_merge([], ...$propertyRestrictions) ?: new \ArrayObject();
     }
 }

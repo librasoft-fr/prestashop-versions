@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Metadata\Resource\Factory;
 
-use ApiPlatform\Exception\InvalidArgumentException;
-use ApiPlatform\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Metadata\CollectionOperationInterface;
-use ApiPlatform\Metadata\HttpOperation;
+use ApiPlatform\Metadata\ErrorResource;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Metadata\Operations;
 use ApiPlatform\Metadata\Resource\ResourceMetadataCollection;
 
@@ -33,21 +33,14 @@ use ApiPlatform\Metadata\Resource\ResourceMetadataCollection;
  */
 final class FormatsResourceMetadataCollectionFactory implements ResourceMetadataCollectionFactoryInterface
 {
-    private $decorated;
-    private $formats;
-    private $patchFormats;
-
-    public function __construct(ResourceMetadataCollectionFactoryInterface $decorated, array $formats, array $patchFormats)
+    public function __construct(private readonly ResourceMetadataCollectionFactoryInterface $decorated, private readonly array $formats, private readonly array $patchFormats, private readonly ?array $errorFormats = null)
     {
-        $this->decorated = $decorated;
-        $this->formats = $formats;
-        $this->patchFormats = $patchFormats;
     }
 
     /**
      * Adds the formats attributes.
      *
-     * @see OperationResourceMetadataFactory
+     * @see UriTemplateResourceMetadataCollectionFactory
      *
      * @throws ResourceClassNotFoundException
      */
@@ -60,6 +53,9 @@ final class FormatsResourceMetadataCollectionFactory implements ResourceMetadata
             $resourceFormats = null === $rawResourceFormats ? $this->formats : $this->normalizeFormats($rawResourceFormats);
             $resourceInputFormats = $resourceMetadata->getInputFormats() ? $this->normalizeFormats($resourceMetadata->getInputFormats()) : $resourceFormats;
             $resourceOutputFormats = $resourceMetadata->getOutputFormats() ? $this->normalizeFormats($resourceMetadata->getOutputFormats()) : $resourceFormats;
+            if ($resourceMetadata instanceof ErrorResource) {
+                $resourceOutputFormats = $resourceMetadata->getOutputFormats() ? $this->normalizeFormats($resourceMetadata->getOutputFormats()) : ($this->errorFormats ?? []);
+            }
 
             $resourceMetadataCollection[$index] = $resourceMetadataCollection[$index]->withOperations($this->normalize($resourceInputFormats, $resourceOutputFormats, $resourceMetadata->getOperations()));
         }
@@ -76,7 +72,7 @@ final class FormatsResourceMetadataCollectionFactory implements ResourceMetadata
                 $operation = $operation->withFormats($this->normalizeFormats($operation->getFormats()));
             }
 
-            if (($isPatch = HttpOperation::METHOD_PATCH === $operation->getMethod()) && !$operation->getFormats() && !$operation->getInputFormats()) {
+            if (($isPatch = 'PATCH' === $operation->getMethod()) && !$operation->getFormats() && !$operation->getInputFormats()) {
                 $operation = $operation->withInputFormats($this->patchFormats);
             }
 
@@ -115,11 +111,9 @@ final class FormatsResourceMetadataCollectionFactory implements ResourceMetadata
     }
 
     /**
-     * @param array|string $currentFormats
-     *
      * @throws InvalidArgumentException
      */
-    private function normalizeFormats($currentFormats): array
+    private function normalizeFormats(array|string $currentFormats): array
     {
         $currentFormats = (array) $currentFormats;
 
@@ -130,14 +124,14 @@ final class FormatsResourceMetadataCollectionFactory implements ResourceMetadata
                 continue;
             }
             if (!\is_string($value)) {
-                throw new InvalidArgumentException(sprintf("The 'formats' attributes value must be a string when trying to include an already configured format, %s given.", \gettype($value)));
+                throw new InvalidArgumentException(\sprintf("The 'formats' attributes value must be a string when trying to include an already configured format, %s given.", \gettype($value)));
             }
             if (\array_key_exists($value, $this->formats)) {
                 $normalizedFormats[$value] = $this->formats[$value];
                 continue;
             }
 
-            throw new InvalidArgumentException(sprintf("You either need to add the format '%s' to your project configuration or declare a mime type for it in your annotation.", $value));
+            throw new InvalidArgumentException(\sprintf("You either need to add the format '%s' to your project configuration or declare a mime type for it in your annotation.", $value));
         }
 
         return $normalizedFormats;

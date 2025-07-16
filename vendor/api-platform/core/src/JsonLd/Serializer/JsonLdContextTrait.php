@@ -15,6 +15,7 @@ namespace ApiPlatform\JsonLd\Serializer;
 
 use ApiPlatform\JsonLd\AnonymousContextBuilderInterface;
 use ApiPlatform\JsonLd\ContextBuilderInterface;
+use ApiPlatform\Metadata\Error;
 
 /**
  * Creates and manipulates the Serializer context.
@@ -42,16 +43,20 @@ trait JsonLdContextTrait
             return $data;
         }
 
+        if (($operation = $context['operation'] ?? null) && ($operation->getExtraProperties()['rfc_7807_compliant_errors'] ?? false) && $operation instanceof Error) {
+            return $data;
+        }
+
         $data['@context'] = $contextBuilder->getResourceContextUri($resourceClass);
 
         return $data;
     }
 
-    private function createJsonLdContext(AnonymousContextBuilderInterface $contextBuilder, $object, array &$context, array $data = []): array
+    private function createJsonLdContext(AnonymousContextBuilderInterface $contextBuilder, $object, array &$context): array
     {
         // We're in a collection, don't add the @context part
         if (isset($context['jsonld_has_context'])) {
-            return $contextBuilder->getAnonymousResourceContext($object, ($context['output'] ?? []) + ['api_resource' => $context['api_resource'] ?? null, 'has_context' => true, 'iri' => false]);
+            return $contextBuilder->getAnonymousResourceContext($object, ($context['output'] ?? []) + ['api_resource' => $context['api_resource'] ?? null, 'has_context' => true]);
         }
 
         $context['jsonld_has_context'] = true;
@@ -59,5 +64,3 @@ trait JsonLdContextTrait
         return $contextBuilder->getAnonymousResourceContext($object, ($context['output'] ?? []) + ['api_resource' => $context['api_resource'] ?? null]);
     }
 }
-
-class_alias(JsonLdContextTrait::class, \ApiPlatform\Core\JsonLd\Serializer\JsonLdContextTrait::class);

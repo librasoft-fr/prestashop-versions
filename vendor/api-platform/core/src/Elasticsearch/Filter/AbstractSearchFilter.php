@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace ApiPlatform\Elasticsearch\Filter;
 
-use ApiPlatform\Api\IriConverterInterface;
-use ApiPlatform\Api\ResourceClassResolverInterface;
-use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Metadata\Exception\InvalidArgumentException;
 use ApiPlatform\Metadata\HttpOperation;
+use ApiPlatform\Metadata\IriConverterInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use ApiPlatform\Metadata\Property\Factory\PropertyNameCollectionFactoryInterface;
+use ApiPlatform\Metadata\ResourceClassResolverInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
@@ -35,23 +35,11 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
  */
 abstract class AbstractSearchFilter extends AbstractFilter implements ConstantScoreFilterInterface
 {
-    protected $iriConverter;
-    protected $propertyAccessor;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct(PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory, PropertyMetadataFactoryInterface $propertyMetadataFactory, ResourceClassResolverInterface $resourceClassResolver, IriConverterInterface $iriConverter, PropertyAccessorInterface $propertyAccessor, ?NameConverterInterface $nameConverter = null, ?array $properties = null)
+    public function __construct(PropertyNameCollectionFactoryInterface $propertyNameCollectionFactory, PropertyMetadataFactoryInterface $propertyMetadataFactory, ResourceClassResolverInterface $resourceClassResolver, protected IriConverterInterface $iriConverter, protected PropertyAccessorInterface $propertyAccessor, ?NameConverterInterface $nameConverter = null, ?array $properties = null)
     {
         parent::__construct($propertyNameCollectionFactory, $propertyMetadataFactory, $resourceClassResolver, $nameConverter, $properties);
-
-        $this->iriConverter = $iriConverter;
-        $this->propertyAccessor = $propertyAccessor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function apply(array $clauseBody, string $resourceClass, ?Operation $operation = null, array $context = []): array
     {
         $searches = [];
@@ -64,7 +52,7 @@ abstract class AbstractSearchFilter extends AbstractFilter implements ConstantSc
             }
 
             if ($hasAssociation || $this->isIdentifier($nestedResourceClass, $nestedProperty, $operation)) {
-                $values = array_map([$this, 'getIdentifierValue'], $values, array_fill(0, \count($values), $nestedProperty));
+                $values = array_map($this->getIdentifierValue(...), $values, array_fill(0, \count($values), $nestedProperty));
             }
 
             if (!$this->hasValidValues($values, $type)) {
@@ -108,6 +96,7 @@ abstract class AbstractSearchFilter extends AbstractFilter implements ConstantSc
                     'property' => $property,
                     'type' => $hasAssociation ? 'string' : $this->getPhpType($type),
                     'required' => false,
+                    'is_collection' => str_ends_with((string) $filterParameterName, '[]'),
                 ];
             }
         }
@@ -163,13 +152,13 @@ abstract class AbstractSearchFilter extends AbstractFilter implements ConstantSc
     /**
      * Gets the ID from an IRI or a raw ID.
      */
-    protected function getIdentifierValue(string $iri, string $property)
+    protected function getIdentifierValue(string $iri, string $property): mixed
     {
         try {
             $item = $this->iriConverter->getResourceFromIri($iri, ['fetch_data' => false]);
 
             return $this->propertyAccessor->getValue($item, $property);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
         }
 
         return $iri;

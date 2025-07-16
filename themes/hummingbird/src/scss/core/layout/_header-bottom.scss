@@ -1,0 +1,13 @@
+$component-name: header-bottom;
+
+.#{$component-name} {
+  &__row {
+    @include media-breakpoint-up(md) {
+      min-height: 4rem;
+    }
+  }
+
+  &__h1 {
+    font-size: unset;
+  }
+}
