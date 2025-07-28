@@ -1,0 +1,4 @@
+services:
+  PrestaShop\Module\Psshipping\Handler\ErrorHandler:
+    class: PrestaShop\Module\Psshipping\Handler\ErrorHandler
+    public: true

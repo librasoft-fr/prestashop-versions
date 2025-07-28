@@ -729,6 +729,7 @@ class ProductController extends FrameworkBundleAdminController
      */
     public function exportAction(ProductFilters $filters)
     {
+        $filters = new ProductFilters($filters->getShopConstraint(), ['limit' => null] + $filters->all());
         $productGridFactory = $this->get('prestashop.core.grid.factory.product');
         $grid = $productGridFactory->getGrid($filters);
 
@@ -1164,6 +1165,7 @@ class ProductController extends FrameworkBundleAdminController
             'taxEnabled' => (bool) $configuration->get('PS_TAX'),
             'stockEnabled' => (bool) $configuration->get('PS_STOCK_MANAGEMENT'),
             'isMultistoreActive' => $this->get('prestashop.adapter.multistore_feature')->isActive(),
+            'layoutTitle' => $this->trans('Product', 'Admin.Global'),
         ]);
     }
 

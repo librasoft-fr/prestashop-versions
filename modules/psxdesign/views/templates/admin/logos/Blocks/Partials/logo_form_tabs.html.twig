@@ -1,0 +1,88 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+    {% if 'svg' not in headerLogoPath|split('.')|last and (form_name == 'email' or form_name == 'invoice') %}
+    <form id="{{ form_name ~ '_use_header_logo' }}" name="{{ form_name ~ '_use_header_logo' }}" method="post" action="{{ path('admin_psxdesign_logo_apply_header_logo_action') }}" >
+        <input type="hidden" name="logo_for" value="{{ form_name }}"/>
+        <div class="form-group">
+            <div class="md-checkbox">
+                {% set use_same_as_header_name = form_name ~ '_use_same_as_header' %}
+                <label for="{{ use_same_as_header_name }}">
+                    <input type="checkbox" name="use_same_as_header" id="{{ use_same_as_header_name }}"
+                           {% if logos[form_name]['useHeaderLogo'] is defined %}
+                               {{ logos[form_name]['useHeaderLogo'] ? 'checked' : '' }}
+                           {% endif %}
+                    >
+                    <i class="md-checkbox-control"></i>
+                    {{' Use header logo'|trans({}, 'Modules.Psxdesign.Admin') }}
+                </label>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary hidden" type="submit" aria-label="{{ 'Save the use of header logo for %form%'|trans({ '%form%': form_name }, 'Modules.Psxdesign.Admin') }}">{{ 'Save'|trans({}, 'Modules.Psxdesign.Admin') }}</button>
+        </div>
+    </form>
+{% endif %}
+
+<div id="{{ form_name ~ '_logo_forms' }}">
+    <div class="form-control-label font-weight-bold mb-1">{{ 'Logo type'|trans({}, 'Modules.Psxdesign.Admin') }}</div>
+    <div class="radio-button-link-container nav" role="tablist">
+        {% set logo_image_tab = form_name ~ '_logo_image' %}
+        {% set logo_text_tab = form_name ~ '_logo_text' %}
+        {% set currentLogoIsImage = logos[form_name].logoType is not defined or (logos[form_name].logoType is defined and logos[form_name].logoType == 'image') %}
+        <a class="nav-link radio-button-link {{ currentLogoIsImage ? 'active' : '' }}" href="{{ '#' ~ logo_image_tab }}" data-toggle="tab">
+            <div class="radio-button-link__radio"></div>
+            <span class="material-icons radio-button-link__icon">
+                            image
+                        </span>
+            <div class="radio-button-link__text">
+                <span class="radio-button-link__label">{{ 'Image'|trans({}, 'Modules.Psxdesign.Admin') }}</span>
+                <span class="radio-button-link__help">{{ 'Import logo image'|trans({}, 'Modules.Psxdesign.Admin') }}</span>
+            </div>
+        </a>
+        <a class="nav-link radio-button-link {{ not currentLogoIsImage ? 'active' : '' }}" href="{{ '#' ~logo_text_tab }}" data-toggle="tab">
+            <div class="radio-button-link__radio"></div>
+            <span class="material-icons radio-button-link__icon">
+                            notes
+                        </span>
+            <div class="radio-button-link__text">
+                <span class="radio-button-link__label">{{ 'Text'|trans({}, 'Modules.Psxdesign.Admin') }}</span>
+                <span class="radio-button-link__help">{{ 'Create text logo'|trans({}, 'Modules.Psxdesign.Admin') }}</span>
+            </div>
+        </a>
+    </div>
+    <div class="tab-content p-0 pt-3">
+        <div class="tab-pane {{ currentLogoIsImage ? 'active' : '' }}" id="{{ logo_image_tab }}">
+            {% include '@Modules/psxdesign/views/templates/admin/logos/Blocks/Partials/logo_form_image.html.twig' with {
+                form_name: form_name
+            } %}
+        </div>
+        <div class="tab-pane {{ not currentLogoIsImage ? 'active' : '' }}" id="{{ logo_text_tab }}">
+            {% include '@Modules/psxdesign/views/templates/admin/logos/Blocks/Partials/logo_form_text.html.twig' with {
+                form_name: form_name
+            } %}
+        </div>
+    </div>
+</div>

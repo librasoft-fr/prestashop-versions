@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="src/Traits/Hooks/UseDisplayAdminAfterHeader.php" source-language="en-US" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="325a728a120635e3e370c5eed5ce3c40">
+        <source>Why is there a "PrestaShop Marketplace" employee?</source>
+        <target>Why is there a "PrestaShop Marketplace" employee?</target>
+        <note>Line: 59</note>
+      </trans-unit>
+      <trans-unit id="90c975a457ddd160fa2c64702ad47bce">
+        <source>MBO employee explanation</source>
+        <target>We've added a "PrestaShop Marketplace" employee for the PrestaShop Marketplace module to work correctly in your back office.
+                We will be able to perform actions on modules (update, activation, setup, etc.) on the behalf of the employees according to their rights</target>
+        <note>Line: 60</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Traits/Hooks/UseDisplayDashboardTop.php" source-language="en-US" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="3b89e163ae0b446bd02e13de8dcf70d3">
+        <source><![CDATA[For even more security on your website forms, consult our Security & Access modules category on the]]></source>
+        <target><![CDATA[For even more security on your website forms, consult our Security & Access modules category on the]]></target>
+        <note>Line: 144</note>
+      </trans-unit>
+      <trans-unit id="3aaeb3f0458cf2580c5f75fefdb86ab6">
+        <source>PrestaShop Addons Marketplace</source>
+        <target>PrestaShop Addons Marketplace</target>
+        <note>Line: 160</note>
+      </trans-unit>
+      <trans-unit id="71f716ae5452ef886e40d36f14afed87">
+        <source>Discover more modules to improve your shop on</source>
+        <target>Discover more modules to improve your shop on</target>
+        <note>Line: 158</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/controllers/module_catalog/cdc-error.html.twig" source-language="en-US" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="a477136f1721bd17d18fc591f094f155">
+        <source>Oh no.. something went wrong</source>
+        <target>Oh no.. something went wrong</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="77df45c90eb889b2731e6900d63ed7f7">
+        <source>There has been a problem on our side. Refresh your page and if the problem persists, try again later.</source>
+        <target>There has been a problem on our side. Refresh your page and if the problem persists, try again later.</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="a593c6d1e05af324063dac348353cece">
+        <source>Refresh page</source>
+        <target>Refresh page</target>
+        <note>Line: 31</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/hook/twig/failed-api-user.html.twig" source-language="en-US" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="a4eb3ae1fceef46fa21eb216a5316651">
+        <source>Your module needs to be reset. The PrestaShop Marketplace in your back office is no longer working properly. Please try resetting the module in your %link%. If the problem persists, feel free to contact the support.</source>
+        <target>Your module needs to be reset. The PrestaShop Marketplace in your back office is no longer working properly. Please try resetting the module in your %link%. If the problem persists, feel free to contact the support.</target>
+        <note>Line: 22</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

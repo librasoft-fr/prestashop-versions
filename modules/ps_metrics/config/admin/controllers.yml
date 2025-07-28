@@ -1,0 +1,20 @@
+services:
+  PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsController:
+    class: PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsController
+    public: true
+    autoconfigure: true
+
+  PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsResolverController:
+    class: PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsResolverController
+    public: true
+    autoconfigure: true
+
+  PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsLegacyStatsController:
+    class: PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsLegacyStatsController
+    public: true
+    autoconfigure: true
+
+  PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsOauthController:
+    class: PrestaShop\Module\Ps_metrics\Controller\Admin\MetricsOauthController
+    public: true
+    autoconfigure: true

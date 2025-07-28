@@ -1,0 +1,65 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+{% embed '@PrestaShop/Admin/Helpers/bootstrap_popup.html.twig' with {
+    'id': 'import_theme_from_ftp_modal',
+    'closable': true,
+} %}
+    {% block header %}
+        <div class="modal-header">
+            <h5 class="modal-title">{{ 'Import from FTP'|trans({}, 'Modules.Psxdesign.Admin') }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endblock %}
+    {% block content %}
+        <div class="modal-body">
+            <form id="import-from-ftp" action="{{ importThemeUrl }}" data-action="import-from-ftp">
+                <div class="alert-container" role="alert"></div>
+                <label class="form-control-label font-weight-bold" for="theme-ftp-path">{{ 'Select archive'|trans({}, 'Modules.Psxdesign.Admin') }}</label>
+                <div class="form-select">
+                    <select class="form-control custom-select" name="theme-ftp-path" id="theme-ftp-path" required>
+                        <option value="" selected>-</option>
+                        {% if themesZipFiles %}
+                            {% for themeZipFile in themesZipFiles %}
+                              <option value="{{ themeZipFile }}">{{ themeZipFile }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <p class="form-text mt-2">
+                    {{ 'This field shows the ZIP files present in the "/themes" folder.'|trans({}, 'Modules.Psxdesign.Admin') }}
+                </p>
+            </form>
+        </div>
+    {% endblock %}
+    {% block footer %}
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">{{ 'Cancel'|trans({}, 'Modules.Psxdesign.Admin') }}</button>
+            <button type="submit" class="btn btn-primary import-theme" form="import-from-ftp">{{ 'Import'|trans({}, 'Modules.Psxdesign.Admin') }}</button>
+        </div>
+    {% endblock %}
+{% endembed %}

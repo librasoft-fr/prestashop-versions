@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin-dev" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="49a474598c6b434a039c11a5cb072ce6">
+        <source>PrestaShop Shipping</source>
+        <target>PrestaShop Shipping</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="56903feb5b9fe846fedb5e6a693707d2">
+        <source>Powered by Mail Boxes Etc., PrestaShop Shipping offers standard and express international delivery methods to your customers no matter where they are located. Have access to exclusive rates for each delivered and returned parcels by using our extensive network of trusted partners.</source>
+        <target>Propulsé par Mail Boxes Etc., PrestaShop Shipping propose des méthodes de livraison internationale standard et express à vos clients, où qu'ils se trouvent. Accédez à des tarifs exclusifs pour chaque colis livré et retourné en utilisant notre vaste réseau de partenaires de confiance.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="e74d6302a8d31cc3a6d7dcb687fd5f3d">
+        <source>Are you sure you want to uninstall PrestaShop Shipping module?</source>
+        <target>Are you sure you want to uninstall PrestaShop Shipping module?</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="4a8f80bf8fc39256e84b333de389e9b1">
+        <source>This requires PHP 7.3 to work properly. Please upgrade your server configuration.</source>
+        <target>This requires PHP 7.3 to work properly. Please upgrade your server configuration.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="fce7f1444023c69d25915cf54b5d458f">
+        <source>Print shipping label</source>
+        <target>Print shipping label</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

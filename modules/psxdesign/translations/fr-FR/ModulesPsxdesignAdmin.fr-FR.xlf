@@ -1,0 +1,1062 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="psxdesign.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="9e0b78b73531a6f55d8f50df6837807a" approved="yes">
+        <source>PrestaShop Design</source>
+        <target state="final">PrestaShop Design</target>
+        <note>Line: 67</note>
+      </trans-unit>
+      <trans-unit id="6e16c09468f55aab97f750479f295295" approved="yes">
+        <source>PrestaShop Design allows you to easily and rapidly customize your website theme and autonomously adapt the appearance of your store, brand image and preferences without needing any technical expertise.</source>
+        <target state="final">PrestaShop Design vous permet de personnaliser facilement et rapidement votre thème de site web et d'adapter l'apparence de votre boutique, image de marque et préférences sans besoin d'expertise technique.</target>
+        <note>Line: 74</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Config/ColorCategoryUncategorizedConfig.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="00557e2cda1dde2b52f80d2014af2238" approved="yes">
+        <source>Uncategorized colors</source>
+        <target state="final">Couleurs non catégorisées</target>
+        <note>Line: 48</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Config/FontCategoryUncategorizedConfig.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="b14d0f52fb18f0137e0ae16fee819636" approved="yes">
+        <source>Uncategorized fonts</source>
+        <target state="final">Polices de caractères non catégorisées</target>
+        <note>Line: 48</note>
+      </trans-unit>
+      <trans-unit id="5c65acb67a8da66f04850bd93d89df83" approved="yes">
+        <source>This font is in your theme but is not specific to any category.</source>
+        <target state="final">Cette police est dans votre thème mais n'est spécifique à aucune catégorie.</target>
+        <note>Line: 49</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignColorsController.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="5d375ab1e88d7fbb9340cff2ee2fc2ea" approved="yes">
+        <source>Classic theme is not installed.</source>
+        <target state="final">Le thème Classic n'est pas installé.</target>
+        <note>Line: 143</note>
+      </trans-unit>
+      <trans-unit id="4d96bb69c04067caf77b9ef30b465f07" approved="yes">
+        <source>Enabling theme failed. Please use "Theme" tab to enable theme.</source>
+        <target state="final">L'activation du thème a échoué. Veuillez utiliser l'onglet "Thème" pour activer le thème.</target>
+        <note>Line: 163</note>
+      </trans-unit>
+      <trans-unit id="297a60db2a0e39a689c1d47bfbff7d31" approved="yes">
+        <source>The name of the color palette can't be empty.</source>
+        <target state="final">Le nom de la palette de couleurs ne peut pas être vide.</target>
+        <note>Line: 177</note>
+      </trans-unit>
+      <trans-unit id="4bdad1157439cd2d7bfc25c9dfd083cf" approved="yes">
+        <source>Connection with database to update new color palette failed. Please try again.</source>
+        <target state="final">La connexion avec la base de données pour mettre à jour la nouvelle palette de couleurs a échoué. Veuillez réessayer.</target>
+        <note>Line: 178</note>
+      </trans-unit>
+      <trans-unit id="6e844884ef97f73cec80bd546f81a1cc" approved="yes">
+        <source>Creation of new color styles failed.</source>
+        <target state="final">La création de nouveaux styles de couleurs a échoué.</target>
+        <note>Line: 179</note>
+      </trans-unit>
+      <trans-unit id="de619bdb3b339e0648dc2e98c0f03519" approved="yes">
+        <source>File in module does not exist or not writable. Please check user permissions in server</source>
+        <target state="final">Le fichier dans le module n'existe pas ou n'est pas accessible en écriture. Veuillez vérifier les autorisations de l'utilisateur sur le serveur</target>
+        <note>Line: 182</note>
+      </trans-unit>
+      <trans-unit id="84fd960662a4d6f15aaea73324e4ca3c" approved="yes">
+        <source>Process of creating new styles file failed. Please try again.</source>
+        <target state="final">Le processus de création d'un nouveau fichier de styles a échoué. Veuillez réessayer.</target>
+        <note>Line: 183</note>
+      </trans-unit>
+      <trans-unit id="a2492692e9bf6dab1ecffcf94ef8ca9f" approved="yes">
+        <source>Replacing new theme styles file failed. Please try again. </source>
+        <target state="final">Le remplacement du fichier de styles a échoué. Veuillez réessayer. </target>
+        <note>Line: 184</note>
+      </trans-unit>
+      <trans-unit id="64a02ac42f450f2b51039a356f126224" approved="yes">
+        <source>The color palette update failed. Please try again.</source>
+        <target state="final">La mise à jour de la palette de couleurs a échoué. Veuillez réessayer.</target>
+        <note>Line: 189</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignFontsController.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="50741259c23f4a36b933c2d6fdd6df7f" approved="yes">
+        <source>Changes have been saved.</source>
+        <target state="final">Les modifications ont été enregistrées.</target>
+        <note>Line: 95</note>
+      </trans-unit>
+      <trans-unit id="1ed0b935875a6751e19e66aadb1a2cdc" approved="yes">
+        <source>Failed to add or update the font.</source>
+        <target state="final">Impossible d'ajouter ou de mettre à jour la police.</target>
+        <note>Line: 142</note>
+      </trans-unit>
+      <trans-unit id="aed07cb7ba3084a2d2443099d2e0f4a2" approved="yes">
+        <source>Failed to delete the font.</source>
+        <target state="final">Impossible de supprimer la police.</target>
+        <note>Line: 143</note>
+      </trans-unit>
+      <trans-unit id="30ad2cdbb6f0ab67e3b1e45a5dc59c8f" approved="yes">
+        <source>Invalid font style is provided.</source>
+        <target state="final">Le style de la police n'est pas valide.</target>
+        <note>Line: 145</note>
+      </trans-unit>
+      <trans-unit id="30e436b10f7ba4864180292c73bc1c76" approved="yes">
+        <source>The font customization is only available with compatible themes.</source>
+        <target state="final">La personnalisation des polices n'est disponible qu'avec les thèmes compatibles.</target>
+        <note>Line: 146</note>
+      </trans-unit>
+      <trans-unit id="921200f445bab209226637b8dc1529f5" approved="yes">
+        <source>Failed to receive font from google fonts</source>
+        <target state="final">Échec de la réception de la police de Google fonts</target>
+        <note>Line: 149</note>
+      </trans-unit>
+      <trans-unit id="85331501f567fdd68de31504e0eddaed" approved="yes">
+        <source>Failed to generate stylesheet</source>
+        <target state="final">Échec de la génération de la feuille de style</target>
+        <note>Line: 151</note>
+      </trans-unit>
+      <trans-unit id="3d289570aad3de52a2668c0ec7602510" approved="yes">
+        <source>The fonts update failed. Please try again.</source>
+        <target state="final">La mise à jour des polices a échoué. Veuillez réessayer.</target>
+        <note>Line: 155</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignLogosController.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="7f3506987b68a43dda5c38e6eeaa40ff" approved="yes">
+        <source>The %destination% logo has been added.</source>
+        <target state="final">Le logo %destination% a été ajouté.</target>
+        <note>Line: 206</note>
+      </trans-unit>
+      <trans-unit id="fd7bac27c906ef24a55a467c86c05ff3" approved="yes">
+        <source>Use same header logo is unavailable.</source>
+        <target state="final">Impossible d'utiliser le même logo que l'en-tête.</target>
+        <note>Line: 138</note>
+      </trans-unit>
+      <trans-unit id="96cdfe5768f9f4aba553662c334bd329" approved="yes">
+        <source>Header logo applied successfully.</source>
+        <target state="final">Le logo de l'en-tête a été correctement appliqué.</target>
+        <note>Line: 148</note>
+      </trans-unit>
+      <trans-unit id="986632f839800f0da226af94d67dc8ad" approved="yes">
+        <source>Favicon updated successfully</source>
+        <target state="final">La favicon a été mise à jour avec succès</target>
+        <note>Line: 176</note>
+      </trans-unit>
+      <trans-unit id="099fb995346f31c749f6e40db0f395e3" approved="yes">
+        <source>header</source>
+        <target state="final">en-tête</target>
+        <note>Line: 232</note>
+      </trans-unit>
+      <trans-unit id="0c83f57c786a0b4a39efab23731c7ebc" approved="yes">
+        <source>email</source>
+        <target state="final">e-mail</target>
+        <note>Line: 234</note>
+      </trans-unit>
+      <trans-unit id="e5f96ae00443877315fbb64fd3d90005" approved="yes">
+        <source>invoice</source>
+        <target state="final">facture</target>
+        <note>Line: 236</note>
+      </trans-unit>
+      <trans-unit id="c4f1eda728a586cdcc25e365c04f7998" approved="yes">
+        <source>The image format is not recognized, allowed formats are: %formats%.</source>
+        <target state="final">Format d'image non reconnu, les formats autorisés sont : %formats%.</target>
+        <note>Line: 260</note>
+      </trans-unit>
+      <trans-unit id="164d00d1842b08f8561d431da45f4ee1" approved="yes">
+        <source>The image format is not recognized, allowed format is: .%format%.</source>
+        <target state="final">Format d'image non reconnu, le format autorisé est : .%format%.</target>
+        <note>Line: 266</note>
+      </trans-unit>
+      <trans-unit id="c353f67bf4b5d3d00c857ac05255753f" approved="yes">
+        <source>The format is invalid, allowed formats are %allowed_formats%.</source>
+        <target state="final">Le format n'est pas valide, les formats autorisés sont %allowed_formats%.</target>
+        <note>Line: 273</note>
+      </trans-unit>
+      <trans-unit id="940e06283fc0c5421a763fb1cc7bae9e" approved="yes">
+        <source>The logo destination is invalid. Please try again.</source>
+        <target state="final">La destination du logo n'est pas valide. Veuillez réessayer.</target>
+        <note>Line: 274</note>
+      </trans-unit>
+      <trans-unit id="7e3eec26e3172928c76bd2f230d88484" approved="yes">
+        <source>The .svg format is not compatible.</source>
+        <target state="final">Le format .svg n'est pas compatible.</target>
+        <note>Line: 275</note>
+      </trans-unit>
+      <trans-unit id="ba0817e051da5a65453b7ab18aa65556" approved="yes">
+        <source>The logo upload failed. Please try again.</source>
+        <target state="final">La mise à jour des polices a échoué. Veuillez réessayer.</target>
+        <note>Line: 361</note>
+      </trans-unit>
+      <trans-unit id="2abbf97beea1977945a4fdff3f6001dd" approved="yes">
+        <source>The file is too large (limit of %size% bytes).</source>
+        <target state="final">Le fichier est trop volumineux (limite de %size% octets).</target>
+        <note>Line: 284</note>
+      </trans-unit>
+      <trans-unit id="1bfe05bff7f395b5065ca058659a56e5" approved="yes">
+        <source>Failed to initialize image creation. PHP GD extension missing.</source>
+        <target state="final">La création de l'image a échoué. L'extension PHP GD est manquante.</target>
+        <note>Line: 345</note>
+      </trans-unit>
+      <trans-unit id="bdd2b4703302bbf3fb6c936193c021ad" approved="yes">
+        <source>Failed convert text to image. Please select different font.</source>
+        <target state="final">Échec de la conversion du texte en image. Veuillez sélectionner une autre police.</target>
+        <note>Line: 347</note>
+      </trans-unit>
+      <trans-unit id="f8195dd1ec0b38b7072de36a65e8339f" approved="yes">
+        <source>This font does not exist. Please choose another font.</source>
+        <target state="final">Cette police n'existe pas. Veuillez choisir une autre police.</target>
+        <note>Line: 348</note>
+      </trans-unit>
+      <trans-unit id="b320d90237861b30b5555ba391dacbb8" approved="yes">
+        <source>The creation of a temporary directory to store the uploaded font has failed. Please check the user permissions on your system.</source>
+        <target state="final">La création d’un dossier temporaire pour stocker la police téléchargée a échoué. Vérifiez les permissions utilisateur sur votre système.</target>
+        <note>Line: 349</note>
+      </trans-unit>
+      <trans-unit id="60ada82d4c3f9277ddf431cd0a2a69a2" approved="yes">
+        <source>Failed to convert text to logo. Please try again.</source>
+        <target state="final">Échec de la conversion du texte en logo. Veuillez réessayer.</target>
+        <note>Line: 351</note>
+      </trans-unit>
+      <trans-unit id="5881481e61f5a2b88ab94100d0d20036" approved="yes">
+        <source>Failed to retrieve font. Please use different font.</source>
+        <target state="final">La police n’a pas été trouvée. Choisissez une autre police.</target>
+        <note>Line: 353</note>
+      </trans-unit>
+      <trans-unit id="33233bda1965facb7182fd63ac69e286" approved="yes">
+        <source>The text may not be longer than 64 characters.</source>
+        <target state="final">Le texte ne doit pas contenir plus de 64 caractères.</target>
+        <note>Line: 356</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignThemeGeneralController.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="d413250759bb6b376da4d75fe2b20cc6" approved="yes">
+        <source>The theme %theme% has been set as active theme.</source>
+        <target state="final">Le thème %theme% vient d’être défini comme thème actif.</target>
+        <note>Line: 145</note>
+      </trans-unit>
+      <trans-unit id="215e7be2ca5dc948e7f4032ddbbb734f" approved="yes">
+        <source>Theme imported successfully</source>
+        <target state="final">Thème importé avec succès</target>
+        <note>Line: 114</note>
+      </trans-unit>
+      <trans-unit id="95bede9bbef66d23fb54916a8da70da5" approved="yes">
+        <source>The theme %theme% cannot be deleted because it's the default Prestashop theme.</source>
+        <target state="final">Le thème %theme% ne peut pas être supprimé car il s'agit du thème Prestashop par défaut.</target>
+        <note>Line: 185</note>
+      </trans-unit>
+      <trans-unit id="c7333b0c480bd7283149c49512adbf34" approved="yes">
+        <source>The theme %themeName% has been deleted.</source>
+        <target state="final">Le thème %themeName% vient d’être supprimé.</target>
+        <note>Line: 195</note>
+      </trans-unit>
+      <trans-unit id="5adc6116425349d9cf976aaadf7e06f5" approved="yes">
+        <source>Please select correct theme's import source.</source>
+        <target state="final">Veuillez sélectionner une source valide pour l'import de votre thème.</target>
+        <note>Line: 244</note>
+      </trans-unit>
+      <trans-unit id="b6b7f8ddf5154dd0718770ad6f10576e" approved="yes">
+        <source>Failed to find imported theme.</source>
+        <target state="final">Impossible de trouver le thème importé.</target>
+        <note>Line: 246</note>
+      </trans-unit>
+      <trans-unit id="ff596a6659892cb72778c3b225444695" approved="yes">
+        <source>File does not exist or bad type uploaded.</source>
+        <target state="final">Le fichier n'existe pas ou est de type invalide.</target>
+        <note>Line: 248</note>
+      </trans-unit>
+      <trans-unit id="0933caade58197a4ff60c27077f67604" approved="yes">
+        <source>There is already a theme %theme_name% in your themes folder. Remove it if you want to continue.</source>
+        <target state="final">Il existe déjà un thème %theme_name% dans votre dossier de thèmes. Supprimez-le si vous voulez continuer.</target>
+        <note>Line: 250</note>
+      </trans-unit>
+      <trans-unit id="bd19c31e2441f20ecdc17c27959511be" approved="yes">
+        <source>Allowed file size exceeded for uploaded theme.</source>
+        <target state="final">La taille de fichier autorisée est dépassée pour le thème téléchargé.</target>
+        <note>Line: 257</note>
+      </trans-unit>
+      <trans-unit id="9bd63485a5055f56674bea3c3ea74c3c" approved="yes">
+        <source>The file type is invalid. Allowed file type is .zip.</source>
+        <target state="final">Le type de fichier n'est pas valide. Le type de fichier autorisé est .zip.</target>
+        <note>Line: 258</note>
+      </trans-unit>
+      <trans-unit id="fcd2705265b5f041cd4b78964c2d0f7e" approved="yes">
+        <source>Unknown error occurred. Please try again.</source>
+        <target state="final">Une erreur inconnue s'est produite. Merci de réessayer.</target>
+        <note>Line: 259</note>
+      </trans-unit>
+      <trans-unit id="3ed761d82d091179b9339d55a2a918eb" approved="yes">
+        <source>Themes can only be imported in single store context.</source>
+        <target state="final">Les thèmes ne peuvent être importés que dans le contexte d'un magasin unique.</target>
+        <note>Line: 263</note>
+      </trans-unit>
+      <trans-unit id="22c02340d6f7c86c03120d5dfe60eac3" approved="yes">
+        <source>Missing configuration file</source>
+        <target state="final">Fichier de configuration manquant</target>
+        <note>Line: 266</note>
+      </trans-unit>
+      <trans-unit id="85265e940fbb820dd2475946e7bc48d9" approved="yes">
+        <source>Invalid configuration</source>
+        <target state="final">Configuration invalide</target>
+        <note>Line: 269</note>
+      </trans-unit>
+      <trans-unit id="5992528f236587164ee4f212b9460410" approved="yes">
+        <source>Invalid data</source>
+        <target state="final">Données non valides</target>
+        <note>Line: 272</note>
+      </trans-unit>
+      <trans-unit id="de203e307b07b7fad83014c6d62ed7e7" approved="yes">
+        <source>The import of your theme failed. Please try again.</source>
+        <target state="final">L'import de votre thème a échoué. Veuillez réessayer.</target>
+        <note>Line: 283</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Controller/Admin/AdminPsxDesignThemeUpgradeController.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="936cfd2c8ab6fed8cc149d71e53ac60c" approved="yes">
+        <source>Module upgrade failed. Please try upgrading it through module manager</source>
+        <target state="final">La mise à jour du module a échoué. Veuillez essayer de le mettre à jour via le gestionnaire de module</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="22b83e3bc688e3646f2ed2f7d42bbddd" approved="yes">
+        <source>Your module has been successfully upgraded!</source>
+        <target state="final">Votre module a bien été mis à jour avec succès !</target>
+        <note>Line: 54</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Install/Tabs/ModuleTabsUninstaller.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="fcf3b725bb6ebb0e635b0f0902ade451" approved="yes">
+        <source><![CDATA[Theme & Logo]]></source>
+        <target state="final"><![CDATA[Thème & Logo]]></target>
+        <note>Line: 86</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Traits/Hooks/UseActionThemeConfiguration.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="a9ded1e5ce5d75814730bb4caaf49419" approved="yes">
+        <source>Background</source>
+        <target state="final">Arrière-plan</target>
+        <note>Line: 52</note>
+      </trans-unit>
+      <trans-unit id="590cfb03d27c7742ee0ca4150e768e4a" approved="yes">
+        <source>Body text</source>
+        <target state="final">Corps du texte</target>
+        <note>Line: 66</note>
+      </trans-unit>
+      <trans-unit id="6c151bb17f34d26df2becfe7ee6bfd0d" approved="yes">
+        <source>Background and discounted prices</source>
+        <target state="final">Arrière-plan et prix réduits</target>
+        <note>Line: 80</note>
+      </trans-unit>
+      <trans-unit id="0245625ee10f9c6c0ed7f50eb1838856" approved="yes">
+        <source>Main title</source>
+        <target state="final">Titre principal</target>
+        <note>Line: 95</note>
+      </trans-unit>
+      <trans-unit id="7e7df36c39bae9c954d0b649942ba950" approved="yes">
+        <source>The main title of a page has to use the Heading 1 format (e.g. Product page name).</source>
+        <target state="final">Ce titre correspond au titre principal de la page (exemple : le nom de la page produit).</target>
+        <note>Line: 94</note>
+      </trans-unit>
+      <trans-unit id="7b058d2a2bc435374b0243f59844e3b1" approved="yes">
+        <source>Section title</source>
+        <target state="final">Titre de section</target>
+        <note>Line: 105</note>
+      </trans-unit>
+      <trans-unit id="b656ad889204220969e19d604704e0de" approved="yes">
+        <source>Section titles mark the main sections of your page and use Heading 2 format (e.g. Popular products).</source>
+        <target state="final">Ces titres sont utilisés dans les principales sections de la page (exemple : Produits populaires).</target>
+        <note>Line: 104</note>
+      </trans-unit>
+      <trans-unit id="03173b52d764351522e627ae8ef10cc1" approved="yes">
+        <source>Footer title</source>
+        <target state="final">Titre de pied de page</target>
+        <note>Line: 115</note>
+      </trans-unit>
+      <trans-unit id="4cb6270cef3453033cbf1dd29909641e" approved="yes">
+        <source>Footer titles structure your footer and use Heading 3 format (e.g. Contact us).</source>
+        <target state="final">Ces titres correspondent aux titres dans le pied de page (exemple : Contactez-nous).</target>
+        <note>Line: 114</note>
+      </trans-unit>
+      <trans-unit id="9cc6ec129ceda82358c4f47e9e7031f8" approved="yes">
+        <source>Subcategory title</source>
+        <target state="final">Titre de sous-catégorie</target>
+        <note>Line: 125</note>
+      </trans-unit>
+      <trans-unit id="1e8c8bcaa8e9c85361207a84ea1036e4" approved="yes">
+        <source>Subcategory titles help structure your category page and use Heading 5 format (e.g. Men).</source>
+        <target state="final">Ces titres correspondent aux sous-catégories dans une page Catégorie (exemple : Hommes).</target>
+        <note>Line: 124</note>
+      </trans-unit>
+      <trans-unit id="9982e9bbb8cfb526589e958a672dd1f1" approved="yes">
+        <source>Product attributes</source>
+        <target state="final">Attribut produit</target>
+        <note>Line: 135</note>
+      </trans-unit>
+      <trans-unit id="f82ccb62263f87a237e1708ce50f68b8" approved="yes">
+        <source>Product attributes of your Category page use Heading 6 format (e.g. Size, Color). </source>
+        <target state="final">Les attributs de produit de votre page de catégorie utilisent le format En-tête 6 (par exemple, taille, couleur). </target>
+        <note>Line: 134</note>
+      </trans-unit>
+      <trans-unit id="ac9800bdfe4e77ea3f6b6d22a9cf8919" approved="yes">
+        <source>Body copy</source>
+        <target state="final">Corps de texte</target>
+        <note>Line: 145</note>
+      </trans-unit>
+      <trans-unit id="61fac42c1093edf7d8094f6412a03e7a" approved="yes">
+        <source>The body copy format is used for the main content in the pages (e.g. Product description).</source>
+        <target state="final">Le corps de texte est utilisé pour le contenu principal des pages (exemple : la description du produit).</target>
+        <note>Line: 144</note>
+      </trans-unit>
+      <trans-unit id="bd908db5ccb07777ced8023dffc802f4" approved="yes">
+        <source>Links</source>
+        <target state="final">Lien</target>
+        <note>Line: 185</note>
+      </trans-unit>
+      <trans-unit id="5e3005455e1b7a48930d49d7834e9308" approved="yes">
+        <source>This is used for links in the page (e.g. All sale products).</source>
+        <target state="final">Les liens permettent d’accéder à une page (exemple : Tous les produits en vente).</target>
+        <note>Line: 154</note>
+      </trans-unit>
+      <trans-unit id="545b1150d9c178bf41eee6c799b715d7" approved="yes">
+        <source>Headings</source>
+        <target state="final">Titres</target>
+        <note>Line: 161</note>
+      </trans-unit>
+      <trans-unit id="80b9f96da8e0750a86dca48a656df2c8" approved="yes">
+        <source>Headings are titles that help organize content on a page and can be used to create sections.</source>
+        <target state="final">Les titres permettent d’organiser le contenu d’une page et peuvent être utilisés pour structurer les sections.</target>
+        <note>Line: 162</note>
+      </trans-unit>
+      <trans-unit id="f15c1cae7882448b3fb0404682e17e61" approved="yes">
+        <source>Content</source>
+        <target state="final">Contenu</target>
+        <note>Line: 181</note>
+      </trans-unit>
+      <trans-unit id="b486c3211e1a0f3e5ca32c8b6413b5e3" approved="yes">
+        <source>Content refers to any information written within the pages. It is used to instruct, to provide descriptions, to explain the benefits of a product or highlight any feature.</source>
+        <target state="final">Le contenu fait référence à toute information écrite dans les pages comme des descriptions qui permettent d’expliquer les avantages d’un produit.</target>
+        <note>Line: 167</note>
+      </trans-unit>
+      <trans-unit id="f71a2953f3c7cd5cdacc13526472d241" approved="yes">
+        <source>Main button</source>
+        <target state="final">Bouton principal</target>
+        <note>Line: 173</note>
+      </trans-unit>
+      <trans-unit id="17ba88fcdd3edd04a9b30146830089ed" approved="yes">
+        <source>Secondary button</source>
+        <target state="final">Bouton secondaire</target>
+        <note>Line: 177</note>
+      </trans-unit>
+      <trans-unit id="9d5bf15117441a1b52eb1f0808e4aad3" approved="yes">
+        <source>Discounts</source>
+        <target state="final">Promotions</target>
+        <note>Line: 189</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/Traits/Hooks/UseDisplayBackOfficeHeader.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="375743988b00ef0b7255bec14d58f24e" approved="yes">
+        <source>You are about to import a logo in svg format. This format being incompatible with the email and invoice logos, these will retain the current logo.</source>
+        <target state="final">Vous êtes sur le point d'importer un logo au format svg. Ce format étant incompatible avec les logos d'e-mail et de facture, ceux-ci conserveront le logo actuel.</target>
+        <note>Line: 109</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="upgrade/upgrade-1.1.0.php" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="55b8deb25fdc0f8b628027f7d1d21cbe" approved="yes">
+        <source>Theme settings</source>
+        <target state="final">Paramètres du thème</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="83915d1254927f41241e8630890bec6e" approved="yes">
+        <source>Themes</source>
+        <target state="final">Thèmes</target>
+        <note>Line: 56</note>
+      </trans-unit>
+      <trans-unit id="f44ba76b3113bb0f0fcbd52ab002e924" approved="yes">
+        <source>Theme modules</source>
+        <target state="final">Modules du thème</target>
+        <note>Line: 156</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/colors/Blocks/Alerts/color_palette_success_alert.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="545cb8f869b2c6fd111f2e1c6d96cc4d" approved="yes">
+        <source>Use this color palette</source>
+        <target state="final">Utiliser cette palette de couleurs</target>
+        <note>Line: 37</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/colors/Blocks/Colors/colors_description.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="5d50889672f6f860d14f502de3de1957" approved="yes">
+        <source>Colors</source>
+        <target state="final">Couleurs</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="124282142cdb0d6aaed16f5c0d2d51e1" approved="yes">
+        <source>Customize the colors by writing the [1]hex color code[/1] or by using the color picker.</source>
+        <target state="final">Personnalisez les couleurs grâce au [1]code couleur hex[/1] ou en utilisant le sélecteur de couleurs.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/colors/Blocks/Gateway/color_feature_disabled_gateway.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="982721c8b726d3e9362b7d29ba7648b2" approved="yes">
+        <source>Customize your theme image</source>
+        <target state="final">Personnalisez l'image de votre thème</target>
+        <note>Line: 25</note>
+      </trans-unit>
+      <trans-unit id="8b6595a0ecbe8ca610fd10a1eab49012" approved="yes">
+        <source>Choose a theme from the list in the Themes page.</source>
+        <target state="final">Choisissez un thème dans la liste de la page Thèmes.</target>
+        <note>Line: 27</note>
+      </trans-unit>
+      <trans-unit id="0882992c52dd32b0f54beb64d2f0c77e" approved="yes">
+        <source>Go to Themes</source>
+        <target state="final">Aller à l'onglet Thèmes</target>
+        <note>Line: 32</note>
+      </trans-unit>
+      <trans-unit id="9094d4bf6f384f8f83d07d7a52bf1977" approved="yes">
+        <source>Use a compatible theme to customize colors</source>
+        <target state="final">Utiliser un thème compatible pour personnaliser les couleurs</target>
+        <note>Line: 22</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/fonts/Blocks/Gateway/font_feature_disabled_gateway.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="65c6e1a43c3978362afb2e53243fbc91" approved="yes">
+        <source>Use a compatible theme to customize fonts</source>
+        <target state="final">Utiliser un thème compatible pour personnaliser les polices</target>
+        <note>Line: 22</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/fonts/Blocks/Partials/fonts_form.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="105768ac96c3080f2437b6ba3130afbf" approved="yes">
+        <source>Try your font</source>
+        <target state="final">Essayez votre police</target>
+        <note>Line: 51</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Favicon/favicon_content.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="a445ef421b4f5a4b520a8859725131da" approved="yes">
+        <source>Current favicon</source>
+        <target state="final">Favicon actuelle</target>
+        <note>Line: 24</note>
+      </trans-unit>
+      <trans-unit id="9fc564ed93e89ea6c0669d2c1a533e8e" approved="yes">
+        <source>Import favicon</source>
+        <target state="final">Importer une favicon</target>
+        <note>Line: 59</note>
+      </trans-unit>
+      <trans-unit id="98d990458b013d00b7c7a2889eeea71b" approved="yes">
+        <source>Accepted format: .ico.</source>
+        <target state="final">Format accepté : .ico.</target>
+        <note>Line: 66</note>
+      </trans-unit>
+      <trans-unit id="dc0cf2c6c65995ff50e119c163427cbd" approved="yes">
+        <source>Save favicon</source>
+        <target state="final">Enregistrer la favicon</target>
+        <note>Line: 70</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Favicon/favicon_description.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="49e95301d8fcdbc23f623e0f2d1ed1e6" approved="yes">
+        <source>Favicon</source>
+        <target state="final">Favicon</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="290160d695d2a0d02659506df1c598b3" approved="yes">
+        <source>The favicon is a small icon that appears on the left in the address bar, tabs, favorites, etc.</source>
+        <target state="final">La favicon est une petite icône qui apparaît à gauche dans la barre d’adresse, les onglets, les favoris, etc.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="3c3779c2d34afccceb20b638c59e0e98" approved="yes">
+        <source>My store</source>
+        <target state="final">Ma boutique</target>
+        <note>Line: 30</note>
+      </trans-unit>
+      <trans-unit id="4c22f5339e90bee6b09da500b68ed198" approved="yes">
+        <source>Create your own with our [1]favicon generator[/1] to reinforce your brand image.</source>
+        <target state="final">Créez votre propre favicon avec notre [1]générateur de favicon[/1] pour renforcer votre image de marque.</target>
+        <note>Line: 42</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Logo/logo_content.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="bf50d5e661106d0abe925af3c2e6f7e7" approved="yes">
+        <source>Header</source>
+        <target state="final">En-tête</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="ce8ae9da5b7cd6c3df2929543a9af92d" approved="yes">
+        <source>Email</source>
+        <target state="final">E-mail</target>
+        <note>Line: 29</note>
+      </trans-unit>
+      <trans-unit id="466eadd40b3c10580e3ab4e8061161ce" approved="yes">
+        <source>Invoice</source>
+        <target state="final">Facture</target>
+        <note>Line: 32</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Logo/logo_description.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="2ada7b483f52be3afc92b8d3b07896d9" approved="yes">
+        <source>Logos</source>
+        <target state="final">Logos</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="90e1005232911b0ebf32745f3064fc68" approved="yes">
+        <source>The header logo appears on all pages of your store.</source>
+        <target state="final">Le logo d'en-tête apparaît sur toutes les pages de votre boutique.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="b5bd3b85d3b6ed84eca40504526b4c92" approved="yes">
+        <source>The recommended size for the default theme: height 40 px and width 200 px.</source>
+        <target state="final">La taille recommandée pour le thème par défaut : hauteur 40 px et largeur 200 px.</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="3610ba33cdd6de4ef3f2dec47235c14c" approved="yes">
+        <source>Unless you change your mind, the same logo will be used on your emails and invoices.</source>
+        <target state="final">Sauf changement de votre part, le même logo sera utilisé sur vos e-mails et sur vos factures.</target>
+        <note>Line: 29</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Partials/logo_form_image.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354" approved="yes">
+        <source>Save</source>
+        <target state="final">Enregistrer</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="025d2c418e33eb7781a2d9592f14a78f" approved="yes">
+        <source>Save logo image for %form%</source>
+        <target state="final">Sauvegarder le logo pour %form%</target>
+        <note>Line: 46</note>
+      </trans-unit>
+      <trans-unit id="b0caae60eea9126579fbbf6ca35022a4" approved="yes">
+        <source>Current logo</source>
+        <target state="final">Logo actuel</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="ecb09d0987cc7e80ccddcec2601004d0" approved="yes">
+        <source>Current logo preview</source>
+        <target state="final">Aperçu du logo</target>
+        <note>Line: 28</note>
+      </trans-unit>
+      <trans-unit id="dd4a23dcbb3ac77ee08261137b3dbf7d" approved="yes">
+        <source>Import logo</source>
+        <target state="final">Importer un logo</target>
+        <note>Line: 34</note>
+      </trans-unit>
+      <trans-unit id="9d4cd431ad497246e49226243d21b6f9" approved="yes">
+        <source>Accepted formats: %formats%.</source>
+        <target state="final">Formats acceptés : %formats%.</target>
+        <note>Line: 41</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Partials/logo_form_tabs.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="9dffbf69ffba8bc38bc4e01abf4b1675" approved="yes">
+        <source>Text</source>
+        <target state="final">Texte</target>
+        <note>Line: 65</note>
+      </trans-unit>
+      <trans-unit id="1b5f5960a06f4ded944101a2e7d281b6" approved="yes">
+        <source> Use header logo</source>
+        <target state="final"> Utiliser le logo de l'en-tête</target>
+        <note>Line: 33</note>
+      </trans-unit>
+      <trans-unit id="433bda5c0dcc85b222ed996897c2b528" approved="yes">
+        <source>Save the use of header logo for %form%</source>
+        <target state="final">Sauvegarder l'utilisation du logo d'en-tête pour %form%</target>
+        <note>Line: 38</note>
+      </trans-unit>
+      <trans-unit id="24084bb0290e971012222c5eb528b7b9" approved="yes">
+        <source>Logo type</source>
+        <target state="final">Type de logo</target>
+        <note>Line: 44</note>
+      </trans-unit>
+      <trans-unit id="be53a0541a6d36f6ecb879fa2c584b08" approved="yes">
+        <source>Image</source>
+        <target state="final">Image</target>
+        <note>Line: 55</note>
+      </trans-unit>
+      <trans-unit id="a2dd963fefd927000740897c818e2e92" approved="yes">
+        <source>Import logo image</source>
+        <target state="final">Importer l'image du logo</target>
+        <note>Line: 56</note>
+      </trans-unit>
+      <trans-unit id="8573e126669782dc953a221fe01ff34a" approved="yes">
+        <source>Create text logo</source>
+        <target state="final">Créer un logo texte</target>
+        <note>Line: 66</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/logos/Blocks/Partials/logo_form_text.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="5d0007dd14911c40863a740e743a70bc" approved="yes">
+        <source>Text of your logo</source>
+        <target state="final">Texte de votre logo</target>
+        <note>Line: 52</note>
+      </trans-unit>
+      <trans-unit id="8d4660d8d39e93976f73e78fccc951bd" approved="yes">
+        <source>Always check the final result on your store as it may differ from the preview, depending on your theme.</source>
+        <target state="final">Vérifiez toujours le résultat final sur votre boutique car, selon votre thème, il peut être différent de l'aperçu.</target>
+        <note>Line: 59</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Alerts/theme_enable_alert.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="61057a0c84605444201929bdd72014f0" approved="yes">
+        <source>Later</source>
+        <target state="final">Plus tard</target>
+        <note>Line: 27</note>
+      </trans-unit>
+      <trans-unit id="2b5fb19532abc419b014f08751ce991a" approved="yes">
+        <source>The %s% theme has just been added.</source>
+        <target state="final">Le thème %s% vient d’être ajouté.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="b6ba229b668e5a7b6700e4d275683084" approved="yes">
+        <source>Use this theme</source>
+        <target state="final">Utiliser ce thème</target>
+        <note>Line: 36</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/CurrentTheme/current_theme_content.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="57f73e4788901990f90b6dd00a56fecc" approved="yes">
+        <source>desktop preview of the theme %theme%</source>
+        <target state="final">aperçu du thème %theme% sur ordinateur</target>
+        <note>Line: 42</note>
+      </trans-unit>
+      <trans-unit id="63a78ed4647f7c63c2929e35ec1c95e3" approved="yes">
+        <source>Customize</source>
+        <target state="final">Personnaliser</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="e145bc7265cc676fa0cf8649321a8b43" approved="yes">
+        <source>mobile preview of the theme %theme%</source>
+        <target state="final">aperçu du thème %theme% sur téléphone</target>
+        <note>Line: 47</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/CurrentTheme/current_theme_description.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="77f1c0bdabe60ab6597cd21b6ba8b9a7" approved="yes">
+        <source>Current theme</source>
+        <target state="final">Thème actif</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="824673ec37551250be94d65a6ea587d2" approved="yes">
+        <source>The theme defines the appearance of your site.</source>
+        <target state="final">Le thème définit l’apparence de votre site.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/delete_theme_modal.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="f2a6c498fb90ee345d997f888fce3b18" approved="yes">
+        <source>Delete</source>
+        <target state="final">Supprimer</target>
+        <note>Line: 42</note>
+      </trans-unit>
+      <trans-unit id="a20cd66c6c13302711252a1b5830f17c" approved="yes">
+        <source>Delete this theme?</source>
+        <target state="final">Supprimer ce thème ?</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="2b6df8b8adc7f02ede51f7122274f6fe" approved="yes">
+        <source>You are about to delete the %theme% theme. This action is irreversible. </source>
+        <target state="final">Vous êtes sur le point de supprimer le thème %theme%. Cette action est irréversible. </target>
+        <note>Line: 34</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/import_theme_from_computer_modal.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="6b547daaf04c82fdcdc9af3b8a75338c" approved="yes">
+        <source>Import from computer</source>
+        <target state="final">Importer depuis l’ordinateur</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="47e6d3c1ed67377125b62d4c8a0d383d" approved="yes">
+        <source>ZIP file</source>
+        <target state="final">Fichier ZIP</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="50cd1313cb912366c20d5b9948f12c43" approved="yes">
+        <source>Browse the files on your computer and select the ZIP file containing your new theme.</source>
+        <target state="final">Parcourez les fichiers sur votre ordinateur et sélectionnez le fichier ZIP contenant votre nouveau thème.</target>
+        <note>Line: 43</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/import_theme_from_ftp_modal.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="cd8d9cc19984ccf9d314eee5eebfc2cc" approved="yes">
+        <source>Import from FTP</source>
+        <target state="final">Importer à partir du FTP</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="94f2371003860a92b12bf4c66b2851ac" approved="yes">
+        <source>Select archive</source>
+        <target state="final">Sélectionnez l’archive</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="5d1a21e0059f50a1a841415eb1dba062" approved="yes">
+        <source>This field shows the ZIP files present in the "/themes" folder.</source>
+        <target state="final">Ce champ affiche les fichiers ZIP présents dans le dossier "/themes".</target>
+        <note>Line: 48</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/import_theme_from_web_modal.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="c35163a24e4834065c72b5a343d3a374" approved="yes">
+        <source>Import from web</source>
+        <target state="final">Importer depuis le web</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="72d6d7a1885885bb55a565fd1070581a" approved="yes">
+        <source>Import</source>
+        <target state="final">Importer</target>
+        <note>Line: 47</note>
+      </trans-unit>
+      <trans-unit id="a33388a338ee2b199d66112369279558" approved="yes">
+        <source>Archive URL</source>
+        <target state="final">URL de l'archive</target>
+        <note>Line: 36</note>
+      </trans-unit>
+      <trans-unit id="85a909ec9c5417427c8a5f6c29b36b55" approved="yes">
+        <source>Specify the full URL of the ZIP file that contains your new theme. For example, "http://example.com/files/theme.zip".</source>
+        <target state="final">Indiquez l'URL complète du fichier ZIP qui contient votre nouveau thème. Par exemple, "http://example.com/files/theme.zip".</target>
+        <note>Line: 39</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Modals/use_theme_modal.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="ad8783089f828b927473fb61d51940ec" approved="yes">
+        <source>Use</source>
+        <target state="final">Utiliser ce thème</target>
+        <note>Line: 57</note>
+      </trans-unit>
+      <trans-unit id="ca4dc1a851769ef30c841b36cd18648a" approved="yes">
+        <source>Use this theme?</source>
+        <target state="final">Utiliser ce thème ?</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="716f6b30598ba30945d84485e61c1027" approved="yes">
+        <source>close</source>
+        <target state="final">fermer</target>
+        <note>Line: 27</note>
+      </trans-unit>
+      <trans-unit id="b305a5c0488685bca9f1ec70026097ab" approved="yes">
+        <source>Your current %currentTheme% theme will be replaced by the %new_theme% theme.</source>
+        <target state="final">Votre thème actuel %currentTheme% sera remplacé par le thème %new_theme% .</target>
+        <note>Line: 35</note>
+      </trans-unit>
+      <trans-unit id="edf64e69abefcde9d74ce67a20d32215" approved="yes">
+        <source>It is important to check the compatibility of your modules with the %new_theme% theme in a test environment.</source>
+        <target state="final">Il est important de vérifier la compatibilité de vos modules avec le thème %new_theme% dans un environnement de test.</target>
+        <note>Line: 39</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/Partials/theme_card.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="135598caf202b9ec4ba7344a1bbafbc7" approved="yes">
+        <source>v%version%</source>
+        <target state="final">v%version%</target>
+        <note>Line: 28</note>
+      </trans-unit>
+      <trans-unit id="e0b71854a21d45103fc0c775abdd8dbb" approved="yes">
+        <source>Developed by %author%</source>
+        <target state="final">Développé par %author%</target>
+        <note>Line: 29</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/ThemeLibrary/theme_library_content.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="c76c38de5f1db7d1143336016c1f9cd9" approved="yes">
+        <source>View demo</source>
+        <target state="final">Voir la démo</target>
+        <note>Line: 31</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/admin/themes/Blocks/ThemeLibrary/theme_library_description.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="c85bd01d843a227d58246a060d753b6b" approved="yes">
+        <source>Theme library</source>
+        <target state="final">Bibliothèque de thème</target>
+        <note>Line: 21</note>
+      </trans-unit>
+      <trans-unit id="61de92eafff44859a223f0d66a882161" approved="yes">
+        <source>Choose the default Classic theme for a simple and minimalist store.</source>
+        <target state="final">Choisissez le thème Classic pour une boutique simple et minimaliste.</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="f42396af8eb1fbc467db554340961512" approved="yes">
+        <source>You can choose other themes with more advanced customization from this list of themes.</source>
+        <target state="final">Vous pouvez choisir d'autres thèmes avec une personnalisation plus avancée dans cette liste de thèmes.</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="b5c941eace89787ab475237451189eac" approved="yes">
+        <source>Import theme</source>
+        <target state="final">Importer un thème</target>
+        <note>Line: 36</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/Partials/file_uploader_preview_template.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="b21f085d08623fc7a5a9da204cc66c8c" approved="yes">
+        <source>Remove file</source>
+        <target state="final">Supprimer le fichier</target>
+        <note>Line: 22</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/alert_notification.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="0bc6ed52e4f26ac8cc6fac6a463e8f4c" approved="yes">
+        <source>We have improved the Design section of your back office</source>
+        <target state="final">Nous avons amélioré la section Apparence de votre back-office</target>
+        <note>Line: 23</note>
+      </trans-unit>
+      <trans-unit id="d1f0da1e84ae6ef7220bf674ca996d58" approved="yes">
+        <source>Enjoy a better experience and benefit from the latest improvements. Your settings and data will be preserved.</source>
+        <target state="final">Profitez d’une meilleure expérience et bénéficiez des dernières améliorations. Vos configurations et les données de votre boutique seront préservées.</target>
+        <note>Line: 26</note>
+      </trans-unit>
+      <trans-unit id="06957d1d0327e88bcde956e59a8bb495" approved="yes">
+        <source>Activate new features</source>
+        <target state="final">Activer les nouveautés</target>
+        <note>Line: 31</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/color_input.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="ed165b334e14bc762233d3fba3e4bff9" approved="yes">
+        <source>Hexadecimal color</source>
+        <target state="final">Code couleur hexadécimal</target>
+        <note>Line: 44</note>
+      </trans-unit>
+      <trans-unit id="5fb63579fc981698f97d55bfecb213ea" approved="yes">
+        <source>Copy</source>
+        <target state="final">Copier</target>
+        <note>Line: 51</note>
+      </trans-unit>
+      <trans-unit id="a588b1abc58b8b758c4b34b69b9e10bb" approved="yes">
+        <source>Copied</source>
+        <target state="final">Copié</target>
+        <note>Line: 52</note>
+      </trans-unit>
+      <trans-unit id="e6de2a53fc1f69460c8846bdbc1fc799" approved="yes">
+        <source>Enter a valid [1]hex code[/1] or use the color picker.</source>
+        <target state="final">Entrer un [1]hex code[/1] valide ou utiliser le sélecteur de couleurs.</target>
+        <note>Line: 62</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/file_uploader.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="18ed1ac8899dc6ce5e95009eaaa2e818" approved="yes">
+        <source>[1]Select[/1] a file or drag and drop</source>
+        <target state="final">[1]Sélectionner[/1] un fichier ou glisser-déposer</target>
+        <note>Line: 30</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/save_banner.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="ea4788705e6873b424c65e91c2846b19" approved="yes">
+        <source>Cancel</source>
+        <target state="final">Annuler</target>
+        <note>Line: 32</note>
+      </trans-unit>
+      <trans-unit id="c227ad77f168e7fd3e21583b324eddf4" approved="yes">
+        <source>Unsaved changes</source>
+        <target state="final">Modifications non sauvegardées</target>
+        <note>Line: 28</note>
+      </trans-unit>
+      <trans-unit id="daa6b483e9f6ca081ec7e0b4a352f9e9" approved="yes">
+        <source>Save changes</source>
+        <target state="final">Enregistrer les modifications</target>
+        <note>Line: 34</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="views/templates/components/text_editor.html.twig" source-language="en-US" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="194f5394ae2e9c74dc3c441b92862d1d" approved="yes">
+        <source>Font</source>
+        <target state="final">Police</target>
+        <note>Line: 64</note>
+      </trans-unit>
+      <trans-unit id="ae284f900f9d6e21ba69144cfc91e41b" approved="yes">
+        <source>Style</source>
+        <target state="final">Style</target>
+        <note>Line: 92</note>
+      </trans-unit>
+      <trans-unit id="6f6cb72d544962fa333e2e34ce64f719" approved="yes">
+        <source>Size</source>
+        <target state="final">Taille</target>
+        <note>Line: 121</note>
+      </trans-unit>
+      <trans-unit id="cb5feb1b7314637725a2e73bdc9f7295" approved="yes">
+        <source>Color</source>
+        <target state="final">Couleur</target>
+        <note>Line: 141</note>
+      </trans-unit>
+      <trans-unit id="1cb251ec0d568de6a929b520c4aed8d1" approved="yes">
+        <source>text</source>
+        <target state="final">texte</target>
+        <note>Line: 178</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>klaviyopsautomation</name>
+    <displayName><![CDATA[PrestaShop Automation with Klaviyo]]></displayName>
+    <version><![CDATA[1.11.1]]></version>
+    <description><![CDATA[Klaviyo module to integrate PrestaShop with Klaviyo.]]></description>
+    <author><![CDATA[PrestaShop Partners]]></author>
+    <tab><![CDATA[advertising_marketing]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

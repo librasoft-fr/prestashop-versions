@@ -1,0 +1,78 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+{# TODO: update 'category' with method getting category #}
+<div class="col-12 col-lg-8">
+    <section class="card">
+        <header class="p-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h3 class="h4 mb-1">
+                        {% if currentlyUsedTheme.display_name is defined and currentlyUsedTheme.display_name is not null %}
+                            {{ currentlyUsedTheme.display_name }}
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </h3>
+                    <span class="small-text text-muted">
+                        {% if currentlyUsedTheme.version is defined and currentlyUsedTheme.version is not null %}
+                            {{ 'v%version%'|trans({'%version%': currentlyUsedTheme.version }, 'Modules.Psxdesign.Admin') }} -
+                        {% endif %}
+                        {% if currentlyUsedTheme.author.name is defined and currentlyUsedTheme.author.name is not null %}
+                            {{ 'Developed by %author%'|trans({
+                                '%author%': currentlyUsedTheme.author.url is defined
+                                ? '<a href="' ~ currentlyUsedTheme.author.url ~ '" target="_blank" rel="noopener">' ~ currentlyUsedTheme.author.name ~ '</a>'
+                                :  currentlyUsedTheme.author.name
+                            }, 'Modules.Psxdesign.Admin')|striptags('<a>')|raw }}
+                        {% endif %}
+                        {% if (currentlyUsedTheme.version is not defined or currentlyUsedTheme.version is null) and (currentlyUsedTheme.author.name is not defined or currentlyUsedTheme.author.name is null) %}
+                            &nbsp;
+                        {% endif %}
+                    </span>
+                </div>
+                <a href="{{ currentlyUsedTheme.customizeUrl }}" class="btn btn-primary flex-shrink-0 ml-2"><i class="material-icons">edit</i> {{ 'Customize'|trans({}, 'Modules.Psxdesign.Admin') }}</a>
+            </div>
+        </header>
+        <div class="container">
+            <div class="theme-preview-container">
+                <div class="theme-preview theme-preview--desktop">
+                    {% if currentlyUsedTheme.preview is defined %}
+                        <img
+                            src="{{ baseShopUrl }}{{ currentlyUsedTheme.preview }}"
+                            alt="{{ 'desktop preview of the theme %theme%'|trans({ '%theme%': currentlyUsedTheme.display_name is defined and currentlyUsedTheme.display_name is not null ? currentlyUsedTheme.display_name : '' }, 'Modules.Psxdesign.Admin') }}"
+                        />
+                    {% endif %}
+                </div>
+                {% if currentlyUsedTheme.previewMobile is defined and currentlyUsedTheme.previewMobile is not null %}
+                    <div class="theme-preview-mobile-wrapper">
+                        <div class="theme-preview theme-preview--mobile">
+                            <img src="{{ baseShopUrl }}{{ currentlyUsedTheme.previewMobile }}" alt="{{ 'mobile preview of the theme %theme%'|trans({ '%theme%': currentlyUsedTheme.display_name }, 'Modules.Psxdesign.Admin') }}" />
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>

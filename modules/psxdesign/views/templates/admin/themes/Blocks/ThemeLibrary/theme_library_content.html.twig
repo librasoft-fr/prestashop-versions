@@ -1,0 +1,77 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+{# TODO: update 'category' with method getting category #}
+<div class="col-12 col-lg-8">
+    <ul class="row row-cols-1 row-cols-sm-2 row-cols-lg-1 row-cols-xl-2 list-unstyled">
+        {% set themes = notUsedThemes|sort((a, b) => a.display_name <=> b.display_name) %}
+        {% for theme in themes %}
+            {% embed '@Modules/psxdesign/views/templates/admin/themes/Blocks/Partials/theme_card.html.twig' with theme  %}
+                {% block image %}
+                    <div class="theme-preview theme-preview--single">
+                        {% if theme.demoUrl is defined and theme.demoUrl is not null %}
+                            <div class="theme-preview--demo-container">
+                                <a href="{{ theme.demoUrl }}" target="_blank" rel="noopener" class="btn btn-primary">
+                                    {{ 'View demo'|trans({}, 'Modules.Psxdesign.Admin') }}
+                                    <i class="material-icons">open_in_new</i>
+                                </a>
+                            </div>
+                        {% endif %}
+                        {% if theme.preview is defined %}
+                            <img
+                                src="{{ baseShopUrl }}{{ theme.preview }}"
+                                alt="{{ 'desktop preview of the theme %theme%'|trans({ '%theme%': theme.display_name is defined and theme.display_name is not null ? theme.display_name : '' }, 'Modules.Psxdesign.Admin') }}"
+                            />
+                        {% endif %}
+                    </div>
+                {% endblock %}
+                {% block button_container %}
+                    {% if theme.name != 'classic' %}
+                        <button
+                                type="button"
+                                class="flex-fill btn btn-outline-danger js-open-delete-theme-modal"
+                                data-toggle="modal"
+                                data-target="#delete_theme_modal"
+                                data-action="{{ path('admin_themes_delete', {'themeName': theme.name}) }}"
+                                data-theme-name="{{ theme.display_name }}"
+                        >
+                            {{ 'Delete'|trans({}, 'Modules.Psxdesign.Admin') }}
+                        </button>
+                    {% endif %}
+                    <button
+                            type="button"
+                            class="flex-fill btn btn-outline-primary js-open-use-theme-modal"
+                            data-toggle="modal"
+                            data-target="#use_theme_modal" {{ (not isSingleShopContext) ? 'disabled' : '' }}
+                            data-action="{{ path('admin_themes_enable', {'themeName': theme.name}) }}"
+                            data-theme-name="{{ theme.display_name }}"
+                    >
+                        {{ 'Use'|trans({}, 'Modules.Psxdesign.Admin') }}
+                    </button>
+                {% endblock %}
+            {% endembed %}
+        {% endfor %}
+    </ul>
+</div>

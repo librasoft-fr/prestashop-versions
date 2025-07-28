@@ -1,0 +1,10 @@
+.nav-bar.collapsed .nav-bar-overflow {
+  overflow: visible!important;
+}
+.nav-bar {
+  background: white;
+}
+
+.page-head ul.breadcrumb, .header-toolbar ol.breadcrumb {
+  padding-block: 0!important;
+}

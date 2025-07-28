@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin-dev" source-language="en" target-language="fr" datatype="plaintext">
+    <body>
+      <trans-unit id="ed56c088e223462171cc99f1a9b37785">
+        <source>PrestaShop Edition Basic</source>
+        <target state="translated">PrestaShop Edition Basic</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="6a90fc4626c573c45b029834f434f30a">
+        <source>PrestaShop Edition Basic.</source>
+        <target state="translated">PrestaShop Edition Basic.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="8cf04a9734132302f96da8e113e80ce5">
+        <source>Home</source>
+        <target state="translated">Accueil</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="f4f70727dc34561dfde1a3c529b6205c">
+        <source>Settings</source>
+        <target state="translated">Paramètres</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="cb2f228df35024a7f8895614134b651d">
+        <source>Customize your Domain Name</source>
+        <target state="translated">Personnaliser le nom de domaine</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="d0c78c13ebd41f2a5e85bcdc760c556b">
+        <source>Customize your domain name to boost your store's search engine ranking.</source>
+        <target state="translated">Personnalisez votre nom de domaine pour améliorer le référencement de votre boutique sur les moteurs de recherche.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="862cd24333aa5c27beb1ec8af6b4766e">
+        <source>View documentation</source>
+        <target state="translated">Voir la documentation</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="e09e0133e1c69592adfd5c3f69663bd0">
+        <source>https://help-center.prestashop.com/fr/articles/11530021421714-changer-le-nom-de-domaine</source>
+        <target state="translated">https://help-center.prestashop.com/fr/articles/11530021421714-changer-le-nom-de-domaine</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="1116ed9b82405b666479000dcc482f84">
+        <source>Skip this step</source>
+        <target state="translated">Ignorer cette étape</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="8422e56d95ab9587169f917f53a23a43">
+        <source>Add your First Product</source>
+        <target state="translated">Ajouter un premier produit</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="d4c43599c3d803321cac28609976291b">
+        <source>Expand your catalog with your very first product</source>
+        <target state="translated">Enrichissez votre catalogue en ajoutant votre tout premier produit</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="4ab7d549596c13206e215c9d0f26000e">
+        <source>https://help-center.prestashop.com/fr/articles/11637213915666-ajouter-un-nouveau-produit</source>
+        <target state="translated">https://help-center.prestashop.com/fr/articles/11637213915666-ajouter-un-nouveau-produit</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="dc16a8bae9c316f56d4db39800bfa86a">
+        <source>Add a Product</source>
+        <target state="translated">Ajouter un produit</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="bb324583a12984d72eeb70c2c38d6cda">
+        <source>Configure your Payment Options</source>
+        <target state="translated">Configurer les moyens de paiement</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="b0f2ff3544cea0f250b4ac64c96991ad">
+        <source>Enhance your customers' shopping experience by offering multiple payment options on your store.</source>
+        <target state="translated">Améliorez l'expérience d’achat de vos clients en proposant plusieurs moyens de paiement sur votre boutique.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5cb09dc063501817d498214ccb99c0f3">
+        <source>https://help-center.prestashop.com/fr/articles/11640755605778-configurer-les-moyens-de-paiement</source>
+        <target state="translated">https://help-center.prestashop.com/fr/articles/11640755605778-configurer-les-moyens-de-paiement</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5fec693e2128dcfb09ac35626dd4a572">
+        <source>Configure your Delivery Options</source>
+        <target state="translated">Configurer les modes de livraison</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="1ec525eb1946fbcb914525fe1ba7f4e0">
+        <source>Configure delivery options to send your products.</source>
+        <target state="translated">Configurez les méthodes de livraison pour envoyer vos produits.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="266164f640e3fd7ac655e47c40e2fc78">
+        <source>https://help-center.prestashop.com/fr/articles/11615624974994-configurer-les-modes-de-livraison</source>
+        <target state="translated">https://help-center.prestashop.com/fr/articles/11615624974994-configurer-les-modes-de-livraison</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ea199c50d679d09dbfe7b272a5dfc230">
+        <source>Meet your Legal Obligations</source>
+        <target state="translated">Répondre aux obligations légales</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="e917d41a7d894760a649f595426555cb">
+        <source>Ensure your store complies with legal requirements before you begin selling.</source>
+        <target state="translated">Assurez-vous que votre boutique respecte les obligations légales avant de commencer à vendre.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="53bfc8c2e07fa9a1407869eeeb1e975b">
+        <source>https://help-center.prestashop.com/fr/articles/11644037761042-repondre-aux-obligations-legales</source>
+        <target state="translated">https://help-center.prestashop.com/fr/articles/11644037761042-repondre-aux-obligations-legales</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="1ddeefbce4668401f03fae436fc6674e">
+        <source>Add a Logo</source>
+        <target state="translated">Ajouter un logo</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="87740d5668147a7ecd2ecba915a5aaad">
+        <source>Add Logos for your store (Header, E-mails, Invoice, and Favicon)</source>
+        <target state="translated">Ajoutez les logos qui apparaîtront sur votre boutique (en-tête, e-mails, factures et favicon)</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="855a91c6a0e71a12bc94322e7b3685c4">
+        <source>https://help-center.prestashop.com/fr/articles/11674550243474-ajouter-un-logo-et-une-favicon</source>
+        <target state="translated">https://help-center.prestashop.com/fr/articles/11674550243474-ajouter-un-logo-et-une-favicon</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="943e3c8b871d7ac7efd2d2f04640b791">
+        <source>Select and Customize your Theme</source>
+        <target state="translated">Choisir et configurer un thème</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="6d00d1805e43ec87dd2e998b24b108b6">
+        <source>Choose and customize a theme that defines the look of your store</source>
+        <target state="translated">Sélectionnez et configurez le thème qui définira l'apparence de votre boutique</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ab7d62a1228738d0bc46e115b5e71c33">
+        <source>https://help-center.prestashop.com/fr/articles/11663976521490-choisir-et-configurer-un-theme</source>
+        <target state="translated">https://help-center.prestashop.com/fr/articles/11663976521490-choisir-et-configurer-un-theme</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c68308ce7ca65863ba890fdaf48c286a">
+        <source>Activate new menu and breadcrumb</source>
+        <target state="translated">Activer le nouveau menu et le fil d'ariane</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="fe5d926454b6a8144efce13a44d019ba">
+        <source>Invalid Configuration value</source>
+        <target state="translated">Valeur de configuration invalide</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c888438d14855d7d96a2724ee9c306bd">
+        <source>Settings updated</source>
+        <target state="translated">Paramètres mis à jour</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

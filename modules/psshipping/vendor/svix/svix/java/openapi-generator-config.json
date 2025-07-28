@@ -1,0 +1,5 @@
+{
+  "apiPackage": "com.svix.internal.api",
+  "modelPackage": "com.svix.models",
+  "dateLibrary": "java8"
+}

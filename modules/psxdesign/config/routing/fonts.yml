@@ -1,0 +1,13 @@
+admin_fonts_index:
+  path: /fonts
+  methods: [ GET ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignFontsController::indexAction'
+    _legacy_controller: AdminPsxDesignFonts
+    _legacy_link: AdminPsxDesignFonts
+
+admin_psxdesign_upsert_font_action:
+  path: /fonts/upsert
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignFontsController::upsertFontAction'

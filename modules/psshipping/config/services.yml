@@ -1,0 +1,39 @@
+imports:
+  - { resource: parameters.yml }
+  - { resource: controllers.yml }
+  - { resource: accounts.yml }
+  - { resource: billing.yml }
+  - { resource: handler.yml }
+  - { resource: configuration.yml }
+
+services:
+  _defaults:
+    public: true
+
+  psshipping:
+    class: 'Psshipping'
+    factory: ['Module', 'getInstanceByName']
+    arguments:
+      - "psshipping"
+
+  psshipping.helper.config:
+    class: 'PrestaShop\Module\Psshipping\Helper\ConfigHelper'
+    public: true
+    arguments:
+      - "%psshipping.api_url%"
+      - "%psshipping.cdn_url%"
+      - "%psshipping.vue_app_dev_mode%"
+      - "%psshipping.use_local_vue_app%"
+      - "%psshipping.mbe_tracking_url%"
+      - "%psshipping.segment_key%"
+      - "%psshipping.sentry_dsn%"
+      - "%psshipping.sentry_env%"
+
+  psshipping.context:
+    class: Context
+    factory: ['Context', 'getContext']
+  
+  PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+    arguments:
+      - '@psshipping'

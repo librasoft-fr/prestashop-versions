@@ -380,6 +380,12 @@ class AdminModelAdapter extends \PrestaShopBundle\Model\AdminModelAdapter
             $form_data['combinations'][$k]['attribute_wholesale_price'] = abs(
                 $this->floatParser->fromString($combination['attribute_wholesale_price'])
             );
+
+            if (isset($combination['attribute_ecotax'])) {
+                $form_data['combinations'][$k]['attribute_ecotax'] = abs(
+                    $this->floatParser->fromString($combination['attribute_ecotax'])
+                );
+            }
         }
 
         //map suppliers

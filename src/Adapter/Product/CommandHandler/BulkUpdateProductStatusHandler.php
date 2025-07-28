@@ -77,9 +77,6 @@ class BulkUpdateProductStatusHandler extends AbstractBulkHandler implements Bulk
     protected function handleSingleAction(ProductId $productId, $command = null)
     {
         $product = $this->productRepository->getByShopConstraint($productId, $command->getShopConstraint());
-        $wasVisibleOnSearch = $this->productIndexationUpdater->isVisibleOnSearch($product);
-        $wasActive = (bool) $product->active;
-
         $product->active = $command->getNewStatus();
         $this->productRepository->partialUpdate(
             $product,
@@ -88,16 +85,7 @@ class BulkUpdateProductStatusHandler extends AbstractBulkHandler implements Bulk
             CannotUpdateProductException::FAILED_UPDATE_STATUS
         );
 
-        // Reindexing is costly operation, so we check if properties impacting indexation have changed and then reindex if needed.
-        if (
-            $wasVisibleOnSearch !== $this->productIndexationUpdater->isVisibleOnSearch($product)
-            || $wasActive !== (bool) $product->active
-            // If multiple shops are impacted it's safer to update indexation, it's more complicated to check if it's needed
-            || $command->getShopConstraint()->forAllShops()
-            || $command->getShopConstraint()->getShopGroupId()
-        ) {
-            $this->productIndexationUpdater->updateIndexation($product, $command->getShopConstraint());
-        }
+        $this->productIndexationUpdater->updateIndexation($product, $command->getShopConstraint());
     }
 
     protected function buildBulkException(): BulkProductException

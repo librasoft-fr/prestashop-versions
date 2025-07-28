@@ -1,0 +1,96 @@
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ */
+.save-banner {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 208px;
+  z-index: 10;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  background: #363a41;
+  color: #ffffff;
+  padding: 1rem;
+  transition: all 0.5s ease-out;
+}
+@media (max-width: 1023px) {
+  .save-banner {
+    left: 0;
+  }
+}
+@media (max-width: 767.98px) {
+  .save-banner {
+    justify-content: flex-end;
+  }
+}
+@media (max-width: 575.98px) {
+  .save-banner {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+.save-banner.save-banner--hidden {
+  display: none;
+}
+.save-banner .save-banner__text {
+  margin: 0 auto 0 0;
+  padding: 0;
+}
+@media (max-width: 575.98px) {
+  .save-banner .save-banner__text {
+    text-align: center;
+    display: block;
+    margin: 0 15px;
+  }
+}
+@media (max-width: 480px) {
+  .save-banner .save-banner__text {
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+.save-banner .save-banner__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+@media (max-width: 480px) {
+  .save-banner .save-banner__actions {
+    justify-content: center;
+  }
+}
+
+/* If sidebar is closes */
+body.page-sidebar-closed .save-banner {
+  left: 48px;
+}
+@media (max-width: 1023px) {
+  body.page-sidebar-closed .save-banner {
+    left: 0;
+  }
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>psshipping</name>
+    <displayName><![CDATA[PrestaShop Shipping]]></displayName>
+    <version><![CDATA[1.1.4]]></version>
+    <description><![CDATA[Powered by Mail Boxes Etc, PrestaShop Shipping offers standard, pickup-point and express international delivery methods to your customers no matter where they are located.
+            Have access to exclusive rates for each delivered and returned parcels by using our extensive network of trusted partners.]]></description>
+    <author><![CDATA[PrestaShop]]></author>
+    <tab><![CDATA[shipping_logistics]]></tab>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall PrestaShop Shipping module?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>
+

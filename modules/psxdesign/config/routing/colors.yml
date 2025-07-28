@@ -1,0 +1,31 @@
+admin_colors_index:
+  path: /colors
+  methods: [ GET ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignColorsController::indexAction'
+    _legacy_controller: AdminPsxDesignColors
+    _legacy_link: AdminPsxDesignColors
+
+admin_psxdesign_upsert_color_palette_action:
+  path: /colors/upsert
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignColorsController::upsertColorPaletteAction'
+
+admin_psxdesign_activate_color_palette_action:
+  path: /colors/activate
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignColorsController::activateColorPaletteAction'
+
+admin_psxdesign_forward_theme_enable_action:
+  path: /colors/{themeName}/enable
+  methods: [ POST ]
+  defaults:
+    _controller: PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignColorsController::forwardThemeEnableAction
+    _legacy_controller: AdminThemes
+    _legacy_link: AdminThemes:enableTheme
+    _legacy_parameters:
+      theme_name: themeName
+  requirements:
+    themeName: "^[a-zA-Z0-9_.-]+$"

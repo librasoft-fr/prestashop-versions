@@ -1,0 +1,5 @@
+admin_mbo_addons_module_upgrade:
+  path: /modules/upgrade
+  methods: [ POST ]
+  defaults:
+    _controller: mbo.controller.addons:upgradeModuleAction

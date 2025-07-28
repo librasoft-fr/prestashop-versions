@@ -1,0 +1,31 @@
+admin_logos_index:
+  path: /logos
+  methods: [ GET ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignLogosController::indexAction'
+    _legacy_controller: AdminPsxDesignLogos
+    _legacy_link: AdminPsxDesignLogos
+
+admin_psxdesign_logo_image_import_action:
+  path: /logo/image-upload
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignLogosController::importLogoImageAction'
+
+admin_psxdesign_logo_apply_header_logo_action:
+  path: /logo/apply-header
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignLogosController::applyHeaderLogoAction'
+
+admin_psxdesign_upload_favicon_action:
+  path: /logos/import-favicon
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignLogosController::uploadFaviconAction'
+
+admin_psxdesign_logo_text_import_action:
+  path: /logo/text-import
+  methods: [ POST ]
+  defaults:
+    _controller: 'PrestaShop\Module\PsxDesign\Controller\Admin\AdminPsxDesignLogosController::importLogoTextAction'

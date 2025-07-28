@@ -1,0 +1,48 @@
+imports:
+    - { resource: services/*.yml }
+    - { resource: services/addons.php }
+
+services:
+  _defaults:
+    public: true
+
+  mbo.externalcontent.provider:
+    class: 'PrestaShop\Module\Mbo\Service\ExternalContentProvider\ExternalContentProvider'
+
+  mbo.addons.links_provider:
+    class: 'PrestaShop\Module\Mbo\Addons\Provider\LinksProvider'
+    arguments:
+      - '@prestashop.core.foundation.version'
+      - '@prestashop.adapter.legacy.context'
+      - '@prestashop.adapter.legacy.configuration'
+      - '@request_stack'
+      - '@prestashop.categories_provider'
+      - '@translator'
+      - '@router'
+
+  mbo.controller.modules.catalog:
+    class: 'PrestaShop\Module\Mbo\Controller\Admin\ModuleCatalogController'
+
+  mbo.controller.modules.selection:
+    class: 'PrestaShop\Module\Mbo\Controller\Admin\ModuleSelectionController'
+    arguments:
+      - '@request_stack'
+
+  mbo.controller.modules.recommended:
+    class: 'PrestaShop\Module\Mbo\Controller\Admin\ModuleRecommendedController'
+    arguments:
+      - '@request_stack'
+    calls:
+      - [ setContainer, [ '@service_container' ] ]
+
+  mbo.controller.themes.catalog:
+    class: 'PrestaShop\Module\Mbo\Controller\Admin\ThemeCatalogController'
+    arguments:
+      - '@request_stack'
+
+  mbo.controller.addons:
+    class: 'PrestaShop\Module\Mbo\Controller\Admin\AddonsController'
+    arguments:
+      - '@request_stack'
+      - '@prestashop.module.manager'
+      - '@prestashop.core.admin.module.repository'

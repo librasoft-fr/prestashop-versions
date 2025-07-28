@@ -62,6 +62,37 @@ class ProductIndexationUpdater
     }
 
     /**
+     * Checks if one of the updated fields is used for the indexation, if one of them is
+     * then a new indexation is needed.
+     *
+     * @param array $updatedFields
+     * @return bool
+     */
+    public function isIndexationNeeded(array $updatedFields): bool
+    {
+        $indexedFields = [
+            'active',
+            'visibility',
+            'name',
+            'description',
+            'description_short',
+            'reference',
+            'isbn',
+            'upc',
+            'ean13',
+            'mpn',
+        ];
+
+        foreach ($updatedFields as $langFieldName => $regularFieldName) {
+            if (in_array($langFieldName, $indexedFields) || in_array($regularFieldName, $indexedFields)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param Product $product
      *
      * @return bool

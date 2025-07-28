@@ -1,0 +1,186 @@
+{#**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ *#}
+
+{#
+    text editors parameters
+    - disabled: change the state for all the inputs to disabled / enabled
+    - fontList: list of font available (see default_fonts.json for example)
+    - fontVariants: list of font variants (see font_variants.json for example)
+    - fontFamily: object with
+        - id: id of the input
+        - name: name of the input
+        - value: default value
+    - fontStyle: object with
+        - id: id of the input
+        - name: name of the input
+        - value: default value
+    - fontSize: object with
+        - id: id of the input
+        - name: name of the input
+        - value: default value
+        - min: min value (default 1) can't be less then 1
+        - max: max value (default 999)
+    - fontColor: object with
+        - id: id of the input
+        - name: name of the input
+        - value: default value
+    - textArea: object with
+        - id: id of textarea
+        - name: name of textarea
+        - ariaLabel: aria label of text area
+        - value: default value
+        - multiline: boolean (by default true)
+        - required: boolean (by default false)
+        - readonly: boolean (by default false)
+#}
+
+<fieldset
+    class="text-editor"
+    {% if disabled is defined and disabled == true %}
+        disabled
+    {% endif %}
+    data-font-list="{{ fontList|json_encode() }}"
+    data-font-variants="{{ fontVariants|json_encode() }}"
+>
+    <div class="text-editor__toolbar">
+        {% if fontFamily.id is defined %}
+        <div class="form-group">
+            <label class="form-control-label font-weight-bold mb-1" for="{{ fontFamily.id }}">{{ 'Font'|trans({}, 'Modules.Psxdesign.Admin') }}</label>
+            <div class="form-select">
+                <select
+                    id="{{ fontFamily.id }}"
+                    name="{{ fontFamily.name ? fontFamily.name : fontFamily.id }}"
+                    class="form-control custom-select text-editor__font-family-select"
+                    {% if disabled is defined and disabled == true %}
+                        disabled
+                    {% endif %}
+                    required=""
+                >
+                    {% for font in fontList %}
+                        <option
+                                {% if fontFamily.value is defined ? fontFamily.value == font.code : loop.first %}
+                                    selected="selected"
+                                {% endif %}
+                                value="{{ font.code }}"
+                                style="font-family:'{{ font.name }}'"
+                        >
+                            {{ font.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endif %}
+        {% if fontStyle.id is defined and fontVariants is defined %}
+        <div class="form-group">
+            <label class="form-control-label font-weight-bold mb-1" for="{{ fontStyle.id }}">{{ 'Style'|trans({}, 'Modules.Psxdesign.Admin') }}</label>
+            <div class="form-select">
+                <select
+                    id="{{ fontStyle.id }}" name="{{ fontStyle.name ? fontStyle.name : fontStyle.id }}"
+                    class="form-control custom-select text-editor__font-variant-select"
+                    {% if disabled is defined and disabled == true %}
+                        disabled
+                    {% endif %}
+                    required=""
+                >
+                    {% for weightKey in fontVariants|first|keys %}
+                        {% for variantKey in fontVariants|keys %}
+                        <option
+                                {% if fontStyle.value == variantKey ~ '-' ~ weightKey %}
+                                    selected="selected"
+                                {% endif %}
+                                value="{{ variantKey }}-{{ weightKey }}"
+                                style="font-style:{{ variantKey }}; font-weight: {{ weightKey }}"
+                        >
+                            {{ fontVariants[variantKey][weightKey] }}
+                        </option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% endif %}
+        {% if fontSize.id is defined %}
+            <div class="form-group for-group--small">
+                <label class="form-control-label font-weight-bold mb-1" for="{{ fontSize.id }}">{{ 'Size'|trans({}, 'Modules.Psxdesign.Admin') }}</label>
+                <div class="ps-number-input-inputs">
+                    <input
+                            class="form-control text-editor__font-size-input"
+                            type="number"
+                            min="{{ fontSize.min is defined ? fontSize.min : 1 }}"
+                            max="{{ fontSize.min is defined ? fontSize.max : 999 }}"
+                            value="{{ fontSize.value is defined ? fontSize.value : 16 }}"
+                            id="{{ fontSize.id }}"
+                            name="{{ fontSize.name ? fontSize.name : fontSize.id }}"
+                            {% if disabled is defined and disabled == true %}
+                                disabled
+                            {% endif %}
+                            required=""
+                    />
+                </div>
+            </div>
+        {% endif %}
+        {% if fontColor.id is defined %}
+            <div class="form-group for-group--small">
+                <label class="form-control-label font-weight-bold mb-1" for="{{ fontColor.id }}">{{ 'Color'|trans({}, 'Modules.Psxdesign.Admin') }}</label>
+                <div class="form-select">
+                    <input
+                            type="color"
+                            value="{{ fontColor.value is defined ? fontColor.value : '#000000' }}"
+                            id="{{ fontColor.id }}"
+                            name="{{ fontColor.name ? fontColor.name : fontColor.id }}"
+                            class="text-editor__font-color-input"
+                            {% if disabled is defined and disabled == true %}
+                                disabled
+                            {% endif %}
+                            required=""
+                    />
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <textarea
+        class="text-editor__textarea"
+        {% if textArea.id is defined %}
+            id="{{ textArea.id }}"
+        {% endif %}
+        {% if textArea.name is defined %}
+            name="{{ textArea.name }}"
+        {% endif %}
+        {% if textArea.multiline is defined and textArea.multiline == false %}
+            rows="1"
+        {% endif %}
+        {% if textArea.required is defined and textArea.required == true %}
+            required=""
+        {% endif %}
+        {% if disabled is defined and disabled == true %}
+            disabled
+        {% endif %}
+        {% if textArea.readonly is defined and textArea.readonly == true %}
+            readonly
+        {% endif %}
+        aria-label="{{ textArea.ariaLabel is defined ? textArea.ariaLabel : 'text'|trans({}, 'Modules.Psxdesign.Admin') }}"
+    >{{ textArea.value is defined ? textArea.value : '' }}</textarea>
+</fieldset>
