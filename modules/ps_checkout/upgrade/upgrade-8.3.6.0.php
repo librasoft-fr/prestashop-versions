@@ -28,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_8_3_6_0($module)
+function upgrade_module_8_3_6_0(Ps_checkout $module)
 {
     // Force PrestaShop to upgrade for all shop to avoid issues
     $savedShopContext = Shop::getContext();

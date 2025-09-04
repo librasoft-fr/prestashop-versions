@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e5c79d5ec2fb847ae9fe94cfc1b61c9",
+    "content-hash": "93fa6fdcc7e64557a53fcbce50e6ce77",
     "packages": [
         {
             "name": "api-platform/core",
@@ -6499,16 +6499,16 @@
         },
         {
             "name": "prestashop/ps_distributionapiclient",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PrestaShop/ps_distributionapiclient.git",
-                "reference": "4db438b616fb26b9281607db436e60f382fb2391"
+                "reference": "45782cbac3950ffa8004af942ded23401aade2c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PrestaShop/ps_distributionapiclient/zipball/4db438b616fb26b9281607db436e60f382fb2391",
-                "reference": "4db438b616fb26b9281607db436e60f382fb2391",
+                "url": "https://api.github.com/repos/PrestaShop/ps_distributionapiclient/zipball/45782cbac3950ffa8004af942ded23401aade2c3",
+                "reference": "45782cbac3950ffa8004af942ded23401aade2c3",
                 "shasum": ""
             },
             "require": {
@@ -6544,9 +6544,9 @@
             "homepage": "https://github.com/PrestaShop/ps_distributionapiclient",
             "support": {
                 "issues": "https://github.com/PrestaShop/ps_distributionapiclient/issues",
-                "source": "https://github.com/PrestaShop/ps_distributionapiclient/tree/v1.1.1"
+                "source": "https://github.com/PrestaShop/ps_distributionapiclient/tree/v1.2.0"
             },
-            "time": "2024-01-19T16:20:17+00:00"
+            "time": "2025-08-06T15:06:02+00:00"
         },
         {
             "name": "prestashop/ps_emailalerts",

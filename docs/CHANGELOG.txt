@@ -24,6 +24,24 @@ needs please refer to https://devdocs.prestashop.com/ for more information.
 Changelog for PrestaShop 8
 
 ####################################
+#   v8.2.3 - (2025-08-28)
+####################################
+
+- Back Office:
+  - Improvement:
+    - #39321: Update Distribution API Client to include the new wall of fame (by @jolelievre)
+    - GHSA-8xx5-h6m3-jr33: Fix email enumeration vulnerability on password reset page (by @M0rgan01 & @matthieu-rolland, vulnerability reported by Maxime Morel-Bailly)
+  - Bug fix:
+    - #38622: Fix new product catalog not loading images in multi-store (by @Codencode)
+    - #39208: Fix Carrier search not working when editing order's carrier (by @Codencode)
+    - #39274: Added closure of the 'deleteCategoriesForm' form (by @Codencode)
+    - #39337: Fix newline in textarea on product page (by @Codencode)
+    - #39430: Fix quantity in delivery slip if we have a refunded product (by @touxten)
+- Front Office:
+  - Bug fix:
+    - #39191: Fix cart recovery: use updateCustomer for restoring customer session (by @Codencode)
+
+####################################
 #   v8.2.2 - (2025-07-28)
 ####################################
 

@@ -997,9 +997,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_distributionapiclient' => array(
-            'pretty_version' => 'v1.1.1',
-            'version' => '1.1.1.0',
-            'reference' => '4db438b616fb26b9281607db436e60f382fb2391',
+            'pretty_version' => 'v1.2.0',
+            'version' => '1.2.0.0',
+            'reference' => '45782cbac3950ffa8004af942ded23401aade2c3',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_distributionapiclient',
             'aliases' => array(),

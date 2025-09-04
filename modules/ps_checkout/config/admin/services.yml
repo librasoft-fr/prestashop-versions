@@ -1,14 +1,9 @@
 imports:
   - { resource: ../common.yml }
+  - { resource: install.yml }
+  - { resource: presenter.yml }
+  - { resource: repository.yml }
 
 services:
-  PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileFinder:
-    class: 'PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileFinder'
-    public: true
-    arguments:
-      - '@PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory'
-      - '@PrestaShop\Module\PrestashopCheckout\Logger\LoggerFilename'
-
-  PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileReader:
-    class: 'PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileReader'
+  _defaults:
     public: true

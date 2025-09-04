@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,28 +17,23 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-use Monolog\Logger;
-use PrestaShop\Module\PrestashopCheckout\Api\Payment\Webhook;
-use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
-use PrestaShop\Module\PrestashopCheckout\Dispatcher\OrderDispatcher;
-use PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutException;
-use PrestaShop\Module\PrestashopCheckout\Http\MaaslandHttpClient;
-use PrestaShop\Module\PrestashopCheckout\Order\Exception\OrderNotFoundException;
-use PrestaShop\Module\PrestashopCheckout\Repository\PsAccountRepository;
-use PrestaShop\Module\PrestashopCheckout\WebHookValidation;
+use PsCheckout\Core\Webhook\WebhookException;
+use PsCheckout\Core\WebhookDispatcher\Action\CheckPSLSignatureAction;
+use PsCheckout\Core\WebhookDispatcher\Processor\DispatchWebhookProcessor;
+use PsCheckout\Core\WebhookDispatcher\Validator\BodyValuesValidator;
+use PsCheckout\Core\WebhookDispatcher\Validator\HeaderValuesValidator;
+use PsCheckout\Core\WebhookDispatcher\Validator\WebhookShopIdValidator;
+use PsCheckout\Core\WebhookDispatcher\ValueObject\DispatchWebhookRequest;
+use PsCheckout\Infrastructure\Controller\AbstractFrontController;
+use Psr\Log\LoggerInterface;
 
-/**
- * @todo To be refactored
- */
 class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontController
 {
     const PS_CHECKOUT_PAYPAL_ID_LABEL = 'PS_CHECKOUT_PAYPAL_ID_MERCHANT';
-
-    /**
-     * @var Ps_checkout
-     */
-    public $module;
 
     /**
      * @var bool If set to true, will be redirected to authentication page
@@ -47,211 +41,54 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
     public $auth = false;
 
     /**
-     * UUID coming from PSL
-     *
-     * @var string
-     */
-    private $shopId;
-
-    /**
-     * Id coming from Paypal
-     *
-     * @var string
-     */
-    private $merchantId;
-
-    /**
-     * Id coming from Firebase
-     *
-     * @var int
-     */
-    private $firebaseId;
-
-    /**
-     * Get all the HTTP body values
-     *
-     * @var array
-     */
-    private $payload;
-
-    /**
-     * Initialize the webhook script
-     *
      * @return bool
+     *
+     * @throws \PsCheckout\Core\Exception\PsCheckoutException
      */
-    public function display()
+    public function display(): bool
     {
+        /** @var LoggerInterface $logger */
+        $logger = $this->module->getService(LoggerInterface::class);
+
+        $logger->info('Webhook dispatch initiated');
+
         try {
-            $headerValues = $this->getHeaderValues();
-            $validationValues = new WebHookValidation();
-            $validationValues->validateHeaderDatas($headerValues);
+            /** @var HeaderValuesValidator $headerValuesValidator */
+            $headerValuesValidator = $this->module->getService(HeaderValuesValidator::class);
+            $headerValues = $headerValuesValidator->validate();
+            $logger->info('Headers validated', $headerValues);
 
-            $this->setAtributesHeaderValues($headerValues);
+            /** @var BodyValuesValidator $bodyValuesValidator */
+            $bodyValuesValidator = $this->module->getService(BodyValuesValidator::class);
+            $bodyValues = $bodyValuesValidator->validate();
+            $logger->info('Body validated', $bodyValues);
 
-            $bodyContent = file_get_contents('php://input');
+            $dispatchWebhookRequest = DispatchWebhookRequest::createFromRequest($bodyValues, $headerValues);
 
-            if (empty($bodyContent)) {
-                throw new PsCheckoutException('Body can\'t be empty', PsCheckoutException::PSCHECKOUT_WEBHOOK_BODY_EMPTY);
-            }
+            /** @var CheckPSLSignatureAction $checkPSLSignatureAction */
+            $checkPSLSignatureAction = $this->module->getService(CheckPSLSignatureAction::class);
+            $checkPSLSignatureAction->execute($bodyValues);
+            $logger->info('PSLS Signature validated', $bodyValues);
 
-            $bodyValues = json_decode($bodyContent, true);
+            /** @var WebhookShopIdValidator $webhookShopIdValidator */
+            $webhookShopIdValidator = $this->module->getService(WebhookShopIdValidator::class);
+            $webhookShopIdValidator->validate($dispatchWebhookRequest->getShopId());
 
-            if (empty($bodyValues)) {
-                throw new PsCheckoutException('Body can\'t be empty', PsCheckoutException::PSCHECKOUT_WEBHOOK_BODY_EMPTY);
-            }
+            $logger->info('Webhook dispatch started');
 
-            $validationValues->validateBodyDatas($bodyValues);
-            $this->setAtributesBodyValues($bodyValues);
+            /** @var DispatchWebhookProcessor $dispatchWebHookProcessor */
+            $dispatchWebHookProcessor = $this->module->getService(DispatchWebhookProcessor::class);
 
-            if (false === $this->checkPSLSignature($bodyValues)) {
-                throw new PsCheckoutException('Invalid PSL signature', PsCheckoutException::PSCHECKOUT_WEBHOOK_PSL_SIGNATURE_INVALID);
-            }
+            return $dispatchWebHookProcessor->process($dispatchWebhookRequest);
+        } catch (WebhookException $e) {
+            // Handle the exception
+            $logger->error('Webhook Dispatcher error: ' . $e->getMessage());
+            http_response_code($e->getCode());
 
-            // Check if have execution permissions
-            if (false === $this->checkExecutionPermissions()) {
-                return false;
-            }
-
-            return $this->dispatchWebHook();
-        } catch (Exception $exception) {
-            $this->handleException($exception);
+            echo json_encode(['error' => $e->getMessage()]);
         }
 
         return false;
-    }
-
-    /**
-     * Check if the Webhook comes from the PSL
-     *
-     * @param array $bodyValues
-     *
-     * @return bool
-     */
-    private function checkPSLSignature(array $bodyValues)
-    {
-        /** @var MaaslandHttpClient $maaslandHttpClient */
-        $maaslandHttpClient = $this->module->getService(MaaslandHttpClient::class);
-        $response = $maaslandHttpClient->getShopSignature($bodyValues);
-
-        // data return false if no error
-        if (isset($response['statusCode'], $response['message']) && 200 === $response['statusCode'] && 'VERIFIED' === $response['message']) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get HTTP Headers
-     *
-     * @return array
-     */
-    private function getHeaderValues()
-    {
-        // Not available on nginx
-        if (function_exists('getallheaders')) {
-            $headers = getallheaders();
-
-            // Ensure we will not return empty values if Request is FORWARDED
-            if (
-                false === empty($headers['Shop-Id'])
-                && false === empty($headers['Merchant-Id'])
-                && false === empty($headers['Psx-Id'])
-            ) {
-                return [
-                    'Shop-Id' => $headers['Shop-Id'],
-                    'Merchant-Id' => $headers['Merchant-Id'],
-                    'Psx-Id' => $headers['Psx-Id'],
-                ];
-            }
-        }
-
-        return [
-            'Shop-Id' => isset($_SERVER['HTTP_SHOP_ID']) ? $_SERVER['HTTP_SHOP_ID'] : null,
-            'Merchant-Id' => isset($_SERVER['HTTP_MERCHANT_ID']) ? $_SERVER['HTTP_MERCHANT_ID'] : null,
-            'Psx-Id' => isset($_SERVER['HTTP_PSX_ID']) ? $_SERVER['HTTP_PSX_ID'] : null,
-        ];
-    }
-
-    /**
-     * Set Header Attributes values from the HTTP request
-     *
-     * @param array $headerValues
-     */
-    private function setAtributesHeaderValues(array $headerValues)
-    {
-        $this->shopId = $headerValues['Shop-Id'];
-        $this->merchantId = $headerValues['Merchant-Id'];
-        $this->firebaseId = $headerValues['Psx-Id'];
-    }
-
-    /**
-     * Set Body Attributes values from the payload
-     *
-     * @param array $bodyValues
-     */
-    private function setAtributesBodyValues(array $bodyValues)
-    {
-        $this->payload = [
-            'resource' => (array) json_decode($bodyValues['resource'], true),
-            'eventType' => (string) $bodyValues['eventType'],
-            'category' => (string) $bodyValues['category'],
-            'summary' => (string) $bodyValues['summary'],
-            'orderId' => (string) $bodyValues['orderId'],
-        ];
-    }
-
-    /**
-     * Check the IP whitelist and Shop, Merchant and Psx Ids
-     *
-     * @return bool
-     *
-     * @throws PsCheckoutException
-     */
-    private function checkExecutionPermissions()
-    {
-        /** @var PsAccountRepository $psAccountRepository */
-        $psAccountRepository = $this->module->getService(PsAccountRepository::class);
-
-        if ($this->shopId !== $psAccountRepository->getShopUuid()) {
-            throw new PsCheckoutException('shopId wrong', PsCheckoutException::PSCHECKOUT_WEBHOOK_SHOP_ID_INVALID);
-        }
-
-        return true;
-    }
-
-    /**
-     * Dispatch the web Hook according to the category
-     *
-     * @return bool
-     */
-    private function dispatchWebHook()
-    {
-        $this->module->getLogger()->info(
-            'DispatchWebHook',
-            [
-                'merchantId' => $this->merchantId,
-                'shopId' => $this->shopId,
-                'firebaseId' => $this->firebaseId,
-                'payload' => $this->payload,
-            ]
-        );
-
-        if ('ShopNotificationOrderChange' === $this->payload['category']) {
-            return (new OrderDispatcher())->dispatchEventType($this->payload);
-        }
-
-        $this->module->getLogger()->info(
-            'DispatchWebHook ignored',
-            [
-                'merchantId' => $this->merchantId,
-                'shopId' => $this->shopId,
-                'firebaseId' => $this->firebaseId,
-                'payload' => $this->payload,
-            ]
-        );
-
-        return true;
     }
 
     /**
@@ -308,72 +145,5 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
     protected function canonicalRedirection($canonical_url = '')
     {
         return;
-    }
-
-    /**
-     * @param Exception $exception
-     */
-    private function handleException(Exception $exception)
-    {
-        $this->module->getLogger()->log(
-            in_array($exception->getCode(), [PsCheckoutException::PRESTASHOP_ORDER_NOT_FOUND, OrderNotFoundException::NOT_FOUND], true) ? Logger::NOTICE : Logger::ERROR,
-            'Webhook exception ' . $exception->getCode(),
-            [
-                'merchantId' => $this->merchantId,
-                'shopId' => $this->shopId,
-                'firebaseId' => $this->firebaseId,
-                'payload' => $this->payload,
-                'exception' => $exception,
-            ]
-        );
-
-        http_response_code($this->getHttpCodeFromExceptionCode($exception->getCode()));
-        header('X-Robots-Tag: noindex, nofollow');
-        header('Content-Type: application/json');
-
-        $bodyReturn = json_encode($exception->getMessage());
-
-        echo $bodyReturn;
-    }
-
-    /**
-     * @param int $exceptionCode
-     *
-     * @return int
-     */
-    private function getHttpCodeFromExceptionCode($exceptionCode)
-    {
-        $httpCode = 500;
-
-        switch ($exceptionCode) {
-            case PsCheckoutException::PRESTASHOP_REFUND_ALREADY_SAVED:
-                $httpCode = 200;
-                break;
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_PSL_SIGNATURE_INVALID:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_SHOP_ID_INVALID:
-                $httpCode = 401;
-                break;
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_AMOUNT_INVALID:
-                $httpCode = 406;
-                break;
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_HEADER_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_SHOP_ID_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_MERCHANT_ID_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_PSX_ID_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_BODY_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_EVENT_TYPE_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_CATEGORY_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_RESOURCE_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_AMOUNT_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_CURRENCY_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_WEBHOOK_ORDER_ID_EMPTY:
-            case PsCheckoutException::PSCHECKOUT_MERCHANT_IDENTIFIER_MISSING:
-            case PsCheckoutException::PRESTASHOP_ORDER_NOT_FOUND:
-            case OrderNotFoundException::NOT_FOUND:
-                $httpCode = 422;
-                break;
-        }
-
-        return $httpCode;
     }
 }

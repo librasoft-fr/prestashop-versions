@@ -28,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_8_4_1_0($module)
+function upgrade_module_8_4_1_0(Ps_checkout $module)
 {
     try {
         $db = Db::getInstance();
@@ -41,7 +41,8 @@ function upgrade_module_8_4_1_0($module)
                 null,
                 $shopId
             );
-            $hasFundingSourceGooglePay = (bool) $db->getValue('
+            $hasFundingSourceGooglePay = (bool) $db->getValue(
+                '
                 SELECT 1
                 FROM `' . _DB_PREFIX_ . 'pscheckout_funding_source`
                 WHERE `name` = "google_pay"

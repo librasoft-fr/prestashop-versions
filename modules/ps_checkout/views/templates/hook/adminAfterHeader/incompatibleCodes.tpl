@@ -16,29 +16,24 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-
 {if $incompatibleCodes}
     <div class="container">
-        {if $isShop17}
-            <div class="banner-alert">
-                <div class="banner-icon">
-                    <i class="material-icons">error_outline</i>
-                </div>
-        {else}
-            <div class="alert alert-warning">
-        {/if}
+        <div class="banner-alert">
+            <div class="banner-icon">
+                <i class="material-icons">error_outline</i>
+            </div>
 
             <div class="banner-text">
                 <h2>
                   {if $codesType === 'countries'}
-                    {l s='PrestaShop Checkout transactions won\'t work in some of your configured countries, but there is a solution !' mod='ps_checkout'}
+                    {l s='PrestaShop Checkout transactions won\'t work in some of your configured countries, but there is a solution !' d='Modules.Checkout.Pscheckout'}
                   {elseif $codesType === 'currencies'}
-                    {l s='PrestaShop Checkout transactions won\'t work in some of your configured currencies, but there is a solution !' mod='ps_checkout'}
+                    {l s='PrestaShop Checkout transactions won\'t work in some of your configured currencies, but there is a solution !' d='Modules.Checkout.Pscheckout'}
                   {/if}
                 </h2>
 
                 <p class="banner-upgrade-info">
-                    {l s='Please upgrade your settings for :' mod='ps_checkout'}
+                    {l s='Please upgrade your settings for :' d='Modules.Checkout.Pscheckout'}
                 </p>
 
                 <p class="incompatible-list">
@@ -51,20 +46,16 @@
 
                 <a href="{$paymentPreferencesLink}" class="button-link" target="_blank">
                     {if $codesType === 'countries'}
-                        {l s='Change countries activation for this payment module' mod='ps_checkout'}
+                        {l s='Change countries activation for this payment module' d='Modules.Checkout.Pscheckout'}
                     {elseif $codesType === 'currencies'}
-                        {l s='Change currencies activation for this payment module' mod='ps_checkout'}
+                        {l s='Change currencies activation for this payment module' d='Modules.Checkout.Pscheckout'}
                     {/if}
                 </a>
 
                 <a class="btn btn-link banner-link" href="{$paypalLink}" target="_blank">
-                    {l s='Know more about compliant ISO Codes' mod='ps_checkout'}
+                    {l s='Know more about compliant ISO Codes' d='Modules.Checkout.Pscheckout'}
 
-                    {if $isShop17}
-                        <i class="material-icons banner-link-icon">trending_flat</i>
-                    {else}
-                        <i class="icon-long-arrow-right"></i>
-                    {/if}
+                    <i class="material-icons banner-link-icon">trending_flat</i>
                 </a>
             </div>
         </div>

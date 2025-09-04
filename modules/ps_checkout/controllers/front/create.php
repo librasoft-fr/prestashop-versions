@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,16 +17,24 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-use PrestaShop\Module\PrestashopCheckout\Cart\Exception\CartNotFoundException;
-use PrestaShop\Module\PrestashopCheckout\CommandBus\CommandBusInterface;
-use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Command\CreatePayPalOrderCommand;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Query\GetPayPalOrderForCartIdQuery;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Query\GetPayPalOrderForCartIdQueryResult;
+use PsCheckout\Core\Exception\PsCheckoutException;
+use PsCheckout\Core\PayPal\Order\Action\CreatePayPalOrderAction;
+use PsCheckout\Core\PayPal\Order\Entity\PayPalOrder;
+use PsCheckout\Core\PayPal\Order\Request\ValueObject\CreatePayPalOrderRequest;
+use PsCheckout\Core\PayPal\OrderStatus\Configuration\PayPalOrderStatusConfiguration;
+use PsCheckout\Infrastructure\Action\AddProductToCartAction;
+use PsCheckout\Infrastructure\Adapter\Context;
+use PsCheckout\Infrastructure\Controller\AbstractFrontController;
+use PsCheckout\Infrastructure\Repository\PayPalOrderRepository;
+use PsCheckout\Utility\Common\InputStreamUtility;
+use Psr\Log\LoggerInterface;
 
 /**
- * This controller receive ajax call to create a PayPal Order
+ * This controller receives ajax call to create a PayPal Order
  */
 class Ps_CheckoutCreateModuleFrontController extends AbstractFrontController
 {
@@ -38,34 +45,34 @@ class Ps_CheckoutCreateModuleFrontController extends AbstractFrontController
 
     /**
      * @see FrontController::postProcess()
-     *
-     * @todo Move logic to a Service
      */
     public function postProcess()
     {
         try {
+            /** @var Context $context */
+            $context = $this->module->getService(Context::class);
+
             // BEGIN Express Checkout
-            $bodyValues = [];
-            $bodyContent = file_get_contents('php://input');
+            $requestData = [];
+
+            /** @var InputStreamUtility $inputStreamUtility */
+            $inputStreamUtility = $this->module->getService(InputStreamUtility::class);
+            $bodyContent = $inputStreamUtility->getBodyContent();
 
             if (!empty($bodyContent)) {
-                $bodyValues = json_decode($bodyContent, true);
+                $requestData = json_decode($bodyContent, true);
             }
 
-            if (isset($bodyValues['quantity_wanted'], $bodyValues['id_product'], $bodyValues['id_product_attribute'], $bodyValues['id_customization'])) {
-                $cart = new Cart();
-                $cart->id_currency = $this->context->currency->id;
-                $cart->id_lang = $this->context->language->id;
-                $cart->add();
-                $isQuantityAdded = $cart->updateQty(
-                    (int) $bodyValues['quantity_wanted'],
-                    (int) $bodyValues['id_product'],
-                    empty($bodyValues['id_product_attribute']) ? null : (int) $bodyValues['id_product_attribute'],
-                    empty($bodyValues['id_customization']) ? false : (int) $bodyValues['id_customization'],
-                    $operator = 'up'
-                );
+            $requestData['isExpressCheckout'] = (isset($requestData['isExpressCheckout']) && $requestData['isExpressCheckout']) || empty($this->context->cart->id_address_delivery);
 
-                if (!$isQuantityAdded) {
+            $createPayPalOrderRequest = new CreatePayPalOrderRequest($requestData);
+
+            if ($this->shouldCreateCart($createPayPalOrderRequest)) {
+                try {
+                    /** @var AddProductToCartAction $addProductToCartAction */
+                    $addProductToCartAction = $this->module->getService(AddProductToCartAction::class);
+                    $addProductToCartAction->execute($createPayPalOrderRequest);
+                } catch (PsCheckoutException $exception) {
                     $this->exitWithResponse([
                         'status' => false,
                         'httpCode' => 400,
@@ -74,51 +81,44 @@ class Ps_CheckoutCreateModuleFrontController extends AbstractFrontController
                                 'message' => 'Failed to update cart quantity.',
                             ],
                         ],
-                        'exceptionCode' => null,
-                        'exceptionMessage' => null,
                     ]);
                 }
-
-                $cart->update();
-
-                $this->module->getLogger()->info(
-                    'Express checkout : Create Cart',
-                    [
-                        'id_cart' => (int) $cart->id,
-                    ]
-                );
-
-                $this->context->cart = $cart;
-                $this->context->cookie->__set('id_cart', (int) $cart->id);
-                $this->context->cookie->write();
             }
             // END Express Checkout
 
-            $cartId = (int) $this->context->cart->id;
+            if (!isset($context->getCart()->id)) {
+                $this->exitWithResponse([
+                    'httpCode' => 404,
+                    'body' => 'Cart not found',
+                ]);
+            }
 
-            $vaultId = isset($bodyValues['vaultId']) ? $bodyValues['vaultId'] : null;
-            $vault = isset($bodyValues['vault']) && $bodyValues['vault'];
-            $favorite = isset($bodyValues['favorite']) && $bodyValues['favorite'];
+            if ($createPayPalOrderRequest->isExpressCheckout() || empty($context->getCart()->id_address_delivery)) {
+                /** @var PayPalOrderRepository $payPalOrderRepository */
+                $payPalOrderRepository = $this->module->getService(PayPalOrderRepository::class);
 
-            $fundingSource = isset($bodyValues['fundingSource']) ? $bodyValues['fundingSource'] : 'paypal';
-            $isCardFields = isset($bodyValues['isCardFields']) && $bodyValues['isCardFields'];
-            $isExpressCheckout = (isset($bodyValues['isExpressCheckout']) && $bodyValues['isExpressCheckout']) || empty($this->context->cart->id_address_delivery);
+                /** @var PayPalOrder|null $payPalOrder */
+                $payPalOrder = $payPalOrderRepository->getOneBy(
+                    [
+                        'id_cart' => (int) $context->getCart()->id,
+                        'is_express_checkout' => '1',
+                    ]
+                );
 
-            if ($isExpressCheckout) {
-                $psCheckoutCartCollection = new PrestaShopCollection(PsCheckoutCart::class);
-                $psCheckoutCartCollection->where('id_cart', '=', (int) $cartId);
-                $psCheckoutCartCollection->where('isExpressCheckout', '=', '1');
-                $psCheckoutCartCollection->where('paypal_status', 'IN', [PsCheckoutCart::STATUS_CREATED, PsCheckoutCart::STATUS_APPROVED, PsCheckoutCart::STATUS_PAYER_ACTION_REQUIRED]);
-                $psCheckoutCartCollection->where('date_upd', '>', date('Y-m-d H:i:s', strtotime('-1 hour')));
-                $psCheckoutCartCollection->orderBy('date_upd', 'desc');
-                /** @var PsCheckoutCart|false $psCheckoutCart */
-                $psCheckoutCart = $psCheckoutCartCollection->getFirst();
-                if ($psCheckoutCart) {
+                if ($payPalOrder && in_array(
+                    $payPalOrder->getStatus(),
+                    [
+                            PayPalOrderStatusConfiguration::STATUS_CREATED,
+                            PayPalOrderStatusConfiguration::STATUS_APPROVED,
+                            PayPalOrderStatusConfiguration::STATUS_PAYER_ACTION_REQUIRED,
+                        ],
+                    true
+                )) {
                     $this->exitWithResponse([
                         'status' => true,
                         'httpCode' => 200,
                         'body' => [
-                            'orderID' => $psCheckoutCart->paypal_order,
+                            'orderID' => $payPalOrder->getId(),
                         ],
                         'exceptionCode' => null,
                         'exceptionMessage' => null,
@@ -126,37 +126,52 @@ class Ps_CheckoutCreateModuleFrontController extends AbstractFrontController
                 }
             }
 
-            /** @var CommandBusInterface $commandBus */
-            $commandBus = $this->module->getService('ps_checkout.bus.command');
-            $commandBus->handle(new CreatePayPalOrderCommand($cartId, $fundingSource, $isCardFields, $isExpressCheckout, $vaultId, $favorite, $vault));
+            /** @var CreatePayPalOrderAction $createPayPalOrderAction */
+            $createPayPalOrderAction = $this->module->getService(CreatePayPalOrderAction::class);
+            $createPayPalOrderAction->execute((int) $context->getCart()->id, $createPayPalOrderRequest);
 
-            /** @var GetPayPalOrderForCartIdQueryResult $getPayPalOrderForCartIdQueryResult */
-            $getPayPalOrderForCartIdQueryResult = $commandBus->handle(new GetPayPalOrderForCartIdQuery($cartId));
-            $order = $getPayPalOrderForCartIdQueryResult->getOrder();
+            /** @var PayPalOrderRepository $payPalOrderRepository */
+            $payPalOrderRepository = $this->module->getService(PayPalOrderRepository::class);
+            $payPalOrder = $payPalOrderRepository->getOneByCartId((int) $context->getCart()->id);
+
+            if (!$payPalOrder) {
+                $this->exitWithResponse([
+                    'httpCode' => 404,
+                    'body' => 'PayPal order not found',
+                ]);
+            }
 
             $this->exitWithResponse([
                 'status' => true,
                 'httpCode' => 200,
                 'body' => [
-                    'orderID' => $order['id'],
+                    'orderID' => $payPalOrder->getId(),
                 ],
                 'exceptionCode' => null,
                 'exceptionMessage' => null,
             ]);
-        } catch (CartNotFoundException $exception) {
-            $this->exitWithResponse([
-                'httpCode' => 400,
-                'body' => 'No cart found.',
-            ]);
         } catch (Exception $exception) {
-            $this->module->getLogger()->error(
+            $this->module->getService(LoggerInterface::class)->error(
                 'CreateController - Exception ' . $exception->getCode(),
                 [
                     'exception' => $exception,
                 ]
             );
 
-            $this->exitWithExceptionMessage($exception);
+            $this->exitWithExceptionMessage(new PsCheckoutException('Unexpected error ocurred.', $exception->getCode()));
         }
+    }
+
+    /**
+     * @param CreatePayPalOrderRequest $checkoutRequest
+     *
+     * @return bool
+     */
+    private function shouldCreateCart(CreatePayPalOrderRequest $checkoutRequest): bool
+    {
+        return $checkoutRequest->getQuantityWanted() !== null
+            || $checkoutRequest->getIdProduct() !== null
+            || $checkoutRequest->getIdProductAttribute() !== null
+            || $checkoutRequest->getIdCustomization() !== null;
     }
 }

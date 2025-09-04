@@ -5035,6 +5035,7 @@ return array(
     'PrestaShop\\Module\\BlockWishList\\Grid\\Definition\\CurrentYearStatisticsGridDefinitionFactory' => $baseDir . '/modules/blockwishlist/src/Grid/Definition/CurrentYearStatisticsGridDefinitionFactory.php',
     'PrestaShop\\Module\\BlockWishList\\Search\\WishListProductSearchProvider' => $baseDir . '/modules/blockwishlist/src/Search/WishListProductSearchProvider.php',
     'PrestaShop\\Module\\BlockWishList\\Type\\ConfigurationType' => $baseDir . '/modules/blockwishlist/src/Type/ConfigurationType.php',
+    'PrestaShop\\Module\\DistributionApiClient\\Controller\\Admin\\TopContributorsController' => $baseDir . '/modules/ps_distributionapiclient/src/Controller/Admin/TopContributorsController.php',
     'PrestaShop\\Module\\DistributionApiClient\\DistributionApi' => $baseDir . '/modules/ps_distributionapiclient/src/DistributionApi.php',
     'PrestaShop\\Module\\DistributionApiClient\\Middleware\\Cache' => $baseDir . '/modules/ps_distributionapiclient/src/Middleware/Cache.php',
     'PrestaShop\\Module\\DistributionApiClient\\Middleware\\CachedResponse' => $baseDir . '/modules/ps_distributionapiclient/src/Middleware/CachedResponse.php',

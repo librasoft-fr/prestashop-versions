@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'prestashopcorp/ps_eventbus',
-        'pretty_version' => 'v4.0.11',
-        'version' => '4.0.11.0',
-        'reference' => 'a532620fa88a698c57934056552bccccfab017dd',
+        'pretty_version' => 'v4.0.12',
+        'version' => '4.0.12.0',
+        'reference' => 'dafe086601214e0795d3ebdc9c0eb6d5c97c91d8',
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'prestashopcorp/ps_eventbus' => array(
-            'pretty_version' => 'v4.0.11',
-            'version' => '4.0.11.0',
-            'reference' => 'a532620fa88a698c57934056552bccccfab017dd',
+            'pretty_version' => 'v4.0.12',
+            'version' => '4.0.12.0',
+            'reference' => 'dafe086601214e0795d3ebdc9c0eb6d5c97c91d8',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

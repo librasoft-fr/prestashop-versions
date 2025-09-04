@@ -28,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_8_3_5_0($module)
+function upgrade_module_8_3_5_0(Ps_checkout $module)
 {
     try {
         $db = Db::getInstance();
@@ -45,6 +45,18 @@ function upgrade_module_8_3_5_0($module)
 
         if (!empty($databaseFields) && !in_array('environment', $databaseFields, true)) {
             $db->execute('ALTER TABLE `' . _DB_PREFIX_ . 'pscheckout_cart` ADD COLUMN `environment` varchar(20) DEFAULT NULL;');
+        }
+
+        $fields = $db->executeS('SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'pscheckout_order`');
+
+        if (!empty($fields)) {
+            $field = array_filter($fields, function ($field) {
+                return $field['Field'] === 'tags';
+            });
+
+            if (empty($field)) {
+                $db->execute('ALTER TABLE `' . _DB_PREFIX_ . 'pscheckout_order` ADD COLUMN `tags` varchar(255) DEFAULT NULL;');
+            }
         }
     } catch (Exception $exception) {
         PrestaShopLogger::addLog($exception->getMessage(), 4, 1, 'Module', $module->id);

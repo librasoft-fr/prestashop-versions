@@ -28,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_8_4_2_0($module)
+function upgrade_module_8_4_2_0(Ps_checkout $module)
 {
     try {
         $module->registerHook('moduleRoutes');
@@ -37,7 +37,8 @@ function upgrade_module_8_4_2_0($module)
         $shopsList = \Shop::getShops(false, null, true);
 
         foreach ($shopsList as $shopId) {
-            $hasFundingSourceApplePay = (bool) $db->getValue('
+            $hasFundingSourceApplePay = (bool) $db->getValue(
+                '
                 SELECT 1
                 FROM `' . _DB_PREFIX_ . 'pscheckout_funding_source`
                 WHERE `name` = "apple_pay"

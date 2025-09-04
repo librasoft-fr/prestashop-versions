@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da
+class ComposerStaticInit3ff15c6f1c82922bfe85d4421a79d9c5
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -5695,6 +5695,7 @@ class ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da
         'PrestaShop\\Module\\BlockWishList\\Grid\\Definition\\CurrentYearStatisticsGridDefinitionFactory' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Grid/Definition/CurrentYearStatisticsGridDefinitionFactory.php',
         'PrestaShop\\Module\\BlockWishList\\Search\\WishListProductSearchProvider' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Search/WishListProductSearchProvider.php',
         'PrestaShop\\Module\\BlockWishList\\Type\\ConfigurationType' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Type/ConfigurationType.php',
+        'PrestaShop\\Module\\DistributionApiClient\\Controller\\Admin\\TopContributorsController' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Controller/Admin/TopContributorsController.php',
         'PrestaShop\\Module\\DistributionApiClient\\DistributionApi' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/DistributionApi.php',
         'PrestaShop\\Module\\DistributionApiClient\\Middleware\\Cache' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Middleware/Cache.php',
         'PrestaShop\\Module\\DistributionApiClient\\Middleware\\CachedResponse' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Middleware/CachedResponse.php',
@@ -12876,11 +12877,11 @@ class ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitc1ca36cf48f6569dac617b418f94f9da::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit3ff15c6f1c82922bfe85d4421a79d9c5::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit3ff15c6f1c82922bfe85d4421a79d9c5::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit3ff15c6f1c82922bfe85d4421a79d9c5::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit3ff15c6f1c82922bfe85d4421a79d9c5::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit3ff15c6f1c82922bfe85d4421a79d9c5::$classMap;
 
         }, null, ClassLoader::class);
     }
