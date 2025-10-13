@@ -50,7 +50,13 @@ class NavBar
 
     public function getDefaultTab(): string
     {
-        return Tab::getClassNameById((int) $this->context->getContext()->employee->default_tab);
+        $className = Tab::getClassNameById((int) $this->context->getContext()->employee->default_tab);
+
+        if (!$className) {
+            $className = 'AdminDashboard';
+        }
+
+        return $className;
     }
 
     public function getPsVersion(): string
@@ -70,7 +76,7 @@ class NavBar
     protected function buildTabs($parentId = 0, $level = 0): array
     {
         $tabs = Tab::getTabs($this->context->getContext()->language->id, $parentId);
-        $currentId = Tab::getCurrentParentId();
+        $currentId = (int) Tab::getCurrentParentId();
         $controllerName = $this->menuBuilder->getLegacyControllerClassName();
 
         $filteredTabs = array_filter($tabs, function ($tab) {

@@ -228,10 +228,10 @@ class CookieCore
     public function __set($key, $value)
     {
         if (is_array($value)) {
-            die(Tools::displayError('Cookie value can\'t be an array.'));
+            throw new PrestaShopException('Cookie value can\'t be an array.');
         }
         if (preg_match('/¤|\|/', $key . $value)) {
-            throw new Exception('Forbidden chars in cookie');
+            throw new PrestaShopException('Forbidden chars in cookie');
         }
         if (!$this->_modified && (!array_key_exists($key, $this->_content) || $this->_content[$key] != $value)) {
             $this->_modified = true;
@@ -352,8 +352,6 @@ class CookieCore
      * @param string|null $cookie Cookie content
      *
      * @return bool Indicates whether the Cookie was successfully set
-     *
-     * @since 1.7.0
      */
     protected function encryptAndSetCookie($cookie = null)
     {
@@ -473,8 +471,6 @@ class CookieCore
 
     /**
      * Check if the cookie exists.
-     *
-     * @since 1.5.0
      *
      * @return bool
      */

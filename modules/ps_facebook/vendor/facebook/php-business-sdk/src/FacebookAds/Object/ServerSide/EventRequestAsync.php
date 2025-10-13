@@ -79,7 +79,7 @@ class EventRequestAsync extends EventRequest {
 
     $url = $base_url.'/'.$pixel_id.'/events';
 
-    $events_json = json_encode($params['data']);
+    $events_json = \GuzzleHttp\json_encode($params['data']);
     $multipart_contents = [
       [
         'name' => 'access_token',
@@ -107,6 +107,6 @@ class EventRequestAsync extends EventRequest {
     $request = new Request('POST', $url, $headers, $body);
 
     $client = AsyncClient::getInstance()->getClient();
-    return $client->sendRequest($request);
+    return $client->sendAsync($request);
   }
 }

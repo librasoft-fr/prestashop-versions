@@ -265,7 +265,7 @@ class ToolsCore
             $httpHost = $_SERVER['HTTP_HOST'];
         }
 
-        $host = (isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : $httpHost);
+        $host = (!empty($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : $httpHost);
         if ($ignore_port && $pos = strpos($host, ':')) {
             $host = substr($host, 0, $pos);
         }
@@ -333,7 +333,7 @@ class ToolsCore
      */
     public static function getServerName()
     {
-        if (isset($_SERVER['HTTP_X_FORWARDED_SERVER']) && $_SERVER['HTTP_X_FORWARDED_SERVER']) {
+        if (!empty($_SERVER['HTTP_X_FORWARDED_SERVER'])) {
             return $_SERVER['HTTP_X_FORWARDED_SERVER'];
         }
 
@@ -357,7 +357,7 @@ class ToolsCore
             $_SERVER['HTTP_X_FORWARDED_FOR'] = $headers['X-Forwarded-For'];
         }
 
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] && (!isset($_SERVER['REMOTE_ADDR'])
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) && (!isset($_SERVER['REMOTE_ADDR'])
             || preg_match('/^127\..*/i', trim($_SERVER['REMOTE_ADDR'])) || preg_match('/^172\.(1[6-9]|2\d|30|31)\..*/i', trim($_SERVER['REMOTE_ADDR']))
             || preg_match('/^192\.168\.*/i', trim($_SERVER['REMOTE_ADDR'])) || preg_match('/^10\..*/i', trim($_SERVER['REMOTE_ADDR'])))) {
             if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',')) {
@@ -1009,6 +1009,9 @@ class ToolsCore
      * @return string
      *
      * @throws PrestaShopException If _PS_MODE_DEV_ is enabled
+     *
+     * @deprecated since 9.0.0 - Please throw an exception directly. It will be handled better and logged
+     * in all enviroments, to both PHP and our logs. This method will be eventually removed
      */
     public static function displayError($errorMessage = null, $htmlentities = null, ?Context $context = null)
     {
@@ -1118,8 +1121,6 @@ class ToolsCore
      * @param string $passwd String to has
      *
      * @return string Hashed password
-     *
-     * @since 1.7.0
      */
     public static function hash($passwd)
     {
@@ -1132,8 +1133,6 @@ class ToolsCore
      * @param string $data String to encrypt
      *
      * @return string Hashed IV
-     *
-     * @since 1.7.0
      */
     public static function hashIV($data)
     {
@@ -2122,9 +2121,11 @@ class ToolsCore
             $path = _PS_ROOT_DIR_ . '/.htaccess';
         }
 
+        // Check if option "Apache optimization" was enabled in performance settings
         if (null === $cache_control) {
             $cache_control = (int) Configuration::get('PS_HTACCESS_CACHE_CONTROL');
         }
+
         if (null === $disable_multiviews) {
             $disable_multiviews = (bool) Configuration::get('PS_HTACCESS_DISABLE_MULTIVIEWS');
         }
@@ -2187,9 +2188,6 @@ class ToolsCore
 
         fwrite($write_fd, "RewriteEngine on\n");
 
-        // Protect .git files or folders
-        fwrite($write_fd, "# Protect .git\nRewriteRule \.git - [F,L]\n");
-
         if (
             !$medias
             && Configuration::getMultiShopValues('PS_MEDIA_SERVER_1')
@@ -2212,9 +2210,14 @@ class ToolsCore
             }
         }
 
-        if (Configuration::get('PS_WEBSERVICE_CGI_HOST')) {
-            fwrite($write_fd, "RewriteCond %{HTTP:Authorization} ^(.*)\nRewriteRule . - [E=HTTP_AUTHORIZATION:%1]\n\n");
-        }
+        /*
+         * Propagate authorization header to PHP that is normally removed by Apache.
+         * In the past, it was passed only if PS_WEBSERVICE_CGI_HOST was enabled,
+         * but today, there is no reason not to pass it.
+         */
+        fwrite($write_fd, "# Sets the HTTP_AUTHORIZATION header removed by apache\n");
+        fwrite($write_fd, "RewriteCond %{HTTP:Authorization} .\n");
+        fwrite($write_fd, "RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\n\n");
 
         foreach ($domains as $domain => $list_uri) {
             // As we use regex in the htaccess, ipv6 surrounded by brackets must be escaped
@@ -2283,6 +2286,7 @@ class ToolsCore
                 }
                 fwrite($write_fd, 'RewriteRule ^images_ie/?([^/]+)\.(jpe?g|png|gif)$ %{ENV:REWRITEBASE}js/jquery/plugins/fancybox/images/$1.$2 [L]' . PHP_EOL);
             }
+
             // Redirections to dispatcher
             if ($rewrite_settings) {
                 fwrite($write_fd, "\n# Send all other traffic to dispatcher\n");
@@ -2302,17 +2306,22 @@ class ToolsCore
 
         fwrite($write_fd, "</IfModule>\n\n");
 
+        // Serve fonts properly and avoid CORS issues
+        fwrite($write_fd, "# Serve fonts properly and avoid CORS issues\n");
         fwrite($write_fd, "AddType application/vnd.ms-fontobject .eot\n");
         fwrite($write_fd, "AddType font/ttf .ttf\n");
         fwrite($write_fd, "AddType font/otf .otf\n");
         fwrite($write_fd, "AddType application/font-woff .woff\n");
         fwrite($write_fd, "AddType font/woff2 .woff2\n");
         fwrite($write_fd, "<IfModule mod_headers.c>
-	<FilesMatch \"\.(ttf|ttc|otf|eot|woff|woff2|svg)$\">
-		Header set Access-Control-Allow-Origin \"*\"
-	</FilesMatch>
+    <FilesMatch \"\.(ttf|ttc|otf|eot|woff|woff2|svg)$\">
+        Header set Access-Control-Allow-Origin \"*\"
+    </FilesMatch>
 </IfModule>\n\n");
-        fwrite($write_fd, '<Files composer.lock>
+
+        // Protect sensitive files from being accessed directly
+        fwrite($write_fd, '# Protect sensitive files from being accessed directly
+<FilesMatch "^(composer\.lock|\.git.*|\.env.*)$">
     # Apache 2.2
     <IfModule !mod_authz_core.c>
         Order deny,allow
@@ -2323,40 +2332,45 @@ class ToolsCore
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
-</Files>
+</FilesMatch>
+
 ');
-        // Cache control
+        // If option "Apache optimization" was enabled in performance settings, setup cache control
         if ($cache_control) {
-            $cache_control = "<IfModule mod_expires.c>
-	ExpiresActive On
+            $cache_control = "# Cache control for static files
+<IfModule mod_expires.c>
+    ExpiresActive On
     AddType image/webp .webp
     ExpiresByType image/webp \"access plus 1 month\"
     ExpiresByType image/avif \"access plus 1 month\"
-	ExpiresByType image/gif \"access plus 1 month\"
-	ExpiresByType image/jpeg \"access plus 1 month\"
-	ExpiresByType image/png \"access plus 1 month\"
-	ExpiresByType text/css \"access plus 1 week\"
-	ExpiresByType text/javascript \"access plus 1 week\"
-	ExpiresByType application/javascript \"access plus 1 week\"
-	ExpiresByType application/x-javascript \"access plus 1 week\"
-	ExpiresByType image/x-icon \"access plus 1 year\"
-	ExpiresByType image/svg+xml \"access plus 1 year\"
-	ExpiresByType image/vnd.microsoft.icon \"access plus 1 year\"
-	ExpiresByType application/font-woff \"access plus 1 year\"
-	ExpiresByType application/x-font-woff \"access plus 1 year\"
-	ExpiresByType font/woff2 \"access plus 1 year\"
-	ExpiresByType application/vnd.ms-fontobject \"access plus 1 year\"
-	ExpiresByType font/opentype \"access plus 1 year\"
-	ExpiresByType font/ttf \"access plus 1 year\"
-	ExpiresByType font/otf \"access plus 1 year\"
-	ExpiresByType application/x-font-ttf \"access plus 1 year\"
-	ExpiresByType application/x-font-otf \"access plus 1 year\"
+    ExpiresByType image/gif \"access plus 1 month\"
+    ExpiresByType image/jpeg \"access plus 1 month\"
+    ExpiresByType image/png \"access plus 1 month\"
+    ExpiresByType text/css \"access plus 1 week\"
+    ExpiresByType text/javascript \"access plus 1 week\"
+    ExpiresByType application/javascript \"access plus 1 week\"
+    ExpiresByType application/x-javascript \"access plus 1 week\"
+    ExpiresByType image/x-icon \"access plus 1 year\"
+    ExpiresByType image/svg+xml \"access plus 1 year\"
+    ExpiresByType image/vnd.microsoft.icon \"access plus 1 year\"
+    ExpiresByType application/font-woff \"access plus 1 year\"
+    ExpiresByType application/x-font-woff \"access plus 1 year\"
+    ExpiresByType font/woff2 \"access plus 1 year\"
+    ExpiresByType application/vnd.ms-fontobject \"access plus 1 year\"
+    ExpiresByType font/opentype \"access plus 1 year\"
+    ExpiresByType font/ttf \"access plus 1 year\"
+    ExpiresByType font/otf \"access plus 1 year\"
+    ExpiresByType application/x-font-ttf \"access plus 1 year\"
+    ExpiresByType application/x-font-otf \"access plus 1 year\"
 </IfModule>
 
+# Remove Etag header as this can cause issues with caching
 <IfModule mod_headers.c>
     Header unset Etag
 </IfModule>
 FileETag none
+
+# Enable GZIP compression for text, HTML, JavaScript, CSS, fonts and SVG files
 <IfModule mod_deflate.c>
     <IfModule mod_filter.c>
         AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/x-javascript font/ttf application/x-font-ttf font/otf application/x-font-otf font/opentype image/svg+xml
@@ -2976,8 +2990,6 @@ exit;
     /**
      * Concat $begin and $end, add ? or & between strings.
      *
-     * @since 1.5.0
-     *
      * @param string $begin
      * @param string $end
      *
@@ -3137,8 +3149,6 @@ exit;
     /**
      * Allow to get the memory limit in octets.
      *
-     * @since 1.4.5.0
-     *
      * @return int|string the memory limit value in octet
      */
     public static function getMemoryLimit()
@@ -3150,8 +3160,6 @@ exit;
 
     /**
      * Gets the value of a configuration option in octets.
-     *
-     * @since 1.5.0
      *
      * @param string $option
      *
@@ -3187,7 +3195,7 @@ exit;
      */
     public static function isPHPCLI()
     {
-        return defined('STDIN') || (Tools::strtolower(PHP_SAPI) == 'cli' && (!isset($_SERVER['REMOTE_ADDR']) || empty($_SERVER['REMOTE_ADDR'])));
+        return defined('STDIN') || (Tools::strtolower(PHP_SAPI) == 'cli' && empty($_SERVER['REMOTE_ADDR']));
     }
 
     public static function argvToGET($argc, $argv)
@@ -3239,8 +3247,6 @@ exit;
      * @param string $name module name
      *
      * @return bool true if exists
-     *
-     * @since 1.4.5.0
      */
     public static function apacheModExists($name)
     {
@@ -3347,8 +3353,6 @@ exit;
      * @param string $dir Add this to prefix output for example /path/dir/*
      *
      * @return array List of file found
-     *
-     * @since 1.5.0
      */
     public static function scandir($path, $ext = 'php', $dir = '', $recursive = false)
     {
@@ -3439,13 +3443,33 @@ exit;
         return false;
     }
 
-    public static function unSerialize($serialized, $object = false)
+    /**
+     * Safely unserializes input string with protection against object injection.
+     *
+     * @param string $serialized Serialized string to decode
+     * @param bool $allowObjects Whether to allow object unserialization
+     *
+     * @return mixed|null Unserialized data or false on failure
+     */
+    public static function unSerialize($serialized, $allowObjects = false)
     {
-        if (is_string($serialized) && (strpos($serialized, 'O:') === false || !preg_match('/(^|;|{|})O:[0-9]+:"/', $serialized)) && !$object || $object) {
-            return @unserialize($serialized);
+        // Only allow if it's a string
+        if (!is_string($serialized)) {
+            return false;
         }
 
-        return false;
+        // Check for potentially malicious serialized objects
+        if (!$allowObjects) {
+            if (str_contains($serialized, 'O:') && preg_match('/(^|;|{|})O:[0-9]+:"/', $serialized)) {
+                return false;
+            }
+
+            // Use native protection only if we disallow objects
+            return @unserialize($serialized, ['allowed_classes' => false]);
+        }
+
+        // Otherwise allow objects as usual
+        return @unserialize($serialized);
     }
 
     /**
@@ -3666,6 +3690,9 @@ exit;
                     if ($allow_style) {
                         $def->addElement('style', 'Block', 'Flow', 'Common', ['type' => 'Text']);
                     }
+                    Hook::exec('actionModifyHtmlPurifierConfig', [
+                        'config' => &$config,
+                    ]);
                 }
 
                 $purifier = new HTMLPurifier($config);

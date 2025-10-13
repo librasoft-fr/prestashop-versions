@@ -26,9 +26,6 @@
 
 use PrestaShop\PrestaShop\Core\Util\Sorter;
 
-/**
- * @since 1.5
- */
 class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
 {
     /**
@@ -156,8 +153,11 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
 
         $order_details = $this->order->products;
         // Sort products by Reference ID (and if equals (like combination) by Supplier Reference)
-        $sorter = new Sorter();
-        $order_details = $sorter->natural($order_details, Sorter::ORDER_DESC, 'product_reference', 'product_supplier_reference');
+        // We must verify if any product is in the orderslip, as failure to do so will result in an Exception when $order_details is NULL.
+        if (!empty($order_details)) {
+            $sorter = new Sorter();
+            $order_details = $sorter->natural($order_details, Sorter::ORDER_DESC, 'product_reference', 'product_supplier_reference');
+        }
 
         $this->smarty->assign([
             'order' => $this->order,

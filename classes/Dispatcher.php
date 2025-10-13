@@ -25,9 +25,6 @@
  */
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
-/**
- * @since 1.5.0
- */
 class DispatcherCore
 {
     /**
@@ -903,28 +900,42 @@ class DispatcherCore
     }
 
     /**
-     * Check if a route rule contain all required keywords of default route definition.
+     * Check if a route rule contain all required keywords and if all keywords exist for default route definition.
      *
      * @param string $route_id
      * @param string $rule Rule to verify
-     * @param array $errors List of missing keywords
+     * @param array $errors List of missing or unknown keywords
      *
      * @return bool
      */
     public function validateRoute($route_id, $rule, &$errors = [])
     {
-        $errors = [];
+        $errors = [
+            'missing' => [],
+            'unknown' => [],
+        ];
         if (!isset($this->default_routes[$route_id])) {
             return false;
         }
 
-        foreach ($this->default_routes[$route_id]['keywords'] as $keyword => $data) {
-            if (isset($data['param']) && !preg_match('#\{([^{}]*:)?' . $keyword . '(:[^{}]*)?\}#', $rule)) {
-                $errors[] = $keyword;
+        preg_match_all('/\{(?:\/:)?([\w_]+)\}/', $rule, $matches);
+        $found_keywords = $matches[1];
+
+        $expected_keywords = array_keys($this->default_routes[$route_id]['keywords']);
+
+        foreach ($found_keywords as $keyword) {
+            if (!in_array($keyword, $expected_keywords)) {
+                $errors['unknown'][] = $keyword;
             }
         }
 
-        return (count($errors)) ? false : true;
+        foreach ($this->default_routes[$route_id]['keywords'] as $keyword => $data) {
+            if (isset($data['param']) && !preg_match('#\{([^{}]*:)?' . $keyword . '(:[^{}]*)?\}#', $rule)) {
+                $errors['missing'][] = $keyword;
+            }
+        }
+
+        return empty($errors['missing']) && empty($errors['unknown']);
     }
 
     /**

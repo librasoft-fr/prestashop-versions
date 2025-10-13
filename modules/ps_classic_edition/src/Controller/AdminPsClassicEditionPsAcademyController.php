@@ -59,7 +59,7 @@ class AdminPsClassicEditionPsAcademyController extends PrestaShopAdminController
 
             if (!empty($ids)) {
                 foreach ($ids as $id) {
-                    $response = $this->httpClient->request('GET', 'https://prestashop-academy.com/api/products/' . $id . '?ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON&id_lang=' . $psAcademyLangId);
+                    $response = $this->httpClient->request('GET', 'https://care-center.prestashop.com/api/products/' . $id . '?ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON&id_lang=' . $psAcademyLangId);
                     $httpStatusCode = $response->getStatusCode();
                     if ($httpStatusCode <= 300) {
                         $responseContents = json_decode($response->getContent(), true);
@@ -85,11 +85,11 @@ class AdminPsClassicEditionPsAcademyController extends PrestaShopAdminController
     {
         $responseVideoHosted = $this->httpClient->request(
             'GET',
-            'https://prestashop-academy.com/api/products?filter[mpn]=[videoHosted]&ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON&id_lang=' . $psAcademyLangId,
+            'https://care-center.prestashop.com/api/products?filter[mpn]=[videoHosted]&ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON&id_lang=' . $psAcademyLangId,
         );
         $responseLiveHosted = $this->httpClient->request(
             'GET',
-            'https://prestashop-academy.com/api/products?filter[mpn]=[liveHosted]&ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON&id_lang=' . $psAcademyLangId,
+            'https://care-center.prestashop.com/api/products?filter[mpn]=[liveHosted]&ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON&id_lang=' . $psAcademyLangId,
         );
 
         $responseContentsVideoHosted = json_decode($responseVideoHosted->getContent(), true);
@@ -125,7 +125,7 @@ class AdminPsClassicEditionPsAcademyController extends PrestaShopAdminController
             'it' => 3,
         ];
 
-        $responseCategory = $this->httpClient->request('GET', 'https://prestashop-academy.com/api/categories/' . $response['id_category_default'] . '?ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON');
+        $responseCategory = $this->httpClient->request('GET', 'https://care-center.prestashop.com/api/categories/' . $response['id_category_default'] . '?ws_key=QG8Z1KD7HAYMAPKK1FR2DKXUIF9LTRJE&output_format=JSON');
         $httpStatusCode = $responseCategory->getStatusCode();
 
         if ($httpStatusCode > 300) {
@@ -134,7 +134,7 @@ class AdminPsClassicEditionPsAcademyController extends PrestaShopAdminController
         $responseContents = json_decode($responseCategory->getContent(), true);
         $category = $responseContents['category']['link_rewrite'][$langIds[$locale]]['value'];
         $link_rewrite = $response['link_rewrite'][$langIds[$locale]]['value'];
-        $productUrl = 'https://prestashop-academy.com/' . $locale . '/' . $category . '/' . $response['id'] . '-' . $link_rewrite . '.html';
+        $productUrl = 'https://care-center.prestashop.com/' . $locale . '/' . $category . '/' . $response['id'] . '-' . $link_rewrite . '.html';
 
         $tmp = [
             'name' => $response['name'][$langIds[$locale]]['value'],

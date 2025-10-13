@@ -2,7 +2,7 @@
 <module>
     <name>ps_classic_edition</name>
     <displayName><![CDATA[PrestaShop Classic Edition]]></displayName>
-    <version><![CDATA[1.0.0]]></version>
+    <version><![CDATA[1.0.2]]></version>
     <description><![CDATA[PrestaShop Classic Edition.]]></description>
     <author><![CDATA[PrestaShop]]></author>
     <tab><![CDATA[administration]]></tab>

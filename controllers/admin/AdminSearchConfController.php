@@ -415,7 +415,7 @@ class AdminSearchConfControllerCore extends AdminController
                     'required' => true,
                     'hint' => [
                         $this->trans('Enter each alias separated by a comma (e.g. \'prestshop,preztashop,prestasohp\').', [], 'Admin.Shopparameters.Help'),
-                        $this->trans('Forbidden characters: &lt;&gt;;=#{}', [], 'Admin.Shopparameters.Help'),
+                        $this->trans('Forbidden characters: &lt;&gt;{}', [], 'Admin.Shopparameters.Help'),
                     ],
                 ],
                 [

@@ -311,6 +311,7 @@ return array(
     'PrestaShop\\Module\\Mbo\\Module\\Module' => $baseDir . '/src/Module/Module.php',
     'PrestaShop\\Module\\Mbo\\Module\\ModuleBuilder' => $baseDir . '/src/Module/ModuleBuilder.php',
     'PrestaShop\\Module\\Mbo\\Module\\ModuleBuilderInterface' => $baseDir . '/src/Module/ModuleBuilderInterface.php',
+    'PrestaShop\\Module\\Mbo\\Module\\ModuleOverrideChecker' => $baseDir . '/src/Module/ModuleOverrideChecker.php',
     'PrestaShop\\Module\\Mbo\\Module\\Repository' => $baseDir . '/src/Module/Repository.php',
     'PrestaShop\\Module\\Mbo\\Module\\RepositoryInterface' => $baseDir . '/src/Module/RepositoryInterface.php',
     'PrestaShop\\Module\\Mbo\\Module\\SourceHandler\\AddonsUrlSourceHandler' => $baseDir . '/src/Module/SourceHandler/AddonsUrlSourceHandler.php',

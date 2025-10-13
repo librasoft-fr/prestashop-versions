@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
+class ComposerStaticInit8bde6cb4e7cf16240206ec3768cc9266
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -32,23 +32,23 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
     );
 
     public static $prefixLengthsPsr4 = array (
-        't' => 
+        't' =>
         array (
             'tubalmartin\\CssMin\\' => 19,
         ),
-        'Z' => 
+        'Z' =>
         array (
             'ZxcvbnPhp\\' => 10,
             'ZipStream\\' => 10,
         ),
-        'T' => 
+        'T' =>
         array (
             'Twig\\Extra\\TwigExtraBundle\\' => 27,
             'Twig\\Extra\\String\\' => 18,
             'Twig\\' => 5,
             'TijsVerkoyen\\CssToInlineStyles\\' => 31,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\UX\\TwigComponent\\' => 25,
             'Symfony\\UX\\Icons\\' => 17,
@@ -122,7 +122,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
             'Soundasleep\\' => 12,
             'Sabberworm\\CSS\\' => 15,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
@@ -153,12 +153,12 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'Pelago\\Emogrifier\\' => 18,
         ),
-        'N' => 
+        'N' =>
         array (
             'Nyholm\\Psr7\\' => 12,
             'Negotiation\\' => 12,
         ),
-        'M' => 
+        'M' =>
         array (
             'Monolog\\' => 8,
             'MaxMind\\WebService\\' => 19,
@@ -169,7 +169,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
             'Matrix\\' => 7,
             'Masterminds\\' => 12,
         ),
-        'L' => 
+        'L' =>
         array (
             'League\\Uri\\' => 11,
             'League\\OAuth2\\Server\\' => 21,
@@ -178,23 +178,23 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
             'Lcobucci\\Clock\\' => 15,
             'Laminas\\Code\\' => 13,
         ),
-        'I' => 
+        'I' =>
         array (
             'Intervention\\HttpAuth\\' => 22,
         ),
-        'G' => 
+        'G' =>
         array (
             'GeoIp2\\' => 7,
         ),
-        'F' => 
+        'F' =>
         array (
             'FOS\\JsRoutingBundle\\' => 20,
         ),
-        'E' => 
+        'E' =>
         array (
             'Egulias\\EmailValidator\\' => 23,
         ),
-        'D' => 
+        'D' =>
         array (
             'Doctrine\\SqlFormatter\\' => 22,
             'Doctrine\\Persistence\\' => 21,
@@ -213,664 +213,664 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
             'Detection\\' => 10,
             'Defuse\\Crypto\\' => 14,
         ),
-        'C' => 
+        'C' =>
         array (
             'Composer\\Pcre\\' => 14,
             'Composer\\Installers\\' => 20,
             'Composer\\CaBundle\\' => 18,
             'Complex\\' => 8,
         ),
-        'A' => 
+        'A' =>
         array (
             'ApiPlatform\\' => 12,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'tubalmartin\\CssMin\\' => 
+        'tubalmartin\\CssMin\\' =>
         array (
             0 => __DIR__ . '/..' . '/tubalmartin/cssmin/src',
         ),
-        'ZxcvbnPhp\\' => 
+        'ZxcvbnPhp\\' =>
         array (
             0 => __DIR__ . '/..' . '/bjeavons/zxcvbn-php/src',
         ),
-        'ZipStream\\' => 
+        'ZipStream\\' =>
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
-        'Twig\\Extra\\TwigExtraBundle\\' => 
+        'Twig\\Extra\\TwigExtraBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/twig/extra-bundle',
         ),
-        'Twig\\Extra\\String\\' => 
+        'Twig\\Extra\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/twig/string-extra',
         ),
-        'Twig\\' => 
+        'Twig\\' =>
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',
         ),
-        'TijsVerkoyen\\CssToInlineStyles\\' => 
+        'TijsVerkoyen\\CssToInlineStyles\\' =>
         array (
             0 => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src',
         ),
-        'Symfony\\UX\\TwigComponent\\' => 
+        'Symfony\\UX\\TwigComponent\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/ux-twig-component/src',
         ),
-        'Symfony\\UX\\Icons\\' => 
+        'Symfony\\UX\\Icons\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/ux-icons/src',
         ),
-        'Symfony\\Polyfill\\Php83\\' => 
+        'Symfony\\Polyfill\\Php83\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php83',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Php73\\' => 
+        'Symfony\\Polyfill\\Php73\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php73',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        'Symfony\\Polyfill\\Intl\\Idn\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
-        'Symfony\\Polyfill\\Intl\\Icu\\' => 
+        'Symfony\\Polyfill\\Intl\\Icu\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-icu',
         ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Translation\\' => 
+        'Symfony\\Contracts\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation-contracts',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\HttpClient\\' => 
+        'Symfony\\Contracts\\HttpClient\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-client-contracts',
         ),
-        'Symfony\\Contracts\\EventDispatcher\\' => 
+        'Symfony\\Contracts\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
-        'Symfony\\Contracts\\Cache\\' => 
+        'Symfony\\Contracts\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/cache-contracts',
         ),
-        'Symfony\\Component\\Yaml\\' => 
+        'Symfony\\Component\\Yaml\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
         ),
-        'Symfony\\Component\\WebLink\\' => 
+        'Symfony\\Component\\WebLink\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/web-link',
         ),
-        'Symfony\\Component\\VarExporter\\' => 
+        'Symfony\\Component\\VarExporter\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/var-exporter',
         ),
-        'Symfony\\Component\\VarDumper\\' => 
+        'Symfony\\Component\\VarDumper\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
-        'Symfony\\Component\\Validator\\' => 
+        'Symfony\\Component\\Validator\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/validator',
         ),
-        'Symfony\\Component\\Translation\\' => 
+        'Symfony\\Component\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
         ),
-        'Symfony\\Component\\Templating\\' => 
+        'Symfony\\Component\\Templating\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/templating',
         ),
-        'Symfony\\Component\\String\\' => 
+        'Symfony\\Component\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
         ),
-        'Symfony\\Component\\Serializer\\' => 
+        'Symfony\\Component\\Serializer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/serializer',
         ),
-        'Symfony\\Component\\Security\\Http\\' => 
+        'Symfony\\Component\\Security\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/security-http',
         ),
-        'Symfony\\Component\\Security\\Csrf\\' => 
+        'Symfony\\Component\\Security\\Csrf\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/security-csrf',
         ),
-        'Symfony\\Component\\Security\\Core\\' => 
+        'Symfony\\Component\\Security\\Core\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/security-core',
         ),
-        'Symfony\\Component\\Routing\\' => 
+        'Symfony\\Component\\Routing\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/routing',
         ),
-        'Symfony\\Component\\PropertyInfo\\' => 
+        'Symfony\\Component\\PropertyInfo\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/property-info',
         ),
-        'Symfony\\Component\\PropertyAccess\\' => 
+        'Symfony\\Component\\PropertyAccess\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/property-access',
         ),
-        'Symfony\\Component\\Process\\' => 
+        'Symfony\\Component\\Process\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
-        'Symfony\\Component\\PasswordHasher\\' => 
+        'Symfony\\Component\\PasswordHasher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/password-hasher',
         ),
-        'Symfony\\Component\\OptionsResolver\\' => 
+        'Symfony\\Component\\OptionsResolver\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/options-resolver',
         ),
-        'Symfony\\Component\\Mime\\' => 
+        'Symfony\\Component\\Mime\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/mime',
         ),
-        'Symfony\\Component\\Messenger\\Bridge\\Doctrine\\' => 
+        'Symfony\\Component\\Messenger\\Bridge\\Doctrine\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/doctrine-messenger',
         ),
-        'Symfony\\Component\\Messenger\\' => 
+        'Symfony\\Component\\Messenger\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/messenger',
         ),
-        'Symfony\\Component\\Mailer\\' => 
+        'Symfony\\Component\\Mailer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/mailer',
         ),
-        'Symfony\\Component\\Lock\\' => 
+        'Symfony\\Component\\Lock\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/lock',
         ),
-        'Symfony\\Component\\Intl\\' => 
+        'Symfony\\Component\\Intl\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/intl',
         ),
-        'Symfony\\Component\\HttpKernel\\' => 
+        'Symfony\\Component\\HttpKernel\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-kernel',
         ),
-        'Symfony\\Component\\HttpFoundation\\' => 
+        'Symfony\\Component\\HttpFoundation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
-        'Symfony\\Component\\HttpClient\\' => 
+        'Symfony\\Component\\HttpClient\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-client',
         ),
-        'Symfony\\Component\\Form\\' => 
+        'Symfony\\Component\\Form\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/form',
         ),
-        'Symfony\\Component\\Finder\\' => 
+        'Symfony\\Component\\Finder\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Symfony\\Component\\Filesystem\\' => 
+        'Symfony\\Component\\Filesystem\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/filesystem',
         ),
-        'Symfony\\Component\\ExpressionLanguage\\' => 
+        'Symfony\\Component\\ExpressionLanguage\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/expression-language',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Symfony\\Component\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'Symfony\\Component\\ErrorHandler\\' => 
+        'Symfony\\Component\\ErrorHandler\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/error-handler',
         ),
-        'Symfony\\Component\\Dotenv\\' => 
+        'Symfony\\Component\\Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/dotenv',
         ),
-        'Symfony\\Component\\DomCrawler\\' => 
+        'Symfony\\Component\\DomCrawler\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/dom-crawler',
         ),
-        'Symfony\\Component\\DependencyInjection\\' => 
+        'Symfony\\Component\\DependencyInjection\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/dependency-injection',
         ),
-        'Symfony\\Component\\CssSelector\\' => 
+        'Symfony\\Component\\CssSelector\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/css-selector',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Symfony\\Component\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'Symfony\\Component\\Config\\' => 
+        'Symfony\\Component\\Config\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/config',
         ),
-        'Symfony\\Component\\Clock\\' => 
+        'Symfony\\Component\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/clock',
         ),
-        'Symfony\\Component\\Cache\\' => 
+        'Symfony\\Component\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/cache',
         ),
-        'Symfony\\Component\\Asset\\' => 
+        'Symfony\\Component\\Asset\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/asset',
         ),
-        'Symfony\\Bundle\\WebProfilerBundle\\' => 
+        'Symfony\\Bundle\\WebProfilerBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/web-profiler-bundle',
         ),
-        'Symfony\\Bundle\\TwigBundle\\' => 
+        'Symfony\\Bundle\\TwigBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/twig-bundle',
         ),
-        'Symfony\\Bundle\\SecurityBundle\\' => 
+        'Symfony\\Bundle\\SecurityBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/security-bundle',
         ),
-        'Symfony\\Bundle\\MonologBundle\\' => 
+        'Symfony\\Bundle\\MonologBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/monolog-bundle',
         ),
-        'Symfony\\Bundle\\FrameworkBundle\\' => 
+        'Symfony\\Bundle\\FrameworkBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/framework-bundle',
         ),
-        'Symfony\\Bundle\\DebugBundle\\' => 
+        'Symfony\\Bundle\\DebugBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/debug-bundle',
         ),
-        'Symfony\\Bridge\\Twig\\' => 
+        'Symfony\\Bridge\\Twig\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/twig-bridge',
         ),
-        'Symfony\\Bridge\\PsrHttpMessage\\' => 
+        'Symfony\\Bridge\\PsrHttpMessage\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/psr-http-message-bridge',
         ),
-        'Symfony\\Bridge\\ProxyManager\\' => 
+        'Symfony\\Bridge\\ProxyManager\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/proxy-manager-bridge',
         ),
-        'Symfony\\Bridge\\Monolog\\' => 
+        'Symfony\\Bridge\\Monolog\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/monolog-bridge',
         ),
-        'Symfony\\Bridge\\Doctrine\\' => 
+        'Symfony\\Bridge\\Doctrine\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/doctrine-bridge',
         ),
-        'Soundasleep\\' => 
+        'Soundasleep\\' =>
         array (
             0 => __DIR__ . '/..' . '/soundasleep/html2text/src',
         ),
-        'Sabberworm\\CSS\\' => 
+        'Sabberworm\\CSS\\' =>
         array (
             0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
         ),
-        'Psr\\SimpleCache\\' => 
+        'Psr\\SimpleCache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\Link\\' => 
+        'Psr\\Link\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/link/src',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Http\\Client\\' => 
+        'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Psr\\EventDispatcher\\' => 
+        'Psr\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Psr\\Clock\\' => 
+        'Psr\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
-        'Psr\\Cache\\' => 
+        'Psr\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
-        'ProxyManager\\' => 
+        'ProxyManager\\' =>
         array (
             0 => __DIR__ . '/..' . '/friendsofphp/proxy-manager-lts/src/ProxyManager',
         ),
-        'PrestaShop\\TranslationToolsBundle\\' => 
+        'PrestaShop\\TranslationToolsBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/translationtools-bundle',
         ),
-        'PrestaShop\\PrestaShop\\' => 
+        'PrestaShop\\PrestaShop\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
-        'PrestaShop\\Module\\ProductComment\\' => 
+        'PrestaShop\\Module\\ProductComment\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/productcomments/src',
         ),
-        'PrestaShop\\Module\\LinkList\\' => 
+        'PrestaShop\\Module\\LinkList\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/ps_linklist/src',
         ),
-        'PrestaShop\\Module\\FacetedSearch\\Tests\\' => 
+        'PrestaShop\\Module\\FacetedSearch\\Tests\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/ps_facetedsearch/tests/php/FacetedSearch',
         ),
-        'PrestaShop\\Module\\FacetedSearch\\Controller\\' => 
+        'PrestaShop\\Module\\FacetedSearch\\Controller\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src/Controller',
         ),
-        'PrestaShop\\Module\\FacetedSearch\\' => 
+        'PrestaShop\\Module\\FacetedSearch\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/ps_facetedsearch/src',
         ),
-        'PrestaShop\\Module\\DistributionApiClient\\' => 
+        'PrestaShop\\Module\\DistributionApiClient\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src',
         ),
-        'PrestaShop\\Module\\BlockWishList\\' => 
+        'PrestaShop\\Module\\BlockWishList\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/blockwishlist/src',
         ),
-        'PrestaShop\\Module\\BlockReassurance\\' => 
+        'PrestaShop\\Module\\BlockReassurance\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/blockreassurance/src',
         ),
-        'PrestaShop\\Module\\APIResources\\' => 
+        'PrestaShop\\Module\\APIResources\\' =>
         array (
             0 => __DIR__ . '/../..' . '/modules/ps_apiresources/src',
         ),
-        'PrestaShop\\Decimal\\' => 
+        'PrestaShop\\Decimal\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/decimal/src',
         ),
-        'PrestaShop\\CircuitBreaker\\' => 
+        'PrestaShop\\CircuitBreaker\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/circuit-breaker/src',
         ),
-        'PrestaShop\\Autoload\\' => 
+        'PrestaShop\\Autoload\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/autoload/src',
         ),
-        'PrestaShopBundle\\' => 
+        'PrestaShopBundle\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src/PrestaShopBundle',
         ),
-        'PhpParser\\' => 
+        'PhpParser\\' =>
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
-        'PhpOffice\\PhpSpreadsheet\\' => 
+        'PhpOffice\\PhpSpreadsheet\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
-        'Pelago\\Emogrifier\\' => 
+        'Pelago\\Emogrifier\\' =>
         array (
             0 => __DIR__ . '/..' . '/pelago/emogrifier/src',
         ),
-        'Nyholm\\Psr7\\' => 
+        'Nyholm\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/nyholm/psr7/src',
         ),
-        'Negotiation\\' => 
+        'Negotiation\\' =>
         array (
             0 => __DIR__ . '/..' . '/willdurand/negotiation/src/Negotiation',
         ),
-        'Monolog\\' => 
+        'Monolog\\' =>
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
-        'MaxMind\\WebService\\' => 
+        'MaxMind\\WebService\\' =>
         array (
             0 => __DIR__ . '/..' . '/maxmind/web-service-common/src/WebService',
         ),
-        'MaxMind\\Exception\\' => 
+        'MaxMind\\Exception\\' =>
         array (
             0 => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception',
         ),
-        'MaxMind\\Db\\' => 
+        'MaxMind\\Db\\' =>
         array (
             0 => __DIR__ . '/..' . '/maxmind-db/reader/src/MaxMind/Db',
         ),
-        'MatthiasMullie\\PathConverter\\' => 
+        'MatthiasMullie\\PathConverter\\' =>
         array (
             0 => __DIR__ . '/..' . '/matthiasmullie/path-converter/src',
         ),
-        'MatthiasMullie\\Minify\\' => 
+        'MatthiasMullie\\Minify\\' =>
         array (
             0 => __DIR__ . '/..' . '/matthiasmullie/minify/src',
         ),
-        'Matrix\\' => 
+        'Matrix\\' =>
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
-        'Masterminds\\' => 
+        'Masterminds\\' =>
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
         ),
-        'League\\Uri\\' => 
+        'League\\Uri\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/uri',
             1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
-        'League\\OAuth2\\Server\\' => 
+        'League\\OAuth2\\Server\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/oauth2-server/src',
         ),
-        'League\\Event\\' => 
+        'League\\Event\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/event/src',
         ),
-        'Lcobucci\\JWT\\' => 
+        'Lcobucci\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
         ),
-        'Lcobucci\\Clock\\' => 
+        'Lcobucci\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/lcobucci/clock/src',
         ),
-        'Laminas\\Code\\' => 
+        'Laminas\\Code\\' =>
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-code/src',
         ),
-        'Intervention\\HttpAuth\\' => 
+        'Intervention\\HttpAuth\\' =>
         array (
             0 => __DIR__ . '/..' . '/intervention/httpauth/src',
         ),
-        'GeoIp2\\' => 
+        'GeoIp2\\' =>
         array (
             0 => __DIR__ . '/..' . '/geoip2/geoip2/src',
         ),
-        'FOS\\JsRoutingBundle\\' => 
+        'FOS\\JsRoutingBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/friendsofsymfony/jsrouting-bundle',
         ),
-        'Egulias\\EmailValidator\\' => 
+        'Egulias\\EmailValidator\\' =>
         array (
             0 => __DIR__ . '/..' . '/egulias/email-validator/src',
         ),
-        'Doctrine\\SqlFormatter\\' => 
+        'Doctrine\\SqlFormatter\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/sql-formatter/src',
         ),
-        'Doctrine\\Persistence\\' => 
+        'Doctrine\\Persistence\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/persistence/src/Persistence',
         ),
-        'Doctrine\\ORM\\' => 
+        'Doctrine\\ORM\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/orm/src',
         ),
-        'Doctrine\\Instantiator\\' => 
+        'Doctrine\\Instantiator\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
         ),
-        'Doctrine\\Inflector\\' => 
+        'Doctrine\\Inflector\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
         ),
-        'Doctrine\\Deprecations\\' => 
+        'Doctrine\\Deprecations\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
-        'Doctrine\\DBAL\\' => 
+        'Doctrine\\DBAL\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/dbal/src',
         ),
-        'Doctrine\\Common\\Lexer\\' => 
+        'Doctrine\\Common\\Lexer\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/lexer/src',
         ),
-        'Doctrine\\Common\\Collections\\' => 
+        'Doctrine\\Common\\Collections\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/collections/lib/Doctrine/Common/Collections',
         ),
-        'Doctrine\\Common\\Cache\\' => 
+        'Doctrine\\Common\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
         ),
-        'Doctrine\\Common\\Annotations\\' => 
+        'Doctrine\\Common\\Annotations\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
         ),
-        'Doctrine\\Common\\' => 
+        'Doctrine\\Common\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/common/src',
             1 => __DIR__ . '/..' . '/doctrine/event-manager/src',
         ),
-        'Doctrine\\Bundle\\DoctrineBundle\\' => 
+        'Doctrine\\Bundle\\DoctrineBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/doctrine-bundle',
         ),
-        'DoctrineExtensions\\' => 
+        'DoctrineExtensions\\' =>
         array (
             0 => __DIR__ . '/..' . '/beberlei/doctrineextensions/src',
         ),
-        'Detection\\' => 
+        'Detection\\' =>
         array (
             0 => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/src',
         ),
-        'Defuse\\Crypto\\' => 
+        'Defuse\\Crypto\\' =>
         array (
             0 => __DIR__ . '/..' . '/defuse/php-encryption/src',
         ),
-        'Composer\\Pcre\\' => 
+        'Composer\\Pcre\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
-        'Composer\\Installers\\' => 
+        'Composer\\Installers\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
         ),
-        'Composer\\CaBundle\\' => 
+        'Composer\\CaBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
         ),
-        'Complex\\' => 
+        'Complex\\' =>
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
         ),
-        'ApiPlatform\\' => 
+        'ApiPlatform\\' =>
         array (
             0 => __DIR__ . '/..' . '/api-platform/core/src',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'S' => 
+        'S' =>
         array (
-            'SecurityLib' => 
+            'SecurityLib' =>
             array (
                 0 => __DIR__ . '/..' . '/ircmaxell/security-lib/lib',
             ),
         ),
-        'R' => 
+        'R' =>
         array (
-            'RandomLib' => 
+            'RandomLib' =>
             array (
                 0 => __DIR__ . '/..' . '/ircmaxell/random-lib/lib',
             ),
         ),
-        'P' => 
+        'P' =>
         array (
-            'Props\\' => 
+            'Props\\' =>
             array (
                 0 => __DIR__ . '/..' . '/mrclay/props-dic/src',
             ),
-            'Pimple' => 
+            'Pimple' =>
             array (
                 0 => __DIR__ . '/..' . '/pimple/pimple/src',
             ),
-            'PHPSQLParser\\' => 
+            'PHPSQLParser\\' =>
             array (
                 0 => __DIR__ . '/..' . '/greenlion/php-sql-parser/src',
             ),
         ),
-        'J' => 
+        'J' =>
         array (
-            'JsonpCallbackValidator' => 
+            'JsonpCallbackValidator' =>
             array (
                 0 => __DIR__ . '/..' . '/willdurand/jsonp-callback-validator/src',
             ),
-            'JSMin\\' => 
+            'JSMin\\' =>
             array (
                 0 => __DIR__ . '/..' . '/mrclay/jsmin-php/src',
             ),
         ),
-        'H' => 
+        'H' =>
         array (
-            'HTMLPurifier' => 
+            'HTMLPurifier' =>
             array (
                 0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
             ),
         ),
-        'C' => 
+        'C' =>
         array (
-            'Curl' => 
+            'Curl' =>
             array (
                 0 => __DIR__ . '/..' . '/curl/curl/src',
             ),
@@ -4849,6 +4849,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShopBundle\\ApiPlatform\\OpenApi\\Factory\\CQRSOpenApiFactory' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Factory/CQRSOpenApiFactory.php',
         'PrestaShopBundle\\ApiPlatform\\Pagination\\PaginationElements' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Pagination/PaginationElements.php',
         'PrestaShopBundle\\ApiPlatform\\Processor\\CommandProcessor' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Processor/CommandProcessor.php',
+        'PrestaShopBundle\\ApiPlatform\\Provider\\EmptyBodyDeserializerProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Provider/EmptyBodyDeserializerProvider.php',
         'PrestaShopBundle\\ApiPlatform\\Provider\\QueryListProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Provider/QueryListProvider.php',
         'PrestaShopBundle\\ApiPlatform\\Provider\\QueryProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Provider/QueryProvider.php',
         'PrestaShopBundle\\ApiPlatform\\QueryResultSerializerTrait' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/QueryResultSerializerTrait.php',
@@ -4869,8 +4870,8 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShopBundle\\Api\\Stock\\Movement' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Api/Stock/Movement.php',
         'PrestaShopBundle\\Api\\Stock\\MovementsCollection' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Api/Stock/MovementsCollection.php',
         'PrestaShopBundle\\Cache\\CacheWarmer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Cache/CacheWarmer.php',
+        'PrestaShopBundle\\Cache\\LegacyCacheClearer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Cache/LegacyCacheClearer.php',
         'PrestaShopBundle\\Cache\\LocalizationWarmer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Cache/LocalizationWarmer.php',
-        'PrestaShopBundle\\Cache\\TranslationCacheClearer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Cache/TranslationCacheClearer.php',
         'PrestaShopBundle\\CommandBus\\MessengerCommandBus' => __DIR__ . '/../..' . '/src/PrestaShopBundle/CommandBus/MessengerCommandBus.php',
         'PrestaShopBundle\\CommandBus\\Middleware\\CommandRegisterMiddleware' => __DIR__ . '/../..' . '/src/PrestaShopBundle/CommandBus/Middleware/CommandRegisterMiddleware.php',
         'PrestaShopBundle\\Command\\APIClientCommand' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Command/APIClientCommand.php',
@@ -5168,6 +5169,8 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Import\\ImportFormHandler' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Import/ImportFormHandler.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Import\\ImportFormHandlerInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Import/ImportFormHandlerInterface.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Import\\ImportType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Import/ImportType.php',
+        'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Logs\\DatabaseLogsFormDataProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Logs/DatabaseLogsFormDataProvider.php',
+        'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Logs\\DatabaseLogsType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Logs/DatabaseLogsType.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Logs\\LogsByEmailType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Logs/LogsByEmailType.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Logs\\LogsFormDataProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Logs/LogsFormDataProvider.php',
         'PrestaShopBundle\\Form\\Admin\\Configure\\AdvancedParameters\\Profile\\ProfileType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Configure/AdvancedParameters/Profile/ProfileType.php',
@@ -5491,7 +5494,6 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShopBundle\\Form\\Admin\\Type\\TextPreviewType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Type/TextPreviewType.php',
         'PrestaShopBundle\\Form\\Admin\\Type\\TextWithLengthCounterType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Type/TextWithLengthCounterType.php',
         'PrestaShopBundle\\Form\\Admin\\Type\\TextWithRecommendedLengthType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Type/TextWithRecommendedLengthType.php',
-        'PrestaShopBundle\\Form\\Admin\\Type\\ThemeChoiceType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Type/ThemeChoiceType.php',
         'PrestaShopBundle\\Form\\Admin\\Type\\TranslatableChoiceType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Type/TranslatableChoiceType.php',
         'PrestaShopBundle\\Form\\Admin\\Type\\TranslatableType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Type/TranslatableType.php',
         'PrestaShopBundle\\Form\\Admin\\Type\\TranslateType' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Form/Admin/Type/TranslateType.php',
@@ -5780,13 +5782,20 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\Decimal\\Operation\\Subtraction' => __DIR__ . '/..' . '/prestashop/decimal/src/Operation/Subtraction.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\ApiClient\\ApiClient' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/ApiClient/ApiClient.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\ApiClient\\ApiClientList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/ApiClient/ApiClientList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributeGroup' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributeGroup.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributeGroupList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributeGroupList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\BulkAttributeGroups' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/BulkAttributeGroups.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\CartRule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/CartRule.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\CustomerGroup' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/CustomerGroup.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\Category' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/Category.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\CategoryList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/CategoryList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerGroup' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerGroup.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerGroupList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerGroupList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\Discount' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/Discount.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\DiscountList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/DiscountList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Hook' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Hook.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\BulkModules' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/BulkModules.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\Module' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/Module.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\ResetModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/ResetModule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UninstallModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UninstallModule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UpgradeModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UpgradeModule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UploadModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UploadModule.php',
@@ -5797,8 +5806,16 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductImageList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductImageList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductShops' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductShops.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Tab\\Tab' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Tab/Tab.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\WebserviceKey\\WebserviceKey' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/WebserviceKey/WebserviceKey.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\WebserviceKey\\WebserviceKeyList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/WebserviceKey/WebserviceKeyList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Zone\\BulkZonesDelete' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Zone/BulkZonesDelete.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Zone\\BulkZonesToggleStatus' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Zone/BulkZonesToggleStatus.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Zone\\Zone' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Zone/Zone.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Zone\\ZoneList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Zone/ZoneList.php',
         'PrestaShop\\Module\\APIResources\\List\\ModuleGridDataFactory' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/List/ModuleGridDataFactory.php',
         'PrestaShop\\Module\\APIResources\\List\\ModuleQueryBuilder' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/List/ModuleQueryBuilder.php',
+        'PrestaShop\\Module\\APIResources\\Validation\\IframeValidationGroupsResolver' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/Validation/IframeValidationGroupsResolver.php',
         'PrestaShop\\Module\\BlockWishList\\Access\\CustomerAccess' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Access/CustomerAccess.php',
         'PrestaShop\\Module\\BlockWishList\\Calculator\\StatisticsCalculator' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Calculator/StatisticsCalculator.php',
         'PrestaShop\\Module\\BlockWishList\\Controller\\WishlistConfigurationAdminController' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Controller/WishlistConfigurationAdminController.php',
@@ -5816,6 +5833,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\Module\\BlockWishList\\Grid\\Definition\\CurrentYearStatisticsGridDefinitionFactory' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Grid/Definition/CurrentYearStatisticsGridDefinitionFactory.php',
         'PrestaShop\\Module\\BlockWishList\\Search\\WishListProductSearchProvider' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Search/WishListProductSearchProvider.php',
         'PrestaShop\\Module\\BlockWishList\\Type\\ConfigurationType' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Type/ConfigurationType.php',
+        'PrestaShop\\Module\\DistributionApiClient\\Controller\\Admin\\TopContributorsController' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Controller/Admin/TopContributorsController.php',
         'PrestaShop\\Module\\DistributionApiClient\\DistributionApi' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/DistributionApi.php',
         'PrestaShop\\Module\\DistributionApiClient\\Middleware\\CachedHttpClient' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Middleware/CachedHttpClient.php',
         'PrestaShop\\Module\\DistributionApiClient\\Middleware\\CachedResponse' => __DIR__ . '/../..' . '/modules/ps_distributionapiclient/src/Middleware/CachedResponse.php',
@@ -5988,6 +6006,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Adapter\\Attribute\\CommandHandler\\AddAttributeHandler' => __DIR__ . '/../..' . '/src/Adapter/Attribute/CommandHandler/AddAttributeHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Attribute\\CommandHandler\\BulkDeleteAttributeHandler' => __DIR__ . '/../..' . '/src/Adapter/Attribute/CommandHandler/BulkDeleteAttributeHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Attribute\\CommandHandler\\DeleteAttributeHandler' => __DIR__ . '/../..' . '/src/Adapter/Attribute/CommandHandler/DeleteAttributeHandler.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Attribute\\CommandHandler\\DeleteAttributeTextureImageHandler' => __DIR__ . '/../..' . '/src/Adapter/Attribute/CommandHandler/DeleteAttributeTextureImageHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Attribute\\CommandHandler\\EditAttributeHandler' => __DIR__ . '/../..' . '/src/Adapter/Attribute/CommandHandler/EditAttributeHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Attribute\\QueryHandler\\GetAttributeForEditingHandler' => __DIR__ . '/../..' . '/src/Adapter/Attribute/QueryHandler/GetAttributeForEditingHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Attribute\\Repository\\AttributeRepository' => __DIR__ . '/../..' . '/src/Adapter/Attribute/Repository/AttributeRepository.php',
@@ -5997,6 +6016,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Adapter\\Backup\\BackupRepository' => __DIR__ . '/../..' . '/src/Adapter/Backup/BackupRepository.php',
         'PrestaShop\\PrestaShop\\Adapter\\Backup\\DatabaseBackupCreator' => __DIR__ . '/../..' . '/src/Adapter/Backup/DatabaseBackupCreator.php',
         'PrestaShop\\PrestaShop\\Adapter\\BestSales\\BestSalesProductSearchProvider' => __DIR__ . '/../..' . '/src/Adapter/BestSales/BestSalesProductSearchProvider.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Bundle\\AssetsInstaller' => __DIR__ . '/../..' . '/src/Adapter/Bundle/AssetsInstaller.php',
         'PrestaShop\\PrestaShop\\Adapter\\CMS\\CMSDataProvider' => __DIR__ . '/../..' . '/src/Adapter/CMS/CMSDataProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\CMS\\PageCategory\\CategoriesProvider' => __DIR__ . '/../..' . '/src/Adapter/CMS/PageCategory/CategoriesProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\CMS\\PageCategory\\CommandHandler\\AbstractCmsPageCategoryHandler' => __DIR__ . '/../..' . '/src/Adapter/CMS/PageCategory/CommandHandler/AbstractCmsPageCategoryHandler.php',
@@ -6027,8 +6047,13 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\ClassIndexCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/ClassIndexCacheClearer.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\DoctrineCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/DoctrineCacheClearer.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\MediaCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/MediaCacheClearer.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\SafeLoggerTrait' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/SafeLoggerTrait.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\SmartyCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/SmartyCacheClearer.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\SymfonyCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/SymfonyCacheClearer.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\Symfony\\ApplicationKernelCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/Symfony/ApplicationKernelCacheClearer.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\Symfony\\ExecKernelCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/Symfony/ExecKernelCacheClearer.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\Symfony\\FilesystemKernelCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/Symfony/FilesystemKernelCacheClearer.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\Symfony\\KernelCacheClearerInterface' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/Symfony/KernelCacheClearerInterface.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\Clearer\\XmlCacheClearer' => __DIR__ . '/../..' . '/src/Adapter/Cache/Clearer/XmlCacheClearer.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\CombineCompressCacheConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Cache/CombineCompressCacheConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Cache\\MemcacheServerManager' => __DIR__ . '/../..' . '/src/Adapter/Cache/MemcacheServerManager.php',
@@ -6120,6 +6145,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Adapter\\Category\\Repository\\CategoryRepository' => __DIR__ . '/../..' . '/src/Adapter/Category/Repository/CategoryRepository.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration' => __DIR__ . '/../..' . '/src/Adapter/Configuration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration\\CommandHandler\\SwitchDebugModeHandler' => __DIR__ . '/../..' . '/src/Adapter/Configuration/CommandHandler/SwitchDebugModeHandler.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Configuration\\DatabaseLogsConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Configuration/DatabaseLogsConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration\\KpiConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Configuration/KpiConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration\\LogsConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Configuration/LogsConfiguration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration\\PhpParameters' => __DIR__ . '/../..' . '/src/Adapter/Configuration/PhpParameters.php',
@@ -6205,6 +6231,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Adapter\\Employee\\ContextEmployeeProvider' => __DIR__ . '/../..' . '/src/Adapter/Employee/ContextEmployeeProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\Employee\\EmployeeDataProvider' => __DIR__ . '/../..' . '/src/Adapter/Employee/EmployeeDataProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\Employee\\EmployeeFormAccessChecker' => __DIR__ . '/../..' . '/src/Adapter/Employee/EmployeeFormAccessChecker.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Employee\\EmployeeLanguageUpdater' => __DIR__ . '/../..' . '/src/Adapter/Employee/EmployeeLanguageUpdater.php',
         'PrestaShop\\PrestaShop\\Adapter\\Employee\\EmployeeRepository' => __DIR__ . '/../..' . '/src/Adapter/Employee/EmployeeRepository.php',
         'PrestaShop\\PrestaShop\\Adapter\\Employee\\FormLanguageChanger' => __DIR__ . '/../..' . '/src/Adapter/Employee/FormLanguageChanger.php',
         'PrestaShop\\PrestaShop\\Adapter\\Employee\\NavigationMenuToggler' => __DIR__ . '/../..' . '/src/Adapter/Employee/NavigationMenuToggler.php',
@@ -7093,6 +7120,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Attribute\\CommandHandler\\AddAttributeHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Attribute/CommandHandler/AddAttributeHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Attribute\\CommandHandler\\BulkDeleteAttributeHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Attribute/CommandHandler/BulkDeleteAttributeHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Attribute\\CommandHandler\\DeleteAttributeHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Attribute/CommandHandler/DeleteAttributeHandlerInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Attribute\\CommandHandler\\DeleteAttributeTextureImageHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Attribute/CommandHandler/DeleteAttributeTextureImageHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Attribute\\CommandHandler\\EditAttributeHandlerInterface' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Attribute/CommandHandler/EditAttributeHandlerInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Attribute\\Command\\AddAttributeCommand' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Attribute/Command/AddAttributeCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Attribute\\Command\\BulkDeleteAttributeCommand' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Attribute/Command/BulkDeleteAttributeCommand.php',
@@ -7117,6 +7145,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Command\\AddAttributeGroupCommand' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Command/AddAttributeGroupCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Command\\BulkDeleteAttributeGroupCommand' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Command/BulkDeleteAttributeGroupCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Command\\DeleteAttributeGroupCommand' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Command/DeleteAttributeGroupCommand.php',
+        'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Command\\DeleteAttributeTextureImageCommand' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Command/DeleteAttributeTextureImageCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Command\\EditAttributeGroupCommand' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Command/EditAttributeGroupCommand.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Exception\\AttributeGroupConstraintException' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Exception/AttributeGroupConstraintException.php',
         'PrestaShop\\PrestaShop\\Core\\Domain\\AttributeGroup\\Exception\\AttributeGroupException' => __DIR__ . '/../..' . '/src/Core/Domain/AttributeGroup/Exception/AttributeGroupException.php',
@@ -9682,6 +9711,8 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleOverrideChecker' => __DIR__ . '/../..' . '/src/Core/Module/ModuleOverrideChecker.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleRepository' => __DIR__ . '/../..' . '/src/Core/Module/ModuleRepository.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\ModuleRepositoryInterface' => __DIR__ . '/../..' . '/src/Core/Module/ModuleRepositoryInterface.php',
+        'PrestaShop\\PrestaShop\\Core\\Module\\Parser\\ModuleParser' => __DIR__ . '/../..' . '/src/Core/Module/Parser/ModuleParser.php',
+        'PrestaShop\\PrestaShop\\Core\\Module\\Parser\\ModuleParserException' => __DIR__ . '/../..' . '/src/Core/Module/Parser/ModuleParserException.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\Exception\\SourceNotHandledException' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/Exception/SourceNotHandledException.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\RemoteZipSourceHandler' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/RemoteZipSourceHandler.php',
         'PrestaShop\\PrestaShop\\Core\\Module\\SourceHandler\\SourceHandlerFactory' => __DIR__ . '/../..' . '/src/Core/Module/SourceHandler/SourceHandlerFactory.php',
@@ -10880,13 +10911,19 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'Symfony\\Component\\Cache\\Traits\\RedisTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisTrait.php',
         'Symfony\\Component\\Cache\\Traits\\RelayProxy' => __DIR__ . '/..' . '/symfony/cache/Traits/RelayProxy.php',
         'Symfony\\Component\\Cache\\Traits\\RelayProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/RelayProxyTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\BgsaveTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/BgsaveTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\CopyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/CopyTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\FtTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/FtTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\GeosearchTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/GeosearchTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\GetWithMetaTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/GetWithMetaTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\GetrangeTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/GetrangeTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\HsetTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/HsetTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\IsTrackedTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/IsTrackedTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\MoveTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/MoveTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\NullableReturnTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/NullableReturnTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\PfcountTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/PfcountTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay11Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay11Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\SwapdbTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/SwapdbTrait.php',
         'Symfony\\Component\\Clock\\Clock' => __DIR__ . '/..' . '/symfony/clock/Clock.php',
         'Symfony\\Component\\Clock\\ClockAwareTrait' => __DIR__ . '/..' . '/symfony/clock/ClockAwareTrait.php',
         'Symfony\\Component\\Clock\\ClockInterface' => __DIR__ . '/..' . '/symfony/clock/ClockInterface.php',
@@ -11992,6 +12029,7 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
         'Symfony\\Component\\HttpKernel\\Fragment\\RoutableFragmentRenderer' => __DIR__ . '/..' . '/symfony/http-kernel/Fragment/RoutableFragmentRenderer.php',
         'Symfony\\Component\\HttpKernel\\Fragment\\SsiFragmentRenderer' => __DIR__ . '/..' . '/symfony/http-kernel/Fragment/SsiFragmentRenderer.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\AbstractSurrogate' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/AbstractSurrogate.php',
+        'Symfony\\Component\\HttpKernel\\HttpCache\\CacheWasLockedException' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/CacheWasLockedException.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\Esi' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/Esi.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\HttpCache' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/HttpCache.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\ResponseCacheStrategy' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/ResponseCacheStrategy.php',
@@ -13815,11 +13853,11 @@ class ComposerStaticInite6bcb21e01e3e3a224056a0468abf062
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite6bcb21e01e3e3a224056a0468abf062::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite6bcb21e01e3e3a224056a0468abf062::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInite6bcb21e01e3e3a224056a0468abf062::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInite6bcb21e01e3e3a224056a0468abf062::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInite6bcb21e01e3e3a224056a0468abf062::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit8bde6cb4e7cf16240206ec3768cc9266::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit8bde6cb4e7cf16240206ec3768cc9266::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit8bde6cb4e7cf16240206ec3768cc9266::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit8bde6cb4e7cf16240206ec3768cc9266::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit8bde6cb4e7cf16240206ec3768cc9266::$classMap;
 
         }, null, ClassLoader::class);
     }

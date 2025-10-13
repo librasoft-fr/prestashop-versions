@@ -1,5 +1,0 @@
-services:
-  PrestaShop\Module\Assistant\Controller\Admin\EmployeeLib:
-    class: PrestaShop\Module\Assistant\Controller\Admin\EmployeeLib
-    arguments:
-      - '@doctrine.dbal.default_connection'

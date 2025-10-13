@@ -884,7 +884,7 @@ class ProductCore extends ObjectModel
         if ((int) $id_customer > 0) {
             $customer = new Customer((int) $id_customer);
             if (!Validate::isLoadedObject($customer)) {
-                die(Tools::displayError(sprintf('Customer with ID "%s" could not be loaded.', $id_customer)));
+                throw new PrestaShopException(sprintf('Customer with ID "%s" could not be loaded.', $id_customer));
             }
             self::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) $customer->id_default_group);
             $cur_cart = Context::getContext()->cart;
@@ -1301,11 +1301,34 @@ class ProductCore extends ObjectModel
             || !$this->deleteFromSupplier()
             || !$this->deleteDownload()
             || !$this->deleteFromCartRules()
+            || !$this->deleteRedirections()
         ) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Resets all entries where this product was used as a redirection target
+     *
+     * @return bool
+     */
+    public function deleteRedirections(): bool
+    {
+        $productTableUpdateResult = Db::getInstance()->update(
+            'product',
+            ['redirect_type' => RedirectType::TYPE_DEFAULT, 'id_type_redirected' => 0],
+            '(redirect_type = \'' . RedirectType::TYPE_PRODUCT_TEMPORARY . '\' OR redirect_type = \'' . RedirectType::TYPE_PRODUCT_PERMANENT . '\') AND id_type_redirected = ' . (int) $this->id
+        );
+
+        $productShopTableUpdateResult = Db::getInstance()->update(
+            'product_shop',
+            ['redirect_type' => RedirectType::TYPE_DEFAULT, 'id_type_redirected' => 0],
+            '(redirect_type = \'' . RedirectType::TYPE_PRODUCT_TEMPORARY . '\' OR redirect_type = \'' . RedirectType::TYPE_PRODUCT_PERMANENT . '\') AND id_type_redirected = ' . (int) $this->id
+        );
+
+        return $productTableUpdateResult && $productShopTableUpdateResult;
     }
 
     /**
@@ -1589,7 +1612,7 @@ class ProductCore extends ObjectModel
         }
 
         if (!Validate::isOrderBy($order_by) || !Validate::isOrderWay($order_way)) {
-            die(Tools::displayError('Invalid sorting parameters provided.'));
+            throw new PrestaShopException('Invalid sorting parameters provided.');
         }
         if ($order_by == 'id_product' || $order_by == 'price' || $order_by == 'date_add' || $order_by == 'date_upd') {
             $order_by_prefix = 'p';
@@ -2132,8 +2155,6 @@ class ProductCore extends ObjectModel
     /**
      * Add a product attribute.
      *
-     * @since 1.5.0.1
-     *
      * @param float $price Additional price
      * @param float $weight Additional weight
      * @param float $unit_impact Additional unit price
@@ -2639,6 +2660,11 @@ class ProductCore extends ObjectModel
             return false;
         }
 
+        // If this product does not have any combinations, no need to do any queries
+        if ($this->getProductType() != ProductType::TYPE_COMBINATIONS) {
+            return false;
+        }
+
         $result = Db::getInstance()->executeS(
             'SELECT pai.`id_image`, pai.`id_product_attribute`, il.`legend`
             FROM `' . _DB_PREFIX_ . 'product_attribute_image` pai
@@ -2750,7 +2776,7 @@ class ProductCore extends ObjectModel
             $order_by_prefix = 'pl';
         }
         if (!Validate::isOrderBy($order_by) || !Validate::isOrderWay($order_way)) {
-            die(Tools::displayError('Invalid sorting parameters provided.'));
+            throw new PrestaShopException('Invalid sorting parameters provided.');
         }
 
         $sql_groups = '';
@@ -3022,7 +3048,7 @@ class ProductCore extends ObjectModel
             $order_by_prefix = 'pl';
         }
         if (!Validate::isOrderBy($order_by) || !Validate::isOrderWay($order_way)) {
-            die(Tools::displayError('Invalid sorting parameters provided.'));
+            throw new PrestaShopException('Invalid sorting parameters provided.');
         }
         $current_date = date('Y-m-d H:i:00');
         $ids_product = Product::_getProductIdByDate(!$beginning ? $current_date : $beginning, !$ending ? $current_date : $ending, $context);
@@ -3357,7 +3383,7 @@ class ProductCore extends ObjectModel
         }
 
         if (!Validate::isUnsignedId($id_product)) {
-            die(Tools::displayError('Product ID is invalid.'));
+            throw new PrestaShopException('Product ID is invalid.');
         }
 
         // Initializations
@@ -3377,7 +3403,7 @@ class ProductCore extends ObjectModel
             * When called from the back office, cart ID can be inexistant
             */
             if (!$id_cart && !isset($context->employee)) {
-                die(Tools::displayError('If no employee is assigned in the context, cart ID must be provided to this method.'));
+                throw new PrestaShopException('If no employee is assigned in the context, cart ID must be provided to this method.');
             }
             $cur_cart = new Cart($id_cart);
             // Store cart in context to avoid multiple instantiations in BO
@@ -6874,7 +6900,9 @@ class ProductCore extends ObjectModel
             'ORDER BY `position`'
         );
 
-        if ($position > count($result)) {
+        $sizeResult = count($result);
+
+        if ($position > $sizeResult && $sizeResult > 0) {
             WebserviceRequest::getInstance()->setError(
                 500,
                 $this->trans(
@@ -7101,8 +7129,6 @@ class ProductCore extends ObjectModel
     /**
      * Get all product attributes ids.
      *
-     * @since 1.5.0
-     *
      * @param int $id_product Product identifier
      * @param bool $shop_only
      *
@@ -7301,8 +7327,6 @@ class ProductCore extends ObjectModel
     /**
      * Gets the name of a given product, in the given lang.
      *
-     * @since 1.5.0
-     *
      * @param int $id_product Product identifier
      * @param int|null $id_product_attribute Attribute identifier
      * @param int|null $id_lang Language identifier
@@ -7390,8 +7414,6 @@ class ProductCore extends ObjectModel
     /**
      * For a given product, returns its real quantity.
      *
-     * @since 1.5.0
-     *
      * @param int $id_product Product identifier
      * @param int $id_product_attribute Attribute identifier
      * @param int $id_warehouse Warehouse identifier - not used anymore
@@ -7414,8 +7436,6 @@ class ProductCore extends ObjectModel
     /**
      * For a given product, tells if it uses the advanced stock management.
      *
-     * @since 1.5.0
-     *
      * @param int $id_product Product identifier
      *
      * @return bool
@@ -7434,8 +7454,6 @@ class ProductCore extends ObjectModel
 
     /**
      * This method allows to flush price cache.
-     *
-     * @since 1.5.0
      */
     public static function flushPriceCache()
     {
@@ -7445,8 +7463,6 @@ class ProductCore extends ObjectModel
 
     /**
      * Get list of parent categories.
-     *
-     * @since 1.5.0
      *
      * @param int|null $id_lang Language identifier
      *
@@ -7458,7 +7474,11 @@ class ProductCore extends ObjectModel
             $id_lang = Context::getContext()->language->id;
         }
 
-        $interval = Category::getInterval($this->id_category_default);
+        // Verify we got the interval, the category may not exist at all
+        if (empty($interval = Category::getInterval($this->id_category_default))) {
+            return [];
+        }
+
         $sql = new DbQuery();
         $sql->from('category', 'c');
         $sql->leftJoin('category_lang', 'cl', 'c.id_category = cl.id_category AND id_lang = ' . (int) $id_lang . Shop::addSqlRestrictionOnLang('cl'));
@@ -7566,8 +7586,6 @@ class ProductCore extends ObjectModel
 
     /**
      * Get the product type (simple, virtual, pack).
-     *
-     * @since in 1.5.0
      *
      * @return int
      */

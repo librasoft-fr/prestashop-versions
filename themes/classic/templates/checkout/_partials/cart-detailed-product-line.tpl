@@ -121,6 +121,7 @@
         {/foreach}
       {/block}
     {/if}
+    {hook h='displayCartExtraProductInfo' product=$product}
   </div>
 
   <!--  product line right content: actions (quantity, delete), price -->

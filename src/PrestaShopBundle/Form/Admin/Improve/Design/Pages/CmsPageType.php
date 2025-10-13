@@ -88,7 +88,7 @@ class CmsPageType extends TranslatorAwareType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $invalidCharsText = sprintf('%s <>={}', $this->trans('Invalid characters:', 'Admin.Notifications.Info'));
+        $invalidCharsText = sprintf('%s <>{}', $this->trans('Invalid characters:', 'Admin.Notifications.Info'));
 
         $builder
             ->add('page_category_id', MaterialChoiceTreeType::class, [

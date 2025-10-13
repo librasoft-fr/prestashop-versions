@@ -149,10 +149,10 @@ class StoreCore extends ObjectModel
     public static function getStores($idLang)
     {
         return Db::getInstance()->executeS(
-            'SELECT s.id_store AS `id`, s.*, sl.*
-            FROM ' . _DB_PREFIX_ . 'store s  ' . Shop::addSqlAssociation('store', 's') . '
-            LEFT JOIN ' . _DB_PREFIX_ . 'store_lang sl ON (sl.id_store = s.id_store AND sl.id_lang = ' . (int) $idLang . ')
-            WHERE s.active = 1
+            'SELECT s.`id_store` AS `id`, s.*, sl.*
+            FROM `' . _DB_PREFIX_ . 'store` s  ' . Shop::addSqlAssociation('store', 's') . '
+            LEFT JOIN `' . _DB_PREFIX_ . 'store_lang` sl ON (sl.`id_store` = s.`id_store` AND sl.`id_lang` = ' . (int) $idLang . ')
+            WHERE s.`active` = 1
             ORDER BY sl.`name` ASC'
         );
     }
@@ -189,20 +189,16 @@ class StoreCore extends ObjectModel
      * This method is allow to know if a store exists for AdminImportController.
      *
      * @return bool
-     *
-     * @since 1.7.0
      */
     public static function storeExists($idStore)
     {
-        $row = Db::getInstance()->getRow(
+        return (bool) Db::getInstance()->getValue(
             '
             SELECT `id_store`
-            FROM ' . _DB_PREFIX_ . 'store a
+            FROM `' . _DB_PREFIX_ . 'store` a
             WHERE a.`id_store` = ' . (int) $idStore,
             false
         );
-
-        return isset($row['id_store']);
     }
 
     /**
@@ -212,6 +208,6 @@ class StoreCore extends ObjectModel
      */
     public static function atLeastOneStoreExists()
     {
-        return (bool) Db::getInstance()->getValue('SELECT `id_store` FROM ' . _DB_PREFIX_ . 'store', false);
+        return (bool) Db::getInstance()->getValue('SELECT `id_store` FROM `' . _DB_PREFIX_ . 'store`', false);
     }
 }

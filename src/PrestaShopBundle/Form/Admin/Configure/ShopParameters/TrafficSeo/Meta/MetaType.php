@@ -120,7 +120,7 @@ class MetaType extends AbstractType
                     ],
                     'constraints' => [
                         new Regex([
-                            'pattern' => '/^[^<>={}]*$/u',
+                            'pattern' => '/^[^<>{}]*$/u',
                             'message' => $this->trans(
                                 '%s is invalid.',
                                 [],
@@ -149,7 +149,7 @@ class MetaType extends AbstractType
                     ],
                     'constraints' => [
                         new Regex([
-                            'pattern' => '/^[^<>={}]*$/u',
+                            'pattern' => '/^[^<>{}]*$/u',
                             'message' => $this->trans(
                                 '%s is invalid.',
                                 [],

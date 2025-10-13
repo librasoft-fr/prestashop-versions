@@ -341,16 +341,24 @@ class CarrierRepository extends AbstractMultiShopObjectModelRepository
         return $count;
     }
 
-    public function getLastPosition(): int
+    /**
+     * Returns the position of the last carrier in the list.
+     * The caller is responsible for incrementing this value by 1 to get the next position.
+     *
+     * @return int Position of the last carrier
+     */
+    public function getLastPosition(): ?int
     {
         $qb = $this->connection->createQueryBuilder();
 
-        return $qb->select('c.position')
+        $lastPosition = $qb->select('c.position')
             ->from($this->prefix . 'carrier', 'c')
             ->orderBy('c.position', 'DESC')
             ->setMaxResults(1)
             ->executeQuery()
             ->fetchOne()
         ;
+
+        return $lastPosition !== false ? (int) $lastPosition : null;
     }
 }

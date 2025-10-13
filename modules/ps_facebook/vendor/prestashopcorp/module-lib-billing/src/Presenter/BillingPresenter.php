@@ -23,7 +23,6 @@ namespace PrestaShopCorp\Billing\Presenter;
 
 use Module;
 use PrestaShopCorp\Billing\Builder\EnvBuilder;
-use PrestaShopCorp\Billing\Builder\UrlBuilder;
 use PrestaShopCorp\Billing\Exception\BillingContextException;
 use PrestaShopCorp\Billing\Wrappers\BillingContextWrapper;
 
@@ -35,11 +34,6 @@ class BillingPresenter
      * @var EnvBuilder
      */
     private $envBuilder;
-
-    /**
-     * @var UrlBuilder
-     */
-    private $urlBuilder;
 
     /**
      * @var BillingContextWrapper
@@ -65,7 +59,6 @@ class BillingPresenter
         $this->setModule($module);
 
         $this->setEnvBuilder(new EnvBuilder());
-        $this->setUrlBuilder(new UrlBuilder());
 
         $this->setBillingContextWrapper($billingContextWrapper);
     }
@@ -95,7 +88,7 @@ class BillingPresenter
                     'i18n' => [
                         'isoCode' => $this->getBillingContextWrapper()->getLanguageIsoCode(),
                     ],
-                    'refreshToken' => $this->getBillingContextWrapper()->getRefreshToken(),
+                    'accessToken' => $this->getBillingContextWrapper()->getAccessToken(),
                     'shop' => [
                         'uuid' => $this->getBillingContextWrapper()->getShopUuid(),
                         'domain' => $this->getBillingContextWrapper()->getShopDomain(),
@@ -220,28 +213,6 @@ class BillingPresenter
     private function getEnvBuilder()
     {
         return $this->envBuilder;
-    }
-
-    /**
-     * setUrlBuilder
-     *
-     * @param UrlBuilder $urlBuilder
-     *
-     * @return void
-     */
-    private function setUrlBuilder(UrlBuilder $urlBuilder)
-    {
-        $this->urlBuilder = $urlBuilder;
-    }
-
-    /**
-     * getUrlBuilder
-     *
-     * @return UrlBuilder
-     */
-    private function getUrlBuilder()
-    {
-        return $this->urlBuilder;
     }
 
     /**

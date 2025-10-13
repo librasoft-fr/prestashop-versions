@@ -299,7 +299,7 @@ class SupplierCore extends ObjectModel
         }
 
         if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)) {
-            die(Tools::displayError('Invalid sorting parameters provided.'));
+            throw new PrestaShopException('Invalid sorting parameters provided.');
         }
 
         $sqlGroups = '';
@@ -485,8 +485,6 @@ class SupplierCore extends ObjectModel
      * @param int $idProductAttribute
      *
      * @return array
-     *
-     * @since 1.5.0
      */
     public static function getProductInformationsBySupplier($idSupplier, $idProduct, $idProductAttribute = 0)
     {

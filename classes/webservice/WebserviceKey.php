@@ -31,7 +31,7 @@ class WebserviceKeyCore extends ObjectModel
     /** @var string Key */
     public $key;
 
-    /** @var bool Webservice Account statuts */
+    /** @var bool Webservice Account status */
     public $active = true;
 
     /** @var string Webservice Account description */

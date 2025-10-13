@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb8393980cef25ddda4ac1db7651d19ba
+class ComposerStaticInitad5e124e2e7361657c2472a85ef312a0
 {
     public static $prefixLengthsPsr4 = array (
         'P' => 
@@ -17,16 +17,6 @@ class ComposerStaticInitb8393980cef25ddda4ac1db7651d19ba
         'PrestaShop\\Module\\PsEventbus\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
-        ),
-    );
-
-    public static $prefixesPsr0 = array (
-        'R' => 
-        array (
-            'Raven_' => 
-            array (
-                0 => __DIR__ . '/..' . '/sentry/sentry/lib',
-            ),
         ),
     );
 
@@ -164,37 +154,14 @@ class ComposerStaticInitb8393980cef25ddda4ac1db7651d19ba
         'PrestaShop\\Module\\PsEventbus\\Traits\\Hooks\\UseWishlistHooks' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseWishlistHooks.php',
         'PrestaShop\\Module\\PsEventbus\\Traits\\UseHooks' => __DIR__ . '/../..' . '/src/Traits/UseHooks.php',
         'Ps_eventbus' => __DIR__ . '/../..' . '/ps_eventbus.php',
-        'Raven_Autoloader' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Autoloader.php',
-        'Raven_Breadcrumbs' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Breadcrumbs.php',
-        'Raven_Breadcrumbs_ErrorHandler' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Breadcrumbs/ErrorHandler.php',
-        'Raven_Breadcrumbs_MonologHandler' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Breadcrumbs/MonologHandler.php',
-        'Raven_Client' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Client.php',
-        'Raven_Compat' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Compat.php',
-        'Raven_Context' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Context.php',
-        'Raven_CurlHandler' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/CurlHandler.php',
-        'Raven_ErrorHandler' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/ErrorHandler.php',
-        'Raven_Exception' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Exception.php',
-        'Raven_Processor' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Processor.php',
-        'Raven_Processor_RemoveCookiesProcessor' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Processor/RemoveCookiesProcessor.php',
-        'Raven_Processor_RemoveHttpBodyProcessor' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Processor/RemoveHttpBodyProcessor.php',
-        'Raven_Processor_SanitizeDataProcessor' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Processor/SanitizeDataProcessor.php',
-        'Raven_Processor_SanitizeHttpHeadersProcessor' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Processor/SanitizeHttpHeadersProcessor.php',
-        'Raven_Processor_SanitizeStacktraceProcessor' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Processor/SanitizeStacktraceProcessor.php',
-        'Raven_ReprSerializer' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/ReprSerializer.php',
-        'Raven_SanitizeDataProcessor' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/SanitizeDataProcessor.php',
-        'Raven_Serializer' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Serializer.php',
-        'Raven_Stacktrace' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Stacktrace.php',
-        'Raven_TransactionStack' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/TransactionStack.php',
-        'Raven_Util' => __DIR__ . '/..' . '/sentry/sentry/lib/Raven/Util.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb8393980cef25ddda4ac1db7651d19ba::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb8393980cef25ddda4ac1db7651d19ba::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitb8393980cef25ddda4ac1db7651d19ba::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitb8393980cef25ddda4ac1db7651d19ba::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitad5e124e2e7361657c2472a85ef312a0::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitad5e124e2e7361657c2472a85ef312a0::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitad5e124e2e7361657c2472a85ef312a0::$classMap;
 
         }, null, ClassLoader::class);
     }

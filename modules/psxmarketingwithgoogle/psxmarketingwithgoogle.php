@@ -74,7 +74,7 @@ class PsxMarketingWithGoogle extends Module
     {
         $this->name = 'psxmarketingwithgoogle';
         $this->tab = 'advertising_marketing';
-        $this->version = '1.75.2';
+        $this->version = '1.75.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->module_key = '16b273e77e02c0cc36cd006463951593';
@@ -233,7 +233,9 @@ class PsxMarketingWithGoogle extends Module
             }
         }
 
-        $this->context->controller->addCSS($this->getPathUri() . 'views/css/admin/menu.css');
+        if (version_compare(_PS_VERSION_, '9.0.0', '<')) {
+            $this->context->controller->addCSS($this->getPathUri() . 'views/css/admin/menu.css');
+        }
     }
 
     public function hookDisplayHeader()

@@ -20,8 +20,8 @@
 
 declare(strict_types=1);
 
-use PrestaShop\Module\PsClassicEdition\Actions\Uninstall;
 use PrestaShop\Module\PsClassicEdition\Install\Tabs\TabsInstaller;
+use PrestaShop\Module\PsClassicEdition\Install\Tabs\TabsUninstaller;
 
 define('PS_CLASSIC_EDITION_SETTINGS_WHITE_LIST', json_decode(file_get_contents(__DIR__ . '/settingsWhiteList.json'), true));
 define('PS_CLASSIC_EDITION_SETTINGS_BLACK_LIST', json_decode(file_get_contents(__DIR__ . '/settingsBlackList.json'), true));
@@ -44,7 +44,7 @@ class ps_classic_edition extends Module
     public function __construct()
     {
         $this->name = 'ps_classic_edition';
-        $this->version = '1.0.0';
+        $this->version = '1.0.2';
         $this->tab = 'administration';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
@@ -75,7 +75,7 @@ class ps_classic_edition extends Module
 
         $installed =
             parent::install()
-            && (new TabsInstaller($this->name, $this->getTranslator()))->installTabs()
+            && (new TabsInstaller($this->name, $this->getTranslator()))->run()
             && $this->registerHook($this->getHooksNames())
         ;
         if (!$installed) {
@@ -95,7 +95,13 @@ class ps_classic_edition extends Module
     public function uninstall(): bool
     {
         return parent::uninstall()
-            && (new Uninstall($this->name))->run();
+            && (new TabsUninstaller($this->name))->run();
+    }
+
+    public function disable($force_all = false): bool
+    {
+        return parent::disable($force_all)
+            && (new TabsUninstaller($this->name))->run();
     }
 
     /**
@@ -103,9 +109,8 @@ class ps_classic_edition extends Module
      */
     public function enable($force_all = false): bool
     {
-        (new TabsInstaller($this->name, $this->getTranslator()))->installTabs();
-
-        return parent::enable($force_all);
+        return parent::enable($force_all)
+            && (new TabsInstaller($this->name, $this->getTranslator()))->run();
     }
 
     protected function uninstallBasicEditionModule(): void

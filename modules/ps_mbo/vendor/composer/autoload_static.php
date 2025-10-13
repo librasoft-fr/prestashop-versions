@@ -512,6 +512,7 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
         'PrestaShop\\Module\\Mbo\\Module\\Module' => __DIR__ . '/../..' . '/src/Module/Module.php',
         'PrestaShop\\Module\\Mbo\\Module\\ModuleBuilder' => __DIR__ . '/../..' . '/src/Module/ModuleBuilder.php',
         'PrestaShop\\Module\\Mbo\\Module\\ModuleBuilderInterface' => __DIR__ . '/../..' . '/src/Module/ModuleBuilderInterface.php',
+        'PrestaShop\\Module\\Mbo\\Module\\ModuleOverrideChecker' => __DIR__ . '/../..' . '/src/Module/ModuleOverrideChecker.php',
         'PrestaShop\\Module\\Mbo\\Module\\Repository' => __DIR__ . '/../..' . '/src/Module/Repository.php',
         'PrestaShop\\Module\\Mbo\\Module\\RepositoryInterface' => __DIR__ . '/../..' . '/src/Module/RepositoryInterface.php',
         'PrestaShop\\Module\\Mbo\\Module\\SourceHandler\\AddonsUrlSourceHandler' => __DIR__ . '/../..' . '/src/Module/SourceHandler/AddonsUrlSourceHandler.php',

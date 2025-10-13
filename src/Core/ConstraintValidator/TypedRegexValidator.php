@@ -49,8 +49,8 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 class TypedRegexValidator extends ConstraintValidator
 {
-    public const CATALOG_CHARS = '<>;=#{}';
-    public const GENERIC_NAME_CHARS = '<>={}';
+    public const CATALOG_CHARS = '<>{}';
+    public const GENERIC_NAME_CHARS = '<>{}';
     public const MESSAGE_CHARS = '<>{}';
     public const NAME_CHARS = '0-9!<>,;?=+()@#"{}_$%:';
 
@@ -117,9 +117,9 @@ class TypedRegexValidator extends ConstraintValidator
             case TypedRegex::TYPE_NAME:
                 return '/^[^0-9!<>,;?=+()@#"°{}_$%:¤|]*$/u';
             case TypedRegex::TYPE_CATALOG_NAME:
-                return '/^[^<>;=#{}]*$/u';
+                return '/^[^<>{}]*$/u';
             case TypedRegex::TYPE_GENERIC_NAME:
-                return '/^[^<>={}]*$/u';
+                return '/^[^<>{}]*$/u';
             case TypedRegex::TYPE_CITY_NAME:
                 return '/^[^!<>;?=+@#"°{}_$%]*$/u';
             case TypedRegex::TYPE_ADDRESS:

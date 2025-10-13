@@ -155,7 +155,7 @@ class FeatureCore extends ObjectModel
         foreach ($fields as $field) {
             foreach (array_keys($field) as $key) {
                 if (!Validate::isTableOrIdentifier($key)) {
-                    die(Tools::displayError('Invalid column name in feature_lang table.'));
+                    throw new PrestaShopException('Invalid column name in feature_lang table.');
                 }
             }
 
@@ -290,8 +290,6 @@ class FeatureCore extends ObjectModel
      * This metohd is allow to know if a feature is used or active.
      *
      * @return bool
-     *
-     * @since 1.5.0.1
      */
     public static function isFeatureActive()
     {

@@ -14,7 +14,7 @@ return array(
     'Symfony\\Contracts\\HttpClient\\' => array($vendorDir . '/symfony/http-client-contracts'),
     'Symfony\\Component\\String\\' => array($vendorDir . '/symfony/string'),
     'Symfony\\Component\\HttpClient\\' => array($vendorDir . '/symfony/http-client'),
-    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'PrestaShop\\PsAccountsInstaller\\' => array($vendorDir . '/prestashop/prestashop-accounts-installer/src'),
     'PrestaShop\\Module\\PsClassicEdition\\' => array($baseDir . '/src'),

@@ -35,7 +35,7 @@ class FailedMessagesShowCommand extends AbstractFailedMessagesCommand
             ->setDefinition([
                 new InputArgument('id', InputArgument::OPTIONAL, 'Specific message id to show'),
                 new InputOption('max', null, InputOption::VALUE_REQUIRED, 'Maximum number of messages to list', 50),
-                new InputOption('transport', null, InputOption::VALUE_OPTIONAL, 'Use a specific failure transport', self::DEFAULT_TRANSPORT_OPTION),
+                new InputOption('transport', null, InputOption::VALUE_REQUIRED, 'Use a specific failure transport', self::DEFAULT_TRANSPORT_OPTION),
                 new InputOption('stats', null, InputOption::VALUE_NONE, 'Display the message count by class'),
                 new InputOption('class-filter', null, InputOption::VALUE_REQUIRED, 'Filter by a specific class name'),
             ])
@@ -70,7 +70,7 @@ EOF
         $this->printPendingMessagesMessage($receiver, $io);
 
         if (!$receiver instanceof ListableReceiverInterface) {
-            throw new RuntimeException(sprintf('The "%s" receiver does not support listing or showing specific messages.', $failureTransportName));
+            throw new RuntimeException(\sprintf('The "%s" receiver does not support listing or showing specific messages.', $failureTransportName));
         }
 
         if ($input->getOption('stats')) {
@@ -93,7 +93,7 @@ EOF
         $rows = [];
 
         if ($classFilter) {
-            $io->comment(sprintf('Displaying only \'%s\' messages', $classFilter));
+            $io->comment(\sprintf('Displaying only \'%s\' messages', $classFilter));
         }
 
         $this->phpSerializer?->acceptPhpIncompleteClass();
@@ -132,12 +132,12 @@ EOF
         $io->table(['Id', 'Class', 'Failed at', 'Error'], $rows);
 
         if ($rowsCount === $max) {
-            $io->comment(sprintf('Showing first %d messages.', $max));
+            $io->comment(\sprintf('Showing first %d messages.', $max));
         } elseif ($classFilter) {
-            $io->comment(sprintf('Showing %d message(s).', $rowsCount));
+            $io->comment(\sprintf('Showing %d message(s).', $rowsCount));
         }
 
-        $io->comment(sprintf('Run <comment>messenger:failed:show {id} --transport=%s -vv</comment> to see message details.', $failedTransportName));
+        $io->comment(\sprintf('Run <comment>messenger:failed:show {id} --transport=%s -vv</comment> to see message details.', $failedTransportName));
     }
 
     private function listMessagesPerClass(?string $failedTransportName, SymfonyStyle $io, int $max): void
@@ -183,15 +183,15 @@ EOF
             $this->phpSerializer?->rejectPhpIncompleteClass();
         }
         if (null === $envelope) {
-            throw new RuntimeException(sprintf('The message "%s" was not found.', $id));
+            throw new RuntimeException(\sprintf('The message "%s" was not found.', $id));
         }
 
         $this->displaySingleMessage($envelope, $io);
 
         $io->writeln([
             '',
-            sprintf(' Run <comment>messenger:failed:retry %s --transport=%s</comment> to retry this message.', $id, $failedTransportName),
-            sprintf(' Run <comment>messenger:failed:remove %s --transport=%s</comment> to delete it.', $id, $failedTransportName),
+            \sprintf(' Run <comment>messenger:failed:retry %s --transport=%s</comment> to retry this message.', $id, $failedTransportName),
+            \sprintf(' Run <comment>messenger:failed:remove %s --transport=%s</comment> to delete it.', $id, $failedTransportName),
         ]);
     }
 }

@@ -59,7 +59,7 @@ class FeatureType extends TranslatorAwareType
                         ]),
                     ],
                 ],
-                'help' => $this->trans('Invalid characters: %chars%', 'Admin.Notifications.Info', ['%chars%' => '<>={}']),
+                'help' => $this->trans('Invalid characters: %chars%', 'Admin.Notifications.Info', ['%chars%' => '<>{}']),
             ])
             ->add('shop_association', ShopChoiceTreeType::class, [
                 'label' => $this->trans('Store association', 'Admin.Global'),

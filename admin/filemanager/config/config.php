@@ -33,6 +33,20 @@ if (!defined('_PS_ADMIN_DIR_')) {
 }
 
 require_once _PS_ADMIN_DIR_.'/../config/config.inc.php';
+
+// Boot the Symfony kernel
+global $kernel;
+
+if (!$kernel) {
+    require_once _PS_ROOT_DIR_ . '/app/AdminKernel.php';
+
+    $kernel = new AdminKernel(
+        _PS_ENV_,
+        _PS_MODE_DEV_
+    );
+    $kernel->boot();
+}
+
 require_once _PS_ADMIN_DIR_.'/init.php';
 
 mb_internal_encoding('UTF-8');
@@ -41,7 +55,7 @@ $products_accesses = Profile::getProfileAccess(Context::getContext()->employee->
 $cms_accesses = Profile::getProfileAccess(Context::getContext()->employee->id_profile, Tab::getIdFromClassName('AdminCmsContent'));
 
 if (!$products_accesses['edit'] && !$cms_accesses['edit']) {
-    die(Tools::displayError('Access forbidden.'));
+    throw new PrestaShopException('Access forbidden.');
 }
 //------------------------------------------------------------------------------
 // DON'T COPY THIS VARIABLES IN FOLDERS config.php FILES

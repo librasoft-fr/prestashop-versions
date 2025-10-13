@@ -29,6 +29,7 @@ use PrestaShop\Module\Mbo\Api\Security\AdminAuthenticationProvider;
 use PrestaShop\Module\Mbo\Helpers\Config;
 use PrestaShop\Module\Mbo\Helpers\UrlHelper;
 use PrestaShop\Module\Mbo\Module\Module;
+use PrestaShop\Module\Mbo\Module\ModuleOverrideChecker;
 use PrestaShop\Module\Mbo\Module\Workflow\TransitionInterface;
 use PrestaShop\Module\Mbo\Tab\TabInterface;
 use PrestaShop\PrestaShop\Adapter\Module\Module as CoreModule;
@@ -133,6 +134,7 @@ class ContextBuilder
         }
 
         $shopActivity = Config::getShopActivity();
+        $overrideChecker = ModuleOverrideChecker::getInstance();
 
         $token = \Tools::getValue('_token');
 
@@ -164,7 +166,9 @@ class ContextBuilder
             'upgradable_modules' => $this->getUpgradableModules(),
             'accounts_user_id' => $this->accountsDataProvider->getAccountsUserId(),
             'accounts_shop_id' => $this->accountsDataProvider->getAccountsShopId(),
-            'accounts_token' => $this->accountsDataProvider->getAccountsToken(),
+            'accounts_token' => $this->accountsDataProvider->getAccountsToken() ?: '',
+            'accounts_shop_token_v7' => $this->accountsDataProvider->getShopTokenV7(),
+            'accounts_shop_token' => $this->accountsDataProvider->getAccountsShopToken(),
             'accounts_component_loaded' => false,
             'module_manager_updates_tab_url' => UrlHelper::transformToAbsoluteUrl($this->router->generate('admin_module_updates')),
             'module_catalog_url' => UrlHelper::transformToAbsoluteUrl($this->router->generate('admin_mbo_catalog_module')),
@@ -173,7 +177,7 @@ class ContextBuilder
             'shop_creation_date' => defined('_PS_CREATION_DATE_') ? _PS_CREATION_DATE_ : null,
             'shop_business_sector_id' => $shopActivity['id'],
             'shop_business_sector' => $shopActivity['name'],
-
+            'overrides_on_shop' => $overrideChecker->listOverridesFromPsDirectory(),
             'actions_token' => UrlHelper::getQueryParameterValue($mboResetUrl, '_token'),
             'actions_url' => [
                 'install' => $this->generateActionUrl('install'),

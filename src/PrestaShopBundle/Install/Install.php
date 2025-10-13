@@ -31,6 +31,7 @@ use Exception;
 use FileLogger as LegacyFileLogger;
 use Language as LanguageLegacy;
 use PhpEncryption;
+use PrestaShop\PrestaShop\Adapter\Bundle\AssetsInstaller;
 use PrestaShop\PrestaShop\Adapter\Entity\Cache;
 use PrestaShop\PrestaShop\Adapter\Entity\Cart;
 use PrestaShop\PrestaShop\Adapter\Entity\Category;
@@ -70,6 +71,7 @@ use PrestaShopLoggerInterface;
 use PSRLoggerAdapter;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 class Install extends AbstractInstall
 {
@@ -454,7 +456,7 @@ class Install extends AbstractInstall
             } else {
                 $languages = $this->installLanguages();
             }
-        } catch (PrestashopInstallerException $e) {
+        } catch (Throwable $e) {
             $this->setError($e->getMessage());
 
             return false;
@@ -535,7 +537,7 @@ class Install extends AbstractInstall
                     return false;
                 }
             }
-        } catch (PrestashopInstallerException $e) {
+        } catch (Throwable $e) {
             $this->setError($e->getMessage());
 
             return false;
@@ -546,6 +548,8 @@ class Install extends AbstractInstall
 
     public function createShop($shop_name)
     {
+        $this->getLogger()->log('Creating shop');
+
         // Create default group shop
         $shop_group = new ShopGroup();
         $shop_group->name = 'Default';
@@ -602,6 +606,7 @@ class Install extends AbstractInstall
         if ($languages_list === null || (is_array($languages_list) && !count($languages_list))) {
             $languages_list = $this->language->getIsoList();
         }
+        $this->getLogger()->log('Installing languages: ' . implode(', ', $languages_list));
 
         $languages_list = array_unique($languages_list);
 
@@ -1205,6 +1210,8 @@ class Install extends AbstractInstall
     public function finalize(?string $randomizedAdminFolderName = null): bool
     {
         $adminFolder = 'admin-dev';
+
+        // If we need, we generate a random name for admin folder (for security purpose!)
         if (file_exists(_PS_ROOT_DIR_ . '/admin/')) {
             $randomizedAdminFolderName = $randomizedAdminFolderName ?? sprintf(
                 'admin%03d%s/',
@@ -1224,9 +1231,18 @@ class Install extends AbstractInstall
                 return false;
             }
         }
+
+        // We need also to run "assets:install" to install some bundles assets via symlink
+        // or hard copy if symlink aren't possible in this environment.
+        SymfonyContainer::getInstance()
+            ->get(AssetsInstaller::class)
+            ->installAssets($adminFolder);
+
+        // And then, we build url and log this information!
         Context::getContext()->shop = new Shop(1);
         Context::getContext()->link = new Link();
         $adminUrl = rtrim(Context::getContext()->link->getAdminBaseLink(), '/') . '/' . $adminFolder;
+
         $this->getLogger()->log(sprintf('You can now access your backoffice at %s.', $adminUrl));
 
         return true;

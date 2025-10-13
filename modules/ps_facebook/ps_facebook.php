@@ -94,7 +94,7 @@ class Ps_facebook extends Module
     {
         $this->name = 'ps_facebook';
         $this->tab = 'advertising_marketing';
-        $this->version = '1.38.9';
+        $this->version = '1.38.12';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->module_key = '860395eb54512ec72d98615805274591';
@@ -281,7 +281,9 @@ class Ps_facebook extends Module
 
     public function hookDisplayBackOfficeHeader()
     {
-        $this->context->controller->addCSS($this->getPathUri() . 'views/css/admin/menu.css');
+        if (version_compare(_PS_VERSION_, '9.0.0', '<')) {
+            $this->context->controller->addCSS($this->getPathUri() . 'views/css/admin/menu.css');
+        }
     }
 
     public function hookActionFrontControllerSetMedia()

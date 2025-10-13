@@ -98,6 +98,9 @@ class QueryListProvider implements ProviderInterface
 
         /** @var GridDataFactoryInterface $gridDataFactory */
         $gridDataFactory = $this->container->get($gridDataFactoryDefinition);
+        if (!$gridDataFactory instanceof GridDataFactoryInterface) {
+            throw new UnexpectedValueException(sprintf('Provided service %s is not a GridDataFactory.', $gridDataFactoryDefinition));
+        }
 
         $filter = $this->createFilters($context, $operation);
 
@@ -121,13 +124,19 @@ class QueryListProvider implements ProviderInterface
             );
         }
 
+        // Apply mapping the other way around, because filters may have default orderBy values named for Grid
+        // that need to be mapped to match the API naming
+        $filtersMapping = $operation->getExtraProperties()['filtersMapping'] ?? [];
+        $orderBy = $this->mapOrderByFieldForAPI($filter->getOrderBy(), $filtersMapping);
+
         return new PaginationElements(
             $count,
-            $filter->getOrderBy(),
+            $orderBy,
             $filter->getOrderWay(),
             $filter->getLimit(),
             $filter->getOffset(),
-            $filter->getFilters(),
+            // Keep the same filters provided in query parameters
+            $context['filters']['filters'] ?? [],
             $normalizedQueryResult
         );
     }
@@ -145,10 +154,11 @@ class QueryListProvider implements ProviderInterface
             [NormalizationMapper::NORMALIZATION_MAPPING => $filtersMapping]
         );
 
+        $orderBy = $this->mapOrderByFieldForGrid($queryParameters['orderBy'] ?? null, $filtersMapping);
         $paginationParameters = [
             'filters' => $paginationFilters,
-            'orderBy' => array_key_exists('orderBy', $queryParameters) ? $queryParameters['orderBy'] : null,
-            'sortOrder' => array_key_exists('sortOrder', $queryParameters) ? $queryParameters['sortOrder'] : 'asc',
+            'orderBy' => $orderBy,
+            'sortOrder' => $queryParameters['sortOrder'] ?? 'asc',
             'offset' => array_key_exists('offset', $queryParameters) ? (int) $queryParameters['offset'] : null,
             'limit' => array_key_exists('limit', $queryParameters)
                 ? (int) $queryParameters['limit']
@@ -175,5 +185,37 @@ class QueryListProvider implements ProviderInterface
         $filters->add($paginationParameters);
 
         return $filters;
+    }
+
+    protected function mapOrderByFieldForGrid(?string $apiOrderBy, array $filtersMapping): ?string
+    {
+        if (empty($apiOrderBy) || empty($filtersMapping)) {
+            return $apiOrderBy;
+        }
+
+        // The orderBy parameter also needs to be mapped (the APIResource field should be used but may not match the SQL query one)
+        foreach ($filtersMapping as $apiKey => $gridKey) {
+            if ('[' . $apiOrderBy . ']' === $apiKey) {
+                $apiOrderBy = str_replace(['[', ']'], '', $gridKey);
+            }
+        }
+
+        return $apiOrderBy;
+    }
+
+    protected function mapOrderByFieldForAPI(?string $gridOrderBy, array $filtersMapping): ?string
+    {
+        if (empty($gridOrderBy)) {
+            return $gridOrderBy;
+        }
+
+        // The orderBy parameter also needs to be mapped (the APIResource field should be used but may not match the SQL query one)
+        foreach ($filtersMapping as $apiKey => $gridKey) {
+            if ('[' . $gridOrderBy . ']' === $gridKey) {
+                $gridOrderBy = str_replace(['[', ']'], '', $apiKey);
+            }
+        }
+
+        return $gridOrderBy;
     }
 }

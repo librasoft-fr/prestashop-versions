@@ -159,6 +159,11 @@ $(() => {
     $modal.on('shown.bs.modal', () => {
       $(OrderViewPageMap.addCartRuleSubmit).prop('disabled', true);
     });
+    $modal.on('hidden.bs.modal', () => {
+      $(OrderViewPageMap.addCartRuleNameInput).val('');
+      $(OrderViewPageMap.addCartRuleTypeSelect).val(DISCOUNT_TYPE_PERCENT).trigger('change');
+      $(OrderViewPageMap.addCartRuleValueInput).val('');
+    });
 
     $form.find(OrderViewPageMap.addCartRuleNameInput).on('keyup', (event) => {
       const cartRuleName = <string>$(event.currentTarget).val();

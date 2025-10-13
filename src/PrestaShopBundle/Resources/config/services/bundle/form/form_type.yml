@@ -8,7 +8,7 @@ services:
       # Symfony will throw an error when an argument is no more used in all services definitions so we can safely remove them.
       # Before adding your own, please check it does not already exist in the list.
       # There could be some duplicates.
-      $locales: "@=service('prestashop.adapter.legacy.context').getLanguages()"
+      $locales: "@=service('prestashop.adapter.legacy.context').getLanguages(false)"
       $isMultiShopEnabled: '@=service("prestashop.adapter.multistore_feature").isUsed()'
       $isShopFeatureEnabled: '@=service("prestashop.adapter.multistore_feature").isUsed()'
       $isMultistoreEnabled: '@=service("prestashop.adapter.multistore_feature").isActive()'
@@ -87,6 +87,7 @@ services:
 
   PrestaShopBundle\Form\Admin\Sell\Order\Invoices\GenerateByStatusType:
     arguments:
+      $translator: '@translator'
       $orderStateChoiceProvider: '@prestashop.core.form.choice_provider.order_state_by_id'
       $orderCountsByState: '@=service("prestashop.core.api.order_invoice.repository").countByOrderState(service("prestashop.adapter.shop.context").getContextListShopID())'
 
@@ -600,10 +601,6 @@ services:
   PrestaShopBundle\Form\Admin\Type\FeatureChoiceType:
     arguments:
       $featureChoiceProvider: '@PrestaShop\PrestaShop\Adapter\Form\ChoiceProvider\FeaturesChoiceProvider'
-
-  PrestaShopBundle\Form\Admin\Type\ThemeChoiceType:
-    arguments:
-      $themesChoiceProvider: '@PrestaShop\PrestaShop\Core\Form\ChoiceProvider\ThemeByNameChoiceProvider'
 
   form.type.sell.product.event_listener.categories_listener:
     alias: 'PrestaShopBundle\Form\Admin\Sell\Product\EventListener\CategoriesListener'

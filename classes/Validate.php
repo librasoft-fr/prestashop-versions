@@ -175,7 +175,7 @@ class ValidateCore
      */
     public static function isCarrierName($name)
     {
-        return empty($name) || preg_match('/^[^<>;=#{}]*$/u', $name);
+        return empty($name) || preg_match('/^[^<>{}]*$/u', $name);
     }
 
     /**
@@ -242,7 +242,7 @@ class ValidateCore
      */
     public static function isMailName($mail_name)
     {
-        return is_string($mail_name) && preg_match('/^[^<>;=#{}]*$/u', $mail_name);
+        return is_string($mail_name) && preg_match('/^[^<>{}]*$/u', $mail_name);
     }
 
     /**
@@ -377,7 +377,7 @@ class ValidateCore
      */
     public static function isCatalogName($name)
     {
-        return preg_match('/^[^<>;=#{}]*$/u', $name);
+        return preg_match('/^[^<>{}]*$/u', $name);
     }
 
     /**
@@ -469,7 +469,7 @@ class ValidateCore
      */
     public static function isValidSearch($search)
     {
-        return preg_match('/^[^<>;=#{}]{0,64}$/u', $search);
+        return preg_match('/^[^<>{}]{0,64}$/u', $search);
     }
 
     /**
@@ -481,7 +481,7 @@ class ValidateCore
      */
     public static function isGenericName($name)
     {
-        return empty($name) || preg_match('/^[^<>={}]*$/u', $name);
+        return empty($name) || preg_match('/^[^<>{}]*$/u', $name);
     }
 
     /**
@@ -588,8 +588,6 @@ class ValidateCore
      * @param string $hashedPasswd Password to validate
      *
      * @return bool Indicates whether the given string is a valid hashed password
-     *
-     * @since 1.7.0
      */
     public static function isHashedPassword($hashedPasswd)
     {
@@ -660,7 +658,7 @@ class ValidateCore
     }
 
     /**
-     * Check for birthDate validity. To avoid year in two digits, disallow date < 200 years ago
+     * Check for birthDate validity. To avoid year in two digits, disallow date < 120 years ago to match with BO rules
      *
      * @param string $date birthdate to validate
      * @param string $format optional format
@@ -677,10 +675,10 @@ class ValidateCore
         if (!empty(DateTime::getLastErrors()['warning_count']) || false === $d) {
             return false;
         }
-        $twoHundredYearsAgo = new DateTime();
-        $twoHundredYearsAgo->sub(new DateInterval('P200Y'));
+        $oneHundredTwentyYearsAgo = new DateTime();
+        $oneHundredTwentyYearsAgo->sub(new DateInterval('P120Y'));
 
-        return $d->setTime(0, 0, 0) <= new DateTime() && $d->setTime(0, 0, 0) >= $twoHundredYearsAgo;
+        return $d->setTime(0, 0, 0) <= new DateTime() && $d->setTime(0, 0, 0) >= $oneHundredTwentyYearsAgo;
     }
 
     /**

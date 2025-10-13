@@ -67,7 +67,7 @@ class FeatureValueType extends TranslatorAwareType
                         new Length(['max' => FeatureValueSettings::VALUE_MAX_LENGTH]),
                     ],
                 ],
-                'help' => $this->trans('Invalid characters: %chars%', 'Admin.Notifications.Info', ['%chars%' => '<>={}']),
+                'help' => $this->trans('Invalid characters: %chars%', 'Admin.Notifications.Info', ['%chars%' => '<>{}']),
             ])
         ;
     }

@@ -34,6 +34,11 @@ class TabsInstaller
     ) {
     }
 
+    public function run(): bool
+    {
+        return $this->installTabs();
+    }
+
     public function installTabs(): bool
     {
         $result = true;

@@ -270,8 +270,7 @@ class ModuleRepository implements ModuleRepositoryInterface
     {
         $path = $this->modulePath . $moduleName;
         if ($isValid) {
-            $moduleConfig = ModuleLegacy::loadModuleXMLConfig($moduleName);
-            $version = $moduleConfig['version'] ?? null;
+            $version = ModuleLegacy::getModuleVersion($moduleName) ?: null;
         } else {
             $version = null;
         }
@@ -358,6 +357,13 @@ class ModuleRepository implements ModuleRepositoryInterface
 
         foreach ($modulesFromHook as $moduleFromHook) {
             if ($module->get('name') === $moduleFromHook['name']) {
+                $moduleVersionAvailable = $module->getAttributes()->get('version_available');
+                $moduleHookVersionAvailable = $moduleFromHook['version_available'];
+                // We keep the more up-to-date information (in case multiple sources provide the same module)
+                if (!empty($moduleVersionAvailable) && !empty($moduleHookVersionAvailable) && version_compare($moduleVersionAvailable, $moduleHookVersionAvailable, '>')) {
+                    continue;
+                }
+
                 // Prevent data from hooks from overriding local translations on displayName and description
                 if ($module->attributes->has('displayName') && !empty($module->attributes->get('displayName'))) {
                     unset($moduleFromHook['displayName']);

@@ -35,7 +35,7 @@ class FailedMessagesRemoveCommand extends AbstractFailedMessagesCommand
                 new InputArgument('id', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Specific message id(s) to remove'),
                 new InputOption('all', null, InputOption::VALUE_NONE, 'Remove all failed messages from the transport'),
                 new InputOption('force', null, InputOption::VALUE_NONE, 'Force the operation without confirmation'),
-                new InputOption('transport', null, InputOption::VALUE_OPTIONAL, 'Use a specific failure transport', self::DEFAULT_TRANSPORT_OPTION),
+                new InputOption('transport', null, InputOption::VALUE_REQUIRED, 'Use a specific failure transport', self::DEFAULT_TRANSPORT_OPTION),
                 new InputOption('show-messages', null, InputOption::VALUE_NONE, 'Display messages before removing it (if multiple ids are given)'),
             ])
             ->setHelp(<<<'EOF'
@@ -78,7 +78,7 @@ EOF
         $shouldDisplayMessages = $input->getOption('show-messages') || 1 === $idsCount;
 
         if (!$receiver instanceof ListableReceiverInterface) {
-            throw new RuntimeException(sprintf('The "%s" receiver does not support removing specific messages.', $failureTransportName));
+            throw new RuntimeException(\sprintf('The "%s" receiver does not support removing specific messages.', $failureTransportName));
         }
 
         if ($shouldDeleteAllMessages) {
@@ -101,7 +101,7 @@ EOF
             }
 
             if (null === $envelope) {
-                $io->error(sprintf('The message with id "%s" was not found.', $id));
+                $io->error(\sprintf('The message with id "%s" was not found.', $id));
                 continue;
             }
 
@@ -112,9 +112,9 @@ EOF
             if ($shouldForce || $io->confirm('Do you want to permanently remove this message?', false)) {
                 $receiver->reject($envelope);
 
-                $io->success(sprintf('Message with id %s removed.', $id));
+                $io->success(\sprintf('Message with id %s removed.', $id));
             } else {
-                $io->note(sprintf('Message with id %s not removed.', $id));
+                $io->note(\sprintf('Message with id %s not removed.', $id));
             }
         }
     }
@@ -123,7 +123,7 @@ EOF
     {
         if (!$shouldForce) {
             if ($receiver instanceof MessageCountAwareInterface) {
-                $question = sprintf('Do you want to permanently remove all (%d) messages?', $receiver->getMessageCount());
+                $question = \sprintf('Do you want to permanently remove all (%d) messages?', $receiver->getMessageCount());
             } else {
                 $question = 'Do you want to permanently remove all failed messages?';
             }
@@ -143,6 +143,6 @@ EOF
             ++$count;
         }
 
-        $io->note(sprintf('%d messages were removed.', $count));
+        $io->note(\sprintf('%d messages were removed.', $count));
     }
 }

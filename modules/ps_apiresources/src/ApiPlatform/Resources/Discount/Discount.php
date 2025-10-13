@@ -40,7 +40,8 @@ use Symfony\Component\HttpFoundation\Response;
             uriTemplate: '/discount/{discountId}',
             requirements: ['discountId' => '\d+'],
             CQRSQuery: GetDiscountForEditing::class,
-            scopes: ['discount_read']
+            scopes: ['discount_read'],
+            CQRSQueryMapping: self::QUERY_MAPPING,
         ),
         new CQRSCreate(
             uriTemplate: '/discount',
@@ -48,13 +49,12 @@ use Symfony\Component\HttpFoundation\Response;
             CQRSCommand: AddDiscountCommand::class,
             CQRSQuery: GetDiscountForEditing::class,
             scopes: ['discount_write'],
-            CQRSCommandMapping: [
-                '[names]' => '[localizedNames]',
-            ],
+            CQRSQueryMapping: self::QUERY_MAPPING,
+            CQRSCommandMapping: self::COMMAND_MAPPING,
         ),
         new CQRSDelete(
             uriTemplate: '/discount/{discountId}',
-            CQRSQuery: DeleteDiscountCommand::class,
+            CQRSCommand: DeleteDiscountCommand::class,
             scopes: [
                 'discount_write',
             ],
@@ -92,4 +92,11 @@ class Discount
     public int $productId;
     public array $combinations;
     public int $reductionProduct;
+
+    protected const QUERY_MAPPING = [
+        '[localizedNames]' => '[names]',
+    ];
+    protected const COMMAND_MAPPING = [
+        '[names]' => '[localizedNames]',
+    ];
 }
