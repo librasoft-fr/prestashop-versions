@@ -69,7 +69,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
     {
         $this->name = 'ps_mainmenu';
         $this->tab = 'front_office_features';
-        $this->version = '2.3.4';
+        $this->version = '2.3.6';
         $this->author = 'PrestaShop';
         $this->imageFiles = null;
 
@@ -100,6 +100,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
             !$this->registerHook('actionObjectProductDeleteAfter') ||
             !$this->registerHook('actionObjectProductAddAfter') ||
             !$this->registerHook('actionCategoryUpdate') ||
+            !$this->registerHook('actionMetaPageSave') ||
             !$this->registerHook('actionShopDataDuplication') ||
             !$this->registerHook('displayTop')) {
             return false;
@@ -136,7 +137,10 @@ class Ps_MainMenu extends Module implements WidgetInterface
 			`label` VARCHAR( 128 ) NOT NULL ,
 			`link` VARCHAR( 128 ) NOT NULL ,
 			INDEX ( `id_linksmenutop` , `id_lang`, `id_shop`)
-		) ENGINE = ' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;');
+		) ENGINE = ' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;') &&
+            Db::getInstance()->execute('
+            INSERT IGNORE INTO `' . _DB_PREFIX_ . 'hook` (`name`, `title`, `description`) VALUES
+            (\'actionMainMenuModifier\', \'Modify main menu view data\', \'This hook allows to alter main menu data\');');
     }
 
     public function uninstall($delete_params = true)
@@ -987,6 +991,11 @@ class Ps_MainMenu extends Module implements WidgetInterface
         $this->clearMenuCache();
     }
 
+    public function hookActionMetaPageSave($params)
+    {
+        $this->clearMenuCache();
+    }
+
     protected function getCacheDirectory()
     {
         $dir = _PS_CACHE_DIR_ . 'ps_mainmenu';
@@ -1107,8 +1116,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
         $helper->module = $this;
         $helper->identifier = $this->identifier;
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) .
-            '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false, [], ['configure' => $this->name, 'tab_module' => $this->tab, 'module_name' => $this->name]);
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = [
             'languages' => $this->context->controller->getLanguages(),
@@ -1191,8 +1199,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
             $helper->fields_value['updatelink'] = '';
         }
 
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) .
-            '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false, [], ['configure' => $this->name, 'tab_module' => $this->tab, 'module_name' => $this->name]);
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->languages = $this->context->controller->getLanguages();
         $helper->default_form_language = (int) $this->context->language->id;
@@ -1423,7 +1430,7 @@ class Ps_MainMenu extends Module implements WidgetInterface
         $helper->module = $this;
         $helper->title = $this->trans('Link list', [], 'Modules.Mainmenu.Admin');
         $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name, 'tab_module' => $this->tab, 'module_name' => $this->name]);
 
         return $helper->generateList($links, $fields_list);
     }
@@ -1489,8 +1496,12 @@ class Ps_MainMenu extends Module implements WidgetInterface
 
     public function renderWidget($hookName, array $configuration)
     {
+        $menu = $this->getWidgetVariables($hookName, $configuration);
+
+        Hook::exec('actionMainMenuModifier', ['menu' => &$menu]);
+
         $this->smarty->assign([
-            'menu' => $this->getWidgetVariables($hookName, $configuration),
+            'menu' => $menu,
         ]);
 
         return $this->fetch('module:ps_mainmenu/ps_mainmenu.tpl');

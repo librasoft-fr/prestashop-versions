@@ -42,7 +42,7 @@ class statscatalog extends Module
     {
         $this->name = 'statscatalog';
         $this->tab = 'administration';
-        $this->version = '2.0.4';
+        $this->version = '2.0.5';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -148,7 +148,6 @@ class statscatalog extends Module
     public function hookDisplayAdminStatsModules($params)
     {
         $categories = Category::getCategories($this->context->language->id, true, false);
-        $product_token = Tools::getAdminToken('AdminProducts' . (int) Tab::getIdFromClassName('AdminProducts') . (int) $this->context->employee->id);
         $irow = 0;
 
         if ($id_category = (int) Tools::getValue('id_category')) {
@@ -239,7 +238,7 @@ class statscatalog extends Module
 						<td>' . $product['name'] . '</td>
 						<td class="left">
 							<div class="btn-group btn-group-action">
-								<a class="btn btn-default" href="' . Tools::safeOutput('index.php?controller=AdminProducts&id_product=' . $product['id_product'] . '&addproduct&token=' . $product_token) . '" target="_blank">
+								<a class="btn btn-default" href="' . Tools::safeOutput($this->context->link->getAdminLink('AdminProducts', true, [], ['updateproduct' => 1, 'id_product' => $product['id_product']])) . '" target="_blank">
 									<i class="icon-edit"></i> ' . $this->trans('Edit', [], 'Admin.Global') . '
 								</a>
 								<button data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">

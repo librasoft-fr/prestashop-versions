@@ -41,7 +41,7 @@ class statsbestcustomers extends ModuleGrid
     {
         $this->name = 'statsbestcustomers';
         $this->tab = 'administration';
-        $this->version = '2.0.4';
+        $this->version = '2.1.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -155,10 +155,8 @@ class statsbestcustomers extends ModuleGrid
             c.`email`,
 			COUNT(co.`id_connections`) as totalVisits,
 			IFNULL((
-				SELECT ROUND(SUM(IFNULL(op.`amount`, 0) / cu.conversion_rate), 2)
+				SELECT ROUND(SUM(IFNULL(o.`total_paid_tax_incl`, 0) / o.conversion_rate), 2)
 				FROM `' . _DB_PREFIX_ . 'orders` o
-				LEFT JOIN `' . _DB_PREFIX_ . 'order_payment` op ON o.reference = op.order_reference
-				LEFT JOIN `' . _DB_PREFIX_ . 'currency` cu ON o.id_currency = cu.id_currency
 				WHERE o.id_customer = c.id_customer
 				AND o.invoice_date BETWEEN ' . $this->getDate() . '
 				AND o.valid

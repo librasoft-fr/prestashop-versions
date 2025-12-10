@@ -1,14 +1,10 @@
 imports:
   - { resource: ../common.yml }
+  - { resource: install.yml }
+  - { resource: presenter.yml }
+  - { resource: repository.yml }
+  - { resource: process.yml }
 
 services:
   _defaults:
-    autowire: true
-    autoconfigure: true
     public: true
-
-  PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileFinder:
-    class: PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileFinder
-
-  PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileReader:
-    class: PrestaShop\Module\PrestashopCheckout\Logger\LoggerFileReader

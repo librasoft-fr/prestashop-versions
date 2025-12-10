@@ -5,6 +5,9 @@ imports:
   - { resource: billing.yml }
   - { resource: handler.yml }
   - { resource: configuration.yml }
+  - { resource: hooks.yml }
+  - { resource: repositories.yml }
+  - { resource: gelProximity.yml }
 
 services:
   _defaults:
@@ -18,12 +21,8 @@ services:
 
   psshipping.helper.config:
     class: 'PrestaShop\Module\Psshipping\Helper\ConfigHelper'
-    public: true
     arguments:
       - "%psshipping.api_url%"
-      - "%psshipping.cdn_url%"
-      - "%psshipping.vue_app_dev_mode%"
-      - "%psshipping.use_local_vue_app%"
       - "%psshipping.mbe_tracking_url%"
       - "%psshipping.segment_key%"
       - "%psshipping.sentry_dsn%"
@@ -32,8 +31,9 @@ services:
   psshipping.context:
     class: Context
     factory: ['Context', 'getContext']
-  
-  PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository:
-    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+
+  PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService'
     arguments:
       - '@psshipping'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'

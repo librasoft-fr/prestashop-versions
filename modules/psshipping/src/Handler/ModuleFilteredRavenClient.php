@@ -107,7 +107,7 @@ class ModuleFilteredRavenClient extends Raven_Client
     {
         if ($this->excluded_domains && !empty($_SERVER['REMOTE_ADDR'])) {
             foreach ($this->excluded_domains as $domain) {
-                if (strpos($_SERVER['REMOTE_ADDR'], $domain) !== false) {
+                if (is_string($_SERVER['REMOTE_ADDR']) && strpos($_SERVER['REMOTE_ADDR'], $domain) !== false) {
                     return true;
                 }
             }

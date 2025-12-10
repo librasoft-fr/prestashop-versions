@@ -117,10 +117,8 @@ class Webhook
      */
     public function saveSvixSecret(): void
     {
-        $svixSecret = $this->generateSvixSecret();
-
         $this->createSvixEndpoint(
-            $svixSecret
+            $this->generateSvixSecret()
         );
     }
 }

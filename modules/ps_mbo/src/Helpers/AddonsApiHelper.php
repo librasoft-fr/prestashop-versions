@@ -21,6 +21,10 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\Mbo\Helpers;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class AddonsApiHelper
 {
     public static function addCustomHeaders(): array
@@ -28,8 +32,8 @@ class AddonsApiHelper
         $defaultCustomHeaders = [
             'X-PrestaShop-MBO' => \ps_mbo::VERSION,
         ];
-        $customHeaderKey = getenv('ADDONS_API_HEADER_KEY');
-        $customHeaderValue = getenv('ADDONS_API_HEADER_VALUE');
+        $customHeaderKey = EnvHelper::getEnv('ADDONS_API_HEADER_KEY');
+        $customHeaderValue = EnvHelper::getEnv('ADDONS_API_HEADER_VALUE');
 
         if (empty($customHeaderKey) || empty($customHeaderValue)) {
             return $defaultCustomHeaders;

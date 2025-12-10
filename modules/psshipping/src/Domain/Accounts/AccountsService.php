@@ -48,13 +48,8 @@ class AccountsService
         /** @var ModuleManagerBuilder $moduleManagerBuilder */
         $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
 
-        if (version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
-            /** @var ModuleManager $moduleManager */
-            $moduleManager = $moduleManagerBuilder->build();
-        } else {
-            /** @var LegacyModuleManager $moduleManager */
-            $moduleManager = $moduleManagerBuilder->build();
-        }
+        /** @var ModuleManager|LegacyModuleManager $moduleManager */
+        $moduleManager = $moduleManagerBuilder->build();
 
         $psAccountsIsInstalled = $moduleManager->isInstalled('ps_accounts');
 
@@ -86,5 +81,24 @@ class AccountsService
         $accountService = $accounts->getPsAccountsService();
 
         return $accountService->getOrRefreshToken();
+    }
+
+    public function getPsAccountCdnUrl(): string
+    {
+        /** @var ModuleManagerBuilder $moduleManagerBuilder */
+        $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
+
+        /** @var ModuleManager|LegacyModuleManager $moduleManager */
+        $moduleManager = $moduleManagerBuilder->build();
+
+        if ($moduleManager->isInstalled('ps_accounts')) {
+            $accountsModule = \Module::getInstanceByName('ps_accounts');
+            if ($accountsModule && version_compare($accountsModule->version, '7', '>=')) {
+                /* @phpstan-ignore-next-line */
+                $accountsCdn = $accountsModule->getParameter('ps_accounts.accounts_cdn_url');
+            }
+        }
+
+        return $accountsCdn ?? 'https://unpkg.com/prestashop_accounts_vue_components@5';
     }
 }

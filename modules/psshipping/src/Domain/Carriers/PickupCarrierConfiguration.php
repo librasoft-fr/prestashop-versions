@@ -23,22 +23,16 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\Psshipping\Domain\Carriers;
 
+use Psshipping;
+
 if (!defined('_PS_VERSION_')) {
     exit();
 }
 
-class PickupCarrierConfiguration implements CarrierConfiguration
+class PickupCarrierConfiguration extends CarrierConfiguration
 {
-    /** @var string mbe tracking url */
-    private $mbe_tracking_url;
-
-    public function __construct(string $mbe_tracking_url)
-    {
-        $this->mbe_tracking_url = $mbe_tracking_url;
-    }
-
     const DEFAULT_CONFIGURATION = [
-        'name' => 'Pickup delivery',
+        'name' => 'Delivery point',
         'freeShipping' => false,
         'active' => false,
         'deleted' => false,
@@ -47,7 +41,8 @@ class PickupCarrierConfiguration implements CarrierConfiguration
         'max_height' => 0,
         'max_depth' => 0,
         'max_weight' => 20,
-        'external_module_name' => 'psshipping_pickup',
+        'grade' => 5,
+        'external_module_name' => Psshipping::MODULE_TECHNICAL_NAME,
     ];
 
     /**
@@ -66,7 +61,9 @@ class PickupCarrierConfiguration implements CarrierConfiguration
             self::DEFAULT_CONFIGURATION['max_height'],
             self::DEFAULT_CONFIGURATION['max_depth'],
             self::DEFAULT_CONFIGURATION['max_weight'],
-            self::DEFAULT_CONFIGURATION['external_module_name']
+            self::DEFAULT_CONFIGURATION['grade'],
+            self::DEFAULT_CONFIGURATION['external_module_name'],
+            CarrierService::CARRIERS_PICKUP
         );
     }
 }

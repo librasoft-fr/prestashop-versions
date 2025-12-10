@@ -25,6 +25,7 @@ namespace PrestaShop\Module\Psshipping\Controller\Admin;
 
 use PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService;
 use PrestaShop\Module\Psshipping\Domain\Carriers\ExpressCarrierConfiguration;
+use PrestaShop\Module\Psshipping\Domain\Carriers\PickupCarrierConfiguration;
 use PrestaShop\Module\Psshipping\Domain\Carriers\StandardCarrierConfiguration;
 use PrestaShop\Module\Psshipping\Exception\BadRequestException;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
@@ -44,25 +45,24 @@ class PsshippingCarrierController extends FrameworkBundleAdminController
     /** @var Psshipping */
     private $module;
 
-    public function __construct(Psshipping $module)
+    public function __construct(Psshipping $module, CarrierService $carrierService)
     {
         $this->module = $module;
+        $this->carrierService = $carrierService;
     }
 
     public function createAction(): Response
     {
         try {
-            $this->carrierService = new CarrierService($this->getCommandBus(), $this->module);
-
             $mbe_tracking_url = $this->module->getMbeTrackingUrl();
 
             return new Response(
                 json_encode([
                     'success' => true,
                     'carrier' => [
-                        'standard' => $this->carrierService->create(new StandardCarrierConfiguration($mbe_tracking_url)),
-                        'pickup' => [],
-                        'express' => $this->carrierService->create(new ExpressCarrierConfiguration($mbe_tracking_url)),
+                        'standard' => $this->carrierService->create(new StandardCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                        'pickup' => $this->carrierService->create(new PickupCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                        'express' => $this->carrierService->create(new ExpressCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
                     ],
                 ]),
                 201,
@@ -76,8 +76,6 @@ class PsshippingCarrierController extends FrameworkBundleAdminController
     public function listAction(): Response
     {
         try {
-            $this->carrierService = new CarrierService($this->getCommandBus(), $this->module);
-
             return new Response(
                 json_encode(['carriers' => $this->carrierService->get()]),
                 200,
@@ -91,7 +89,6 @@ class PsshippingCarrierController extends FrameworkBundleAdminController
     public function toggleStatusAction(Request $request): Response
     {
         try {
-            $this->carrierService = new CarrierService($this->getCommandBus(), $this->module);
             $requestBodyContent = (array) json_decode((string) $request->getContent(false), true);
 
             if (empty($requestBodyContent['idCarrier'])) {

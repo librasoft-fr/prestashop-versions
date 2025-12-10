@@ -96,7 +96,7 @@ class Ps_Facetedsearch extends Module implements WidgetInterface
     {
         $this->name = 'ps_facetedsearch';
         $this->tab = 'front_office_features';
-        $this->version = '4.0.1';
+        $this->version = '4.0.2';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -1726,7 +1726,7 @@ VALUES(' . $last_id . ', ' . (int) $idShop . ')');
 
     public function initializeSupportedControllers()
     {
-        $this->setSupportedControllers([
+        $supportedControllers = [
             'category' => [
                 'name' => $this->trans('Category', [], 'Modules.Facetedsearch.Admin'),
                 'cacheable' => true,
@@ -1755,6 +1755,15 @@ VALUES(' . $last_id . ', ' . (int) $idShop . ')');
                 'name' => $this->trans('Search', [], 'Modules.Facetedsearch.Admin'),
                 'cacheable' => false,
             ],
-        ]);
+        ];
+
+        Hook::exec(
+            'actionFacetedSearchSetSupportedControllers',
+            [
+                'supportedControllers' => &$supportedControllers,
+            ]
+        );
+
+        $this->setSupportedControllers($supportedControllers);
     }
 }

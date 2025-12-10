@@ -11,6 +11,7 @@ services:
     class: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingCarrierController'
     arguments:
       - '@psshipping'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService'
   
   PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController:
     class: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController'
@@ -29,3 +30,4 @@ services:
     class: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingOrdersController'
     arguments:
       - '@psshipping'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService'

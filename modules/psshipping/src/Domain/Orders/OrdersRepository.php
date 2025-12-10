@@ -88,7 +88,7 @@ class OrdersRepository
         }
 
         $qb = $this->connection->createQueryBuilder()
-            ->select('o.id_order, o.date_add, osl.name, o.reference, o.total_shipping_tax_incl, o.id_currency, os.color, ca.external_module_name')
+            ->select('o.id_order, o.date_add, osl.name, o.reference, o.total_shipping_tax_incl, o.id_currency, os.color, ca.external_module_name, o.id_carrier')
             ->from($this->dbPrefix . 'orders', 'o')
             ->innerJoin('o', $this->dbPrefix . 'order_state_lang', 'osl', 'o.current_state = osl.id_order_state AND osl.id_lang = :idLang')
             ->innerJoin('osl', $this->dbPrefix . 'order_state', 'os', 'osl.id_order_state = os.id_order_state')
@@ -105,11 +105,8 @@ class OrdersRepository
         /** @var Statement $execute */
         $execute = $qb->execute();
 
+        /** @var array<int, array<string, string|int|bool>> */
         $result = $execute->fetchAll();
-
-        if (!is_array($result)) {
-            return [];
-        }
 
         return $result;
     }
@@ -153,11 +150,8 @@ class OrdersRepository
         /** @var Statement $execute */
         $execute = $qb->execute();
 
+        /** @var array<int, array<string, string|int|bool>> */
         $result = $execute->fetchAll();
-
-        if (!is_array($result)) {
-            return [];
-        }
 
         return $result;
     }
@@ -209,11 +203,8 @@ class OrdersRepository
         /** @var Statement $execute */
         $execute = $qb->execute();
 
+        /** @var array<int, array<string, bool|int|string>> */
         $result = $execute->fetchAll();
-
-        if (!is_array($result)) {
-            return [];
-        }
 
         return $result;
     }
@@ -276,5 +267,111 @@ class OrdersRepository
         $order = new \OrderCore($orderId);
         $order->setCurrentState((int) $statusPs->statusMapped);
         $order->save();
+    }
+
+    public function updateCarrierForOrders(int $oldCarrierId, int $newCarrierId): void
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb->update($this->dbPrefix . 'orders', 'o')
+            ->set('o.id_carrier', ':newCarrierId')
+            ->where('o.id_carrier = :oldCarrierId')
+            ->setParameter('newCarrierId', $newCarrierId)
+            ->setParameter('oldCarrierId', $oldCarrierId)
+            ->execute();
+    }
+
+    /**
+     * @param int $orderId
+     *
+     * @return array<string, mixed>
+     */
+    public function getOrderDetails(int $orderId): array
+    {
+        $context = Context::getContext();
+        $langId = 0;
+        $shopId = 0;
+
+        if (!empty($context) && !empty($context->language)) {
+            $langId = $context->language->id;
+        }
+
+        if (!empty($context->shop)) {
+            $shopId = (int) $context->shop->id;
+        }
+
+        $qb = $this->connection->createQueryBuilder()
+            ->select([
+                'ca.name as carrier_name',
+                'oc.tracking_number',
+                'osl.name as order_status',
+                'a.firstname as delivery_firstname',
+                'a.lastname as delivery_lastname',
+                'a.company as delivery_company',
+                'a.address1 as delivery_address1',
+                'a.address2 as delivery_address2',
+                'a.postcode as delivery_postcode',
+                'a.city as delivery_city',
+                's.iso_code as delivery_state_code',
+                'c.iso_code as delivery_country_code',
+                'cl.name as delivery_country',
+                'od.product_name',
+                'od.product_quantity',
+                'od.product_reference',
+                'od.product_attribute_id as product_id_product_attribute',
+                'od.product_id',
+                'od.unit_price_tax_incl',
+                'od.total_price_tax_incl',
+            ])
+            ->from($this->dbPrefix . 'orders', 'o')
+            ->innerJoin('o', $this->dbPrefix . 'order_carrier', 'oc', 'oc.id_order = o.id_order')
+            ->innerJoin('o', $this->dbPrefix . 'carrier', 'ca', 'o.id_carrier = ca.id_carrier')
+            ->innerJoin('o', $this->dbPrefix . 'order_state_lang', 'osl', 'o.current_state = osl.id_order_state AND osl.id_lang = :langId')
+            ->innerJoin('o', $this->dbPrefix . 'address', 'a', 'o.id_address_delivery = a.id_address')
+            ->innerJoin('a', $this->dbPrefix . 'country', 'c', 'a.id_country = c.id_country')
+            ->innerJoin('a', $this->dbPrefix . 'country_lang', 'cl', 'a.id_country = cl.id_country AND cl.id_lang = :langId')
+            ->leftJoin('a', $this->dbPrefix . 'state', 's', 'a.id_state = s.id_state')
+            ->innerJoin('o', $this->dbPrefix . 'order_detail', 'od', 'od.id_order = o.id_order')
+            ->where('o.id_order = :orderId AND o.id_shop = :shopId')
+            ->setParameter('orderId', $orderId)
+            ->setParameter('shopId', $shopId)
+            ->setParameter('langId', $langId);
+
+        /** @var Statement $execute */
+        $execute = $qb->execute();
+
+        /** @var array<int, array<string, mixed>> */
+        $result = $execute->fetchAll();
+
+        if (empty($result)) {
+            return [];
+        }
+
+        $orderInfo = $result[0];
+        $products = [];
+
+        foreach ($result as $row) {
+            $products[] = [
+                'name' => $row['product_name'],
+                'quantity' => $row['product_quantity'],
+                'reference' => $row['product_reference'],
+                'id_product_attribute' => $row['product_id_product_attribute'],
+                'id_product' => $row['product_id'],
+            ];
+        }
+
+        return [
+            'carrier' => $orderInfo['carrier_name'],
+            'tracking_number' => $orderInfo['tracking_number'],
+            'status' => $orderInfo['order_status'],
+            'address' => [
+                'address_line_1' => $orderInfo['delivery_address1'],
+                'address_line_2' => $orderInfo['delivery_address2'],
+                'admin_area_2' => $orderInfo['delivery_city'],
+                'admin_area_1' => $orderInfo['delivery_state_code'],
+                'postal_code' => $orderInfo['delivery_postcode'],
+                'country_code' => $orderInfo['delivery_country_code'],
+            ],
+            'products' => $products,
+        ];
     }
 }

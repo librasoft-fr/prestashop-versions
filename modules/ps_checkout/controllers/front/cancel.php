@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,10 +17,15 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-use PrestaShop\Module\PrestashopCheckout\Checkout\Command\CancelCheckoutCommand;
-use PrestaShop\Module\PrestashopCheckout\CommandBus\CommandBusInterface;
-use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
+use PsCheckout\Core\PayPal\Order\Action\CancelPayPalOrderAction;
+use PsCheckout\Core\PayPal\Order\Request\ValueObject\CancelPayPalOrderRequest;
+use PsCheckout\Infrastructure\Controller\AbstractFrontController;
+use PsCheckout\Utility\Common\InputStreamUtility;
+use Psr\Log\LoggerInterface;
 
 /**
  * This controller receive ajax call on customer canceled payment
@@ -35,20 +39,22 @@ class Ps_CheckoutCancelModuleFrontController extends AbstractFrontController
 
     /**
      * @see FrontController::postProcess()
-     *
-     * @todo Move logic to a Service
      */
     public function postProcess()
     {
+        /** @var LoggerInterface $logger */
+        $logger = $this->module->getService(LoggerInterface::class);
         try {
-            if (false === Validate::isLoadedObject($this->context->cart)) {
+            if (!Validate::isLoadedObject($this->context->cart)) {
                 $this->exitWithResponse([
                     'httpCode' => 400,
                     'body' => 'No cart found.',
                 ]);
             }
 
-            $bodyContent = file_get_contents('php://input');
+            /** @var InputStreamUtility $inputStreamUtility */
+            $inputStreamUtility = $this->module->getService(InputStreamUtility::class);
+            $bodyContent = $inputStreamUtility->getBodyContent();
 
             if (empty($bodyContent)) {
                 $this->exitWithResponse([
@@ -66,40 +72,25 @@ class Ps_CheckoutCancelModuleFrontController extends AbstractFrontController
                 ]);
             }
 
-            $orderId = isset($bodyValues['orderID']) ? $bodyValues['orderID'] : null;
-            $fundingSource = isset($bodyValues['fundingSource']) ? $bodyValues['fundingSource'] : null;
-            $isExpressCheckout = isset($bodyValues['isExpressCheckout']) && $bodyValues['isExpressCheckout'];
-            $isHostedFields = isset($bodyValues['isHostedFields']) && $bodyValues['isHostedFields'];
-            $reason = isset($bodyValues['reason']) ? Tools::safeOutput($bodyValues['reason']) : null;
-            $error = isset($bodyValues['error'])
-                ? Tools::safeOutput(is_string($bodyValues['error']) ? $bodyValues['error'] : json_encode($bodyValues['error']))
-                : null;
+            $orderCancelRequest = new CancelPayPalOrderRequest($bodyValues, $this->context->cart->id);
 
-            if ($orderId) {
-                /** @var CommandBusInterface $commandBus */
-                $commandBus = $this->module->getService('ps_checkout.bus.command');
-
-                $commandBus->handle(new CancelCheckoutCommand(
-                    $this->context->cart->id,
-                    $orderId,
-                    PsCheckoutCart::STATUS_CANCELED,
-                    $fundingSource,
-                    $isExpressCheckout,
-                    $isHostedFields
-                ));
+            if ($orderCancelRequest->getOrderId()) {
+                /** @var CancelPayPalOrderAction $cancelPayPalOrderAction */
+                $cancelPayPalOrderAction = $this->module->getService(CancelPayPalOrderAction::class);
+                $cancelPayPalOrderAction->execute($orderCancelRequest);
             }
 
-            $this->module->getLogger()->log(
-                $error ? 400 : 200,
+            $logger->log(
+                $orderCancelRequest->getError() ? 400 : 200,
                 'Customer canceled payment',
                 [
-                    'PayPalOrderId' => $orderId,
-                    'FundingSource' => $fundingSource,
+                    'PayPalOrderId' => $orderCancelRequest->getOrderId(),
+                    'FundingSource' => $orderCancelRequest->getFundingSource(),
                     'id_cart' => $this->context->cart->id,
-                    'isExpressCheckout' => $isExpressCheckout,
-                    'isHostedFields' => $isHostedFields,
-                    'reason' => $reason,
-                    'error' => $error,
+                    'isExpressCheckout' => $orderCancelRequest->isExpressCheckout(),
+                    'isHostedFields' => $orderCancelRequest->isHostedFields(),
+                    'reason' => $orderCancelRequest->getReason(),
+                    'error' => $orderCancelRequest->getError(),
                 ]
             );
 
@@ -111,7 +102,7 @@ class Ps_CheckoutCancelModuleFrontController extends AbstractFrontController
                 'exceptionMessage' => null,
             ]);
         } catch (Exception $exception) {
-            $this->module->getLogger()->error(
+            $logger->error(
                 'CancelController - Exception ' . $exception->getCode(),
                 [
                     'exception' => $exception,

@@ -27,10 +27,13 @@ if (!defined('_PS_VERSION_')) {
     exit();
 }
 
-interface CarrierConfiguration
+abstract class CarrierConfiguration implements CarrierConfigurationInterface
 {
-    /**
-     * @return CarrierDto
-     */
-    public function transform();
+    /** @var string mbe tracking url */
+    protected $mbe_tracking_url;
+
+    public function __construct(string $mbe_tracking_url)
+    {
+        $this->mbe_tracking_url = $mbe_tracking_url;
+    }
 }

@@ -20,41 +20,31 @@
 {% extends '@PrestaShop/Admin/layout.html.twig' %}
 
 {% block content %}
-  <div id="psshipping-app"></div>
+  {% include "@Modules/psshipping/views/templates/dist/src/app/settings/index.html" %}
 {% endblock %}
 
 {% block stylesheets %}
-{{ parent() }} 
+{{ parent() }}
+
 <style>
   body {
     background-color: white!important;
   }
 </style>
-{% if hotReloadModeEnabled == false %}
-  <link rel="stylesheet" href="{{ appCss }}" type="text/css" media="all">
-{% endif %}
-{% endblock %}
 
-{% block javascripts %}
-{% if hotReloadModeEnabled %}
-  <script type="module" src="http://localhost:5173/@vite/client"></script>
-  <script type="module" src="http://localhost:5173/src/main.ts"></script>
-{% else %}
-  <script src="{{ appLink }}" type="module"></script>
-{% endif %}
 <script>
   var defaultIsoCode = '{{ defaultIsoCode|raw }}'
   var psxShippingApiUrl = '{{ psxShippingApiUrl|raw }}'
   var isOnboardingDone = {{ isOnboardingDone|json_encode }}
   var contextPsAccounts = {{ contextPsAccounts|json_encode|raw }}
   var tokenPsAccounts = '{{ tokenPsAccounts|raw }}'
+  var psAccountCdnUrl = '{{ psAccountCdnUrl|raw }}'
   var psBillingContext = {{ psBillingContext|json_encode|raw }}
   var isMultiShopContext = {{ isMultiShopContext|json_encode }}
   var shops = {{ shops|json_encode|raw }}
   var routes = {{ routes|json_encode|raw }}
   var phpVersion = '{{ phpVersion|raw }}'
   var moduleVersion = '{{ moduleVersion|raw }}'
-  var cdnUrl = '{{ cdnUrl|raw }}'
   var psVersion = '{{ psVersion|raw }}'
   var activeHooks = {{ activeHooks|json_encode|raw }}
 </script>

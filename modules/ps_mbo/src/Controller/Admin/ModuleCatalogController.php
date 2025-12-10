@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,7 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\Mbo\Controller\Admin;
@@ -30,8 +28,12 @@ use PrestaShop\PrestaShop\Core\Security\Permission;
 use PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
 use PrestaShop\PsAccountsInstaller\Installer\Installer;
 use PrestaShopBundle\Controller\Admin\PrestaShopAdminController;
-use PrestaShopBundle\Security\Annotation\AdminSecurity;
+use PrestaShopBundle\Security\Attribute\AdminSecurity;
 use Symfony\Component\HttpFoundation\Response;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 /**
  * Responsible of "Improve > Modules > Modules Catalog" page display.
@@ -72,33 +74,12 @@ class ModuleCatalogController extends PrestaShopAdminController
         $this->psAccountsInstaller = $psAccountsInstaller;
     }
 
-    /**
-     * Module Catalog page
-     *
-     * @AdminSecurity(
-     *     "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))",
-     *     message="You do not have permission to update this.",
-     *     redirectRoute="admin_administration"
-     * )
-     *
-     * @return Response
-     */
+    #[AdminSecurity(
+        "is_granted('read', request.get('_legacy_controller')) && is_granted('update', request.get('_legacy_controller')) && is_granted('create', request.get('_legacy_controller')) && is_granted('delete', request.get('_legacy_controller'))"
+    )]
     public function indexAction(): Response
     {
-        $moduleUri = __PS_BASE_URI__ . 'modules/ps_mbo/';
-
-        $extraParams = [
-            'cdc_error_templating_url' => $moduleUri . 'views/js/cdc-error-templating.js',
-            'cdc_error_templating_css' => $moduleUri . 'views/css/cdc-error-templating.css',
-        ];
-
-        $cdcJsFile = getenv('MBO_CDC_URL');
-        if (!is_string($cdcJsFile) || empty($cdcJsFile)) {
-            $extraParams['cdc_script_not_found'] = true;
-            $extraParams['cdc_error_url'] = $moduleUri . 'views/js/cdc-error.js';
-        } else {
-            $extraParams['cdc_url'] = $cdcJsFile;
-        }
+        $extraParams = \ps_mbo::getCdcMediaUrl();
 
         /*********************
          * PrestaShop Account *

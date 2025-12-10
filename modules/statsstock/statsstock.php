@@ -34,7 +34,7 @@ class statsstock extends Module
     public function __construct()
     {
         $this->name = 'statsstock';
-        $this->version = '2.0.1';
+        $this->version = '2.0.2';
         $this->tab = 'administration';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
@@ -57,7 +57,7 @@ class statsstock extends Module
             $this->context->cookie->statsstock_id_category = Tools::getValue('statsstock_id_category');
         }
 
-        $ru = AdminController::$currentIndex . '&module=' . $this->name . '&token=' . Tools::getValue('token');
+        $ru = $this->context->link->getAdminLink('AdminStats', true, [], ['module' => $this->name]);
         $currency = new Currency((int) Configuration::get('PS_CURRENCY_DEFAULT'));
         $filter = ((int) $this->context->cookie->statsstock_id_category ? ' AND p.id_product IN (SELECT cp.id_product FROM ' . _DB_PREFIX_ . 'category_product cp WHERE cp.id_category = ' . (int) $this->context->cookie->statsstock_id_category . ')' : '');
 

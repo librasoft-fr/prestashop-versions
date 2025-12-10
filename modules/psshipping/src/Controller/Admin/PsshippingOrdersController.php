@@ -43,16 +43,20 @@ class PsshippingOrdersController extends FrameworkBundleAdminController
     /** @var Psshipping */
     private $module;
 
-    public function __construct(Psshipping $module)
+    /** @var CarrierService */
+    private $carrierService;
+
+    public function __construct(Psshipping $module, CarrierService $carrierService)
     {
         $this->module = $module;
+        $this->carrierService = $carrierService;
     }
 
     public function listOrdersAction(Request $request): Response
     {
         try {
             $requestBodyContent = (array) json_decode((string) $request->getContent(false), true);
-            $carriers = (new CarrierService($this->getCommandBus(), $this->module))->get();
+            $carriers = $this->carrierService->get();
             $itemPerPage = 10;
             $pageNumber = 1;
             $prestashopAdapter = new PrestaShopAdapter($this->module);
@@ -146,11 +150,10 @@ class PsshippingOrdersController extends FrameworkBundleAdminController
     {
         try {
             $carriersId = [];
-            foreach ((new CarrierService($this->getCommandBus(), $this->module))->get() as $carriers) {
-                foreach ($carriers as $carrier) {
-                    if (!empty($carrier['id_carrier'])) {
-                        $carriersId[] = (int) $carrier['id_carrier'];
-                    }
+            $carriers = $this->carrierService->get();
+            foreach ($carriers as $carrier) {
+                if ($carrier && !empty($carrier['id_carrier'])) {
+                    $carriersId[] = (int) $carrier['id_carrier'];
                 }
             }
 

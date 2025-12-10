@@ -38,7 +38,7 @@ class statsproduct extends ModuleGraph
     {
         $this->name = 'statsproduct';
         $this->tab = 'administration';
-        $this->version = '2.1.3';
+        $this->version = '2.1.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -110,9 +110,7 @@ class statsproduct extends ModuleGraph
 				' . (Tools::getValue('id_category') ? 'LEFT JOIN `' . _DB_PREFIX_ . 'category_product` cp ON p.`id_product` = cp.`id_product`' : '') . '
 				WHERE pl.`id_lang` = ' . (int) $id_lang . '
 					' . (Tools::getValue('id_category') ? 'AND cp.id_category = ' . (int) Tools::getValue('id_category') : '');
-        if (version_compare(_PS_VERSION_, '1.7.0.0', '>=')) {
-            $sql .= ' AND p.state = ' . Product::STATE_SAVED;
-        }
+        $sql .= ' AND p.state = ' . Product::STATE_SAVED;
         $sql .= ' ORDER BY pl.`name`';
 
         return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
@@ -259,14 +257,12 @@ class statsproduct extends ModuleGraph
 							</tr>
 						</thead>
 						<tbody>';
-                $token_order = Tools::getAdminToken('AdminOrders' . (int) Tab::getIdFromClassName('AdminOrders') . (int) $this->context->employee->id);
-                $token_customer = Tools::getAdminToken('AdminCustomers' . (int) Tab::getIdFromClassName('AdminCustomers') . (int) $this->context->employee->id);
                 foreach ($sales as $sale) {
                     $this->html .= '
 						<tr>
 							<td>' . Tools::displayDate($sale['date_add']) . '</td>
-							<td class="text-center"><a href="?controller=AdminOrders&id_order=' . $sale['id_order'] . '&vieworder&token=' . $token_order . '">' . (int) $sale['id_order'] . '</a></td>
-							<td class="text-center"><a href="?controller=AdminCustomers&id_customer=' . $sale['id_customer'] . '&viewcustomer&token=' . $token_customer . '">' . (int) $sale['id_customer'] . '</a></td>
+							<td class="text-center"><a href="' . $this->context->link->getAdminLink('AdminOrders', true, [], ['vieworder' => 1, 'id_order' => $sale['id_order']]) . '">' . (int) $sale['id_order'] . '</a></td>
+							<td class="text-center"><a href="' . $this->context->link->getAdminLink('AdminCustomers', true, [], ['viewcustomer' => 1, 'id_customer' => $sale['id_customer']]) . '">' . (int) $sale['id_customer'] . '</a></td>
 							' . ($has_attribute ? '<td>' . $sale['product_name'] . '</td>' : '') . '
 							<td>' . (int) $sale['product_quantity'] . '</td>
 							<td>' . $this->context->getCurrentLocale()->formatPrice($sale['total'], $currency->iso_code) . '</td>
@@ -297,11 +293,10 @@ class statsproduct extends ModuleGraph
 								</tr>
 							</thead>
 						<tbody>';
-                    $token_products = Tools::getAdminToken('AdminProducts' . (int) Tab::getIdFromClassName('AdminProducts') . (int) $this->context->employee->id);
                     foreach ($cross_selling as $selling) {
                         $this->html .= '
 							<tr>
-								<td><a href="?controller=AdminProducts&id_product=' . (int) $selling['id_product'] . '&addproduct&token=' . $token_products . '">' . $selling['pname'] . '</a></td>
+								<td><a href="' . $this->context->link->getAdminLink('AdminProducts', true, [], ['id_product' => (int) $selling['id_product'], 'updateproduct' => 1]) . '">' . $selling['pname'] . '</a></td>
 								<td class="text-center">' . (int) $selling['pqty'] . '</td>
 								<td class="text-right">' . $this->context->getCurrentLocale()->formatPrice($selling['pprice'], $currency->iso_code) . '</td>
 							</tr>';
@@ -355,7 +350,7 @@ class statsproduct extends ModuleGraph
 				<tr>
 					<td>' . $product['reference'] . '</td>
 					<td>
-						<a href="' . Tools::safeOutput(AdminController::$currentIndex . '&token=' . Tools::getValue('token') . '&module=' . $this->name . '&id_product=' . $product['id_product']) . '">' . $product['name'] . '</a>
+						<a href="' . Tools::safeOutput($this->context->link->getAdminLink('AdminStats', true, [], ['module' => $this->name, 'id_product' => (int) $product['id_product']])) . '">' . $product['name'] . '</a>
 					</td>
 					<td>' . $product['quantity'] . '</td>
 				</tr>';

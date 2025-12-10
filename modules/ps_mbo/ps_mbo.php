@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -32,33 +31,19 @@ if (file_exists($autoloadPath)) {
 use PrestaShop\Module\Mbo\Accounts\Provider\AccountsDataProvider;
 use PrestaShop\Module\Mbo\Addons\Subscriber\ModuleManagementEventSubscriber;
 use PrestaShop\Module\Mbo\Helpers\Config;
+use PrestaShop\Module\Mbo\Helpers\EnvHelper;
 use PrestaShop\Module\Mbo\Helpers\ErrorHelper;
 use PrestaShop\PrestaShop\Core\Module\ModuleRepository;
 use PrestaShopBundle\Event\ModuleManagementEvent;
-use Symfony\Component\Dotenv\Dotenv;
 
 class ps_mbo extends Module
 {
     use PrestaShop\Module\Mbo\Traits\HaveTabs;
     use PrestaShop\Module\Mbo\Traits\UseHooks;
 
-    /**
-     * @var string
-     */
-    public const VERSION = '5.1.0';
+    public const VERSION = '5.2.1';
 
-    public const CONTROLLERS_WITH_CONNECTION_TOOLBAR = [
-        'AdminModulesManage',
-        'AdminModulesSf',
-    ];
-
-    public const CONTROLLERS_WITH_CDC_SCRIPT = [
-        'AdminModulesNotifications',
-        'AdminModulesUpdates',
-        'AdminModulesManage',
-    ];
-
-    public $configurationList = [
+    public array $configurationList = [
         'PS_MBO_SHOP_ADMIN_UUID' => '', // 'ADMIN' because there will be only one for all shops in a multishop context
         'PS_MBO_LAST_PS_VERSION_API_CONFIG' => '',
     ];
@@ -85,10 +70,7 @@ class ps_mbo extends Module
     {
         $this->name = 'ps_mbo';
         // This value must be hard-coded to respect Addons rules, so we must make sure that the const value is always synced with this one
-        $this->version = '5.1.0';
-        if ($this->version !== self::VERSION) {
-            throw new PrestaShopException('The values from ps_mbo::$version and ps_mbo::VERSION must be identical');
-        }
+        $this->version = '5.2.1';
         $this->author = 'PrestaShop';
         $this->tab = 'administration';
         $this->module_key = '6cad5414354fbef755c7df4ef1ab74eb';
@@ -309,7 +291,7 @@ class ps_mbo extends Module
         }
     }
 
-    public function installTables(?string $table = null): bool
+    public function installTables(string $table = null): bool
     {
         $sqlQueries = [];
 
@@ -398,16 +380,6 @@ class ps_mbo extends Module
      */
     private function loadEnv(): void
     {
-        $dotenv = new Dotenv();
-        $dotenv->usePutenv();
-        $dotenv->loadEnv(__DIR__ . '/.env');
-    }
-
-    private function isPsAccountEnabled(): bool
-    {
-        /** @var PrestaShop\PsAccountsInstaller\Installer\Installer|null $accountsInstaller */
-        $accountsInstaller = $this->get(PrestaShop\PsAccountsInstaller\Installer\Installer::class);
-
-        return null !== $accountsInstaller && $accountsInstaller->isModuleEnabled();
+        EnvHelper::loadEnv(__DIR__ . '/.env');
     }
 }

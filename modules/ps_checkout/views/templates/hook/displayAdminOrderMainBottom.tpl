@@ -16,7 +16,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-
 <div class="card mt-2" id="ps_checkout">
   <div class="card-header">
     <h3 class="card-header-title">
@@ -24,15 +23,14 @@
       {$moduleName|escape:'html':'UTF-8'}
     </h3>
   </div>
+
   <div class="card-body">
-    <div class="paypal-order-notifications">
-    </div>
-    <div class="paypal-order-container">
-    </div>
+    <div class="paypal-order-notifications"></div>
+    <div class="paypal-order-container"></div>
     <div class="paypal-order-loader text-center">
       <button class="btn-primary-reverse onclick unbind spinner"></button>
     </div>
   </div>
 </div>
 
-{include file='./partials/adminOrderView.tpl' legacy=false orderPrestaShopId=$orderPrestaShopId orderPayPalBaseUrl=$orderPayPalBaseUrl}
+{include file='./partials/adminOrderView.tpl' orderPrestaShopId=$orderPrestaShopId orderPayPalBaseUrl=$orderPayPalBaseUrl}

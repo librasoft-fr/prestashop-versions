@@ -100,7 +100,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $this->confirmUninstall = $this->trans('Are you sure that you want to delete all of your contacts?', [], 'Modules.Emailsubscription.Admin');
         $this->ps_versions_compliancy = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
 
-        $this->version = '2.8.2';
+        $this->version = '2.8.3';
         $this->author = 'PrestaShop';
         $this->error = false;
         $this->valid = false;
@@ -239,7 +239,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                 $c->update();
             }
 
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&conf=4&token=' . Tools::getAdminTokenLite('AdminModules'));
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name, 'conf' => 4]));
         } elseif (Tools::isSubmit('submitExport') && $action = Tools::getValue('action')) {
             $this->export_csv();
         } elseif (Tools::isSubmit('searchEmail')) {
@@ -312,7 +312,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $helper_list->simple_header = false;
         $helper_list->identifier = 'id';
         $helper_list->table = 'merged';
-        $helper_list->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name;
+        $helper_list->currentIndex = $this->context->link->getAdminLink('AdminModules', false, [], ['configure' => $this->name]);
         $helper_list->token = Tools::getAdminTokenLite('AdminModules');
         $helper_list->actions = ['viewCustomer'];
 
@@ -334,7 +334,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
     public function displayViewCustomerLink($token = null, $id = null, $name = null)
     {
         $this->smarty->assign([
-            'href' => 'index.php?controller=AdminCustomers&id_customer=' . (int) $id . '&updatecustomer&token=' . Tools::getAdminTokenLite('AdminCustomers'),
+            'href' => $this->context->link->getAdminLink('AdminCustomers', true, ['route' => 'admin_customers_edit', 'customerId' => (int) $id], ['id_customer' => (int) $id, 'updatecustomer' => 1]),
             'action' => $this->trans('View', [], 'Admin.Actions'),
             'disable' => !((int) $id > 0),
         ]);
@@ -958,8 +958,9 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
             if ($params['newCustomer']->newsletter && $code = Configuration::get('NW_VOUCHER_CODE')) {
                 $this->sendVoucher($email, $code);
             }
-
-            return (bool) Db::getInstance()->execute('DELETE FROM ' . _DB_PREFIX_ . 'emailsubscription WHERE id_shop=' . (int) $id_shop . ' AND email=\'' . pSQL($email) . "'");
+            if ($params['newCustomer']->newsletter) {
+                return (bool) Db::getInstance()->execute('DELETE FROM ' . _DB_PREFIX_ . 'emailsubscription WHERE id_shop=' . (int) $id_shop . ' AND email=\'' . pSQL($email) . "'");
+            }
         }
 
         if ($newsletter) {
@@ -978,6 +979,8 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
     {
         $customer = new Customer($params['object']->id);
         $this->_origin_newsletter = (int) $customer->newsletter;
+
+        Db::getInstance()->execute('DELETE FROM ' . _DB_PREFIX_ . 'emailsubscription WHERE id_shop=' . (int) $params['object']->id_shop . ' AND email=\'' . pSQL($params['object']->email) . "'");
     }
 
     public function hookActionCustomerAccountUpdate($params)
@@ -1106,7 +1109,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'submitUpdate';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false, [], ['configure' => $this->name, 'tab_module' => $this->tab, 'module_name' => $this->name]);
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = [
             'fields_value' => $this->getConfigFieldsValues(),
@@ -1207,7 +1210,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'btnSubmit';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false, [], ['configure' => $this->name, 'tab_module' => $this->tab, 'module_name' => $this->name]);
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = [
             'fields_value' => $this->getConfigFieldsValues(),
@@ -1246,7 +1249,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
         $helper->table = $this->table;
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'searchEmail';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false, [], ['configure' => $this->name, 'tab_module' => $this->tab, 'module_name' => $this->name]);
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = [
             'fields_value' => ['searched_email' => $this->_searched_email],

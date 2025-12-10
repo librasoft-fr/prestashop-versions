@@ -363,7 +363,7 @@ services:
   PrestaShopBundle\Form\Admin\Sell\Catalog\AttributeType:
     public: true
     arguments:
-      $attributeGroupRepository: '@PrestaShop\PrestaShop\Adapter\AttributeGroup\Repository\AttributeGroupRepository'
+      $attributeGroupChoiceProvider: '@PrestaShop\PrestaShop\Core\Form\ChoiceProvider\AttributeGroupChoiceProvider'
       $multistoreFeature: '@prestashop.adapter.multistore_feature'
     tags:
       - { name: form.type }
@@ -548,6 +548,7 @@ services:
   PrestaShopBundle\Form\Admin\Configure\ShopParameters\OrderStates\OrderStateType:
     arguments:
       $themeCatalog: "@prestashop.core.mail_template.theme_catalog"
+      $legacyTemplateLister: '@prestashop.core.email.legacy_template_lister'
 
   PrestaShopBundle\Form\Admin\Improve\International\Locations\ZoneType:
   PrestaShopBundle\Form\Admin\Improve\International\Locations\CountryType:
@@ -576,6 +577,10 @@ services:
     arguments:
       $countriesChoiceProvider: '@prestashop.core.form.choice_provider.configurable_country_by_id'
       $zonesChoiceProvider: '@prestashop.core.form.choice_provider.zone_by_id'
+
+  PrestaShopBundle\Form\Admin\Improve\International\Locations\ChangeStatesZoneType:
+    arguments:
+      $zoneChoiceProvider: '@prestashop.core.form.choice_provider.zone_by_id'
 
   PrestaShopBundle\Form\Admin\Sell\Product\EventListener\SpecificPriceCombinationListener:
     arguments:

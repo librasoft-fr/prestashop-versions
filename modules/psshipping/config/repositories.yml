@@ -1,0 +1,23 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+    arguments:
+      - '@psshipping'
+
+  PrestaShop\Module\Psshipping\Domain\Orders\OrdersRepository:
+    class: 'PrestaShop\Module\Psshipping\Domain\Orders\OrdersRepository'
+    arguments:
+      - '@psshipping'
+
+  PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressRepository:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressRepository'
+    arguments:
+      - '@psshipping'
+
+  PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressOrdersRepository:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressOrdersRepository'
+    arguments:
+      - '@psshipping'

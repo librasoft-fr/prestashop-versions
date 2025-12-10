@@ -19,16 +19,16 @@
 
 {% trans_default_domain 'Module.Psshipping.Admin' %}
 
+{% block content %}
+  <div class="tab-pane fade" id="psshippingTabContent" role="tabpanel" aria-labelledby="psshippingTab">
+    {% include "@Modules/psshipping/views/templates/dist/src/app/order/index.html" %}
+  </div>
+{% endblock %}
+
 {% block javascript %}
 <script>
   var shipmentDetail = {{shipmentDetail|json_encode|raw}};
+  var defaultIsoCode = "{{defaultIsoCode|raw}}";
+  var contextPsAccounts = {{ contextPsAccounts|json_encode|raw }}
 </script>
 {% endblock %}
-
-<div class="tab-pane fade show active" id="psshipping-app" role="tabpanel" aria-labelledby="psshippingTab">
-<script src="{{ appLink }}" type="module"></script>
-<link rel="stylesheet" href="{{ appCss }}" type="text/css" media="all">
-<i18n-host>
-  <shipping-label></shipping-label>
-</i18n-host>
-</div>

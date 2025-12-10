@@ -2,8 +2,8 @@
 <module>
   <name>ps_mbo</name>
   <displayName><![CDATA[PrestaShop Marketplace in your Back Office]]></displayName>
-  <version><![CDATA[5.1.0]]></version>
-  <description><![CDATA[Discover the best PrestaShop modules to optimize your online store.]]></description>
+  <version><![CDATA[5.2.0]]></version>
+  <description><![CDATA[Browse the Addons marketplace directly from your back office to better meet your needs.]]></description>
   <author><![CDATA[PrestaShop]]></author>
   <tab><![CDATA[administration]]></tab>
   <is_configurable>0</is_configurable>

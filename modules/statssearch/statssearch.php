@@ -23,7 +23,6 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -37,26 +36,26 @@ class statssearch extends ModuleGraph
     public function __construct()
     {
         $this->name = 'statssearch';
-        $this->tab = 'analytics_stats';
-        $this->version = '2.0.2';
+        $this->tab = 'administration';
+        $this->version = '2.1.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
         parent::__construct();
 
         $this->query = 'SELECT `keywords`, COUNT(TRIM(`keywords`)) as occurences, MAX(results) as total
-				FROM `'._DB_PREFIX_.'statssearch`
+				FROM `' . _DB_PREFIX_ . 'statssearch`
 				WHERE 1
-					'.Shop::addSqlRestriction().'
+					' . Shop::addSqlRestriction() . '
 					AND `date_add` BETWEEN ';
 
         $this->query_group_by = 'GROUP BY `keywords`
 				HAVING occurences > 1
 				ORDER BY occurences DESC';
 
-        $this->displayName = $this->trans('Shop search', array(), 'Modules.Statssearch.Admin');
-        $this->description = $this->trans('Enrich your stats, add a tab showing what keywords have been searched by your visitors.', array(), 'Modules.Statssearch.Admin');
-        $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
+        $this->displayName = $this->trans('Shop search', [], 'Modules.Statssearch.Admin');
+        $this->description = $this->trans('Enrich your stats, add a tab showing what keywords have been searched by your visitors.', [], 'Modules.Statssearch.Admin');
+        $this->ps_versions_compliancy = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
     }
 
     public function install()
@@ -66,7 +65,7 @@ class statssearch extends ModuleGraph
         }
 
         return Db::getInstance()->execute('
-		CREATE TABLE `'._DB_PREFIX_.'statssearch` (
+		CREATE TABLE `' . _DB_PREFIX_ . 'statssearch` (
 			id_statssearch INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 			id_shop INTEGER UNSIGNED NOT NULL DEFAULT \'1\',
 		  	id_shop_group INTEGER UNSIGNED NOT NULL DEFAULT \'1\',
@@ -74,7 +73,7 @@ class statssearch extends ModuleGraph
 			results INT(6) NOT NULL DEFAULT 0,
 			date_add DATETIME NOT NULL,
 			PRIMARY KEY(id_statssearch)
-		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8');
+		) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8');
     }
 
     public function uninstall()
@@ -83,7 +82,7 @@ class statssearch extends ModuleGraph
             return false;
         }
 
-        return (Db::getInstance()->execute('DROP TABLE `'._DB_PREFIX_.'statssearch`'));
+        return Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'statssearch`');
     }
 
     /**
@@ -91,29 +90,29 @@ class statssearch extends ModuleGraph
      */
     public function hookActionSearch($params)
     {
-        $sql = 'INSERT INTO `'._DB_PREFIX_.'statssearch` (`id_shop`, `id_shop_group`, `keywords`, `results`, `date_add`)
-				VALUES ('.(int)$this->context->shop->id.', '.(int)$this->context->shop->id_shop_group.', \''.pSQL($params['expr']).'\', '.(int)$params['total'].', NOW())';
+        $sql = 'INSERT INTO `' . _DB_PREFIX_ . 'statssearch` (`id_shop`, `id_shop_group`, `keywords`, `results`, `date_add`)
+				VALUES (' . (int) $this->context->shop->id . ', ' . (int) $this->context->shop->id_shop_group . ', \'' . pSQL($params['expr']) . '\', ' . (int) $params['total'] . ', NOW())';
         Db::getInstance()->execute($sql);
     }
 
     public function hookDisplayAdminStatsModules()
     {
         if (Tools::getValue('export')) {
-            $this->csvExport(array('type' => 'pie'));
+            $this->csvExport(['type' => 'pie']);
         }
 
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($this->query.ModuleGraph::getDateBetween().$this->query_group_by);
+        $result = Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($this->query . ModuleGraph::getDateBetween() . $this->query_group_by);
         $this->html = '
 		<div class="panel-heading">
-			'.$this->displayName.'
+			' . $this->displayName . '
 		</div>';
         $table = '
 		<table class="table">
 			<thead>
 				<tr>
-					<th><span class="title_box active">'.$this->trans('Keywords', array(), 'Modules.Statssearch.Admin').'</span></th>
-					<th><span class="title_box active">'.$this->trans('Occurrences', array(), 'Modules.Statssearch.Admin').'</span></th>
-					<th><span class="title_box active">'.$this->trans('Results', array(), 'Modules.Statssearch.Admin').'</span></th>
+					<th><span class="title_box active">' . $this->trans('Keywords', [], 'Modules.Statssearch.Admin') . '</span></th>
+					<th><span class="title_box active">' . $this->trans('Occurrences', [], 'Modules.Statssearch.Admin') . '</span></th>
+					<th><span class="title_box active">' . $this->trans('Results', [], 'Modules.Statssearch.Admin') . '</span></th>
 				</tr>
 			</thead>
 			<tbody>';
@@ -121,9 +120,9 @@ class statssearch extends ModuleGraph
         foreach ($result as $row) {
             if (Tools::strlen($row['keywords']) >= Configuration::get('PS_SEARCH_MINWORDLEN')) {
                 $table .= '<tr>
-					<td>'.$row['keywords'].'</td>
-					<td>'.$row['occurences'].'</td>
-					<td>'.$row['total'].'</td>
+					<td>' . $row['keywords'] . '</td>
+					<td>' . $row['occurences'] . '</td>
+					<td>' . $row['total'] . '</td>
 				</tr>';
             }
         }
@@ -132,12 +131,12 @@ class statssearch extends ModuleGraph
 		</table>';
 
         if (count($result)) {
-            $this->html .= '<div>'.$this->engine(array('type' => 'pie')).'</div>
-							<a class="btn btn-default" href="'.Tools::safeOutput($_SERVER['REQUEST_URI']).'&export=1">
-								<i class="icon-cloud-upload"></i> '.$this->trans('CSV Export', array(), 'Modules.Statssearch.Admin').'
-							</a>'.$table;
+            $this->html .= '<div>' . $this->engine(['type' => 'pie']) . '</div>
+							<a class="btn btn-default" href="' . Tools::safeOutput($_SERVER['REQUEST_URI']) . '&export=1">
+								<i class="icon-cloud-upload"></i> ' . $this->trans('CSV Export', [], 'Modules.Statssearch.Admin') . '
+							</a>' . $table;
         } else {
-            $this->html .= '<p>'.$this->trans('Cannot find any keywords that have been searched for more than once.', array(), 'Modules.Statssearch.Admin').'</p>';
+            $this->html .= '<p>' . $this->trans('Cannot find any keywords that have been searched for more than once.', [], 'Modules.Statssearch.Admin') . '</p>';
         }
 
         return $this->html;
@@ -145,14 +144,14 @@ class statssearch extends ModuleGraph
 
     protected function getData($layers)
     {
-        $this->_titles['main'] = $this->trans('Top 10 keywords', array(), 'Modules.Statssearch.Admin');
-        $total_result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($this->query.$this->getDate().$this->query_group_by);
+        $this->_titles['main'] = $this->trans('Top 10 keywords', [], 'Modules.Statssearch.Admin');
+        $total_result = Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($this->query . $this->getDate() . $this->query_group_by);
         $total = 0;
         $total2 = 0;
         foreach ($total_result as $total_row) {
             $total += $total_row['occurences'];
         }
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($this->query.$this->getDate().$this->query_group_by.' LIMIT 9');
+        $result = Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($this->query . $this->getDate() . $this->query_group_by . ' LIMIT 9');
         foreach ($result as $row) {
             if (!$row['occurences']) {
                 continue;
@@ -162,7 +161,7 @@ class statssearch extends ModuleGraph
             $total2 += $row['occurences'];
         }
         if ($total > $total2) {
-            $this->_legend[] = $this->trans('Others', array(), 'Modules.Statssearch.Admin');
+            $this->_legend[] = $this->trans('Others', [], 'Modules.Statssearch.Admin');
             $this->_values[] = $total - $total2;
         }
     }

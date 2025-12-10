@@ -18,9 +18,5 @@
  *}
  
 <div class="tab-pane" id="psshippingTabContent" role="tabpanel" aria-labelledby="psshippingTabContent">
-<script src="{$appLink|escape:'htmlall':'UTF-8'}" type="module"></script>
-<link rel="stylesheet" href="{$appCss|escape:'htmlall':'UTF-8'}" type="text/css" media="all">
-<i18n-host>
-  <shipping-label></shipping-label>
-</i18n-host>
+  {include file="./../dist/src/app/order/index.html"}
 </div>

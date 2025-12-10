@@ -41,19 +41,19 @@ class CarrierService
     /** @var CommandBusInterface */
     private $commandBus;
 
-    /** @var Psshipping */
-    private $module;
+    /** @var CarrierRepository */
+    private $carrierRepository;
 
-    const CARRIERS_CREATED_BY_MODULE = [
-        'psshipping_standard',
-        'psshipping_express',
-        'psshipping_pickup',
-    ];
+    const CARRIERS_STANDARD = 'standard';
+    const CARRIERS_EXPRESS = 'express';
+    const CARRIERS_PICKUP = 'pickup';
 
-    public function __construct(CommandBusInterface $commandBus, Psshipping $module)
+    public function __construct(Psshipping $module, CarrierRepository $carrierRepository)
     {
-        $this->module = $module;
+        /** @var CommandBusInterface $commandBus */
+        $commandBus = $module->getService('prestashop.core.command_bus');
         $this->commandBus = $commandBus;
+        $this->carrierRepository = $carrierRepository;
     }
 
     /**
@@ -64,11 +64,10 @@ class CarrierService
     public function create($carrierConfiguration)
     {
         $carrierDto = $carrierConfiguration->transform();
-        $totalCarriers = $this->get();
         $carrier = CarrierDto::fromDomain($carrierDto);
 
-        if ($this->checkCarrierExists($totalCarriers[$carrier->external_module_name]) > 0) {
-            return CarrierDto::toDomain($carrier);
+        if ($this->isCarrierExists($carrierDto)) {
+            return CarrierDto::toDomain($carrier, $carrierDto->getType());
         }
 
         $context = \Context::getContext();
@@ -76,67 +75,66 @@ class CarrierService
         $carrier->save();
         $carrier->setTaxRulesGroup((int) Configuration::get('PS_TAX'), false);
 
+        $this->carrierRepository->addShippingCarrierMapping((int) $carrier->id, $carrierDto->getType());
+
         if (!empty($context->language) && !empty($context->language->id)) {
             $carrier->setGroups(array_column(Group::getGroups($context->language->id), 'id_group'));
         }
 
-        return CarrierDto::toDomain($carrier);
+        return CarrierDto::toDomain($carrier, $carrierDto->getType());
     }
 
     public function update(): void
     {
-        foreach ($this->get() as $carrier) {
-            foreach ($carrier as $carrierDetail) {
-                if (!empty($carrierDetail['id_carrier'])) {
-                    $carrierCore = new Carrier((int) $carrierDetail['id_carrier']);
-                    $carrierCore->active = false;
-                    $carrierCore->update();
-                }
+        foreach ($this->get() as $carrierDetail) {
+            if (!empty($carrierDetail['id_carrier'])) {
+                $carrierCore = new Carrier((int) $carrierDetail['id_carrier']);
+                $carrierCore->active = false;
+                $carrierCore->update();
             }
         }
     }
 
     public function delete(): void
     {
-        foreach ($this->get() as $carrier) {
-            foreach ($carrier as $carrierDetail) {
-                if (!empty($carrierDetail['id_carrier'])) {
-                    $carrierCore = new Carrier((int) $carrierDetail['id_carrier']);
-                    $carrierCore->deleted = true;
-                    $carrierCore->update();
-                }
+        foreach ($this->get() as $carrierDetail) {
+            if (!empty($carrierDetail['id_carrier'])) {
+                $carrierCore = new Carrier((int) $carrierDetail['id_carrier']);
+                $carrierCore->deleted = true;
+                $carrierCore->update();
             }
         }
     }
 
     /**
-     * @return array<int|string,array<Carrier>>
+     * @return array<string,?Carrier>
      */
     public function get()
     {
+        $carrierFromModule = [
+            self::CARRIERS_STANDARD => null,
+            self::CARRIERS_EXPRESS => null,
+            self::CARRIERS_PICKUP => null,
+        ];
         $context = Context::getContext();
 
         if (!empty($context->link)) {
-            $findCarriers = (new CarrierRepository($this->module))->getCarriers();
-
-            $carrierFromModule = [
-                'psshipping_standard' => [],
-                'psshipping_express' => [],
-                'psshipping_pickup' => [],
-            ];
+            $findCarriers = $this->carrierRepository->getCarriers();
+            $mapping = $this->carrierRepository->getShippingCarriersMapping();
 
             foreach ($findCarriers as $carrier) {
                 $carrier['id_carrier'] = (int) $carrier['id_carrier'];
-                if (!empty($context->link)) {
-                    $carrier['detailLink'] = $context->link->getAdminLink('AdminCarrierWizard', true, [], ['id_carrier' => $carrier['id_carrier']]);
-                }
-                $carrierFromModule[$carrier['external_module_name']][] = $carrier;
-            }
+                $carrier['detailLink'] = $context->link->getAdminLink('AdminCarrierWizard', true, [], ['id_carrier' => $carrier['id_carrier']]);
 
-            return $carrierFromModule;
+                foreach ($mapping as $idCarrier => $carrierType) {
+                    if ((int) $idCarrier === $carrier['id_carrier']) {
+                        $carrierFromModule[$carrierType] = $carrier;
+                    }
+                }
+            }
         }
 
-        return [];
+        return $carrierFromModule;
     }
 
     public function toggle(int $carrierId): bool
@@ -158,18 +156,32 @@ class CarrierService
     }
 
     /**
-     * @param Carrier[] $carriers
+     * @param CarrierDto $carrier
      */
-    private function checkCarrierExists($carriers): int
+    private function isCarrierExists($carrier): bool
     {
-        $isCarrierActive = 0;
+        $allShippingCarriers = $this->get();
+        $mapping = $this->carrierRepository->getShippingCarriersMapping();
+        $currentCarrierValue = $allShippingCarriers[$carrier->getType()];
 
-        foreach ($carriers as $carrier) {
-            if (isset($carrier['deleted']) && (bool) $carrier['deleted'] === false) {
-                ++$isCarrierActive;
+        if ($currentCarrierValue !== null && in_array($currentCarrierValue['id_carrier'], array_keys($mapping))) {
+            if (filter_var($currentCarrierValue['deleted'], FILTER_VALIDATE_BOOLEAN) === true) {
+                $this->enableCarrier($currentCarrierValue['id_carrier']);
             }
+
+            return true;
         }
 
-        return $isCarrierActive;
+        return false;
+    }
+
+    /**
+     * @param int $carrierId
+     */
+    private function enableCarrier($carrierId): void
+    {
+        $carrier = new Carrier((int) $carrierId);
+        $carrier->deleted = false;
+        $carrier->update();
     }
 }

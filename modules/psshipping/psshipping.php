@@ -25,13 +25,25 @@ if (!defined('_PS_VERSION_')) {
     exit();
 }
 
+use PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController;
 use PrestaShop\Module\Psshipping\Domain\Accounts\AccountsService;
 use PrestaShop\Module\Psshipping\Domain\Api\Webhook;
+use PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository;
 use PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService;
+use PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressOrdersRepository;
 use PrestaShop\Module\Psshipping\Domain\Legacy\PrestaShopAdapter;
+use PrestaShop\Module\Psshipping\Domain\Orders\OrdersRepository;
 use PrestaShop\Module\Psshipping\Domain\Segment\Segment;
+use PrestaShop\Module\Psshipping\Domain\Shipment\RecipientDTO;
+use PrestaShop\Module\Psshipping\Domain\Shipment\RecipientPickupPointDTO;
 use PrestaShop\Module\Psshipping\Exception\PsshippingException;
 use PrestaShop\Module\Psshipping\Helper\ConfigHelper;
+use PrestaShop\Module\Psshipping\Hooks\HookActionObjectCarrierUpdateAfter;
+use PrestaShop\Module\Psshipping\Hooks\HookActionValidateOrder;
+use PrestaShop\Module\Psshipping\Hooks\HookDisplayCarrierExtraContent;
+use PrestaShop\Module\Psshipping\Hooks\HookDisplayHeader;
+use PrestaShop\Module\Psshipping\Hooks\HookDisplayOrderConfirmation;
+use PrestaShop\Module\Psshipping\Service\DatabaseInstaller;
 use PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer;
 use PrestaShop\PrestaShop\Adapter\Configuration;
 use PrestaShop\PrestaShop\Core\Action\ActionsBarButtonsCollection as NewActionsBarButtonsCollection;
@@ -66,14 +78,24 @@ class Psshipping extends Module
     /** @var ServiceContainer */
     public $serviceContainer;
 
+    const MODULE_TECHNICAL_NAME = 'psshipping';
+    const MBE_API_SERVICE_ID_CARRIER_STANDARD = 2;
+    const MBE_API_SERVICE_ID_CARRIER_EXPRESS = 4;
+    const MBE_API_SERVICE_ID_CARRIER_PICKUP = 12;
+
     const HOOK_LIST = [
         'actionGetAdminOrderButtons',
+        'actionValidateOrder',
+        'displayHeader',
         'displayAdminOrderTabContent',
         'displayAdminOrderTabLink',
         'displayAdminOrderContentShip',
         'displayAdminOrderTabShip',
         'displayBackOfficeHeader',
+        'displayCarrierExtraContent',
+        'displayOrderConfirmation',
         'actionObjectCarrierUpdateAfter',
+        'actionGetOrderShipments',
     ];
 
     /** @var array<array<string, string|bool>> */
@@ -95,7 +117,7 @@ class Psshipping extends Module
     {
         $this->name = 'psshipping';
         $this->tab = 'shipping_logistics';
-        $this->version = '1.1.4';
+        $this->version = '2.0.9';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->module_key = '8a4eff554bcb2ec847b3d4c70286b0e2';
@@ -132,12 +154,6 @@ class Psshipping extends Module
         }
     }
 
-    private function registerHooks(): bool
-    {
-        /* @phpstan-ignore-next-line */
-        return (bool) $this->registerHook(self::HOOK_LIST);
-    }
-
     public function install(): bool
     {
         $segment = new Segment($this, true);
@@ -150,9 +166,27 @@ class Psshipping extends Module
             return defined('PS_INSTALLATION_IN_PROGRESS');
         }
 
-        parent::install();
+        if (!parent::install()) {
+            $this->_errors[] = $this->trans('An error occured during the parent installation.', [], 'Modules.Psshipping.Admin');
 
-        return (bool) $this->registerHooks();
+            return false;
+        }
+
+        if (!$this->registerHook(self::HOOK_LIST)) {
+            $this->_errors[] = $this->trans('An error occured while trying to register hooks.', [], 'Modules.Psshipping.Admin');
+
+            return false;
+        }
+
+        try {
+            (new DatabaseInstaller($this))->install();
+        } catch (Exception $e) {
+            $this->_errors[] = $e->getMessage();
+
+            return false;
+        }
+
+        return true;
     }
 
     public function uninstall()
@@ -168,29 +202,28 @@ class Psshipping extends Module
         parent::uninstall();
 
         $configuration = new Configuration();
-        $configuration->remove('PS_SHIPPING_ONBOARDING_IS_DONE');
-        $configuration->remove('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE');
-        $configuration->remove('PS_SHIPPING_MAX_WIDTH_PER_PACKAGE');
-        $configuration->remove('PS_SHIPPING_MAX_HEIGHT_PER_PACKAGE');
-        $configuration->remove('PS_SHIPPING_MAX_LENGTH_PER_PACKAGE');
-        $configuration->remove('PS_SHIPPING_ORDER_MAPPING_IS_ACTIVATE');
-        $configuration->remove('PS_SHIPPING_ORDER_STATUS_MAPPING');
+        $configuration->remove(PsshippingConfigurationController::ONBOARDING_IS_DONE);
+        $configuration->remove(PsshippingConfigurationController::MAX_WEIGHT_PER_PACKAGE);
+        $configuration->remove(PsshippingConfigurationController::MAX_WIDTH_PER_PACKAGE);
+        $configuration->remove(PsshippingConfigurationController::MAX_HEIGHT_PER_PACKAGE);
+        $configuration->remove(PsshippingConfigurationController::MAX_LENGTH_PER_PACKAGE);
+        $configuration->remove(PsshippingConfigurationController::ORDER_MAPPING_IS_ACTIVATE);
+        $configuration->remove(PsshippingConfigurationController::ORDER_STATUS_MAPPING);
         $configuration->remove('PS_SHIPPING_WEBHOOK_SECRET');
         (new Webhook($this))->deleteSvixEndpoint();
 
-        /** @var PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface $commandBus */
-        $commandBus = $this->getService('prestashop.core.command_bus');
-        (new CarrierService($commandBus, $this))->delete();
+        $carrierRepository = new CarrierRepository($this);
+        $carrierService = new CarrierService($this, $carrierRepository);
+        $carrierService->delete();
 
         return true;
     }
 
     public function disable($force_all = false): bool
     {
-        /** @var PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface $commandBus */
-        $commandBus = $this->getService('prestashop.core.command_bus');
-
-        (new CarrierService($commandBus, $this))->update();
+        $carrierRepository = new CarrierRepository($this);
+        $carrierService = new CarrierService($this, $carrierRepository);
+        $carrierService->update();
 
         return parent::disable($force_all);
     }
@@ -205,6 +238,7 @@ class Psshipping extends Module
         $segment = new Segment($this);
         $segment->setMessage('[SHI] PS Shipping Module Manager Configure CTA Clicked');
         $segment->track();
+        $this->registerHook('actionGetOrderShipments');
 
         try {
             Tools::redirectAdmin((new PrestaShopAdapter($this))->generateRoute('home', ['route' => 'home']));
@@ -213,6 +247,56 @@ class Psshipping extends Module
                 throw new PsshippingException($e->getMessage(), $e->getCode());
             }
         }
+    }
+
+    /**
+     * @param array{
+     *   carrier: array{
+     *     id: int,
+     *   }
+     * } $params
+     */
+    public function hookDisplayCarrierExtraContent(array $params): string
+    {
+        /** @var HookDisplayCarrierExtraContent $hookDisplayCarrierExtraContent */
+        $hookDisplayCarrierExtraContent = $this->getService(HookDisplayCarrierExtraContent::class);
+
+        return $hookDisplayCarrierExtraContent->run($params);
+    }
+
+    public function hookDisplayHeader(): void
+    {
+        /** @var HookDisplayHeader $hookDisplayHeader */
+        $hookDisplayHeader = $this->getService(HookDisplayHeader::class);
+
+        $hookDisplayHeader->run();
+    }
+
+    /**
+     * @param array{
+     *   order: Order,
+     * } $params
+     */
+    public function hookDisplayOrderConfirmation(array $params): string
+    {
+        /** @var HookDisplayOrderConfirmation $hookDisplayOrderConfirmation */
+        $hookDisplayOrderConfirmation = $this->getService(HookDisplayOrderConfirmation::class);
+
+        return $hookDisplayOrderConfirmation->run($params);
+    }
+
+    /**
+     * @param array{
+     *   cart: Cart,
+     *   order: Order,
+     * } $params
+     */
+    public function hookActionValidateOrder(array $params): void
+    {
+        /** @var HookActionValidateOrder $hookActionValidateOrder */
+        $hookActionValidateOrder = $this->getService(HookActionValidateOrder::class);
+
+        $hookActionValidateOrder->run($params);
     }
 
     /**
@@ -227,7 +311,7 @@ class Psshipping extends Module
     }
 
     /**
-     * Method that dispatch to the correct service container to use
+     * Method that dispatches to the correct service container
      *
      * @param string $serviceName
      *
@@ -235,16 +319,17 @@ class Psshipping extends Module
      */
     public function getService($serviceName)
     {
-        $splitServiceNamespace = explode('.', $serviceName);
-        $firstLevelNamespace = $splitServiceNamespace[0];
-        // if serviceName is not a service coming from the module
-        if ($firstLevelNamespace !== 'psshipping') {
-            // use symfony service container from prestashop
-            return $this->get($serviceName);
+        // Check if it's a module service (dot notation or full namespace)
+        $isModuleService =
+            strpos($serviceName, 'psshipping.') === 0 ||
+            strpos($serviceName, 'PrestaShop\\Module\\Psshipping\\') === 0;
+
+        if ($isModuleService) {
+            return $this->serviceContainer->getService($serviceName);
         }
 
-        // otherwise use the service container from the module
-        return $this->serviceContainer->getService($serviceName);
+        // Otherwise use PrestaShop’s main container
+        return $this->get($serviceName);
     }
 
     /**
@@ -287,15 +372,11 @@ class Psshipping extends Module
             'defaultIsoCode' => $this->context->language->iso_code ?? 'en',
         ]);
 
-        $assets = $this->getAssetsPath();
-
         if (empty($this->context->smarty)) {
             return '';
         }
 
-        $this->context->smarty->assign($assets);
-
-        return $this->display(__DIR__, '/views/templates/hook/promoteBanner.tpl');
+        return $this->display(__DIR__, 'views/templates/hook/promoteBanner.tpl');
     }
 
     /**
@@ -304,17 +385,6 @@ class Psshipping extends Module
     public function getFilePath(): string
     {
         return __FILE__;
-    }
-
-    /**
-     * @return bool
-     */
-    public function useHotReload(): bool
-    {
-        /** @var ConfigHelper $config */
-        $config = $this->getService('psshipping.helper.config');
-
-        return (bool) $config->vue_app_dev_mode;
     }
 
     /**
@@ -353,31 +423,12 @@ class Psshipping extends Module
     /**
      * @return string
      */
-    public function getCdnUrl(): string
-    {
-        /** @var ConfigHelper $config */
-        $config = $this->getService('psshipping.helper.config');
-
-        return $config->cdn_url;
-    }
-
-    /**
-     * @return string
-     */
     public function getApiUrl(): string
     {
         /** @var ConfigHelper $config */
         $config = $this->getService('psshipping.helper.config');
 
         return $config->api_url;
-    }
-
-    public function isDevEnvironment(): bool
-    {
-        /** @var ConfigHelper $config */
-        $config = $this->getService('psshipping.helper.config');
-
-        return (bool) $config->use_local_vue_app;
     }
 
     public function getMbeTrackingUrl(): string
@@ -432,77 +483,9 @@ class Psshipping extends Module
      */
     public function hookActionObjectCarrierUpdateAfter(array $params): void
     {
-        /** @var Carrier $carrier */
-        $carrier = $params['object'];
-
-        if (!in_array($carrier->external_module_name, CarrierService::CARRIERS_CREATED_BY_MODULE)) {
-            return;
-        }
-
-        $this->listenerUpdateFromStatusButton();
-        $this->listenerUpdateFromEditButton($carrier);
-    }
-
-    /**
-     * This function is used for listening changes if the user enabled or disabled the status carrier
-     * from on the grid carrier page.
-     */
-    private function listenerUpdateFromStatusButton(): void
-    {
-        if (!empty($this->context->controller->controller_name) && $this->context->controller->controller_name !== 'AdminCarriers') {
-            return;
-        }
-
-        $carrierId = is_numeric(\Tools::getValue('id_carrier')) ? (int) \Tools::getValue('id_carrier') : null;
-
-        if (\Tools::getValue('statuscarrier') === '' && $carrierId) {
-            $this->trackCarrierActiveChanges($carrierId);
-
-            return;
-        }
-    }
-
-    /**
-     * This function is used for listening changes if the user enabled or disabled the status carrier
-     * from the carrier page itself.
-     */
-    private function listenerUpdateFromEditButton(Carrier $carrier): void
-    {
-        if (!empty($this->context->controller->controller_name) && $this->context->controller->controller_name !== 'AdminCarrierWizard') {
-            return;
-        }
-
-        $oldCarrierId = is_numeric(\Tools::getValue('id_carrier')) ? (int) \Tools::getValue('id_carrier') : null;
-
-        // When an edit is made on a carrier, the old one is set to 'deleted' in the database.
-        // The new one, we only want to track the new one witch is a duplicated from the other one.
-        if ($oldCarrierId === $carrier->id) {
-            return;
-        }
-
-        $oldCarrier = new \Carrier($oldCarrierId);
-
-        if ($oldCarrier->active !== $carrier->active && $carrier->id) {
-            $this->trackCarrierActiveChanges($carrier->id);
-        }
-    }
-
-    private function trackCarrierActiveChanges(int $carrierId): void
-    {
-        $carrier = new \Carrier($carrierId);
-        $eventAction = $carrier->active ? 'Enabled' : 'Disabled';
-        $account = (new AccountsService())->getAccountsContext($this);
-
-        $segment = new Segment($this);
-        $segment->setMessage('[SHI] Carrier ' . $eventAction);
-        $segment->setOptions([
-            'date' => date('Ymd'),
-            'enabled' => (bool) $carrier->active,
-            'email' => !empty($account['user']['email']) ? $account['user']['email'] : null,
-            'carrier_name' => $carrier->name,
-            'mbe_shipping_service' => explode('_', $carrier->external_module_name)[1],
-        ]);
-        $segment->track();
+        /** @var HookActionObjectCarrierUpdateAfter $hookActionObjectCarrierUpdateAfter */
+        $hookActionObjectCarrierUpdateAfter = $this->getService(HookActionObjectCarrierUpdateAfter::class);
+        $hookActionObjectCarrierUpdateAfter->run($params);
     }
 
     /**
@@ -518,51 +501,54 @@ class Psshipping extends Module
             return '';
         }
 
-        $assets = $this->getAssetsPath();
-
         if (empty($this->context->smarty)) {
             return '';
         }
 
-        $this->smarty->assign([
-            'appCss' => $assets['appCss'],
-            'appLink' => $assets['appLink'],
-        ]);
-
         Media::addJsDef([
             'shipmentDetail' => $this->renderOrderDetail(new Order($params['order']->id)),
+            'contextPsAccounts' => (new AccountsService())->getAccountsContext($this),
         ]);
 
-        return $this->display(__DIR__, '/views/templates/admin/shipping.tpl');
+        return $this->display(__DIR__, 'views/templates/admin/shipping.tpl');
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function renderOrderDetail(Order $order)
+    private function renderOrderDetail(Order $order)
     {
-        $deliveryDetails = new Address((int) ($order->id_address_delivery));
         $totalCartPackageWeight = (float) (new Cart($order->id_cart))->getTotalWeight();
-        $maxWeightPerPackage = floatval(is_numeric((new Configuration())->get('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE', 0)) ? (new Configuration())->get('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE', 0) : 0);
-        $trackingNumber = (new OrderCarrier($order->id))->tracking_number;
+        $maxWeightPerPackageConfiguration = (new Configuration())->get(PsshippingConfigurationController::MAX_WEIGHT_PER_PACKAGE, 0);
+        $maxWeightPerPackage = is_numeric($maxWeightPerPackageConfiguration) ? (float) $maxWeightPerPackageConfiguration : 0.0;
+        $orderCarrierId = $order->getIdOrderCarrier();
+        /** @var string|null $trackingNumber */
+        $trackingNumber = (new OrderCarrier($orderCarrierId))->tracking_number;
         $carrier = new Carrier((int) $order->id_carrier);
+
+        $recipient = $this->buildRecipient($order);
+
+        /** @var CarrierRepository $carrierRepository */
+        $carrierRepository = $this->getService(CarrierRepository::class);
+        $carrierMapping = $carrierRepository->getShippingCarriersMapping();
+        $carrierType = $carrierMapping[$carrier->id];
 
         return [
             'deliveryMode' => $carrier->name,
-            'numberOfPackages' => (int) ceil($totalCartPackageWeight / $maxWeightPerPackage),
+            'numberOfPackages' => (int) ($maxWeightPerPackage > 0 ? ceil($totalCartPackageWeight / $maxWeightPerPackage) : 0),
             'totalCartWeight' => $totalCartPackageWeight,
             'maxWeightPerPackage' => $maxWeightPerPackage,
             'shippingDate' => $order->delivery_date,
             'deliveryAddress' => [
-                'recipient' => $this->buildRecipient($deliveryDetails, $order->getCustomer()),
-                'shipment' => $this->buildShipmentDetail($order, $carrier->external_module_name, $deliveryDetails),
+                'recipient' => $recipient->toArray(),
+                'shipment' => $this->buildShipmentDetail($order, $carrierType, $recipient),
             ],
             'contextPsAccounts' => (new AccountsService())->getAccountsContext($this),
             'tokenPsAccounts' => (new AccountsService())->getPsAccountToken($this),
             'psxShippingApiUrl' => $this->getApiUrl(),
             'defaultIsoCode' => $this->context->language->iso_code ?? 'en',
             'orderId' => $order->id,
-            'trackingNumber' => $trackingNumber,
+            'trackingNumber' => $trackingNumber ?? '',
             'saveTrackingNumberControllerLink' => (new PrestaShopAdapter($this))->generateRoute('save_tracking_number', ['route' => 'save_tracking_number']),
         ];
     }
@@ -583,54 +569,84 @@ class Psshipping extends Module
         /** @var Router $router */
         $router = $this->get('router');
         $order = new Order((int) $params['id_order']);
-        $assets = $this->getAssetsPath();
 
         $shipmentDetail = $this->renderOrderDetail($order);
         $shipmentDetail['saveTrackingNumberControllerLink'] = $router->generate('save_tracking_number');
 
         return $this->render('@Modules/psshipping/views/templates/admin/shipping.html.twig', [
-            'appCss' => $assets['appCss'],
-            'appLink' => $assets['appLink'],
             'shipmentDetail' => $shipmentDetail,
             'params' => $order,
+            'defaultIsoCode' => $this->context->language->iso_code ?? 'en',
+            'contextPsAccounts' => (new AccountsService())->getAccountsContext($this),
         ]);
     }
 
     /**
-     * @param Address $address
-     * @param Customer $customer
+     * @param Order $order
      *
-     * @return array<string, string>
+     * @return RecipientDTO
      */
-    private function buildRecipient($address, $customer)
+    private function buildRecipient(Order $order)
     {
-        $state = '';
+        /** @var CarrierRepository $carrierRepository */
+        $carrierRepository = $this->getService(CarrierRepository::class);
+        $isOrderUsePickupPointCarrier = $carrierRepository->isPickupCarrierFromMapping((int) $order->id_carrier);
 
-        if ($address->id_state) {
-            $state = (new StateCore($address->id_state))->iso_code;
+        $customer = new Customer((int) $order->id_customer);
+        $customerAddress = new Address((int) $order->id_address_delivery);
+
+        // if the order was made with a pickup point carrier, use the address of the pickup point
+        if ($isOrderUsePickupPointCarrier) {
+            /** @var PsshippingAddressOrdersRepository $addressRepository */
+            $addressRepository = $this->getService(PsshippingAddressOrdersRepository::class);
+            $pickupPointAddress = $addressRepository->findOneByIdOrderAndShop((int) $order->id, (int) $order->id_shop);
+
+            if ($pickupPointAddress === null) {
+                throw new PsshippingException(sprintf('Cannot find the pickup point address associated to the orderId %s.', $order->id));
+            }
+
+            $pickupPointAddress = $pickupPointAddress->getAddress();
+
+            $recipient = new RecipientPickupPointDTO(
+                $pickupPointAddress->getCode(),
+                $pickupPointAddress->getNetworkCode(),
+                $customer->firstname . ' ' . $customer->lastname,
+                $pickupPointAddress->getAddress(),
+                $pickupPointAddress->getDescription() ?? '',
+                $customerAddress->phone,
+                $pickupPointAddress->getZipCode(),
+                $pickupPointAddress->getCity(),
+                $pickupPointAddress->getDepartment(),
+                $pickupPointAddress->getCountry(),
+                $customer->email
+            );
+        } else { // otherwise use the address delivery of the order (from the customer)
+            $customerCountry = new Country($customerAddress->id_country);
+
+            $recipient = new RecipientDTO(
+                empty($customerAddress->company) ? $customer->firstname . ' ' . $customer->lastname : $customerAddress->company,
+                $customerAddress->address1,
+                $customerAddress->address2,
+                $customerAddress->phone,
+                $customerAddress->postcode,
+                $customerAddress->city,
+                (new StateCore($customerAddress->id_state))->iso_code,
+                $customerCountry->iso_code,
+                $customer->email
+            );
         }
 
-        return [
-            'name' => empty($address->company) ? $customer->firstname . ' ' . $customer->lastname : $address->company,
-            'address' => $address->address1,
-            'address2' => $address->address2,
-            'phone' => $address->phone,
-            'zipCode' => $address->postcode,
-            'city' => $address->city,
-            'state' => $state,
-            'country' => (new CountryCore($address->id_country))->iso_code,
-            'email' => $customer->email,
-        ];
+        return $recipient;
     }
 
     /**
      * @param Order $order
-     * @param string $carrierName
-     * @param Address $address
+     * @param string $carrierType
+     * @param RecipientDTO $recipient
      *
      * @return array<string, array<int<0, max>|string,float|int>|int|string>
      */
-    private function buildShipmentDetail($order, $carrierName, $address)
+    private function buildShipmentDetail($order, $carrierType, $recipient)
     {
         $configuration = new Configuration();
         $weight = 0;
@@ -639,17 +655,17 @@ class Psshipping extends Module
         $length = 0;
         $productsWeight = [];
 
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE'))) {
-            $weight = floatval($configuration->get('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE'));
+        if (is_numeric($configuration->get(PsshippingConfigurationController::MAX_WEIGHT_PER_PACKAGE))) {
+            $weight = floatval($configuration->get(PsshippingConfigurationController::MAX_WEIGHT_PER_PACKAGE));
         }
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_WIDTH_PER_PACKAGE'))) {
-            $width = floatval($configuration->get('PS_SHIPPING_MAX_WIDTH_PER_PACKAGE'));
+        if (is_numeric($configuration->get(PsshippingConfigurationController::MAX_WIDTH_PER_PACKAGE))) {
+            $width = floatval($configuration->get(PsshippingConfigurationController::MAX_WIDTH_PER_PACKAGE));
         }
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_HEIGHT_PER_PACKAGE'))) {
-            $height = floatval($configuration->get('PS_SHIPPING_MAX_HEIGHT_PER_PACKAGE'));
+        if (is_numeric($configuration->get(PsshippingConfigurationController::MAX_HEIGHT_PER_PACKAGE))) {
+            $height = floatval($configuration->get(PsshippingConfigurationController::MAX_HEIGHT_PER_PACKAGE));
         }
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_LENGTH_PER_PACKAGE'))) {
-            $length = floatval($configuration->get('PS_SHIPPING_MAX_LENGTH_PER_PACKAGE'));
+        if (is_numeric($configuration->get(PsshippingConfigurationController::MAX_LENGTH_PER_PACKAGE))) {
+            $length = floatval($configuration->get(PsshippingConfigurationController::MAX_LENGTH_PER_PACKAGE));
         }
 
         foreach ($order->getProducts() as $product) {
@@ -661,13 +677,26 @@ class Psshipping extends Module
             $productsWeight[] = (float) $product['weight'];
         }
 
-        $serviceId = $carrierName === 'psshipping_express' ? 4 : 2;
+        switch ($carrierType) {
+            case CarrierService::CARRIERS_STANDARD:
+                $serviceId = self::MBE_API_SERVICE_ID_CARRIER_STANDARD;
+                break;
+            case CarrierService::CARRIERS_PICKUP:
+                $serviceId = self::MBE_API_SERVICE_ID_CARRIER_PICKUP;
+                break;
+            case CarrierService::CARRIERS_EXPRESS:
+                $serviceId = self::MBE_API_SERVICE_ID_CARRIER_EXPRESS;
+                break;
+            default:
+                $serviceId = 0;
+                break;
+        }
 
         return [
             'orderDate' => $order->date_upd,
             'service' => $serviceId,
             'packageType' => 'GENERIC',
-            'description' => empty($address->address2) ? '-' : $address->address2,
+            'description' => $recipient->address2 ?? '-',
             'productsWeight' => $productsWeight,
             'defaultConfiguration' => [
                 'weight' => $weight,
@@ -684,9 +713,23 @@ class Psshipping extends Module
     private function canDisplayShippingTab(int $idOrder)
     {
         $order = new Order($idOrder);
-        $shipment = new Carrier((int) $order->getShipping()[0]['id_carrier']);
 
-        return in_array($shipment->external_module_name, CarrierService::CARRIERS_CREATED_BY_MODULE);
+        /** @var CarrierRepository $carrierRepository */
+        $carrierRepository = $this->getService(CarrierRepository::class);
+        $carrierMapping = $carrierRepository->getShippingCarriersMapping();
+
+        $configuration = new Configuration();
+
+        if (
+            $configuration->get(PsshippingConfigurationController::MAX_WEIGHT_PER_PACKAGE) === '' ||
+            $configuration->get(PsshippingConfigurationController::MAX_WIDTH_PER_PACKAGE) === '' ||
+            $configuration->get(PsshippingConfigurationController::MAX_HEIGHT_PER_PACKAGE) === '' ||
+            $configuration->get(PsshippingConfigurationController::MAX_LENGTH_PER_PACKAGE) === ''
+        ) {
+            return false;
+        }
+
+        return array_key_exists((int) $order->id_carrier, $carrierMapping);
     }
 
     /**
@@ -710,7 +753,7 @@ class Psshipping extends Module
             'psImage' => $psImage,
         ]);
 
-        return $this->display(__DIR__, '/views/templates/admin/shipping-link.tpl');
+        return $this->display(__DIR__, 'views/templates/admin/shipping-link.tpl');
     }
 
     /**
@@ -729,6 +772,20 @@ class Psshipping extends Module
         return $this->render('@Modules/psshipping/views/templates/admin/shipping-link.html.twig', [
             'psImage' => $psImage,
         ]);
+    }
+
+    /**
+     * @param array<string, string> $params
+     *
+     * @return array<string, mixed>
+     */
+    public function hookActionGetOrderShipments(array $params): array
+    {
+        if (empty($params['id_order'])) {
+            return [];
+        }
+
+        return (new OrdersRepository($this))->getOrderDetails((int) $params['id_order']);
     }
 
     /**
@@ -752,28 +809,6 @@ class Psshipping extends Module
         }
 
         return $twig->render($template, $params);
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function getAssetsPath()
-    {
-        $pathAppBuilded = '';
-        $pathAssetsBuilded = '';
-
-        if (!$this->isDevEnvironment()) {
-            $pathAppBuilded = $this->getCdnUrl() . '/js/psshipping-web-component.js';
-            $pathAssetsBuilded = $this->getCdnUrl() . '/css/style.css';
-        } else {
-            $pathAppBuilded = $this->getPathUri() . '/views/build/js/psshipping-web-component.js?v=' . time();
-            $pathAssetsBuilded = $this->getPathUri() . '/views/build/css/style.css';
-        }
-
-        return [
-            'appCss' => $pathAssetsBuilded,
-            'appLink' => $pathAppBuilded,
-        ];
     }
 
     /**

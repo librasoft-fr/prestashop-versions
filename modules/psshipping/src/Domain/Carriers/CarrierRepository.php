@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\Psshipping\Domain\Carriers;
 
+use Carrier;
+use Configuration;
 use Context;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Statement;
@@ -49,6 +51,8 @@ class CarrierRepository
      */
     private $module;
 
+    const PS_SHIPPING_CARRIER = 'PS_SHIPPING_CARRIER';
+
     /**
      * @param Psshipping $module
      */
@@ -64,7 +68,7 @@ class CarrierRepository
     /**
      * @param bool $active
      *
-     * @return array
+     * @return Carrier[]
      */
     public function getCarriers($active = false)
     {
@@ -80,19 +84,69 @@ class CarrierRepository
             if ($active) {
                 $qb->where('c.active = 1');
             }
-            $qb->where('c.is_module = 0');
-            $qb->andWhere('c.external_module_name IN (:names)');
+            $qb->where('c.is_module = 1');
+            $qb->andWhere("c.external_module_name = 'psshipping'");
             $qb->groupBy('c.id_carrier');
             $qb->orderBy('c.id_carrier', 'DESC');
             $qb->setParameter('id_lang', (int) $context->language->id);
-            $qb->setParameter('names', CarrierService::CARRIERS_CREATED_BY_MODULE, Connection::PARAM_STR_ARRAY);
 
             /** @var Statement $execute */
             $execute = $qb->execute();
 
-            return $execute->fetchAll();
+            /** @var Carrier[] */
+            $result = $execute->fetchAll();
+
+            return $result;
         }
 
         return [];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getShippingCarriersMapping(): array
+    {
+        $mapping = Configuration::get(self::PS_SHIPPING_CARRIER);
+
+        // Return type is wrong on Configuration::get before PS 1.7.8
+        // @phpstan-ignore function.alreadyNarrowedType
+        if (!is_string($mapping)) {
+            return [];
+        }
+
+        /** @var string[] $value */
+        $value = json_decode($mapping, true);
+
+        return $value;
+    }
+
+    public function addShippingCarrierMapping(int $carrierId, string $type): void
+    {
+        $mapping = $this->getShippingCarriersMapping();
+        $mapping[$carrierId] = $type;
+
+        Configuration::updateGlobalValue(self::PS_SHIPPING_CARRIER, json_encode($mapping));
+    }
+
+    /**
+     * @param string[] $mapping
+     */
+    public function updateShippingCarrierMapping(array $mapping): void
+    {
+        Configuration::updateGlobalValue(self::PS_SHIPPING_CARRIER, json_encode($mapping));
+    }
+
+    public function isPickupCarrierFromMapping(int $currentCarrierId): bool
+    {
+        $carrierMapping = $this->getShippingCarriersMapping();
+
+        foreach ($carrierMapping as $carrierId => $type) {
+            if ($currentCarrierId === $carrierId && $type === CarrierService::CARRIERS_PICKUP) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

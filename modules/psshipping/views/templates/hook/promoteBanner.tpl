@@ -17,8 +17,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
 
-<script src="{$appLink|escape:'htmlall':'UTF-8'}" type="module"></script>
-<link rel="stylesheet" href="{$appCss|escape:'htmlall':'UTF-8'}" type="text/css" media="all">
+{include file="../dist/src/app/promote/index.html"}
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -28,15 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
   }
 
-  let promoteBanner = document.createElement('div');
-  promoteBanner.setAttribute('id', 'promotePsshippingBanner');
-  const content = `
-    <i18n-host>
-      <promote-shipping></promote-shipping>
-    </i18n-host>
-  `;
-  promoteBanner.innerHTML = content;
+  const content = document.querySelector('#shipping-promote');
 
-  contentMessageBox.appendChild(promoteBanner);
+  contentMessageBox.appendChild(content);
 });
 </script>

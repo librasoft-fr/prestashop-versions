@@ -25,6 +25,7 @@ namespace PrestaShop\Module\Psshipping\Domain\Orders;
 
 use Carrier;
 use Currency;
+use PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository;
 use PrestaShop\Module\Psshipping\Domain\Legacy\PrestaShopAdapter;
 use Psshipping;
 
@@ -43,30 +44,32 @@ class OrdersService
     }
 
     /**
-     * @param array<int|string,array<Carrier>> $carriersFromShop
+     * @param array<int|string,?Carrier> $carriersFromShop
      * @param PrestaShopAdapter $prestashopAdapter
      * @param int $limit
      * @param int $offset
      *
-     * @return array<string, array<int, array<string, int|string>>|int<0, max>>>>
+     * @return array{orders: array<string, int|string>[], ordersCount: non-negative-int}
      */
     public function getOrdersByCustomCarriers($carriersFromShop, $prestashopAdapter, $limit, $offset)
     {
         $carriersId = [];
         $orderRepository = new OrdersRepository($this->module);
-
-        foreach ($carriersFromShop as $carriers) {
-            foreach ($carriers as $carrier) {
-                if (!empty($carrier['id_carrier'])) {
-                    $carriersId[] = $carrier['id_carrier'];
-                }
+        foreach ($carriersFromShop as $carrier) {
+            if ($carrier && !empty($carrier['id_carrier'])) {
+                $carriersId[] = $carrier['id_carrier'];
             }
         }
         $result = $orderRepository->getOrders($limit, $offset, $carriersId);
         $totalOrders = $orderRepository->getNbOrders($carriersId);
 
+        /** @var CarrierRepository $carrierRepository */
+        $carrierRepository = $this->module->getService(CarrierRepository::class);
+        $carrierMapping = $carrierRepository->getShippingCarriersMapping();
+
         foreach ($result as $key => $value) {
             $result[$key]['order_link'] = $prestashopAdapter->generateOrderLink((int) $value['id_order']);
+            $result[$key]['type'] = $carrierMapping[$value['id_carrier']];
         }
 
         return [
@@ -109,14 +112,14 @@ class OrdersService
             $orderDto->setOrderStatusBadgeColor(strval($value['color']));
         }
 
-        if (!empty($value['external_module_name'])) {
-            if ($value['external_module_name'] === 'psshipping_standard') {
+        if (!empty($value['type'])) {
+            if ($value['type'] === 'standard') {
                 $orderDto->setShippingService('Standard');
             }
-            if ($value['external_module_name'] === 'psshipping_express') {
+            if ($value['type'] === 'express') {
                 $orderDto->setShippingService('Express');
             }
-            if ($value['external_module_name'] === 'psshipping_pickup') {
+            if ($value['type'] === 'pickup') {
                 $orderDto->setShippingService('Pickup');
             }
         }

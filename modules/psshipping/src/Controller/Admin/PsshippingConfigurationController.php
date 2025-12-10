@@ -38,6 +38,15 @@ if (!defined('_PS_VERSION_')) {
 
 class PsshippingConfigurationController extends FrameworkBundleAdminController
 {
+    const MAX_WEIGHT_PER_PACKAGE = 'PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE';
+    const MAX_WIDTH_PER_PACKAGE = 'PS_SHIPPING_MAX_WIDTH_PER_PACKAGE';
+    const MAX_HEIGHT_PER_PACKAGE = 'PS_SHIPPING_MAX_HEIGHT_PER_PACKAGE';
+    const MAX_LENGTH_PER_PACKAGE = 'PS_SHIPPING_MAX_LENGTH_PER_PACKAGE';
+    const ORDER_STATUS_MAPPING = 'PS_SHIPPING_ORDER_STATUS_MAPPING';
+    const ORDER_MAPPING_IS_ACTIVATE = 'PS_SHIPPING_ORDER_MAPPING_IS_ACTIVATE';
+    const ONBOARDING_IS_DONE = 'PS_SHIPPING_ONBOARDING_IS_DONE';
+    const ADVANCED_ORDER_SETTING = 'PS_SHIPPING_ADVANCED_ORDER_SETTING';
+
     /** @var Psshipping */
     private $module;
 
@@ -61,8 +70,8 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
             if (!empty($context) && !empty($context->shop)) {
                 $configuration->restrictUpdatesTo($context->shop);
             }
-            $onboardingIsDone = (bool) $configuration->get('PS_SHIPPING_ONBOARDING_IS_DONE', false);
-            $configuration->set('PS_SHIPPING_ONBOARDING_IS_DONE', !$onboardingIsDone);
+            $onboardingIsDone = (bool) $configuration->get(self::ONBOARDING_IS_DONE, false);
+            $configuration->set(self::ONBOARDING_IS_DONE, !$onboardingIsDone);
         } catch (\Exception $e) {
             return new Response(
                 json_encode(['error' => 'An error occurred. Cannot toggle onboarding status.']),
@@ -133,10 +142,10 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
                 );
             }
 
-            $configuration->set('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE', $maxWeightPerPackage);
-            $configuration->set('PS_SHIPPING_MAX_WIDTH_PER_PACKAGE', $maxWidthPerPackage);
-            $configuration->set('PS_SHIPPING_MAX_HEIGHT_PER_PACKAGE', $maxHeightPerPackage);
-            $configuration->set('PS_SHIPPING_MAX_LENGTH_PER_PACKAGE', $maxLengthPerPackage);
+            $configuration->set(self::MAX_WEIGHT_PER_PACKAGE, $maxWeightPerPackage);
+            $configuration->set(self::MAX_WIDTH_PER_PACKAGE, $maxWidthPerPackage);
+            $configuration->set(self::MAX_HEIGHT_PER_PACKAGE, $maxHeightPerPackage);
+            $configuration->set(self::MAX_LENGTH_PER_PACKAGE, $maxLengthPerPackage);
         } catch (\Exception $e) {
             throw new BadRequestException($e->getMessage(), $e->getCode());
         }
@@ -163,20 +172,20 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
         $maxWidthPerPackage = 0;
         $maxLengthPerPackage = 0;
 
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE', 0))) {
-            $maxWeightPerPackage = floatval($configuration->get('PS_SHIPPING_MAX_WEIGHT_PER_PACKAGE', 0));
+        if (is_numeric($configuration->get(self::MAX_WEIGHT_PER_PACKAGE, 0))) {
+            $maxWeightPerPackage = floatval($configuration->get(self::MAX_WEIGHT_PER_PACKAGE, 0));
         }
 
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_WIDTH_PER_PACKAGE', 0))) {
-            $maxWidthPerPackage = floatval($configuration->get('PS_SHIPPING_MAX_WIDTH_PER_PACKAGE', 0));
+        if (is_numeric($configuration->get(self::MAX_WIDTH_PER_PACKAGE, 0))) {
+            $maxWidthPerPackage = floatval($configuration->get(self::MAX_WIDTH_PER_PACKAGE, 0));
         }
 
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_HEIGHT_PER_PACKAGE', 0))) {
-            $maxHeightPerPackage = floatval($configuration->get('PS_SHIPPING_MAX_HEIGHT_PER_PACKAGE', 0));
+        if (is_numeric($configuration->get(self::MAX_HEIGHT_PER_PACKAGE, 0))) {
+            $maxHeightPerPackage = floatval($configuration->get(self::MAX_HEIGHT_PER_PACKAGE, 0));
         }
 
-        if (is_numeric($configuration->get('PS_SHIPPING_MAX_LENGTH_PER_PACKAGE', 0))) {
-            $maxLengthPerPackage = floatval($configuration->get('PS_SHIPPING_MAX_LENGTH_PER_PACKAGE', 0));
+        if (is_numeric($configuration->get(self::MAX_LENGTH_PER_PACKAGE, 0))) {
+            $maxLengthPerPackage = floatval($configuration->get(self::MAX_LENGTH_PER_PACKAGE, 0));
         }
 
         return new Response(
@@ -205,7 +214,7 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
         return new Response(
             json_encode([
                 'status' => true,
-                'advancedSetting' => (bool) $configuration->get('PS_SHIPPING_ADVANCED_ORDER_SETTING', false),
+                'advancedSetting' => (bool) $configuration->get(self::ADVANCED_ORDER_SETTING, false),
             ]),
             200,
             ['Content-Type' => 'application/json']
@@ -232,7 +241,7 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
                 );
             }
 
-            $configuration->set('PS_SHIPPING_ADVANCED_ORDER_SETTING', $requestBodyContent['advancedValue']);
+            $configuration->set(self::ADVANCED_ORDER_SETTING, $requestBodyContent['advancedValue']);
         } catch (\Exception $e) {
             throw new BadRequestException($e->getMessage(), $e->getCode());
         }
@@ -266,11 +275,11 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
                 );
             }
 
-            if ($configuration->get('PS_SHIPPING_ORDER_STATUS_MAPPING') === null) {
+            if ($configuration->get(self::ORDER_STATUS_MAPPING) === null || empty($configuration->get(self::ORDER_STATUS_MAPPING))) {
                 (new Webhook($this->module))->saveSvixSecret();
             }
 
-            $configuration->set('PS_SHIPPING_ORDER_STATUS_MAPPING', $requestBodyContent['mapping']);
+            $configuration->set(self::ORDER_STATUS_MAPPING, $requestBodyContent['mapping']);
         } catch (\Exception $e) {
             throw new BadRequestException($e->getMessage(), $e->getCode());
         }
@@ -304,7 +313,7 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
                 );
             }
 
-            $configuration->set('PS_SHIPPING_ORDER_MAPPING_IS_ACTIVATE', $requestBodyContent['enabled']);
+            $configuration->set(self::ORDER_MAPPING_IS_ACTIVATE, $requestBodyContent['enabled']);
         } catch (\Exception $e) {
             throw new BadRequestException($e->getMessage(), $e->getCode());
         }
@@ -327,12 +336,12 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
             $configuration->restrictUpdatesTo($context->shop);
         }
 
-        $mapping = $configuration->get('PS_SHIPPING_ORDER_STATUS_MAPPING');
+        $mapping = $configuration->get(self::ORDER_STATUS_MAPPING);
 
         return new Response(
             json_encode([
                 'status' => true,
-                'enabled' => (bool) $configuration->get('PS_SHIPPING_ORDER_MAPPING_IS_ACTIVATE', false),
+                'enabled' => (bool) $configuration->get(self::ORDER_MAPPING_IS_ACTIVATE, false),
                 'mapping' => empty($mapping),
             ]),
             200,
@@ -344,6 +353,8 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
     {
         $state = [];
 
+        // Type is wrong before PS 8
+        // @phpstan-ignore notIdentical.alwaysTrue
         if (\Country::getByIso('IT') !== false) {
             $italyStates = array_filter(\State::getStates(), function ($value) {
                 return (int) $value['id_country'] === \Country::getByIso('IT');

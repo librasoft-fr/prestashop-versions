@@ -69,8 +69,14 @@ class CarrierDto
     /** @var int maximum package weight managed by the transporter */
     private $maxWeight;
 
+    /** @var int grade of the shipping delay (0 for longest, 9 for shortest) */
+    private $grade;
+
     /** @var string */
     private $externalModuleName;
+
+    /** @var string */
+    private $type;
 
     public function __construct(
         string $name,
@@ -83,7 +89,9 @@ class CarrierDto
         int $max_height,
         int $max_depth,
         int $max_weight,
-        string $externalModuleName
+        int $grade,
+        string $externalModuleName,
+        string $type
     ) {
         $this->name = $name;
         $this->tackingUrl = $tackingUrl;
@@ -106,8 +114,10 @@ class CarrierDto
         $this->maxHeight = $max_height;
         $this->maxDepth = $max_depth;
         $this->maxWeight = $max_weight;
+        $this->grade = $grade;
         $this->setShippingZones();
         $this->externalModuleName = $externalModuleName;
+        $this->type = $type;
     }
 
     /**
@@ -115,7 +125,7 @@ class CarrierDto
      *
      * @return CarrierDto
      */
-    public static function toDomain(Carrier $carrier)
+    public static function toDomain(Carrier $carrier, string $type)
     {
         return new CarrierDto(
             $carrier->name,
@@ -128,7 +138,9 @@ class CarrierDto
             $carrier->max_height,
             $carrier->max_depth,
             $carrier->max_weight,
-            $carrier->external_module_name
+            $carrier->grade,
+            $carrier->external_module_name,
+            $type
         );
     }
 
@@ -154,7 +166,10 @@ class CarrierDto
         $carrier->max_weight = $carrierDto->maxWeight;
         $carrier->external_module_name = $carrierDto->externalModuleName;
         $carrier->active = $carrierDto->active;
+        $carrier->grade = $carrierDto->grade;
         $carrier->shipping_handling = false;
+        $carrier->is_module = true;
+        $carrier->need_range = true;
 
         return $carrier;
     }
@@ -185,5 +200,33 @@ class CarrierDto
     public function getRanges()
     {
         return $this->ranges;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return array<string, array<string>|bool|int|string>
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'name' => $this->name,
+            'tacking_url' => $this->tackingUrl,
+            'free_shipping' => $this->freeShipping,
+            'ranges' => $this->ranges,
+            'delay' => $this->delay,
+            'active' => $this->active,
+            'deleted' => $this->deleted,
+            'range_behavior' => $this->rangeBehavior,
+            'max_width' => $this->maxWidth,
+            'max_height' => $this->maxHeight,
+            'max_depth' => $this->maxDepth,
+            'max_weight' => $this->maxWeight,
+            'external_module_name' => $this->externalModuleName,
+            'type' => $this->type,
+        ];
     }
 }

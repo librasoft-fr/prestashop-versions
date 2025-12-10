@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace PrestaShop\Module\Psshipping\Controller\Admin;
 
 use Context;
-use GuzzleHttp\Exception\BadResponseException;
 use PrestaShop\Module\Psshipping\Domain\Http\HttpClient;
 use PrestaShop\Module\Psshipping\Exception\BadRequestException;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
@@ -46,7 +45,7 @@ class PsshippingFaqController extends FrameworkBundleAdminController
     }
 
     /**
-     * @throws BadResponseException
+     * @throws BadRequestException
      */
     public function getFaq(): Response
     {

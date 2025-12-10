@@ -35,7 +35,7 @@ class statscheckup extends Module
     {
         $this->name = 'statscheckup';
         $this->tab = 'administration';
-        $this->version = '2.0.3';
+        $this->version = '2.0.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -110,7 +110,6 @@ class statscheckup extends Module
             1 => '<img src="../modules/' . $this->name . '/img/orange.png" alt="' . $this->trans('Average', [], 'Modules.Statscheckup.Admin') . '" />',
             2 => '<img src="../modules/' . $this->name . '/img/green.png" alt="' . $this->trans('Good', [], 'Modules.Statscheckup.Admin') . '" />',
         ];
-        $token_products = Tools::getAdminToken('AdminProducts' . (int) Tab::getIdFromClassName('AdminProducts') . (int) Context::getContext()->employee->id);
         $divisor = 4;
         $totals = ['products' => 0, 'active' => 0, 'images' => 0, 'sales' => 0, 'stock' => 0];
         foreach ($languages as $language) {
@@ -163,7 +162,7 @@ class statscheckup extends Module
 		<div class="panel-heading">'
             . $this->displayName . '
 		</div>
-		<form action="' . Tools::safeOutput(AdminController::$currentIndex . '&token=' . Tools::getValue('token') . '&module=' . $this->name) . '" method="post" class="checkup form-horizontal">
+		<form action="' . Tools::safeOutput($this->context->link->getAdminLink('AdminStats', true, [], ['module' => $this->name])) . '" method="post" class="checkup form-horizontal">
 			<table class="table checkup">
 				<thead>
 					<tr>
@@ -205,7 +204,7 @@ class statscheckup extends Module
 				<i class="icon-save"></i> ' . $this->trans('Save', [], 'Admin.Actions') . '
 			</button>
 		</form>
-		<form action="' . Tools::safeOutput(AdminController::$currentIndex . '&token=' . Tools::getValue('token') . '&module=' . $this->name) . '" method="post" class="form-horizontal alert">
+		<form action="' . Tools::safeOutput($this->context->link->getAdminLink('AdminStats', true, [], ['module' => $this->name])) . '" method="post" class="form-horizontal alert">
 			<div class="row">
 				<div class="col-lg-12">
 					<label class="control-label pull-left">' . $this->trans('Order by', [], 'Modules.Statscheckup.Admin') . '</label>
@@ -270,7 +269,7 @@ class statscheckup extends Module
             $this->html .= '
 				<tr>
 					<td>' . $row['id_product'] . '</td>
-					<td><a href="' . Tools::safeOutput('index.php?controller=AdminProducts&updateproduct&id_product=' . $row['id_product'] . '&token=' . $token_products) . '">' . Tools::substr($row['name'], 0, 42) . '</a></td>
+					<td><a href="' . Tools::safeOutput($this->context->link->getAdminLink('AdminProducts', true, [], ['updateproduct' => 1, 'id_product' => $row['id_product']])) . '">' . Tools::substr($row['name'], 0, 42) . '</a></td>
 					<td class="center">' . $array_colors[$scores['active']] . '</td>';
             foreach ($languages as $language) {
                 if (isset($row['desclength_' . $language['iso_code']])) {

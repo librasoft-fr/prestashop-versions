@@ -23,7 +23,7 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
     );
 
     public static $prefixLengthsPsr4 = array (
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -39,7 +39,7 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
             'Symfony\\Component\\Dotenv\\' => 25,
             'Sentry\\' => 7,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
@@ -49,11 +49,11 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
             'PrestaShop\\Module\\Mbo\\Tests\\' => 28,
             'PrestaShop\\Module\\Mbo\\' => 22,
         ),
-        'J' => 
+        'J' =>
         array (
             'Jean85\\' => 7,
         ),
-        'H' => 
+        'H' =>
         array (
             'Http\\Promise\\' => 13,
             'Http\\Message\\' => 13,
@@ -62,145 +62,145 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
             'Http\\Client\\Common\\' => 19,
             'Http\\Client\\' => 12,
         ),
-        'G' => 
+        'G' =>
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
         ),
-        'F' => 
+        'F' =>
         array (
             'Firebase\\JWT\\' => 13,
         ),
-        'C' => 
+        'C' =>
         array (
             'Clue\\StreamFilter\\' => 18,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\HttpClient\\' => 
+        'Symfony\\Contracts\\HttpClient\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-client-contracts',
         ),
-        'Symfony\\Component\\Workflow\\' => 
+        'Symfony\\Component\\Workflow\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/workflow',
         ),
-        'Symfony\\Component\\String\\' => 
+        'Symfony\\Component\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
         ),
-        'Symfony\\Component\\OptionsResolver\\' => 
+        'Symfony\\Component\\OptionsResolver\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/options-resolver',
         ),
-        'Symfony\\Component\\HttpClient\\' => 
+        'Symfony\\Component\\HttpClient\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-client',
         ),
-        'Symfony\\Component\\Dotenv\\' => 
+        'Symfony\\Component\\Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/dotenv',
         ),
-        'Sentry\\' => 
+        'Sentry\\' =>
         array (
             0 => __DIR__ . '/..' . '/sentry/sentry/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Http\\Client\\' => 
+        'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'PrestaShop\\PsAccountsInstaller\\' => 
+        'PrestaShop\\PsAccountsInstaller\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/prestashop-accounts-installer/src',
         ),
-        'PrestaShop\\Module\\Mbo\\Tests\\' => 
+        'PrestaShop\\Module\\Mbo\\Tests\\' =>
         array (
             0 => __DIR__ . '/../..' . '/tests',
         ),
-        'PrestaShop\\Module\\Mbo\\' => 
+        'PrestaShop\\Module\\Mbo\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
-        'Jean85\\' => 
+        'Jean85\\' =>
         array (
             0 => __DIR__ . '/..' . '/jean85/pretty-package-versions/src',
         ),
-        'Http\\Promise\\' => 
+        'Http\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/promise/src',
         ),
-        'Http\\Message\\' => 
+        'Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/message/src',
             1 => __DIR__ . '/..' . '/php-http/message-factory/src',
         ),
-        'Http\\Factory\\Guzzle\\' => 
+        'Http\\Factory\\Guzzle\\' =>
         array (
             0 => __DIR__ . '/..' . '/http-interop/http-factory-guzzle/src',
         ),
-        'Http\\Discovery\\' => 
+        'Http\\Discovery\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/discovery/src',
         ),
-        'Http\\Client\\Common\\' => 
+        'Http\\Client\\Common\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/client-common/src',
         ),
-        'Http\\Client\\' => 
+        'Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/httplug/src',
         ),
-        'GuzzleHttp\\Psr7\\' => 
+        'GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'GuzzleHttp\\Promise\\' => 
+        'GuzzleHttp\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
-        'Firebase\\JWT\\' => 
+        'Firebase\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'Clue\\StreamFilter\\' => 
+        'Clue\\StreamFilter\\' =>
         array (
             0 => __DIR__ . '/..' . '/clue/stream-filter/src',
         ),
@@ -452,7 +452,6 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
         'PrestaShop\\Module\\Mbo\\Controller\\Admin\\AddonsController' => __DIR__ . '/../..' . '/src/Controller/Admin/AddonsController.php',
         'PrestaShop\\Module\\Mbo\\Controller\\Admin\\ModuleCatalogController' => __DIR__ . '/../..' . '/src/Controller/Admin/ModuleCatalogController.php',
         'PrestaShop\\Module\\Mbo\\Controller\\Admin\\ModuleRecommendedController' => __DIR__ . '/../..' . '/src/Controller/Admin/ModuleRecommendedController.php',
-        'PrestaShop\\Module\\Mbo\\Controller\\Admin\\ModuleSelectionController' => __DIR__ . '/../..' . '/src/Controller/Admin/ModuleSelectionController.php',
         'PrestaShop\\Module\\Mbo\\Controller\\Admin\\ThemeCatalogController' => __DIR__ . '/../..' . '/src/Controller/Admin/ThemeCatalogController.php',
         'PrestaShop\\Module\\Mbo\\DependencyInjection\\CacheDirectoryProvider' => __DIR__ . '/../..' . '/src/DependencyInjection/CacheDirectoryProvider.php',
         'PrestaShop\\Module\\Mbo\\DependencyInjection\\ContainerProvider' => __DIR__ . '/../..' . '/src/DependencyInjection/ContainerProvider.php',
@@ -478,10 +477,12 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
         'PrestaShop\\Module\\Mbo\\Exception\\ClientRequestException' => __DIR__ . '/../..' . '/src/Exception/ClientRequestException.php',
         'PrestaShop\\Module\\Mbo\\Exception\\DownloadModuleException' => __DIR__ . '/../..' . '/src/Exception/DownloadModuleException.php',
         'PrestaShop\\Module\\Mbo\\Exception\\ExpectedServiceNotFoundException' => __DIR__ . '/../..' . '/src/Exception/ExpectedServiceNotFoundException.php',
+        'PrestaShop\\Module\\Mbo\\Exception\\FileOperationException' => __DIR__ . '/../..' . '/src/Exception/FileOperationException.php',
         'PrestaShop\\Module\\Mbo\\Handler\\ErrorHandler\\ErrorHandler' => __DIR__ . '/../..' . '/src/Handler/ErrorHandler/ErrorHandler.php',
         'PrestaShop\\Module\\Mbo\\Handler\\ErrorHandler\\ErrorHandlerInterface' => __DIR__ . '/../..' . '/src/Handler/ErrorHandler/ErrorHandlerInterface.php',
         'PrestaShop\\Module\\Mbo\\Helpers\\AddonsApiHelper' => __DIR__ . '/../..' . '/src/Helpers/AddonsApiHelper.php',
         'PrestaShop\\Module\\Mbo\\Helpers\\Config' => __DIR__ . '/../..' . '/src/Helpers/Config.php',
+        'PrestaShop\\Module\\Mbo\\Helpers\\EnvHelper' => __DIR__ . '/../..' . '/src/Helpers/EnvHelper.php',
         'PrestaShop\\Module\\Mbo\\Helpers\\ErrorHelper' => __DIR__ . '/../..' . '/src/Helpers/ErrorHelper.php',
         'PrestaShop\\Module\\Mbo\\Helpers\\ModuleErrorHelper' => __DIR__ . '/../..' . '/src/Helpers/ModuleErrorHelper.php',
         'PrestaShop\\Module\\Mbo\\Helpers\\UrlHelper' => __DIR__ . '/../..' . '/src/Helpers/UrlHelper.php',
@@ -536,15 +537,6 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
         'PrestaShop\\Module\\Mbo\\Service\\ModulesHelper' => __DIR__ . '/../..' . '/src/Service/ModulesHelper.php',
         'PrestaShop\\Module\\Mbo\\Service\\View\\ContextBuilder' => __DIR__ . '/../..' . '/src/Service/View/ContextBuilder.php',
         'PrestaShop\\Module\\Mbo\\Service\\View\\InstalledModule' => __DIR__ . '/../..' . '/src/Service/View/InstalledModule.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\Tab' => __DIR__ . '/../..' . '/src/Tab/Tab.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabCollection' => __DIR__ . '/../..' . '/src/Tab/TabCollection.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabCollectionDecoderXml' => __DIR__ . '/../..' . '/src/Tab/TabCollectionDecoderXml.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabCollectionFactory' => __DIR__ . '/../..' . '/src/Tab/TabCollectionFactory.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabCollectionFactoryInterface' => __DIR__ . '/../..' . '/src/Tab/TabCollectionFactoryInterface.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabCollectionInterface' => __DIR__ . '/../..' . '/src/Tab/TabCollectionInterface.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabCollectionProvider' => __DIR__ . '/../..' . '/src/Tab/TabCollectionProvider.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabCollectionProviderInterface' => __DIR__ . '/../..' . '/src/Tab/TabCollectionProviderInterface.php',
-        'PrestaShop\\Module\\Mbo\\Tab\\TabInterface' => __DIR__ . '/../..' . '/src/Tab/TabInterface.php',
         'PrestaShop\\Module\\Mbo\\Tests\\Helpers\\VersionTest' => __DIR__ . '/../..' . '/tests/Helpers/VersionTest.php',
         'PrestaShop\\Module\\Mbo\\Tests\\Module\\Filters\\FiltersTest' => __DIR__ . '/../..' . '/tests/Module/Filters/FiltersTest.php',
         'PrestaShop\\Module\\Mbo\\Tests\\Module\\TransitionModuleTest' => __DIR__ . '/../..' . '/tests/Module/TransitionModuleTest.php',
@@ -554,15 +546,12 @@ class ComposerStaticInit5fbead78089182978609c09444be406e
         'PrestaShop\\Module\\Mbo\\Traits\\HaveCdcComponent' => __DIR__ . '/../..' . '/src/Traits/HaveCdcComponent.php',
         'PrestaShop\\Module\\Mbo\\Traits\\HaveConfigurationPage' => __DIR__ . '/../..' . '/src/Traits/HaveConfigurationPage.php',
         'PrestaShop\\Module\\Mbo\\Traits\\HaveTabs' => __DIR__ . '/../..' . '/src/Traits/HaveTabs.php',
-        'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseActionAdminControllerSetMedia' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseActionAdminControllerSetMedia.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseActionBeforeInstallModule' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseActionBeforeInstallModule.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseActionBeforeUpgradeModule' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseActionBeforeUpgradeModule.php',
-        'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseActionGetAdminToolbarButtons' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseActionGetAdminToolbarButtons.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseActionGetAlternativeSearchPanels' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseActionGetAlternativeSearchPanels.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseActionListModules' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseActionListModules.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseDashboardZoneOne' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseDashboardZoneOne.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseDashboardZoneThree' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseDashboardZoneThree.php',
-        'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseDisplayAdminAfterHeader' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseDisplayAdminAfterHeader.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseDisplayAdminThemesListAfter' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseDisplayAdminThemesListAfter.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseDisplayDashboardTop' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseDisplayDashboardTop.php',
         'PrestaShop\\Module\\Mbo\\Traits\\Hooks\\UseDisplayEmptyModuleCategoryExtraMessage' => __DIR__ . '/../..' . '/src/Traits/Hooks/UseDisplayEmptyModuleCategoryExtraMessage.php',

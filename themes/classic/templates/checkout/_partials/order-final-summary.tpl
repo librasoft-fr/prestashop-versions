@@ -56,7 +56,7 @@
     </div>
   </div>
 
-  {if !$cart.is_virtual}
+  {if !$cart.is_virtual && isset($is_multishipment_enabled) && !$is_multishipment_enabled}
     <div class="row">
       <div class="col-md-12">
         <h4 class="h4">
@@ -95,14 +95,25 @@
 
   <div class="row">
     {block name='order_confirmation_table'}
-      {include file='checkout/_partials/order-final-summary-table.tpl'
-         products=$cart.products
-         products_count=$cart.products_count
-         subtotals=$cart.subtotals
-         totals=$cart.totals
-         labels=$cart.labels
-         add_product_link=true
-       }
+      {if isset($is_multishipment_enabled) && $is_multishipment_enabled}
+        {include file='checkout/_partials/order-final-summary-table-multishipment.tpl'
+          products=$products_carrier_mapping
+          products_count=$cart.products_count
+          subtotals=$cart.subtotals
+          totals=$cart.totals
+          labels=$cart.labels
+          add_product_link=true
+        }
+      {else}
+        {include file='checkout/_partials/order-final-summary-table.tpl'
+          products=$cart.products
+          products_count=$cart.products_count
+          subtotals=$cart.subtotals
+          totals=$cart.totals
+          labels=$cart.labels
+          add_product_link=true
+        }
+      {/if}
     {/block}
   </div>
 </section>

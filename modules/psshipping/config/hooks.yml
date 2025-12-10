@@ -1,0 +1,42 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\Psshipping\Hooks\HookActionObjectCarrierUpdateAfter:
+    class: 'PrestaShop\Module\Psshipping\Hooks\HookActionObjectCarrierUpdateAfter'
+    arguments:
+      - '@psshipping'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+      - '@PrestaShop\Module\Psshipping\Domain\Orders\OrdersRepository'
+
+  PrestaShop\Module\Psshipping\Hooks\HookDisplayCarrierExtraContent:
+    class: 'PrestaShop\Module\Psshipping\Hooks\HookDisplayCarrierExtraContent'
+    arguments:
+      - '@psshipping'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+      - '@psshipping.context'
+
+  PrestaShop\Module\Psshipping\Hooks\HookDisplayHeader:
+    class: 'PrestaShop\Module\Psshipping\Hooks\HookDisplayHeader'
+    arguments:
+      - '@psshipping'
+      - '@PrestaShop\Module\Psshipping\Domain\GelProximity\GelProximityService'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+      - '@psshipping.context'
+      - "%psshipping.gel_proximity.end_user_url%"
+
+  PrestaShop\Module\Psshipping\Hooks\HookActionValidateOrder:
+    class: 'PrestaShop\Module\Psshipping\Hooks\HookActionValidateOrder'
+    arguments:
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressRepository'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressOrdersRepository'
+      - '@psshipping.context'
+
+  PrestaShop\Module\Psshipping\Hooks\HookDisplayOrderConfirmation:
+    class: 'PrestaShop\Module\Psshipping\Hooks\HookDisplayOrderConfirmation'
+    arguments:
+      - '@psshipping'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository'
+      - '@PrestaShop\Module\Psshipping\Domain\Carriers\PickupPoints\PsshippingAddressOrdersRepository'
+      - '@psshipping.context'

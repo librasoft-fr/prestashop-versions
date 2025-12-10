@@ -64,9 +64,6 @@ class PsshippingHomeController extends FrameworkBundleAdminController
             );
         }
 
-        $isOnDevMode = $this->module->isDevEnvironment();
-        $pathAppBuilded = $isOnDevMode ? '/modules/' . $this->module->name . '/views/build/js/psshipping-ui.js' : $this->module->getCdnUrl() . '/js/psshipping-ui.js';
-        $pathAssetsBuilded = $isOnDevMode ? '/modules/' . $this->module->name . '/views/build/css/style.css' : $this->module->getCdnUrl() . '/css/style.css';
         $context = Context::getContext();
         /** @var Router $router */
         $router = $this->get('router');
@@ -75,13 +72,11 @@ class PsshippingHomeController extends FrameworkBundleAdminController
             '@Modules/psshipping/views/templates/admin/index.html.twig',
             [
                 'layoutTitle' => $this->module->displayName,
-                'appLink' => $pathAppBuilded,
-                'appCss' => $pathAssetsBuilded,
                 'defaultIsoCode' => $context->language->iso_code ?? 'en',
-                'hotReloadModeEnabled' => $this->module->useHotReload(),
                 'psxShippingApiUrl' => $this->module->getApiUrl(),
                 'contextPsAccounts' => (new AccountsService())->getAccountsContext($this->module),
                 'tokenPsAccounts' => (new AccountsService())->getPsAccountToken($this->module),
+                'psAccountCdnUrl' => (new AccountsService())->getPsAccountCdnUrl(),
                 'psBillingContext' => (new BillingService())->getBillingContext($this->module),
                 'isOnboardingDone' => (bool) $this->isOnboardingDone(),
                 'shops' => $this->getShops(),
@@ -91,7 +86,6 @@ class PsshippingHomeController extends FrameworkBundleAdminController
                 'psVersion' => _PS_VERSION_,
                 'moduleKey' => $this->module->module_key,
                 'moduleVersion' => $this->module->version,
-                'cdnUrl' => $this->module->getCdnUrl(),
                 'activeHooks' => $this->getActiveHooks(),
             ]
         );
@@ -152,7 +146,6 @@ class PsshippingHomeController extends FrameworkBundleAdminController
             'oauthKeycloakCallback' => $this->getBaseURI('callback_oauth_keycloak'),
             'getOrders' => $router->generate('list_orders'),
             'getTrackingNumberForManifest' => $router->generate('get_last_tracking_number'),
-            'faqList' => $router->generate('faq_list'),
             'psAccountsDebugLink' => $this->getPsAccountsDebugLink(),
             'orderStatusLink' => $this->getOrderStatusLink(),
             'setDimensions' => $router->generate('save_dimensions_per_packages'),

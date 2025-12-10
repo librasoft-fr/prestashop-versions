@@ -566,13 +566,11 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * Get amount of Customer Discounts.
+     * Returns a total amount of cart rules of a specific ID in the current cart.
      *
      * @param int $id_cart_rule CartRule ID
      *
-     * @return int Amount of Customer Discounts
-     *
-     * @todo: What are customer discounts? Isn't this just a PriceRule and shouldn't this method be renamed instead?
+     * @return int Amount of cart rules used
      */
     public function getDiscountsCustomer($id_cart_rule)
     {
@@ -2024,24 +2022,33 @@ class CartCore extends ObjectModel
 
         // EARLY RETURNS
 
-        // if cart rules are not used
+        // If the type of calculation is ONLY_DISCOUNTS and cart rules are disabled,
+        // we can immediately return 0
         if ($type == Cart::ONLY_DISCOUNTS && !CartRule::isFeatureActive()) {
             return 0;
         }
-        // no shipping cost if is a cart with only virtuals products
+
+        // If the cart is FULLY virtual and the type of calculation is ONLY_SHIPPING,
+        // we can immediately return 0
         $virtual = $this->isVirtualCart();
         if ($virtual && $type == Cart::ONLY_SHIPPING) {
             return 0;
         }
+
+        // If the cart is FULLY virtual and the type of calculation is BOTH,
+        // we can switch it to BOTH_WITHOUT_SHIPPING, because there is no shipping
         if ($virtual && $type == Cart::BOTH) {
             $type = Cart::BOTH_WITHOUT_SHIPPING;
         }
 
-        // filter products
+        // If no specific products list is provided, we get the full list of products in cart
+        // In most cases, we calculate the total for all products in cart
         if (null === $products) {
             $products = $this->getProducts(false, false, null, true, $keepOrderPrices);
         }
 
+        // If we want to calculate only physical products without shipping,
+        // we filter out virtual products from the products list
         if ($type == Cart::ONLY_PHYSICAL_PRODUCTS_WITHOUT_SHIPPING) {
             foreach ($products as $key => $product) {
                 if (!empty($product['is_virtual'])) {
@@ -2051,6 +2058,7 @@ class CartCore extends ObjectModel
             $type = Cart::ONLY_PRODUCTS;
         }
 
+        // If we want to calculate only products, we filter out gifts from the products list
         if ($type == Cart::ONLY_PRODUCTS) {
             foreach ($products as $key => $product) {
                 if (!empty($product['is_gift'])) {
@@ -2059,6 +2067,8 @@ class CartCore extends ObjectModel
             }
         }
 
+        // If taxes are disabled in configuration, we calculate everything without taxes,
+        // even if $withTaxes was passed as true
         if (!Configuration::get('PS_TAX')) {
             $withTaxes = false;
         }
@@ -2109,12 +2119,10 @@ class CartCore extends ObjectModel
                 throw new Exception('unknown cart calculation type : ' . $type);
         }
 
-        // TAXES ?
-
+        // Apply taxes if required
         $value = $withTaxes ? $amount->getTaxIncluded() : $amount->getTaxExcluded();
 
-        // ROUND AND RETURN
-
+        // Round it, return it
         return Tools::ps_round($value, $computePrecision);
     }
 
@@ -2216,6 +2224,8 @@ class CartCore extends ObjectModel
     }
 
     /**
+     * @deprecated since 9.1.0, just use $this->id_address_delivery directly
+     *
      * @param array $products - not used anymore
      *
      * @return int
@@ -2256,6 +2266,8 @@ class CartCore extends ObjectModel
     }
 
     /**
+     * @deprecated since 9.1.0 - no longer used
+     *
      * @param bool $withTaxes
      * @param array $product
      * @param Context|null $virtualContext
@@ -2280,6 +2292,9 @@ class CartCore extends ObjectModel
     }
 
     /**
+     * Returns the address ID to be used for tax calculation according to the shop configuration.
+     * Basically the same as getTaxAddressId below, but with verification that the address exists.
+     *
      * @param array $product - not used anymore
      *
      * @return int|null
@@ -2302,7 +2317,8 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * Returns the tax address id according to the shop's configuration
+     * Returns the address ID to be used for tax calculation according to the shop configuration.
+     * Basically the same as getProductAddressId above, but without verification that the address exists.
      *
      * @return int
      */
