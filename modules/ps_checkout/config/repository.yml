@@ -1,0 +1,31 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  PrestaShop\Module\PrestashopCheckout\Repository\PsCheckoutCartRepository:
+    class: PrestaShop\Module\PrestashopCheckout\Repository\PsCheckoutCartRepository
+
+  PrestaShop\Module\PrestashopCheckout\FundingSource\FundingSourceConfigurationRepository:
+    class: PrestaShop\Module\PrestashopCheckout\FundingSource\FundingSourceConfigurationRepository
+
+  PrestaShop\Module\PrestashopCheckout\Repository\CountryRepository:
+    class: PrestaShop\Module\PrestashopCheckout\Repository\CountryRepository
+
+  PrestaShop\Module\PrestashopCheckout\Repository\PayPalCodeRepository:
+    class: PrestaShop\Module\PrestashopCheckout\Repository\PayPalCodeRepository
+
+  PrestaShop\Module\PrestashopCheckout\Repository\PsAccountRepository:
+    class: PrestaShop\Module\PrestashopCheckout\Repository\PsAccountRepository
+    arguments:
+      - "@ps_accounts.facade"
+
+  PrestaShop\Module\PrestashopCheckout\Repository\PayPalOrderRepository:
+    class: PrestaShop\Module\PrestashopCheckout\Repository\PayPalOrderRepository
+
+  PrestaShop\Module\PrestashopCheckout\Repository\PaymentTokenRepository:
+    class: PrestaShop\Module\PrestashopCheckout\Repository\PaymentTokenRepository
+
+  PrestaShop\Module\PrestashopCheckout\Repository\PayPalCustomerRepository:
+    class: PrestaShop\Module\PrestashopCheckout\Repository\PayPalCustomerRepository

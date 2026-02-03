@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -28,7 +29,7 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_8_3_4_0(Ps_checkout $module)
+function upgrade_module_8_3_4_0($module)
 {
     // Force PrestaShop to upgrade for all shop to avoid issues
     $savedShopContext = Shop::getContext();
@@ -110,7 +111,6 @@ function upgrade_module_8_3_4_0(Ps_checkout $module)
                                 'pt' => 'Autorizado. A ser capturado pelo comerciante',
                             ]
                         );
-
                         break;
                     case 'PS_CHECKOUT_STATE_PARTIALLY_REFUNDED':
                         ps_checkout_create_order_state_8_3_4_0(
@@ -127,7 +127,6 @@ function upgrade_module_8_3_4_0(Ps_checkout $module)
                                 'pt' => 'Reembolso parcial',
                             ]
                         );
-
                         break;
                     case 'PS_CHECKOUT_STATE_PENDING':
                         ps_checkout_create_order_state_8_3_4_0('PS_CHECKOUT_STATE_PENDING', '#34209E', [
@@ -140,7 +139,6 @@ function upgrade_module_8_3_4_0(Ps_checkout $module)
                             'pl' => 'Oczekiwanie na płatność',
                             'pt' => 'Aguardando pagamento',
                         ]);
-
                         break;
                     case 'PS_CHECKOUT_STATE_PARTIALLY_PAID':
                         ps_checkout_create_order_state_8_3_4_0(
@@ -157,7 +155,6 @@ function upgrade_module_8_3_4_0(Ps_checkout $module)
                                 'pt' => 'Pagamento parcial',
                             ]
                         );
-
                         break;
                     default:
                         Configuration::updateGlobalValue($configuration_key, $id_order_state);
@@ -168,7 +165,7 @@ function upgrade_module_8_3_4_0(Ps_checkout $module)
         }
 
         // Installing FundingSource if table pscheckout_funding_source is empty or incomplete - including BLIK
-        $fundingSources = ['paypal', 'paylater', 'card', 'bancontact', 'eps', 'ideal', 'mybank', 'p24', 'blik'];
+        $fundingSources = ['paypal', 'paylater', 'card', 'bancontact', 'eps', 'giropay', 'ideal', 'mybank', 'p24', 'sofort', 'blik'];
         $availableFundingSourcesByShops = [];
         $maxPositionByShops = [];
         $availableFundingSources = $db->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'pscheckout_funding_source');

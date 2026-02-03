@@ -1,8 +1,0 @@
-services:
-  _defaults:
-    public: true
-
-  PsCheckout\Core\Settings\Configuration\PayPalConfiguration:
-    class: PsCheckout\Core\Settings\Configuration\PayPalConfiguration
-    arguments:
-      - '@PsCheckout\Infrastructure\Adapter\Configuration'

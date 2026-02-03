@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -28,14 +29,14 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_3_0_0(Ps_checkout $module)
+function upgrade_module_3_0_0($module)
 {
     // Force PrestaShop to upgrade for all shop to avoid issues
     $savedShopContext = Shop::getContext();
     $savedShopId = Shop::getContextShopID();
     $savedGroupShopId = Shop::getContextShopGroupID();
     Shop::setContext(Shop::CONTEXT_ALL);
-    $shopsList = \Shop::getShops(false, null, true);
+    $shopsList = Shop::getShops(false, null, true);
 
     $module->registerHook('actionObjectShopDeleteAfter', $shopsList);
 

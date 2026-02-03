@@ -16,6 +16,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
+
 {if isset($hasRequiredDependencies) && !$hasRequiredDependencies}
   <script src="https://assets.prestashop3.com/dst/mbo/v1/mbo-cdc-dependencies-resolver.umd.js"></script>
   <div id="mbo-cdc-container"></div>
@@ -44,17 +45,19 @@
   #content.nobootstrap div.bootstrap.panel {
     display: none;
   }
+  #content.nobootstrap .page-head h4.page-subtitle {
+    display: none;
+  }
 </style>
 
 <script>
-    // Enhance page subtitle with module version
-    const pageSubtitles = document.querySelectorAll('#content.nobootstrap .page-head .page-subtitle, #content.bootstrap .page-head .page-subtitle');
-    const moduleVersion = window?.store?.context?.moduleVersion ? ' v' + window.store.context.moduleVersion : '';
+  // Enhance page title with subtitle and module version
+  const pageTitle = document.querySelector('#content.nobootstrap .page-head h2.page-title');
+  const pageSubtitle = document.querySelector('#content.nobootstrap .page-head h4.page-subtitle');
 
-    pageSubtitles?.forEach((pageSubtitle) => {
-        if (pageSubtitle) {
-            pageSubtitle.textContent = pageSubtitle.textContent
-                + moduleVersion;
-        }
-    });
+  if (pageTitle) {
+    pageTitle.textContent = pageTitle.textContent
+      + (pageSubtitle ? ' ' + pageSubtitle.textContent : '')
+      + (window?.store?.context?.moduleVersion ? ' v' + window.store.context.moduleVersion : '')
+  }
 </script>

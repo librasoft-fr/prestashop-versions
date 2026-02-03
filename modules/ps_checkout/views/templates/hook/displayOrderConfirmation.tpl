@@ -19,14 +19,14 @@
 <section id="ps_checkout-displayOrderConfirmation">
     {if $orderPayPalTransactionStatus === 'PENDING' || $orderPayPalStatus === 'APPROVED' || $orderPayPalStatus === 'CREATED'}
       <div class="alert alert-warning">
-          {l s='Your order is waiting for payment confirmation. You will receive an email when your payment has been validated. You can also check the order status in your order history in your account.' d='Modules.Checkout.Pscheckout'}
+          {l s='Your order is waiting for payment confirmation. You will receive an email when your payment has been validated. You can also check the order status in your order history in your account.' mod='ps_checkout'}
       </div>
     {/if}
 
     {if $orderPayPalTransactionStatus === 'DECLINED' || $orderPayPalTransactionStatus === 'FAILED'}
       <div class="alert alert-danger">
         <a href="#ps_checkout-displayPaymentReturn" class="alert-link">
-            {$translations.notificationFailed|escape:'html':'UTF-8'}
+            {$translations.notificationFailed}
         </a>
       </div>
     {/if}
@@ -34,7 +34,7 @@
     {if $approvalLink && $orderPayPalStatus === 'PENDING_APPROVAL'}
       <div class="alert alert-warning">
         <a href="#ps_checkout-displayPaymentReturn" class="alert-link" style="margin: initial;padding: initial;">
-            {$translations.notificationPendingApproval|escape:'html':'UTF-8'}
+            {$translations.notificationPendingApproval}
         </a>
       </div>
     {/if}
@@ -42,7 +42,7 @@
     {if $payerActionLink && $orderPayPalStatus === 'PAYER_ACTION_REQUIRED'}
       <div class="alert alert-warning">
         <a href="#ps_checkout-displayPaymentReturn" class="alert-link" style="margin: initial;padding: initial;">
-            {$translations.notificationPayerActionRequired|escape:'html':'UTF-8'}
+            {$translations.notificationPayerActionRequired}
         </a>
       </div>
     {/if}

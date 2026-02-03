@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -16,7 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-'use strict';
 
 let ps_checkout = {};
 let {$} = window;
@@ -24,6 +24,7 @@ let {$} = window;
 (function() {
   /**
    * @param {object} config
+   * @param {boolean} config.legacy - Use legacy style
    * @param {int} config.orderPrestaShopId - PrestaShop Order identifier
    * @param {string} config.orderPayPalBaseUrl - Base url used for request
    * @param {string} config.orderPayPalContainer - HTML element identifier
@@ -49,6 +50,7 @@ let {$} = window;
         url: `${config.orderPayPalBaseUrl}&rand=${new Date().getTime()}`,
         data: {
           ajax: 1,
+          legacy: config.legacy,
           action: 'FetchOrder',
           id_order : config.orderPrestaShopId
         },
@@ -102,6 +104,7 @@ let {$} = window;
 
   /**
    * @param {object} config
+   * @param {boolean} config.legacy - Use legacy style
    * @param {int} config.orderPrestaShopId - PrestaShop Order identifier
    * @param {string} config.orderPayPalBaseUrl - Base url used for request
    * @param {string} config.orderPayPalContainer - HTML element identifier
@@ -245,6 +248,15 @@ let {$} = window;
               }));
             }
 
+            if (undefined !== jqXHR.responseJSON && undefined !== jqXHR.responseJSON.errors) {
+              for (const error of jqXHR.responseJSON.errors) {
+                $(refundModalNotificationContainer).append(payPalOrderNotification.createErrorHTMLElement({
+                  text: error,
+                  class: 'danger',
+                }));
+              }
+            }
+
             $(refundModalLoaderContainer).hide();
             refundModalSubmitButton.prop('disabled', false);
           });
@@ -313,6 +325,7 @@ let {$} = window;
    * Initialize ps_checkout
    *
    * @param {object} config
+   * @param {boolean} config.legacy - Use legacy style
    * @param {int} config.orderPrestaShopId - PrestaShop Order identifier
    * @param {string} config.orderPayPalBaseUrl - Base url used for request
    * @param {string} config.orderPayPalContainer - HTML element identifier

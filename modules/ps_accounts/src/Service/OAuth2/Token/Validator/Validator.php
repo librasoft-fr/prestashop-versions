@@ -20,6 +20,7 @@
 
 namespace PrestaShop\Module\PsAccounts\Service\OAuth2\Token\Validator;
 
+use PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository;
 use PrestaShop\Module\PsAccounts\Service\OAuth2\OAuth2Service;
 use PrestaShop\Module\PsAccounts\Vendor\Firebase\JWT\ExpiredException;
 use PrestaShop\Module\PsAccounts\Vendor\Firebase\JWT\JWK;
@@ -34,11 +35,27 @@ class Validator
     private $oAuth2Service;
 
     /**
-     * @param OAuth2Service $oAuth2Service
+     * @var ConfigurationRepository
      */
-    public function __construct(OAuth2Service $oAuth2Service)
-    {
+    private $repository;
+
+    /**
+     * @var int
+     */
+    private $defaultLeeway;
+
+    /**
+     * @param OAuth2Service $oAuth2Service
+     * @param int $defaultLeeway
+     */
+    public function __construct(
+        OAuth2Service $oAuth2Service,
+        ConfigurationRepository $repository,
+        $defaultLeeway = 0
+    ) {
         $this->oAuth2Service = $oAuth2Service;
+        $this->repository = $repository;
+        $this->defaultLeeway = $defaultLeeway;
     }
 
     /**
@@ -55,6 +72,7 @@ class Validator
     {
         // verify token signature & expiration (among others)
         try {
+            JWT::$leeway = $this->getLeeway();
             $token = JWT::decode($token, JWK::parseKeySet($this->oAuth2Service->getJwks($refreshJwks)));
         } catch (ExpiredException $e) {
             throw new Exception\TokenExpiredException($e->getMessage());
@@ -154,5 +172,15 @@ class Validator
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLeeway()
+    {
+        $leeway = $this->repository->getValidationLeeway();
+
+        return is_int($leeway) ? $leeway : $this->defaultLeeway;
     }
 }

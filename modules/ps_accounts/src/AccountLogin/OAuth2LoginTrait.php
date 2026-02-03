@@ -25,12 +25,14 @@ use PrestaShop\Module\PsAccounts\AccountLogin\Exception\AccountLoginException;
 use PrestaShop\Module\PsAccounts\AccountLogin\Exception\EmailNotVerifiedException;
 use PrestaShop\Module\PsAccounts\AccountLogin\Exception\EmployeeNotFoundException;
 use PrestaShop\Module\PsAccounts\AccountLogin\Exception\Oauth2LoginException;
+use PrestaShop\Module\PsAccounts\Context\ShopContext;
 use PrestaShop\Module\PsAccounts\Entity\EmployeeAccount;
 use PrestaShop\Module\PsAccounts\Log\Logger;
 use PrestaShop\Module\PsAccounts\Repository\EmployeeAccountRepository;
 use PrestaShop\Module\PsAccounts\Service\AnalyticsService;
 use PrestaShop\Module\PsAccounts\Service\OAuth2\OAuth2Exception;
 use PrestaShop\Module\PsAccounts\Service\OAuth2\OAuth2Service;
+use PrestaShop\Module\PsAccounts\Service\OAuth2\Resource\AccessToken;
 use PrestaShop\Module\PsAccounts\Service\OAuth2\Resource\UserInfo;
 use PrestaShop\Module\PsAccounts\Service\PsAccountsService;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -44,11 +46,11 @@ trait OAuth2LoginTrait
     abstract protected function getOAuth2Service();
 
     /**
-     * @param UserInfo $user
+     * @param AccessToken $accessToken
      *
      * @return bool
      */
-    abstract protected function initUserSession(UserInfo $user);
+    abstract protected function initUserSession(AccessToken $accessToken);
 
     /**
      * @return mixed
@@ -95,61 +97,79 @@ trait OAuth2LoginTrait
      */
     public function oauth2Login()
     {
-        $apiClient = $this->getOAuth2Service();
+        $shopId = Tools::getValue('shop_id', $this->getShopId() ?: \Context::getContext()->shop->id);
 
-        //$this->getSession()->start();
-        $session = $this->getSession();
-        $oauth2Session = $this->getOauth2Session();
+        /** @var ShopContext $shopContext */
+        $shopContext = $this->module->getService(ShopContext::class);
 
-        $error = Tools::getValue('error', '');
-        $state = Tools::getValue('state', '');
-        $code = Tools::getValue('code', '');
+        return $shopContext->execInShopContext($shopId, function () use ($shopId) {
+            // FIXME: rework multishop context management
+            //\Shop::setContext(\Shop::CONTEXT_SHOP, $shopId);
 
-        if (!empty($error)) {
-            // Got an error, probably user denied access
-            throw new \Exception('Got error: ' . $error);
-        // If we don't have an authorization code then get one
-        } elseif (empty($code)) {
-            // cleanup existing accessToken
-            $oauth2Session->clear();
+            $apiClient = $this->getOAuth2Service();
 
-            $this->setSessionReturnTo(Tools::getValue($this->getReturnToParam()));
+            //$this->getSession()->start();
+            $session = $this->getSession();
+            $oauth2Session = $this->getOauth2Session();
 
-            $this->oauth2Redirect(Tools::getValue('locale', 'en'));
+            $error = Tools::getValue('error', '');
+            $state = Tools::getValue('state', '');
+            $code = Tools::getValue('code', '');
+            $action = Tools::getValue('action', 'login');
+            $source = Tools::getValue('source', 'ps_accounts');
 
-        // Check given state against previously stored one to mitigate CSRF attack
-        } elseif (empty($state) || ($session->has('oauth2state') && $state !== $session->get('oauth2state'))) {
-            $session->remove('oauth2state');
+            if (!empty($error)) {
+                // Got an error, probably user denied access
+                throw new \Exception('Got error: ' . $error);
+            // If we don't have an authorization code then get one
+            } elseif (empty($code)) {
+                // cleanup existing accessToken
+                $oauth2Session->clear();
 
-            throw new \Exception('Invalid state');
-        } else {
-            $this->assertValidCode($code);
+                $this->setOAuthAction($action);
+                $this->setSource($source);
+                $this->setShopId($shopId);
 
-            try {
-                $accessToken = $apiClient->getAccessTokenByAuthorizationCode(
-                    $code,
-                    $this->getSession()->get('oauth2pkceCode')
-                );
-            } catch (OAuth2Exception $e) {
-                throw new Oauth2LoginException($e->getMessage(), null, $e);
+                $this->setSessionReturnTo(Tools::getValue($this->getReturnToParam()));
+
+                $this->oauth2Redirect(Tools::getValue('locale', 'en'), $shopId);
+
+            // Check given state against previously stored one to mitigate CSRF attack
+            } elseif (empty($state) || ($session->has('oauth2state') && $state !== $session->get('oauth2state'))) {
+                $session->remove('oauth2state');
+
+                throw new \Exception('Invalid state');
+            } else {
+                $this->assertValidCode($code);
+
+                try {
+                    $accessToken = $apiClient->getAccessTokenByAuthorizationCode(
+                        $code,
+                        $this->getSession()->get('oauth2pkceCode'),
+                        [],
+                        [],
+                        $shopId
+                    );
+                } catch (OAuth2Exception $e) {
+                    throw new Oauth2LoginException($e->getMessage(), null, $e);
+                }
+
+                if ($this->initUserSession($accessToken)) {
+                    return $this->redirectAfterLogin();
+                }
             }
-
-            $oauth2Session->setTokenProvider($accessToken);
-
-            if ($this->initUserSession($oauth2Session->getUserInfo())) {
-                return $this->redirectAfterLogin();
-            }
-        }
+        });
     }
 
     /**
      * @param string $locale
+     * @param int|null $shopId
      *
      * @return void
      *
      * @throws \Exception
      */
-    private function oauth2Redirect($locale)
+    private function oauth2Redirect($locale, $shopId)
     {
         $apiClient = $this->getOAuth2Service();
 
@@ -165,7 +185,8 @@ trait OAuth2LoginTrait
             'S256',
             $locale,
             '',
-            'login'
+            'login',
+            $shopId
         );
 
         // Redirect the user to the authorization URL.
@@ -225,6 +246,60 @@ trait OAuth2LoginTrait
     private function getReturnToParam()
     {
         return 'return_to';
+    }
+
+    /**
+     * @return string
+     */
+    private function getOAuthAction()
+    {
+        return $this->getSession()->get('oauth2action');
+    }
+
+    /**
+     * @param string $action
+     *
+     * @return void
+     */
+    private function setOAuthAction($action)
+    {
+        $this->getSession()->set('oauth2action', $action);
+    }
+
+    /**
+     * @return string
+     */
+    private function getSource()
+    {
+        return $this->getSession()->get('source');
+    }
+
+    /**
+     * @param string $source
+     *
+     * @return void
+     */
+    private function setSource($source)
+    {
+        $this->getSession()->set('source', $source);
+    }
+
+    /**
+     * @return string
+     */
+    private function getShopId()
+    {
+        return $this->getSession()->get('shopId');
+    }
+
+    /**
+     * @param string $shopId
+     *
+     * @return void
+     */
+    private function setShopId($shopId)
+    {
+        $this->getSession()->set('shopId', $shopId);
     }
 
     /**

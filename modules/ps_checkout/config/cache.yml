@@ -1,0 +1,63 @@
+services:
+  _defaults:
+    public: true
+  PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider:
+    class: 'PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider'
+    arguments:
+      - !php/const _PS_VERSION_
+      - !php/const _PS_ROOT_DIR_
+      - !php/const _PS_MODE_DEV_
+
+  ps_checkout.cache.array.paypal.order:
+    class: Symfony\Component\Cache\Adapter\ArrayAdapter
+
+  ps_checkout.cache.filesystem.paypal.order:
+    class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    arguments:
+      - "paypal-orders"
+      - 3600
+      - '@=service("PrestaShop\\ModuleLibCacheDirectoryProvider\\Cache\\CacheDirectoryProvider").getPath()'
+
+  ps_checkout.cache.paypal.order:
+    class: PrestaShop\Module\PrestashopCheckout\PayPal\Order\Cache\PayPalOrderCache
+    arguments:
+      - [
+        "@ps_checkout.cache.array.paypal.order",
+        "@ps_checkout.cache.filesystem.paypal.order",
+      ]
+
+  ps_checkout.cache.array.paypal.capture:
+    class: Symfony\Component\Cache\Adapter\ArrayAdapter
+
+  ps_checkout.cache.filesystem.paypal.capture:
+    class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    arguments:
+      - "paypal-capture"
+      - 3600
+      - '@=service("PrestaShop\\ModuleLibCacheDirectoryProvider\\Cache\\CacheDirectoryProvider").getPath()'
+
+  ps_checkout.cache.paypal.capture:
+    class: Symfony\Component\Cache\Adapter\ChainAdapter
+    arguments:
+      - [
+        "@ps_checkout.cache.array.paypal.capture",
+        "@ps_checkout.cache.filesystem.paypal.capture",
+      ]
+
+  ps_checkout.cache.pscheckoutcart:
+    class: Symfony\Component\Cache\Adapter\ArrayAdapter
+
+  ps_checkout.cache.order:
+    class: Symfony\Component\Cache\Adapter\ArrayAdapter
+
+  Symfony\Component\Cache\Adapter\ChainAdapter $orderPayPalCache:
+    alias: 'ps_checkout.cache.paypal.order'
+
+  Symfony\Component\Cache\Adapter\ArrayAdapter $orderCache:
+    alias: 'ps_checkout.cache.order'
+
+  Symfony\Component\Cache\Adapter\ArrayAdapter $cartPrestaShopCache:
+    alias: 'ps_checkout.cache.pscheckoutcart'
+
+  Symfony\Component\Cache\Adapter\ChainAdapter $capturePayPalCache:
+    alias: 'ps_checkout.cache.paypal.capture'

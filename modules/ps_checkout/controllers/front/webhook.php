@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -17,16 +18,11 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
 
-use PsCheckout\Core\Exception\PsCheckoutException;
-use PsCheckout\Core\Webhook\Handler\WebhookHandler;
-use PsCheckout\Core\Webhook\Handler\WebhookHandlerInterface;
-use PsCheckout\Core\Webhook\WebhookException;
-use PsCheckout\Infrastructure\Controller\AbstractFrontController;
-use PsCheckout\Utility\Common\InputStreamUtility;
+use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
+use PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutException;
+use PrestaShop\Module\PrestashopCheckout\Webhook\WebhookException;
+use PrestaShop\Module\PrestashopCheckout\Webhook\WebhookHandler;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -35,7 +31,7 @@ use Psr\Log\LoggerInterface;
 class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
 {
     /**
-     * @var Ps_Checkout
+     * @var Ps_checkout
      */
     public $module;
 
@@ -50,10 +46,10 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
     public function postProcess()
     {
         /** @var LoggerInterface $logger */
-        $logger = $this->module->getService(LoggerInterface::class);
+        $logger = $this->module->getService('ps_checkout.logger');
 
         try {
-            /** @var WebhookHandlerInterface $webhookHandler */
+            /** @var WebhookHandler $webhookHandler */
             $webhookHandler = $this->module->getService(WebhookHandler::class);
 
             if (empty($_SERVER['HTTP_WEBHOOK_SECRET']) || !$webhookHandler->authenticate($_SERVER['HTTP_WEBHOOK_SECRET'])) {
@@ -78,7 +74,6 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
             $this->exitWithResponse([
                 'httpCode' => 200,
             ]);
-
             exit;
         } catch (WebhookException $exception) {
             switch ($exception->getCode()) {
@@ -87,7 +82,6 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
                         'httpCode' => 401,
                         'error' => $exception->getMessage(),
                     ]);
-
                     break;
                 default:
                     $this->exitWithResponse([
@@ -95,7 +89,6 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
                         'error' => $exception->getMessage(),
                     ]);
             }
-
             exit;
         } catch (Exception $exception) {
             $logger->error(
@@ -107,7 +100,6 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
             $this->exitWithResponse([
                 'httpCode' => 500,
             ]);
-
             exit;
         }
     }
@@ -117,11 +109,9 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
      *
      * @throws PsCheckoutException
      */
-    private function getPayload(): array
+    private function getPayload()
     {
-        /** @var InputStreamUtility $inputStreamUtility */
-        $inputStreamUtility = $this->module->getService(InputStreamUtility::class);
-        $content = $inputStreamUtility->getBodyContent();
+        $content = file_get_contents('php://input');
 
         if (empty($content)) {
             throw new WebhookException('Webhook payload is missing.', WebhookException::WEBHOOK_PAYLOAD_INVALID);
@@ -193,7 +183,7 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
      *
      * @return false
      */
-    protected function geolocationManagement($defaultCountry): bool
+    protected function geolocationManagement($defaultCountry)
     {
         return false;
     }

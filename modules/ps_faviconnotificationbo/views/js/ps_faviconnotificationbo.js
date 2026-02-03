@@ -33,12 +33,14 @@ let ps_faviconnotificationbo = {};
     let FaviconNotificationsUpdater = function(config) {
         let refresh = function() {
             let notificationTimer = null;
+            const url = new URL(config.notificationGetUrl);
+            url.searchParams.append('rand', new Date().getTime());
             let notificationRequest = $.ajax({
                 type: 'POST',
                 headers: {"cache-control": "no-cache"},
                 cache: false,
                 dataType: 'json',
-                url: `${config.notificationGetUrl}&rand=${new Date().getTime()}`,
+                url: url.toString(),
             });
 
             notificationRequest.done(function(data) {

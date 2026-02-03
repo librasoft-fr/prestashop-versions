@@ -119,8 +119,12 @@ class AdminLoginPsAccountsController extends \AdminController
      */
     public function setMedia($isNewTheme = false)
     {
-        $this->addCss($this->module->getLocalPath() . '/views/css/login.css');
-        $this->addJS($this->module->getLocalPath() . '/views/js/login.js');
+        $this->addCss($this->module->getLocalPath() . '/views/css/login.css' .
+            '?v=' . urlencode($this->module->version)
+        );
+        $this->addJS($this->module->getLocalPath() . '/views/js/login.js' .
+            '?v=' . urlencode($this->module->version)
+        );
     }
 
     /**
@@ -172,6 +176,6 @@ class AdminLoginPsAccountsController extends \AdminController
     {
         $res = $this->externalAssetsClient->getTestimonials();
 
-        return $res['status'] ? $res['body'] : [];
+        return $res->isSuccessful ? $res->body : [];
     }
 }

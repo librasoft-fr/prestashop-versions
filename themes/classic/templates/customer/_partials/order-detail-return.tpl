@@ -49,7 +49,7 @@
             <td>
               <strong>{$product.name}</strong><br/>
               {if $product.product_reference}
-                {l s='Reference' d='Shop.Theme.Catalog'}: {$product.product_reference}<br/>
+                {l s='Reference: %reference%' sprintf=['%reference%' => $product.product_reference] d='Shop.Theme.Catalog'}<br/>
               {/if}
               {if $product.is_virtual}
                 {l s='Virtual products can\'t be returned.' d='Shop.Theme.Customeraccount'}<br/>
@@ -153,7 +153,7 @@
                 <div class="col-sm-5 desc">
                   <div class="name">{$product.name}</div>
                   {if $product.product_reference}
-                    <div class="ref">{l s='Reference' d='Shop.Theme.Catalog'}: {$product.product_reference}</div>
+                    <div class="ref">{l s='Reference: %reference%' sprintf=['%reference%' => $product.product_reference] d='Shop.Theme.Catalog'}</div>
                   {/if}
                   {if isset($product.download_link)}
                     <a href="{$product.download_link}">{l s='Download' d='Shop.Theme.Actions'}</a><br/>

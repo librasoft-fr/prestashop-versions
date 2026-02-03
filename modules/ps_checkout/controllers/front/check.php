@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -17,17 +18,12 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
 
-use PsCheckout\Core\PayPal\Order\Action\CancelPayPalOrderAction;
-use PsCheckout\Core\PayPal\Order\Processor\UpdateExternalPayPalOrderProcessor;
-use PsCheckout\Core\PayPal\Order\Request\ValueObject\CancelPayPalOrderRequest;
-use PsCheckout\Core\PayPal\Order\Request\ValueObject\CheckPayPalOrderRequest;
-use PsCheckout\Infrastructure\Controller\AbstractFrontController;
-use PsCheckout\Utility\Common\InputStreamUtility;
-use Psr\Log\LoggerInterface;
+use PrestaShop\Module\PrestashopCheckout\Checkout\Command\CancelCheckoutCommand;
+use PrestaShop\Module\PrestashopCheckout\Checkout\Command\UpdatePaymentMethodSelectedCommand;
+use PrestaShop\Module\PrestashopCheckout\CommandBus\CommandBusInterface;
+use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
+use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Command\UpdatePayPalOrderCommand;
 
 /**
  * This controller receive ajax call on customer click on a payment button
@@ -41,62 +37,74 @@ class Ps_CheckoutCheckModuleFrontController extends AbstractFrontController
 
     /**
      * @see FrontController::postProcess()
+     *
+     * @todo Move logic to a Service
      */
     public function postProcess()
     {
-        /** @var LoggerInterface $logger */
-        $logger = $this->module->getService(LoggerInterface::class);
-
         try {
-            if (!Validate::isLoadedObject($this->context->cart)) {
+            if (false === Validate::isLoadedObject($this->context->cart)) {
                 $this->exitWithResponse([
                     'httpCode' => 400,
                     'body' => 'No cart found.',
                 ]);
             }
 
-            /** @var InputStreamUtility $inputStreamUtility */
-            $inputStreamUtility = $this->module->getService(InputStreamUtility::class);
-            $bodyContent = $inputStreamUtility->getBodyContent();
+            $bodyContent = file_get_contents('php://input');
 
-            $bodyValues = json_decode($bodyContent, true);
-
-            if (empty($bodyContent) || empty($bodyValues)) {
+            if (empty($bodyContent)) {
                 $this->exitWithResponse([
                     'httpCode' => 400,
                     'body' => 'Payload invalid',
                 ]);
             }
 
-            $checkOrderRequest = new CheckPayPalOrderRequest($this->context->cart->id, $bodyValues);
+            $bodyValues = json_decode($bodyContent, true);
 
-            if (!$checkOrderRequest->getOrderId()) {
+            if (empty($bodyValues)) {
+                $this->exitWithResponse([
+                    'httpCode' => 400,
+                    'body' => 'Payload invalid',
+                ]);
+            }
+
+            $cartId = (int) $this->context->cart->id;
+            $fundingSource = isset($bodyValues['fundingSource']) ? $bodyValues['fundingSource'] : 'paypal';
+            $orderId = isset($bodyValues['orderID']) ? $bodyValues['orderID'] : null;
+            $isExpressCheckout = isset($bodyValues['isExpressCheckout']) && $bodyValues['isExpressCheckout'];
+            $isHostedFields = isset($bodyValues['isHostedFields']) && $bodyValues['isHostedFields'];
+
+            if (empty($orderId)) {
                 $this->exitWithResponse([
                     'httpCode' => 400,
                     'body' => 'Missing PayPal Order Id',
                 ]);
             }
 
+            /** @var CommandBusInterface $commandBus */
+            $commandBus = $this->module->getService('ps_checkout.bus.command');
+            $commandBus->handle(new UpdatePaymentMethodSelectedCommand($cartId, $orderId, $fundingSource, $isExpressCheckout, $isHostedFields));
             try {
-                /** @var UpdateExternalPayPalOrderProcessor $updateExternalPayPalOrderProcessor */
-                $updateExternalPayPalOrderProcessor = $this->module->getService(UpdateExternalPayPalOrderProcessor::class);
-
-                $updateExternalPayPalOrderProcessor->execute($checkOrderRequest);
+                $commandBus->handle(new UpdatePayPalOrderCommand($orderId, $cartId, $fundingSource, $isHostedFields, $isExpressCheckout));
             } catch (Exception $exception) {
-                $logger->error(
+                $this->module->getLogger()->error(
                     'Failed to patch PayPal Order',
                     [
-                        'PayPalOrderId' => $checkOrderRequest->getOrderId(),
-                        'FundingSource' => $checkOrderRequest->getFundingSource(),
-                        'isExpressCheckout' => $checkOrderRequest->isExpressCheckout(),
-                        'isHostedFields' => $checkOrderRequest->isHostedFields(),
+                        'PayPalOrderId' => $orderId,
+                        'FundingSource' => $fundingSource,
+                        'isExpressCheckout' => $isExpressCheckout,
+                        'isHostedFields' => $isHostedFields,
                         'id_cart' => (int) $this->context->cart->id,
                     ]
                 );
-
-                /** @var CancelPayPalOrderAction $cancelPayPalOrderAction */
-                $cancelPayPalOrderAction = $this->module->getService(CancelPayPalOrderAction::class);
-                $cancelPayPalOrderAction->execute(new CancelPayPalOrderRequest($bodyValues, $this->context->cart->id));
+                $commandBus->handle(new CancelCheckoutCommand(
+                    $this->context->cart->id,
+                    $orderId,
+                    PsCheckoutCart::STATUS_CANCELED,
+                    $fundingSource,
+                    $isExpressCheckout,
+                    $isHostedFields
+                ));
             }
 
             $this->exitWithResponse([
@@ -107,7 +115,7 @@ class Ps_CheckoutCheckModuleFrontController extends AbstractFrontController
                 'exceptionMessage' => null,
             ]);
         } catch (Exception $exception) {
-            $logger->error(
+            $this->module->getLogger()->error(
                 sprintf(
                     'CheckController - Exception %s : %s',
                     $exception->getCode(),

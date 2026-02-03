@@ -16,12 +16,42 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
+
+{**
+ * WARNING
+ *
+ * This file allow only html
+ *
+ * It will be parsed by PrestaShop Core with PrestaShop\PrestaShop\Core\Payment\PaymentOptionFormDecorator
+ *
+ * Script tags will be removed and some HTML5 element can cause an Exception due to DOMDocument class
+ *}
 <div class="ps_checkout-vault-payment-container-{$paymentIdentifier} ps_checkout-vault-fields">
   <div>
     <label for="ps_checkout-vault-payment-{$paymentIdentifier}" class="ps_checkout-vault-label">
       <input type="checkbox" value="1" name="ps_checkout-vault-payment-{$paymentIdentifier}" id="ps_checkout-vault-payment-{$paymentIdentifier}">
-      {l s='Securely store payment details for future purchases' d='Modules.Checkout.Pscheckout'}
-      <img src="{$modulePath}views/img/icons/lock_fill.svg" alt="lock" width="15" height="15">
+      {l s='Securely store payment details for future purchases' mod='ps_checkout'}
+      <img src="{$lockIcon}" alt="lock" width="15" height="15">
     </label>
   </div>
+{*  <div>*}
+{*    <label for="ps_checkout-favorite-payment-{$paymentIdentifier}" class="ps_checkout-vault-label">*}
+{*      <input type="checkbox" disabled value="1" name="ps_checkout-favorite-payment-{$paymentIdentifier}" id="ps_checkout-favorite-payment-{$paymentIdentifier}">*}
+{*      {if $paymentIdentifier=='card'}*}
+{*        {l s='Make this card favorite / default ' mod='ps_checkout'}*}
+{*      {else}*}
+{*        {l s='Make this account favorite / default ' mod='ps_checkout'}*}
+{*      {/if}*}
+{*    </label>*}
+{*  </div>*}
+{*  <script>*}
+{*    const vaultCheckbox{$paymentIdentifier} = document.getElementById('ps_checkout-vault-payment-{$paymentIdentifier}');*}
+{*    const favoriteCheckbox{$paymentIdentifier} = document.getElementById('ps_checkout-favorite-payment-{$paymentIdentifier}');*}
+{*    vaultCheckbox{$paymentIdentifier}.addEventListener('change', (event) => {*}
+{*      if (!event.target.checked) {*}
+{*        favoriteCheckbox{$paymentIdentifier}.checked = false;*}
+{*      }*}
+{*      favoriteCheckbox{$paymentIdentifier}.toggleAttribute('disabled', !event.target.checked);*}
+{*    });*}
+{*  </script>*}
 </div>

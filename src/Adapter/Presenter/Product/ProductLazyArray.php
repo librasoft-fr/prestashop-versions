@@ -1514,7 +1514,7 @@ class ProductLazyArray extends AbstractLazyArray
      */
     protected function getProductAttributeWhitelist()
     {
-        return [
+        $whitelist = [
             'active',
             'add_to_cart_url',
             'additional_shipping_cost',
@@ -1620,6 +1620,12 @@ class ProductLazyArray extends AbstractLazyArray
             'visibility',
             'weight_unit',
         ];
+
+        if (empty($this->product['show_quantities'])) {
+            $whitelist = array_diff($whitelist, ['quantity', 'quantity_all_versions']);
+        }
+
+        return $whitelist;
     }
 
     /**

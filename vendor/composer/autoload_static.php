@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit08991e390d696b283893d855006fe6b0
+class ComposerStaticInit7d244726c8c375884f53366b2f306571
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -4825,20 +4825,26 @@ class ComposerStaticInit08991e390d696b283893d855006fe6b0
         'PrestaShopBundle\\ApiPlatform\\Exception\\CQRSQueryNotFoundException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Exception/CQRSQueryNotFoundException.php',
         'PrestaShopBundle\\ApiPlatform\\Exception\\GridDataFactoryNotFoundException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Exception/GridDataFactoryNotFoundException.php',
         'PrestaShopBundle\\ApiPlatform\\Exception\\LocaleNotFoundException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Exception/LocaleNotFoundException.php',
+        'PrestaShopBundle\\ApiPlatform\\Exception\\PositionDefinitionNotFoundException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Exception/PositionDefinitionNotFoundException.php',
+        'PrestaShopBundle\\ApiPlatform\\Exception\\PositionDefinitionParentIdNotFoundException' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Exception/PositionDefinitionParentIdNotFoundException.php',
         'PrestaShopBundle\\ApiPlatform\\LocalizedValueUpdater' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/LocalizedValueUpdater.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\AbstractCQRSOperation' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/AbstractCQRSOperation.php',
+        'PrestaShopBundle\\ApiPlatform\\Metadata\\AbstractScopedOperation' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/AbstractScopedOperation.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSCommand' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSCommand.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSCreate' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSCreate.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSDelete' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSDelete.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSGet' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSGet.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSGetCollection' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSGetCollection.php',
+        'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSPaginate' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSPaginate.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSPartialUpdate' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSPartialUpdate.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\CQRSUpdate' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/CQRSUpdate.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\LocalizedValue' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/LocalizedValue.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\PaginatedList' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/PaginatedList.php',
+        'PrestaShopBundle\\ApiPlatform\\Metadata\\PositionCollection' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/PositionCollection.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\Property\\Factory\\CQRSConstructorPropertyMetadataFactory' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/Property/Factory/CQRSConstructorPropertyMetadataFactory.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\Resource\\Factory\\CQRSNotFoundMetadataCollectionFactoryDecorator' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/Resource/Factory/CQRSNotFoundMetadataCollectionFactoryDecorator.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\Resource\\Factory\\ExperimentalOperationsMetadataCollectionFactoryDecorator' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/Resource/Factory/ExperimentalOperationsMetadataCollectionFactoryDecorator.php',
+        'PrestaShopBundle\\ApiPlatform\\Metadata\\UpdatePosition' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/UpdatePosition.php',
         'PrestaShopBundle\\ApiPlatform\\NormalizationMapper' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/NormalizationMapper.php',
         'PrestaShopBundle\\ApiPlatform\\Normalizer\\CQRSApiNormalizer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Normalizer/CQRSApiNormalizer.php',
         'PrestaShopBundle\\ApiPlatform\\Normalizer\\DateImmutableNormalizer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Normalizer/DateImmutableNormalizer.php',
@@ -4853,11 +4859,14 @@ class ComposerStaticInit08991e390d696b283893d855006fe6b0
         'PrestaShopBundle\\ApiPlatform\\OpenApi\\Adapter\\LocalizedValueAdapter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Adapter/LocalizedValueAdapter.php',
         'PrestaShopBundle\\ApiPlatform\\OpenApi\\Adapter\\MultiParameterSetterAdapter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Adapter/MultiParameterSetterAdapter.php',
         'PrestaShopBundle\\ApiPlatform\\OpenApi\\Adapter\\OpenApiSchemaAdapterInterface' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Adapter/OpenApiSchemaAdapterInterface.php',
+        'PrestaShopBundle\\ApiPlatform\\OpenApi\\Adapter\\PositionCollectionAdapter' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Adapter/PositionCollectionAdapter.php',
         'PrestaShopBundle\\ApiPlatform\\OpenApi\\Adapter\\SchemaAdapterChain' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Adapter/SchemaAdapterChain.php',
         'PrestaShopBundle\\ApiPlatform\\OpenApi\\Adapter\\SchemaSynchronizer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Adapter/SchemaSynchronizer.php',
         'PrestaShopBundle\\ApiPlatform\\OpenApi\\Factory\\CQRSOpenApiFactory' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/OpenApi/Factory/CQRSOpenApiFactory.php',
         'PrestaShopBundle\\ApiPlatform\\Pagination\\PaginationElements' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Pagination/PaginationElements.php',
+        'PrestaShopBundle\\ApiPlatform\\PositionCollectionUpdater' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/PositionCollectionUpdater.php',
         'PrestaShopBundle\\ApiPlatform\\Processor\\CommandProcessor' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Processor/CommandProcessor.php',
+        'PrestaShopBundle\\ApiPlatform\\Processor\\UpdatePositionProcessor' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Processor/UpdatePositionProcessor.php',
         'PrestaShopBundle\\ApiPlatform\\Provider\\EmptyBodyDeserializerProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Provider/EmptyBodyDeserializerProvider.php',
         'PrestaShopBundle\\ApiPlatform\\Provider\\QueryListProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Provider/QueryListProvider.php',
         'PrestaShopBundle\\ApiPlatform\\Provider\\QueryProvider' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Provider/QueryProvider.php',
@@ -5791,18 +5800,28 @@ class ComposerStaticInit08991e390d696b283893d855006fe6b0
         'PrestaShop\\Decimal\\Operation\\Multiplication' => __DIR__ . '/..' . '/prestashop/decimal/src/Operation/Multiplication.php',
         'PrestaShop\\Decimal\\Operation\\Rounding' => __DIR__ . '/..' . '/prestashop/decimal/src/Operation/Rounding.php',
         'PrestaShop\\Decimal\\Operation\\Subtraction' => __DIR__ . '/..' . '/prestashop/decimal/src/Operation/Subtraction.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\BulkDeleteCustomerCommandDenormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/BulkDeleteCustomerCommandDenormalizer.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\CartAddressNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/CartAddressNormalizer.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\CountryIdNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/CountryIdNormalizer.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\GenerateCombinationsSerializer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/GenerateCombinationsSerializer.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\OrderAddressNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/OrderAddressNormalizer.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\StateIdInterfaceNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/StateIdInterfaceNormalizer.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Processor\\BulkCustomersDeleteProcessor' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Processor/BulkCustomersDeleteProcessor.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\Address' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/Address.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\AddressList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/AddressList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\BulkAddresses' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/BulkAddresses.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\CartAddress' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/CartAddress.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\CustomerAddress' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/CustomerAddress.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\ManufacturerAddress' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/ManufacturerAddress.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\OrderAddress' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/OrderAddress.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\ApiClient\\ApiClient' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/ApiClient/ApiClient.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\ApiClient\\ApiClientList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/ApiClient/ApiClientList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\Attribute' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/Attribute.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributeGroup' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributeGroup.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributeGroupList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributeGroupList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributeGroupPosition' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributeGroupPosition.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributeList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributeList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributePosition' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributePosition.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\BulkAttribute' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/BulkAttribute.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\BulkAttributeGroups' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/BulkAttributeGroups.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\BulkDeleteCategories' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/BulkDeleteCategories.php',
@@ -5812,10 +5831,15 @@ class ComposerStaticInit08991e390d696b283893d855006fe6b0
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\CategoryList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/CategoryList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Contact\\Contact' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Contact/Contact.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Contact\\ContactList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Contact/ContactList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\BulkCustomers' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/BulkCustomers.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\Customer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/Customer.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerDetails' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerDetails.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerGroup' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerGroup.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerGroupList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerGroupList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\FoundCustomer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/FoundCustomer.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\BulkDeleteDiscounts' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/BulkDeleteDiscounts.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\BulkUpdateStatusDiscounts' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/BulkUpdateStatusDiscounts.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\Discount' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/Discount.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\DiscountConditions' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/DiscountConditions.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\DiscountList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/DiscountList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Feature\\BulkFeatureValues' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Feature/BulkFeatureValues.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Feature\\BulkFeatures' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Feature/BulkFeatures.php',
@@ -5830,7 +5854,11 @@ class ComposerStaticInit08991e390d696b283893d855006fe6b0
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UninstallModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UninstallModule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UpgradeModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UpgradeModule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UploadModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UploadModule.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\Combination' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/Combination.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\CombinationIdList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/CombinationIdList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\CombinationList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/CombinationList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\FoundProduct' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/FoundProduct.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\GenerateCombinations' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/GenerateCombinations.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\NewProductImage' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/NewProductImage.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\Product' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/Product.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductImage' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductImage.php',
@@ -13919,11 +13947,11 @@ class ComposerStaticInit08991e390d696b283893d855006fe6b0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit08991e390d696b283893d855006fe6b0::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit08991e390d696b283893d855006fe6b0::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit08991e390d696b283893d855006fe6b0::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit08991e390d696b283893d855006fe6b0::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit08991e390d696b283893d855006fe6b0::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit7d244726c8c375884f53366b2f306571::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit7d244726c8c375884f53366b2f306571::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit7d244726c8c375884f53366b2f306571::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit7d244726c8c375884f53366b2f306571::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit7d244726c8c375884f53366b2f306571::$classMap;
 
         }, null, ClassLoader::class);
     }

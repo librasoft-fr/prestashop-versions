@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -17,13 +18,11 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
 
-use PsCheckout\Core\PayPal\GooglePay\Builder\GooglePayPaymentRequestDataBuilder;
-use PsCheckout\Infrastructure\Controller\AbstractFrontController;
-use PsCheckout\Utility\Common\InputStreamUtility;
+use PrestaShop\Module\PrestashopCheckout\Cart\ValueObject\CartId;
+use PrestaShop\Module\PrestashopCheckout\CommandBus\QueryBusInterface;
+use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
+use PrestaShop\Module\PrestashopCheckout\PayPal\GooglePay\Query\GetGooglePayTransactionInfoQuery;
 
 /**
  * This controller receive ajax call on customer click on a payment button
@@ -35,6 +34,8 @@ class Ps_CheckoutGooglepayModuleFrontController extends AbstractFrontController
      */
     public $module;
 
+    private QueryBusInterface $queryBus;
+
     /**
      * @see FrontController::postProcess()
      */
@@ -42,19 +43,18 @@ class Ps_CheckoutGooglepayModuleFrontController extends AbstractFrontController
     {
         try {
             $bodyValues = [];
-
-            /** @var InputStreamUtility $inputStreamUtility */
-            $inputStreamUtility = $this->module->getService(InputStreamUtility::class);
-            $bodyContent = $inputStreamUtility->getBodyContent();
+            $bodyContent = file_get_contents('php://input');
 
             if (!empty($bodyContent)) {
                 $bodyValues = json_decode($bodyContent, true);
             }
 
-            $action = $bodyValues['action'] ?? null;
+            $action = $bodyValues['action'];
+
+            $this->queryBus = $this->module->getService('ps_checkout.bus.query');
 
             if ($action === 'getTransactionInfo') {
-                $this->getTransactionInfo();
+                $this->getTransactionInfo($bodyValues);
             } else {
                 $this->exitWithExceptionMessage(new Exception('Invalid request', 400));
             }
@@ -63,18 +63,13 @@ class Ps_CheckoutGooglepayModuleFrontController extends AbstractFrontController
         }
     }
 
-    /**
-     * @return void
-     */
-    private function getTransactionInfo()
+    private function getTransactionInfo(array $bodyValues)
     {
-        /** @var GooglePayPaymentRequestDataBuilder $googlePayPaymentRequestDataBuilder */
-        $googlePayPaymentRequestDataBuilder = $this->module->getService(GooglePayPaymentRequestDataBuilder::class);
-        $transactionInfo = $googlePayPaymentRequestDataBuilder->build($this->context->cart->id);
+        $transactionInfo = $this->queryBus->handle(new GetGooglePayTransactionInfoQuery(new CartId($this->context->cart->id)));
 
         $this->exitWithResponse([
             'httpCode' => 200,
-            'body' => $transactionInfo->toArray(),
+            'body' => $transactionInfo->getPayload()->toArray(),
         ]);
     }
 }

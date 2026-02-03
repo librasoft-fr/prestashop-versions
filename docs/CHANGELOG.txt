@@ -24,6 +24,90 @@ needs please refer to https://devdocs.prestashop.com/ for more information.
 Changelog for PrestaShop 9
 
 ####################################
+#   v9.0.3 - (2026-01-22)
+####################################
+
+- Back Office:
+  - Improvement:
+    - #40517: Add some help boxes to product page (by @Hlavtox)
+    - #39923: Improve wording of some settings, better explain the meaning of them (by @Hlavtox)
+    - #40230: Adds help text to product page fields (by @Hlavtox)
+    - GHSA-67v7-3g49-mxh2 Protect users from time based email enumeration attacks (by @matthieu-rolland, vulnerability reported by Lam Yiu Tung)
+  - Bug fix:
+    - #40563: Admin API improvements for combination endpoints (by @jolelievre)
+    - #40556: Fix: CsvFileReader service fails with "You have requested a non-existent service 'session'" (by @Codencode)
+    - #38775: Fix: Multishop - error loading CMS pages removed from the default shop (by @Codencode)
+    - #40499: Fix: When saving an Attribute is_color_group is not updated. (by @Codencode)
+    - #40554: Fix: always display taxes total in order summary (by @Codencode)
+    - #40532: BO Product page, fix feature value collection indexes (by @jolelievre)
+    - #40433: Fix: Module update problem (by @Codencode)
+    - #40054: Use URL when building urls to prevent subtle mistakes with &? (by @tswfi)
+    - #40036: BO - Product : Fixed feature display in multishop (by @Progi1984)
+    - #39854: Fix: Quick Access links redirect to root instead of subdirectory, causing 404 (by @Codencode)
+    - #40050: Fix: Incorrect redirect from HTTP to HTTPS on the admin login page when PrestaShop is in a subfolder (by @Codencode)
+    - #40475: Fix link for redirection on country BO page (by @jolelievre)
+    - #40066: Fix: [BO] Admin Countries page redirect issue with multishop after changing shop (by @Codencode)
+    - #40329: Prevent NoResultException when checking for existing translations (by @ChillCode)
+    - #39926: Fix: handle SELECT fields without no_quotes in getSensitiveAttributes (by @Codencode)
+    - #40001: Fix redirect after editing root category to use current categoryId in stead of PS_HOME_CATEGORY (by @Codencode)
+    - #39869: Update monologger to v3 (by @NKoonen)
+    - #40256: Fix: Issue retrieving product price when adding the first specific_price (by @Codencode)
+    - #40243: Admin API handle position update (by @jolelievre)
+    - #40257: Prevent saving ajax URL for future login redirection, or the redirect… (by @jolelievre)
+    - #40112: Bump prestakit to v2.0.5 (by @Quetzacoalt91)
+  - Refactoring:
+    - #37667: Apply backoffice optimizations (by @Hlavtox)
+- Front Office:
+  - New feature:
+    - #40403: Allow easily hooking into country and currency selection logic (by @Hlavtox)
+  - Improvement:
+    - #40537: Remove unnecessary force refresh in checkout (by @Hlavtox)
+    - #40248: Prevent Exposure of Sensitive Product Attributes in Front Office (by @M0rgan01)
+  - Bug fix:
+    - #40246: Fix preview in multilang (by @tleon)
+    - #39582: Fix: Product customization text field bug with using symbol {} (by @Codencode)
+    - #40117: Fix cart rule validation in front office (by @Hlavtox)
+    - #40262: Allow access to customized files preview without multi-lang enabled (by @kpodemski)
+    - #40137: Updated zxcvbn to a maintained version for consistency with backend checks (by @tleon)
+  - Refactoring:
+    - #40406: Comment how language setting works in FO (by @Hlavtox)
+- Core:
+  - Improvement:
+    - #40269: Prevent database inconsistencies by preventing faulty group delete calls (by @Hlavtox)
+    - #40133: Update ca-bundle from 1.3.7 to 1.5.9 (by @tswfi)
+    - #40350: Remove the composer config to ignore audit (by @jolelievre)
+    - #40332: Restore original repository for ps_apiresources (by @nicosomb)
+    - #40312: Bump to `9.0.3` (by @boherm)
+    - #40134: Docker : Fixed Install of xdebug (by @Progi1984)
+  - Bug fix:
+    - #40585: Preliminary tasks for patch version 9.0.3 (by @jolelievre)
+    - #40479: Fix legacy profiler in the back office (by @kpodemski)
+    - #40562: Update VAT rates for Estonia and Romania (by @Codencode)
+    - #40496: Fix some type issues related to carriers (by @Hlavtox)
+    - #40423: Fix empty extra vars / product list when using the new automatic text email option (by @matrixino)
+    - #40040: Always request a non cached result in Order::getIdByCartId (by @ilsalvopss)
+    - #40400: Simplify cart rule minimal value by avoiding subtracting values (by @Hlavtox)
+  - Refactoring:
+    - #40389: Comment logic related to addresses and their initialization (by @Hlavtox)
+- Installer:
+  - Bug fix:
+    - #40574: Fix Makefile to prevent build assets twice (by @jolelievre)
+    - #40077: Install Console : Allow characters "<" & ">" in admin password (by @Progi1984)
+    - #40114: Chore(Makefile): fix Makefile shell detection issue (by @tyloo)
+- Localization:
+  - Bug fix:
+    - #40521: Fix default fixtures translation (by @jolelievre)
+- Tests:
+  - Improvement:
+    - #40512: Functional Tests : Bump @prestashop-core/ui-testing (by @Progi1984)
+    - #40458: Functional Tests : Bump @prestashop-core/ui-testing (by @Progi1984)
+    - #40434: Functional Tests : Bump @prestashop-core/ui-testing (by @Progi1984)
+    - #40363: Functional Tests : Bump @prestashop-core/ui-testing (by @Progi1984)
+    - #40138: Functional Tests : Bump @prestashop-core/ui-testing (by @Progi1984)
+  - Refactoring:
+    - #40298: Functional tests - Fix create account in FO classic theme test (by @nesrineabdmouleh)
+
+####################################
 #   v9.0.2 - (2025-12-01)
 ####################################
 

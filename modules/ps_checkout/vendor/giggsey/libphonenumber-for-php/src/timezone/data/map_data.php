@@ -630,7 +630,6 @@ return  [
     1270965 => 'America/Chicago',
     1270988 => 'America/Chicago',
     1272 => 'America/New_York',
-    1274 => 'America/Chicago',
     1276 => 'America/New_York',
     1279 => 'America/Los_Angeles',
     1281 => 'America/Chicago',

@@ -41,7 +41,7 @@ class ps_mbo extends Module
     use PrestaShop\Module\Mbo\Traits\HaveTabs;
     use PrestaShop\Module\Mbo\Traits\UseHooks;
 
-    public const VERSION = '5.2.1';
+    public const VERSION = '5.2.2';
 
     public array $configurationList = [
         'PS_MBO_SHOP_ADMIN_UUID' => '', // 'ADMIN' because there will be only one for all shops in a multishop context
@@ -70,7 +70,7 @@ class ps_mbo extends Module
     {
         $this->name = 'ps_mbo';
         // This value must be hard-coded to respect Addons rules, so we must make sure that the const value is always synced with this one
-        $this->version = '5.2.1';
+        $this->version = '5.2.2';
         $this->author = 'PrestaShop';
         $this->tab = 'administration';
         $this->module_key = '6cad5414354fbef755c7df4ef1ab74eb';

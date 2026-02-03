@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -17,14 +18,14 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
 
-use PsCheckout\Core\PaymentToken\Action\DeletePaymentTokenAction;
-use PsCheckout\Infrastructure\Controller\AbstractFrontController;
-use PsCheckout\Infrastructure\Repository\PaymentTokenRepository;
-use PsCheckout\Utility\Common\InputStreamUtility;
+use PrestaShop\Module\PrestashopCheckout\CommandBus\CommandBusInterface;
+use PrestaShop\Module\PrestashopCheckout\CommandBus\QueryBusInterface;
+use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
+use PrestaShop\Module\PrestashopCheckout\PayPal\PaymentToken\Command\DeletePaymentTokenCommand;
+use PrestaShop\Module\PrestashopCheckout\PayPal\PaymentToken\Query\GetCustomerPaymentTokensQuery;
+use PrestaShop\Module\PrestashopCheckout\PayPal\PaymentToken\Query\GetCustomerPaymentTokensQueryResult;
+use PrestaShop\Module\PrestashopCheckout\PayPal\PaymentToken\ValueObject\PaymentTokenId;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -38,17 +39,20 @@ class Ps_CheckoutVaultModuleFrontController extends AbstractFrontController
     public function postProcess()
     {
         try {
-            $bodyValues = [];
+            /** @var CommandBusInterface $commandBus */
+            $commandBus = $this->module->getService('ps_checkout.bus.command');
 
-            /** @var InputStreamUtility $inputStreamUtility */
-            $inputStreamUtility = $this->module->getService(InputStreamUtility::class);
-            $bodyContent = $inputStreamUtility->getBodyContent();
+            /** @var QueryBusInterface $queryBus */
+            $queryBus = $this->module->getService('ps_checkout.bus.query');
+
+            $bodyValues = [];
+            $bodyContent = file_get_contents('php://input');
 
             if (!empty($bodyContent)) {
                 $bodyValues = json_decode($bodyContent, true);
             }
 
-            $customerId = $this->context->customer->isLogged() ? $this->context->customer->id : null;
+            $customerId = $this->getCustomerId();
 
             if (isset($bodyValues['action'])) {
                 $action = $bodyValues['action'];
@@ -56,16 +60,11 @@ class Ps_CheckoutVaultModuleFrontController extends AbstractFrontController
                 switch ($action) {
                     case 'deleteToken':
                         $vaultId = $bodyValues['vaultId'];
-
-                        /** @var DeletePaymentTokenAction $deletePaymentTokenAction */
-                        $deletePaymentTokenAction = $this->module->getService(DeletePaymentTokenAction::class);
-                        $deletePaymentTokenAction->execute($vaultId, $customerId);
-
+                        $commandBus->handle(new DeletePaymentTokenCommand(new PaymentTokenId($vaultId), $customerId));
                         $this->exitWithResponse([
                             'status' => true,
                             'httpCode' => 200,
                         ]);
-
                         break;
                     default:
                         $this->exitWithResponse([
@@ -74,23 +73,27 @@ class Ps_CheckoutVaultModuleFrontController extends AbstractFrontController
                         ]);
                 }
             }
-            /** @var PaymentTokenRepository $paymentTokenRepository */
-            $paymentTokenRepository = $this->module->getService(PaymentTokenRepository::class);
-            $tokens = $paymentTokenRepository->getAllByCustomerId($customerId);
+
+            /** @var GetCustomerPaymentTokensQueryResult $getCustomerPaymentMethodTokensQueryResult */
+            $getCustomerPaymentMethodTokensQueryResult = $queryBus->handle(new GetCustomerPaymentTokensQuery(
+                $customerId,
+                $this->getPageSize(),
+                $this->getPageNumber()
+            ));
 
             $this->exitWithResponse([
                 'status' => true,
                 'httpCode' => 200,
                 'body' => [
-                    'customerId' => $customerId,
-                    'paymentTokens' => $tokens,
-                    'totalItems' => null,
-                    'totalPages' => null,
+                    'customerId' => $getCustomerPaymentMethodTokensQueryResult->getCustomerId(),
+                    'paymentTokens' => $getCustomerPaymentMethodTokensQueryResult->getPaymentTokens(),
+                    'totalItems' => $getCustomerPaymentMethodTokensQueryResult->getTotalItems(),
+                    'totalPages' => $getCustomerPaymentMethodTokensQueryResult->getTotalPages(),
                 ],
             ]);
         } catch (Exception $exception) {
             /** @var LoggerInterface $logger */
-            $logger = $this->module->getService(LoggerInterface::class);
+            $logger = $this->module->getService('ps_checkout.logger');
             $logger->error(
                 sprintf(
                     'VaultController exception %s : %s',

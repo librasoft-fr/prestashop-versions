@@ -53,8 +53,10 @@
 
       <div class="box">
           <ul>
-            {if $order.carrier.name}
-              <li><strong>{l s='Carrier' d='Shop.Theme.Checkout'}</strong> {$order.carrier.name}</li>
+            {if not $is_multishipment_enabled|default:false}
+              {if $order.carrier.name}
+                <li><strong>{l s='Carrier' d='Shop.Theme.Checkout'}</strong> {$order.carrier.name}</li>
+              {/if}
             {/if}
             <li><strong>{l s='Payment method' d='Shop.Theme.Checkout'}</strong> {$order.details.payment}</li>
 
@@ -151,61 +153,27 @@
 
   {block name='order_detail'}
     {if $order.details.is_returnable && !$orderIsVirtual}
-      {include file='customer/_partials/order-detail-return.tpl'}
+      {if $is_multishipment_enabled|default:false}
+        {include file='customer/_partials/order-detail-return-multishipment.tpl'}
+      {else}
+        {include file='customer/_partials/order-detail-return.tpl'}
+      {/if}
     {else}
-      {include file='customer/_partials/order-detail-no-return.tpl'}
+      {if $is_multishipment_enabled|default:false}
+        {include file='customer/_partials/order-detail-no-return-multishipment.tpl'}
+      {else}
+        {include file='customer/_partials/order-detail-no-return.tpl'}
+      {/if}
     {/if}
   {/block}
 
   {block name='order_carriers'}
     {if $order.shipping}
-      <div class="box">
-        <table class="table table-striped table-bordered hidden-sm-down">
-          <thead class="thead-default">
-            <tr>
-              <th>{l s='Date' d='Shop.Theme.Global'}</th>
-              <th>{l s='Carrier' d='Shop.Theme.Checkout'}</th>
-              <th>{l s='Weight' d='Shop.Theme.Checkout'}</th>
-              <th>{l s='Shipping cost' d='Shop.Theme.Checkout'}</th>
-              <th>{l s='Tracking number' d='Shop.Theme.Checkout'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {foreach from=$order.shipping item=line}
-              <tr>
-                <td>{$line.shipping_date}</td>
-                <td>{$line.carrier_name}</td>
-                <td>{$line.shipping_weight}</td>
-                <td>{$line.shipping_cost}</td>
-                <td>{$line.tracking nofilter}</td>
-              </tr>
-            {/foreach}
-          </tbody>
-        </table>
-        <div class="hidden-md-up shipping-lines">
-          {foreach from=$order.shipping item=line}
-            <div class="shipping-line">
-              <ul>
-                <li>
-                  <strong>{l s='Date' d='Shop.Theme.Global'}</strong> {$line.shipping_date}
-                </li>
-                <li>
-                  <strong>{l s='Carrier' d='Shop.Theme.Checkout'}</strong> {$line.carrier_name}
-                </li>
-                <li>
-                  <strong>{l s='Weight' d='Shop.Theme.Checkout'}</strong> {$line.shipping_weight}
-                </li>
-                <li>
-                  <strong>{l s='Shipping cost' d='Shop.Theme.Checkout'}</strong> {$line.shipping_cost}
-                </li>
-                <li>
-                  <strong>{l s='Tracking number' d='Shop.Theme.Checkout'}</strong> {$line.tracking nofilter}
-                </li>
-              </ul>
-            </div>
-          {/foreach}
-        </div>
-      </div>
+      {if $is_multishipment_enabled|default:false}
+        {include file='customer/_partials/order-shipments.tpl'}
+      {else}
+        {include file='customer/_partials/order-carrier.tpl'}
+      {/if}
     {/if}
   {/block}
 

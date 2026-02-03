@@ -47,7 +47,7 @@
                 <strong>{$product.product_name}</strong>
                 {if $product.product_reference}
                   <br />
-                  {l s='Reference' d='Shop.Theme.Catalog'}: {$product.product_reference}
+                  {l s='Reference: %reference%' sprintf=['%reference%' => $product.product_reference] d='Shop.Theme.Catalog'}
                 {/if}
                 {if $product.customizations}
                   {foreach from=$product.customizations item="customization"}
