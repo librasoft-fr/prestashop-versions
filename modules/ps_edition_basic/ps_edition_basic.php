@@ -57,11 +57,11 @@ class ps_edition_basic extends Module
     public function __construct()
     {
         $this->name = 'ps_edition_basic';
-        $this->version = '1.0.20';
+        $this->version = '1.0.21';
         $this->tab = 'administration';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = ['min' => '8.0.0', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '8.0.0', 'max' => '8.99.0'];
         $this->module_key = '5530785cbb44445d52d2a98f8ff6d309';
 
         parent::__construct();
@@ -150,6 +150,8 @@ class ps_edition_basic extends Module
 
     public function disable($force_all = false): bool
     {
+        (new Uninstall($this->name))->uninstallTabs();
+
         return parent::disable($force_all);
     }
 

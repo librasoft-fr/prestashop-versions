@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\PsEditionBasic\Actions;
 
+use PrestaShop\Module\PsEditionBasic\Install\Tabs\Tabs;
+
 class Uninstall
 {
     /**
@@ -44,13 +46,29 @@ class Uninstall
     {
         $result = true;
 
-        foreach (['HOME', 'AdminPsEditionBasicHomepageController', 'AdminPsEditionBasicSettingsController'] as $tabItemClassName) {
+        $dashboardTab = new \Tab(\Tab::getIdFromClassName(Tabs::CLASS_NAME_DASHBOARD));
+
+        foreach (['HOME', Tabs::CLASS_NAME_HOMEPAGE_CONTROLLER, Tabs::CLASS_NAME_SETTINGS_CONTROLLER] as $tabItemClassName) {
             $id_tab = (int) \Tab::getIdFromClassName($tabItemClassName);
 
             $tab = new \Tab($id_tab);
+
+            // Reset default page of employees that were using this tab as default page of their backoffice.
+            if (!empty($id_tab) && !empty($dashboardTab->id)) {
+                \Db::getInstance()->execute('UPDATE ' . _DB_PREFIX_ . "employee SET default_tab = '$dashboardTab->id' WHERE default_tab = '$id_tab';");
+            }
             if (\Validate::isLoadedObject($tab) && $tab->module === $this->moduleName) {
                 $result = $result && $tab->delete();
             }
+        }
+
+        // Reset Dashboard initial position
+        if (!empty($dashboardTab->id)) {
+            $dashboardTab->id_parent = 0;
+            $dashboardTab->save();
+            // Must be done in two calls because the position is forced when the parent is changed
+            $dashboardTab->position = 0;
+            $dashboardTab->save();
         }
 
         return $result;

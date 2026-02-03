@@ -24,6 +24,10 @@ namespace PrestaShop\Module\PsEditionBasic\Install\Tabs;
 
 class Tabs
 {
+    const CLASS_NAME_DASHBOARD = 'AdminDashboard';
+    const CLASS_NAME_HOMEPAGE_CONTROLLER = 'AdminPsEditionBasicHomepageController';
+    const CLASS_NAME_SETTINGS_CONTROLLER = 'AdminPsEditionBasicSettingsController';
+
     /**
      * Get module tabs information for installation
      *
@@ -50,7 +54,7 @@ class Tabs
                 'wording_domain' => 'Modules.Editionbasic.Admin',
             ],
             [
-                'class_name' => 'AdminPsEditionBasicHomepageController',
+                'class_name' => self::CLASS_NAME_HOMEPAGE_CONTROLLER,
                 'route_name' => 'ps_edition_basic_homepage',
                 'name' => [
                     'en' => 'Home',
@@ -67,7 +71,7 @@ class Tabs
                 'wording_domain' => 'Modules.Editionbasic.Admin',
             ],
             [
-                'class_name' => 'AdminPsEditionBasicSettingsController',
+                'class_name' => self::CLASS_NAME_SETTINGS_CONTROLLER,
                 'route_name' => 'ps_edition_basic_settings',
                 'name' => [
                     'en' => 'Settings',
