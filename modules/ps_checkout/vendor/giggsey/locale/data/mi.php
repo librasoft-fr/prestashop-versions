@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -23,7 +25,7 @@ return [
     'AW' => 'Arūpa',
     'AX' => 'Motu Ōrana',
     'AZ' => 'Atepaihānia',
-    'BA' => 'Pōngia-Herekōwini',
+    'BA' => 'Pōngia & Herekōwini',
     'BB' => 'Papatohe',
     'BD' => 'Pākaratēhi',
     'BE' => 'Peretiama',
@@ -55,6 +57,7 @@ return [
     'CM' => 'Kamarūna',
     'CN' => 'Haina',
     'CO' => 'Koromōpia',
+    'CQ' => 'Hāka',
     'CR' => 'Koto Rīka',
     'CU' => 'Kiupa',
     'CV' => 'Te Kūrae Matomato',

@@ -24,7 +24,7 @@ if (!defined('_PS_VERSION_')) {
 
 use PrestaShop\Module\Psshipping\Domain\Carriers\CarrierRepository;
 use PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService;
-use PrestaShop\Module\Psshipping\Domain\Carriers\PickupCarrierConfiguration;
+use PrestaShop\Module\Psshipping\Domain\Carriers\MbePickupCarrierConfiguration;
 use PrestaShop\Module\Psshipping\Service\DatabaseInstaller;
 
 /**
@@ -57,10 +57,10 @@ function upgrade_module_2_0_0($module)
                     continue;
                 }
                 if ($shippingCarrier['external_module_name'] === 'psshipping_standard') {
-                    $carrierRepository->addShippingCarrierMapping((int) $shippingCarrier['id_carrier'], CarrierService::CARRIERS_STANDARD);
+                    $carrierRepository->addShippingCarrierMapping((int) $shippingCarrier['id_carrier'], CarrierService::CARRIERS_STANDARD, CarrierService::PROVIDER_MBE);
                 }
                 if ($shippingCarrier['external_module_name'] === 'psshipping_express') {
-                    $carrierRepository->addShippingCarrierMapping((int) $shippingCarrier['id_carrier'], CarrierService::CARRIERS_EXPRESS);
+                    $carrierRepository->addShippingCarrierMapping((int) $shippingCarrier['id_carrier'], CarrierService::CARRIERS_EXPRESS, CarrierService::PROVIDER_MBE);
                 }
             }
         }
@@ -69,7 +69,7 @@ function upgrade_module_2_0_0($module)
     // require_once is necessary because the previous autoloader is loaded in memory
     require_once __DIR__ . '/../src/Domain/Carriers/CarrierConfigurationInterface.php';
     require_once __DIR__ . '/../src/Domain/Carriers/CarrierConfiguration.php';
-    require_once __DIR__ . '/../src/Domain/Carriers/PickupCarrierConfiguration.php';
+    require_once __DIR__ . '/../src/Domain/Carriers/MbePickupCarrierConfiguration.php';
     require_once __DIR__ . '/../src/Service/DatabaseInstaller.php';
 
     $result = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'carrier` SET `external_module_name`= "psshipping", `is_module` = 1, `need_range` = 1 WHERE `external_module_name` IN ("psshipping_standard", "psshipping_express")')
@@ -77,7 +77,7 @@ function upgrade_module_2_0_0($module)
 
     $mbe_tracking_url = $module->getMbeTrackingUrl();
 
-    $carrierService->create(new PickupCarrierConfiguration($mbe_tracking_url))->jsonSerialize();
+    $carrierService->create(new MbePickupCarrierConfiguration($mbe_tracking_url))->jsonSerialize();
 
     return $result;
 }

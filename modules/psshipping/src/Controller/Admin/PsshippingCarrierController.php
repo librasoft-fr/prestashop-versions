@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace PrestaShop\Module\Psshipping\Controller\Admin;
 
 use PrestaShop\Module\Psshipping\Domain\Carriers\CarrierService;
-use PrestaShop\Module\Psshipping\Domain\Carriers\ExpressCarrierConfiguration;
-use PrestaShop\Module\Psshipping\Domain\Carriers\PickupCarrierConfiguration;
-use PrestaShop\Module\Psshipping\Domain\Carriers\StandardCarrierConfiguration;
+use PrestaShop\Module\Psshipping\Domain\Carriers\MbeExpressCarrierConfiguration;
+use PrestaShop\Module\Psshipping\Domain\Carriers\MbePickupCarrierConfiguration;
+use PrestaShop\Module\Psshipping\Domain\Carriers\MbeStandardCarrierConfiguration;
+use PrestaShop\Module\Psshipping\Domain\Carriers\UpsExpressCarrierConfiguration;
+use PrestaShop\Module\Psshipping\Domain\Carriers\UpsStandardCarrierConfiguration;
 use PrestaShop\Module\Psshipping\Exception\BadRequestException;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use Psshipping;
@@ -60,9 +62,15 @@ class PsshippingCarrierController extends FrameworkBundleAdminController
                 json_encode([
                     'success' => true,
                     'carrier' => [
-                        'standard' => $this->carrierService->create(new StandardCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
-                        'pickup' => $this->carrierService->create(new PickupCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
-                        'express' => $this->carrierService->create(new ExpressCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                        'standard' => [
+                            $this->carrierService->create(new MbeStandardCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                            $this->carrierService->create(new UpsStandardCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                        ],
+                        'pickup' => $this->carrierService->create(new MbePickupCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                        'express' => [
+                            $this->carrierService->create(new MbeExpressCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                            $this->carrierService->create(new UpsExpressCarrierConfiguration($mbe_tracking_url))->jsonSerialize(),
+                        ],
                     ],
                 ]),
                 201,

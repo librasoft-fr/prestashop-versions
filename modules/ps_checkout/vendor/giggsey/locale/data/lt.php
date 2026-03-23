@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -55,6 +57,7 @@ return [
     'CM' => 'Kamerūnas',
     'CN' => 'Kinija',
     'CO' => 'Kolumbija',
+    'CQ' => 'Sarkas',
     'CR' => 'Kosta Rika',
     'CU' => 'Kuba',
     'CV' => 'Žaliasis Kyšulys',
@@ -79,7 +82,7 @@ return [
     'ET' => 'Etiopija',
     'FI' => 'Suomija',
     'FJ' => 'Fidžis',
-    'FK' => 'Folklando Salos',
+    'FK' => 'Folklando salos',
     'FM' => 'Mikronezija',
     'FO' => 'Farerų Salos',
     'FR' => 'Prancūzija',

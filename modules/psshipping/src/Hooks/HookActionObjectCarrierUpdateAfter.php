@@ -146,11 +146,11 @@ class HookActionObjectCarrierUpdateAfter
             return;
         }
 
-        if ($this->oldCarrierIdCache) {
+        if ($this->oldCarrierIdCache && !empty($carrier->id)) {
             $mapping = $this->carrierRepository->getShippingCarriersMapping();
-            $type = $mapping[$this->oldCarrierIdCache];
+            $carrierDetail = $mapping[$this->oldCarrierIdCache];
             unset($mapping[$this->oldCarrierIdCache]);
-            $mapping[$carrier->id] = $type;
+            $mapping[$carrier->id] = ['type' => $carrierDetail['type'], 'provider' => $carrierDetail['provider']];
             $this->carrierRepository->updateShippingCarrierMapping($mapping);
             $this->orderRepository->updateCarrierForOrders($this->oldCarrierIdCache, (int) $carrier->id);
             $this->oldCarrierIdCache = null;

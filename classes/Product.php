@@ -1,34 +1,15 @@
 <?php
 
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * For the full copyright and license information, please view the
+ * docs/licenses/LICENSE.txt file that was distributed with this source code.
  */
 
 use PrestaShop\Decimal\DecimalNumber;
 use PrestaShop\PrestaShop\Core\Domain\Product\Pack\ValueObject\PackStockType;
 use PrestaShop\PrestaShop\Core\Domain\Product\ProductSettings;
 use PrestaShop\PrestaShop\Core\Domain\Product\Stock\ValueObject\OutOfStockType;
+use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\DeliveryTimeNoteType;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\Gtin;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\Isbn;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductType;
@@ -345,7 +326,7 @@ class ProductCore extends ObjectModel
      *
      * @var int
      */
-    public $additional_delivery_times = 1;
+    public $additional_delivery_times = DeliveryTimeNoteType::TYPE_DEFAULT;
 
     /**
      * Delivery in-stock information.
@@ -371,12 +352,9 @@ class ProductCore extends ObjectModel
     public $pack_quantity;
 
     /**
-     * For now default value remains undefined, to keep compatibility with page v1 and former products.
-     * But once the v2 is merged the default value should be ProductType::TYPE_STANDARD
-     *
      * @var string
      */
-    public $product_type = ProductType::TYPE_UNDEFINED;
+    public $product_type = ProductType::TYPE_STANDARD;
 
     /**
      * @var int
@@ -473,7 +451,7 @@ class ProductCore extends ObjectModel
             'product_type' => [
                 'type' => self::TYPE_STRING,
                 'validate' => 'isGenericName',
-                // For now undefined value is still allowed, in 179 we should use ProductType::AVAILABLE_TYPES here
+                // TYPE_UNDEFINED is here to support legacy products that have no type set
                 'values' => [
                     ProductType::TYPE_STANDARD,
                     ProductType::TYPE_PACK,
@@ -481,8 +459,7 @@ class ProductCore extends ObjectModel
                     ProductType::TYPE_COMBINATIONS,
                     ProductType::TYPE_UNDEFINED,
                 ],
-                // This default value should be replaced with ProductType::TYPE_STANDARD in 179 when the v2 page is fully migrated
-                'default' => ProductType::TYPE_UNDEFINED,
+                'default' => ProductType::TYPE_STANDARD,
             ],
 
             /* Shop fields */
@@ -5466,8 +5443,14 @@ class ProductCore extends ObjectModel
             return array_merge($row, self::$productPropertiesCache[$cache_key]);
         }
 
+        /*
+         * Now, to get proper prices, we need to calculate them for a specific quantity, because
+         * there can be quantity discount. The variable to use is different for different contexts.
+         * If a specific quantity_wanted is set, we use it. Usually a product page.
+         * If cart_quantity is defined, we use it. Usually cart context.
+         * Otherwise, we use minimal_quantity, if nothing was passed - on listings.
+         */
         if (isset($row['quantity_wanted'])) {
-            // 'quantity_wanted' may very well be zero even if set
             $quantityToUseForPriceCalculations = max((int) $row['minimal_quantity'], (int) $row['quantity_wanted']);
         } elseif (isset($row['cart_quantity'])) {
             $quantityToUseForPriceCalculations = max((int) $row['minimal_quantity'], (int) $row['cart_quantity']);

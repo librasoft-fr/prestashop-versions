@@ -169,8 +169,8 @@ CREATE TABLE `PREFIX_cart_rule` (
   `date_from` datetime NOT NULL,
   `date_to` datetime NOT NULL,
   `description` MEDIUMTEXT,
-  `quantity` int(10) unsigned NOT NULL DEFAULT '0',
-  `quantity_per_user` int(10) unsigned NOT NULL DEFAULT '0',
+  `quantity` int(10) unsigned DEFAULT '0',
+  `quantity_per_user` int(10) unsigned DEFAULT '0',
   `priority` int(10) unsigned NOT NULL DEFAULT 1,
   `partial_use` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `code` varchar(254) NOT NULL,
@@ -197,6 +197,8 @@ CREATE TABLE `PREFIX_cart_rule` (
   `active` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `date_add` datetime NOT NULL,
   `date_upd` datetime NOT NULL,
+  `id_cart_rule_type` int(10) unsigned DEFAULT NULL,
+  `minimum_product_quantity` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_cart_rule`),
   KEY `id_customer` (
     `id_customer`, `active`, `date_to`
@@ -213,7 +215,8 @@ CREATE TABLE `PREFIX_cart_rule` (
     `date_to`
   ),
   KEY `date_from` (`date_from`),
-  KEY `date_to` (`date_to`)
+  KEY `date_to` (`date_to`),
+  KEY `id_cart_rule_type` (`id_cart_rule_type`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
 
 /* Localized name assocatied with a promo code */
@@ -261,6 +264,9 @@ CREATE TABLE `PREFIX_cart_rule_product_rule_group` (
   `id_product_rule_group` int(10) unsigned NOT NULL auto_increment,
   `id_cart_rule` int(10) unsigned NOT NULL,
   `quantity` int(10) unsigned NOT NULL DEFAULT 1,
+  `type` ENUM(
+    'at_least_one_product_rule', 'all_product_rules'
+  ) NOT NULL DEFAULT 'at_least_one_product_rule',
   PRIMARY KEY (`id_product_rule_group`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
 
@@ -270,7 +276,7 @@ CREATE TABLE `PREFIX_cart_rule_product_rule` (
   `id_product_rule_group` int(10) unsigned NOT NULL,
   `type` ENUM(
     'products', 'categories', 'attributes',
-    'manufacturers', 'suppliers'
+    'manufacturers', 'suppliers', 'combinations', 'features'
   ) NOT NULL,
   PRIMARY KEY (`id_product_rule`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
@@ -295,6 +301,36 @@ CREATE TABLE `PREFIX_cart_rule_shop` (
   `id_cart_rule` int(10) unsigned NOT NULL,
   `id_shop` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id_cart_rule`, `id_shop`)
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
+
+/* Discount types for compatibility */
+CREATE TABLE `PREFIX_cart_rule_type` (
+  `id_cart_rule_type` int(10) unsigned NOT NULL auto_increment,
+  `discount_type` varchar(128) NOT NULL,
+  `is_core` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `date_add` datetime NOT NULL,
+  `date_upd` datetime NOT NULL,
+  PRIMARY KEY (`id_cart_rule_type`),
+  UNIQUE KEY `discount_type` (`discount_type`)
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
+
+/* Localized names for cart rule types */
+CREATE TABLE `PREFIX_cart_rule_type_lang` (
+  `id_cart_rule_type` int(10) unsigned NOT NULL,
+  `id_lang` int(10) unsigned NOT NULL,
+  `name` varchar(254) NOT NULL,
+  `description` TEXT,
+  PRIMARY KEY (`id_cart_rule_type`, `id_lang`)
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
+
+/* Cart rule compatibility table */
+CREATE TABLE `PREFIX_cart_rule_compatible_types` (
+  `id_cart_rule` int(10) unsigned NOT NULL,
+  `id_cart_rule_type` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id_cart_rule`, `id_cart_rule_type`),
+  KEY `id_cart_rule` (`id_cart_rule`),
+  KEY `id_cart_rule_type` (`id_cart_rule_type`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
 
 /* List of products inside a cart */
@@ -3027,4 +3063,29 @@ CREATE TABLE `PREFIX_access` (
   PRIMARY KEY (`id_profile`, `id_authorization_role`),
   KEY `IDX_564352A15FCA037F` (`id_profile`),
   KEY `IDX_564352A18C6DE0E5` (`id_authorization_role`)
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
+
+CREATE TABLE `PREFIX_shipment` (
+  `id_shipment` int(10) AUTO_INCREMENT NOT NULL,
+  `id_order` int(10) NOT NULL,
+  `id_carrier` int(10) NOT NULL,
+  `id_delivery_address` int(10) DEFAULT NULL,
+  `shipping_cost_tax_excl` NUMERIC(20, 6) DEFAULT '0.000000',
+  `shipping_cost_tax_incl` NUMERIC(20, 6) DEFAULT '0.000000',
+  `packed_at` datetime DEFAULT NULL,
+  `shipped_at` datetime DEFAULT NULL,
+  `delivered_at` datetime DEFAULT NULL,
+  `cancelled_at` DATETIME DEFAULT NULL,
+  `tracking_number` varchar(255) DEFAULT NULL,
+  `date_add` datetime NOT NULL,
+  `date_upd` datetime NOT NULL,
+  PRIMARY KEY (`id_shipment`)
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;
+
+CREATE TABLE `PREFIX_shipment_product` (
+  `id_shipment_product` INT AUTO_INCREMENT NOT NULL,
+  `id_shipment` int(10) NOT NULL,
+  `id_order_detail` int(10) NOT NULL,
+  `quantity` int(10) DEFAULT NULL,
+  PRIMARY KEY (id_shipment_product)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8mb4 COLLATION;

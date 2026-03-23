@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -55,6 +57,7 @@ return [
     'CM' => 'Cameroon',
     'CN' => 'China',
     'CO' => 'Colombia',
+    'CQ' => 'Sark',
     'CR' => 'Costa Rica',
     'CU' => 'Cuba',
     'CV' => 'Cape Verde',
@@ -184,7 +187,7 @@ return [
     'PE' => 'Peru',
     'PF' => 'French Polynesia',
     'PG' => 'Papua New Guinea',
-    'PH' => 'Pilipinas',
+    'PH' => 'Philippines',
     'PK' => 'Pakistan',
     'PL' => 'Poland',
     'PM' => 'St. Pierre & Miquelon',
@@ -241,7 +244,7 @@ return [
     'UA' => 'Ukraine',
     'UG' => 'Uganda',
     'UM' => 'U.S. Outlying Islands',
-    'US' => 'Estados Unidos',
+    'US' => 'United States',
     'UY' => 'Uruguay',
     'UZ' => 'Uzbekistan',
     'VA' => 'Vatican City',

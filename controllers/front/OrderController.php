@@ -1,31 +1,14 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * For the full copyright and license information, please view the
+ * docs/licenses/LICENSE.txt file that was distributed with this source code.
  */
 
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
+use PrestaShop\PrestaShop\Adapter\Shipment\DeliveryOptionsProvider;
 use PrestaShop\PrestaShop\Core\Checkout\TermsAndConditions;
+use PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagSettings;
+use PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagStateCheckerInterface;
 use PrestaShop\PrestaShop\Core\Foundation\Templating\RenderableProxy;
 use PrestaShopBundle\Translation\TranslatorComponent;
 
@@ -118,12 +101,25 @@ class OrderControllerCore extends FrontController
      */
     public function getCheckoutSession(): CheckoutSession
     {
-        $deliveryOptionsFinder = new DeliveryOptionsFinder(
-            $this->context,
-            $this->getTranslator(),
-            $this->objectPresenter,
-            new PriceFormatter()
-        );
+        /** @var FeatureFlagStateCheckerInterface $featureFlagManager */
+        $featureFlagManager = $this->get(FeatureFlagStateCheckerInterface::class);
+
+        if ($featureFlagManager->isEnabled(FeatureFlagSettings::FEATURE_FLAG_IMPROVED_SHIPMENT)) {
+            $deliveryOptionsFinder = new DeliveryOptionsProvider(
+                $this->context,
+                $this->getTranslator(),
+                $this->objectPresenter,
+                new PriceFormatter(),
+                $this->cart_presenter,
+            );
+        } else {
+            $deliveryOptionsFinder = new DeliveryOptionsFinder(
+                $this->context,
+                $this->getTranslator(),
+                $this->objectPresenter,
+                new PriceFormatter()
+            );
+        }
 
         $session = new CheckoutSession(
             $this->context,
@@ -231,7 +227,8 @@ class OrderControllerCore extends FrontController
 
         if ($this->context->cart->isAllProductsInStock() !== true
             || $this->context->cart->checkAllProductsAreStillAvailableInThisState() !== true
-            || $this->context->cart->checkAllProductsHaveMinimalQuantities() !== true) {
+            || $this->context->cart->checkAllProductsHaveMinimalQuantities() !== true
+            || $this->context->cart->checkCountriesAreEnabled() !== true) {
             $responseData['errors'] = true;
             $responseData['cartUrl'] = $this->context->link->getPageLink('cart', null, null, ['action' => 'show']);
         }
@@ -270,6 +267,11 @@ class OrderControllerCore extends FrontController
         if ($this->context->cart->isAllProductsInStock() !== true
             || $this->context->cart->checkAllProductsAreStillAvailableInThisState() !== true
             || $this->context->cart->checkAllProductsHaveMinimalQuantities() !== true) {
+            $shouldRedirectToCart = true;
+        }
+
+        // Additionally, check that the addresses are valid
+        if ($this->context->cart->checkCountriesAreEnabled() !== true) {
             $shouldRedirectToCart = true;
         }
 
@@ -424,7 +426,7 @@ class OrderControllerCore extends FrontController
                 new ConditionsToApproveFinder(
                     $this->context,
                     $translator
-                )
+                ),
             ));
 
         return $checkoutProcess;

@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -19,7 +21,6 @@ return [
     'BQ' => 'Kàríbíánì ti Nɛ́dálándì',
     'BW' => 'Bɔ̀tìsúwánà',
     'BZ' => 'Bèlísɛ̀',
-    'CH' => 'switishilandi',
     'CL' => 'Shílè',
     'CN' => 'Sháínà',
     'CZ' => 'Shɛ́ɛ́kì',

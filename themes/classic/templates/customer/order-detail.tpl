@@ -53,7 +53,7 @@
 
       <div class="box">
           <ul>
-            {if not $is_multishipment_enabled|default:false}
+            {if not $order.shipments}
               {if $order.carrier.name}
                 <li><strong>{l s='Carrier' d='Shop.Theme.Checkout'}</strong> {$order.carrier.name}</li>
               {/if}
@@ -153,13 +153,13 @@
 
   {block name='order_detail'}
     {if $order.details.is_returnable && !$orderIsVirtual}
-      {if $is_multishipment_enabled|default:false}
+      {if $order.shipments}
         {include file='customer/_partials/order-detail-return-multishipment.tpl'}
       {else}
         {include file='customer/_partials/order-detail-return.tpl'}
       {/if}
     {else}
-      {if $is_multishipment_enabled|default:false}
+      {if $order.shipments}
         {include file='customer/_partials/order-detail-no-return-multishipment.tpl'}
       {else}
         {include file='customer/_partials/order-detail-no-return.tpl'}
@@ -169,7 +169,7 @@
 
   {block name='order_carriers'}
     {if $order.shipping}
-      {if $is_multishipment_enabled|default:false}
+      {if $order.shipments}
         {include file='customer/_partials/order-shipments.tpl'}
       {else}
         {include file='customer/_partials/order-carrier.tpl'}

@@ -53,7 +53,7 @@ class PrestaShopAdapter
 
         $context = \Context::getContext();
 
-        if (!empty($context->link) && !empty($context->shop)) {
+        if (!empty($context->link)) {
             return $context->link->getAdminLink($routeName, true, $sfParams, $params);
         }
 
@@ -71,8 +71,26 @@ class PrestaShopAdapter
 
         $context = \Context::getContext();
 
-        if (!empty($context->link) && !empty($context->shop)) {
+        if (!empty($context->link)) {
             return $context->link->getAdminLink('AdminOrders', true, [], ['vieworder' => '', 'id_order' => $orderId]);
+        }
+
+        return '';
+    }
+
+    public function generateEditCarrierLink(int $carrierId): string
+    {
+        if (version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
+            /** @var Router $router */
+            $router = $this->module->get('router');
+
+            return $router->generate('admin_carriers_edit', ['carrierId' => $carrierId]);
+        }
+
+        $context = \Context::getContext();
+
+        if (!empty($context->link)) {
+            return $context->link->getAdminLink('AdminCarrierWizard', true, [], ['id_carrier' => $carrierId]);
         }
 
         return '';

@@ -5,7 +5,6 @@
         <th>{l s='Date' d='Shop.Theme.Global'}</th>
         <th>{l s='Carrier' d='Shop.Theme.Checkout'}</th>
         <th>{l s='Weight' d='Shop.Theme.Checkout'}</th>
-        <th>{l s='Shipping cost' d='Shop.Theme.Checkout'}</th>
         <th>{l s='Tracking number' d='Shop.Theme.Checkout'}</th>
       </tr>
     </thead>
@@ -15,7 +14,6 @@
           <td>{$line.date_add}</td>
           <td>{$line.carrier_name}</td>
           <td>{$line.package_weight}</td>
-          <td>{$line.package_cost}</td>
           <td>
             {if $line.carrier_tracking_url}
               <a href="{$line.carrier_tracking_url}" target="_blank">{$line.tracking_number}</a>
@@ -41,9 +39,6 @@
           </li>
           <li>
             <strong>{l s='Weight' d='Shop.Theme.Checkout'}</strong> {$line.package_weight}
-          </li>
-          <li>
-            <strong>{l s='Shipping cost' d='Shop.Theme.Checkout'}</strong> {$line.package_cost}
           </li>
           <li>
             <strong>{l s='Tracking number' d='Shop.Theme.Checkout'}</strong>

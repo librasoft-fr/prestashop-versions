@@ -15,5 +15,5 @@ return array(
     'JSMin\\' => array($vendorDir . '/mrclay/jsmin-php/src'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
     'Curl' => array($vendorDir . '/curl/curl/src'),
-    '' => array($vendorDir . '/cssjanus/cssjanus/src'),
+    '' => array($vendorDir . '/wikimedia/cssjanus/src'),
 );

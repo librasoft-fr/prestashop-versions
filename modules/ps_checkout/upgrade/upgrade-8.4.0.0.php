@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -29,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_8_4_0_0($module)
+function upgrade_module_8_4_0_0(Ps_checkout $module)
 {
     try {
         $db = Db::getInstance();

@@ -1,29 +1,12 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * For the full copyright and license information, please view the
+ * docs/licenses/LICENSE.txt file that was distributed with this source code.
  */
+use PrestaShop\PrestaShop\Adapter\ContainerFinder;
 use PrestaShop\PrestaShop\Adapter\ServiceLocator;
+use PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagSettings;
+use PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagStateCheckerInterface;
 
 class CarrierCore extends ObjectModel
 {
@@ -764,9 +747,12 @@ class CarrierCore extends ObjectModel
                  * for current weight/price of the cart and remove the carrier if it is not available for the current cart.
                  */
                 if ($row['range_behavior']) {
-                    // Get id zone
+                    /*
+                     * Resolve default zone to use for shipping if no address is provided yet. Country in the context is
+                     * always assigned. It may be a default country or a geolocated country set it FrontController.
+                     */
                     if (!$id_zone) {
-                        $id_zone = (int) Country::getIdZone((int) Configuration::get('PS_COUNTRY_DEFAULT'));
+                        $id_zone = (int) Context::getContext()->country->id_zone;
                     }
 
                     // Get only carriers that have a range compatible with cart
@@ -1141,10 +1127,24 @@ class CarrierCore extends ObjectModel
      */
     public function isUsed()
     {
+        $containerFinder = new ContainerFinder(Context::getContext());
+
+        /** @var FeatureFlagStateCheckerInterface $featureFlagManager */
+        $featureFlagManager = $containerFinder->getContainer()->get(FeatureFlagStateCheckerInterface::class);
+
         $row = Db::getInstance()->getRow('
             SELECT COUNT(`id_carrier`) AS total
             FROM `' . _DB_PREFIX_ . 'orders`
             WHERE `id_carrier` = ' . (int) $this->id);
+
+        if ($featureFlagManager->isEnabled(FeatureFlagSettings::FEATURE_FLAG_IMPROVED_SHIPMENT)) {
+            $result = Db::getInstance()->getRow('
+                SELECT COUNT(`id_carrier`) AS total
+                FROM `' . _DB_PREFIX_ . 'shipment`
+                WHERE `id_carrier` = ' . (int) $this->id);
+
+            $row['total'] += (int) $result['total'];
+        }
 
         return (int) $row['total'];
     }
@@ -1509,12 +1509,6 @@ class CarrierCore extends ObjectModel
      */
     public static function getAvailableCarrierList(Product $product, $id_warehouse = 0, $id_address_delivery = null, $id_shop = null, $cart = null, &$error = [])
     {
-        static $ps_country_default = null;
-
-        if ($ps_country_default === null) {
-            $ps_country_default = Configuration::get('PS_COUNTRY_DEFAULT');
-        }
-
         if (null === $id_shop) {
             $id_shop = Context::getContext()->shop->id;
         }
@@ -1535,8 +1529,7 @@ class CarrierCore extends ObjectModel
                 return [];
             }
         } else {
-            $country = new Country($ps_country_default);
-            $id_zone = $country->id_zone;
+            $id_zone = (int) Context::getContext()->country->id_zone;
         }
 
         // Does the product is linked with carriers?

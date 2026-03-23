@@ -52,3 +52,5 @@ services:
   PrestaShop\PrestaShop\Adapter\Carrier\QueryHandler\GetCarrierRangesHandler:
 
   PrestaShop\PrestaShop\Adapter\Carrier\CommandHandler\SetCarrierRangesHandler:
+
+  PrestaShop\PrestaShop\Adapter\Carrier\QueryHandler\GetAvailableCarriersHandler:

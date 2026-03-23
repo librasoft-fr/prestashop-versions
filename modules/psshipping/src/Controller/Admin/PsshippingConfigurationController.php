@@ -349,15 +349,20 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
         );
     }
 
-    public function getStateForItaly(): Response
+    public function getStates(Request $request): Response
     {
         $state = [];
+        $countryCode = 'IT';
+
+        if (!empty($request->get('countryCode') && is_scalar($request->get('countryCode')))) {
+            $countryCode = strval($request->get('countryCode'));
+        }
 
         // Type is wrong before PS 8
         // @phpstan-ignore notIdentical.alwaysTrue
-        if (\Country::getByIso('IT') !== false) {
-            $italyStates = array_filter(\State::getStates(), function ($value) {
-                return (int) $value['id_country'] === \Country::getByIso('IT');
+        if (\Country::getByIso($countryCode) !== false) {
+            $states = array_filter(\State::getStates(), function ($value) use ($countryCode) {
+                return (int) $value['id_country'] === \Country::getByIso($countryCode);
             });
 
             $state = array_map(function ($value) {
@@ -365,7 +370,7 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
                     'isoCode' => $value['iso_code'],
                     'name' => $value['name'],
                 ];
-            }, $italyStates);
+            }, $states);
         }
 
         return new Response(

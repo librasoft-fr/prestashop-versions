@@ -54,11 +54,11 @@ onboarding_toggle_status:
     _legacy_controller: PsshippingConfigurationController
     _legacy_link: PsshippingConfigurationController
 
-get_italy_state:
-  path: /psshipping/configuration/get-italy-state
+get_states:
+  path: /psshipping/configuration/get-states
   methods: [GET]
   defaults:
-    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::getStateForItaly'
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::getStates'
     _legacy_controller: PsshippingConfigurationController
     _legacy_link: PsshippingConfigurationController
 

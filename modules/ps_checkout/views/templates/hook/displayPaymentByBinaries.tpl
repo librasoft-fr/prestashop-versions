@@ -16,7 +16,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-
 {foreach from=$paymentOptions item="fundingSource"}
   <section class="js-payment-binary js-payment-ps_checkout js-payment-ps_checkout-{$fundingSource} mt-1 disabled">
     <div id="ps_checkout-{$fundingSource}-buttons-container">

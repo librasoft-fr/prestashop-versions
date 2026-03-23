@@ -1,2 +1,2 @@
-php version: 8.4
+php version: 8.5
 mysql version: 8.0

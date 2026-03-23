@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -45,7 +47,7 @@ return [
     'BZ' => 'Belize',
     'CA' => 'Kanada',
     'CC' => 'Visiwa vya Cocos (Keeling)',
-    'CD' => 'Jamhuri ya Kidemokrasia ya Kongo',
+    'CD' => 'Kongo - Kinshasa',
     'CF' => 'Jamhuri ya Afrika ya Kati',
     'CG' => 'Kongo - Brazzaville',
     'CH' => 'Uswisi',
@@ -55,6 +57,7 @@ return [
     'CM' => 'Kameruni',
     'CN' => 'Uchina',
     'CO' => 'Kolombia',
+    'CQ' => 'Sark',
     'CR' => 'Kostarika',
     'CU' => 'Kuba',
     'CV' => 'Cape Verde',

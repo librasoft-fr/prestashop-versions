@@ -152,8 +152,10 @@ class PsshippingOrdersController extends FrameworkBundleAdminController
             $carriersId = [];
             $carriers = $this->carrierService->get();
             foreach ($carriers as $carrier) {
-                if ($carrier && !empty($carrier['id_carrier'])) {
-                    $carriersId[] = (int) $carrier['id_carrier'];
+                foreach ($carrier as $carrierDetail) {
+                    if ($carrierDetail && !empty($carrierDetail['id_carrier'])) {
+                        $carriersId[] = (int) $carrierDetail['id_carrier'];
+                    }
                 }
             }
 

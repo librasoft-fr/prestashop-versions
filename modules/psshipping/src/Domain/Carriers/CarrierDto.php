@@ -37,7 +37,7 @@ class CarrierDto
     private $name;
 
     /** @var string URL with a '@' for */
-    private $tackingUrl;
+    private $trackingUrl;
 
     /** @var bool */
     private $freeShipping;
@@ -78,9 +78,12 @@ class CarrierDto
     /** @var string */
     private $type;
 
+    /** @var string */
+    private $provider;
+
     public function __construct(
         string $name,
-        string $tackingUrl,
+        string $trackingUrl,
         bool $freeShipping,
         bool $active,
         bool $deleted,
@@ -91,10 +94,11 @@ class CarrierDto
         int $max_weight,
         int $grade,
         string $externalModuleName,
-        string $type
+        string $type,
+        string $provider
     ) {
         $this->name = $name;
-        $this->tackingUrl = $tackingUrl;
+        $this->trackingUrl = $trackingUrl;
         $this->freeShipping = $freeShipping;
         $this->active = $active;
         $this->deleted = $deleted;
@@ -104,7 +108,7 @@ class CarrierDto
         $this->maxDepth = $max_depth;
         $this->maxWeight = $max_weight;
         $this->name = $name;
-        $this->tackingUrl = $tackingUrl;
+        $this->trackingUrl = $trackingUrl;
         $this->freeShipping = $freeShipping;
         $this->setTransitTimeWithLangs();
         $this->active = $active;
@@ -118,6 +122,7 @@ class CarrierDto
         $this->setShippingZones();
         $this->externalModuleName = $externalModuleName;
         $this->type = $type;
+        $this->provider = $provider;
     }
 
     /**
@@ -125,7 +130,7 @@ class CarrierDto
      *
      * @return CarrierDto
      */
-    public static function toDomain(Carrier $carrier, string $type)
+    public static function toDomain(Carrier $carrier, string $type, string $provider)
     {
         return new CarrierDto(
             $carrier->name,
@@ -140,7 +145,8 @@ class CarrierDto
             $carrier->max_weight,
             $carrier->grade,
             $carrier->external_module_name,
-            $type
+            $type,
+            $provider
         );
     }
 
@@ -154,7 +160,7 @@ class CarrierDto
         $carrier = new Carrier();
 
         $carrier->name = $carrierDto->name;
-        $carrier->url = $carrierDto->tackingUrl;
+        $carrier->url = $carrierDto->trackingUrl;
         $carrier->is_free = $carrierDto->freeShipping;
         $carrier->delay = $carrierDto->delay;
         $carrier->active = $carrierDto->active;
@@ -207,6 +213,11 @@ class CarrierDto
         return $this->type;
     }
 
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+
     /**
      * @return array<string, array<string>|bool|int|string>
      */
@@ -214,7 +225,7 @@ class CarrierDto
     {
         return [
             'name' => $this->name,
-            'tacking_url' => $this->tackingUrl,
+            'tracking_url' => $this->trackingUrl,
             'free_shipping' => $this->freeShipping,
             'ranges' => $this->ranges,
             'delay' => $this->delay,
@@ -227,6 +238,7 @@ class CarrierDto
             'max_weight' => $this->maxWeight,
             'external_module_name' => $this->externalModuleName,
             'type' => $this->type,
+            'provider' => $this->provider,
         ];
     }
 }

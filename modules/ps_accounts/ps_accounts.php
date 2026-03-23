@@ -33,7 +33,7 @@ class Ps_accounts extends Module
 
     // Needed in order to retrieve the module version easier (in api call headers) than instanciate
     // the module each time to get the version
-    const VERSION = '8.0.9';
+    const VERSION = '8.0.13';
 
     /**
      * Admin tabs
@@ -97,7 +97,7 @@ class Ps_accounts extends Module
 
         // We cannot use the const VERSION because the const is not computed by addons marketplace
         // when the zip is uploaded
-        $this->version = '8.0.9';
+        $this->version = '8.0.13';
 
         $this->module_key = 'abf2cd758b4d629b2944d3922ef9db73';
 
@@ -322,6 +322,7 @@ class Ps_accounts extends Module
             return $settingsForm;
         }
 
+        /** @var \PrestaShop\Module\PsAccounts\Service\PsAccountsService $psAccountsService */
         $psAccountsService = $this->getService(\PrestaShop\Module\PsAccounts\Service\PsAccountsService::class);
 
         //$this->context->smarty->assign('pathVendor', $this->_path . 'views/js/chunk-vendors.' . $this->version . '.js');
@@ -418,6 +419,10 @@ class Ps_accounts extends Module
      */
     public function onModuleReset()
     {
+        /** @var \PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository $configurationRepository */
+        $configurationRepository = $this->getService(\PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository::class);
+        $configurationRepository->fixMultiShopConfig(true);
+
         /** @var \PrestaShop\Module\PsAccounts\Http\Client\CircuitBreaker\Factory $circuitBreakerFactory */
         $circuitBreakerFactory = $this->getService(\PrestaShop\Module\PsAccounts\Http\Client\CircuitBreaker\Factory::class);
         $circuitBreakerFactory->resetAll();
@@ -425,10 +430,6 @@ class Ps_accounts extends Module
         /** @var \PrestaShop\Module\PsAccounts\Service\OAuth2\OAuth2Service $oAuth2Service */
         $oAuth2Service = $this->getService(\PrestaShop\Module\PsAccounts\Service\OAuth2\OAuth2Service::class);
         $oAuth2Service->clearCache();
-
-        /** @var \PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository $configurationRepository */
-        $configurationRepository = $this->getService(\PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository::class);
-        $configurationRepository->fixMultiShopConfig();
 
         // FIXME: this wont prevent from re-implanting override on reset of module
         $uninstaller = new PrestaShop\Module\PsAccounts\Module\Uninstall($this, Db::getInstance());
@@ -463,7 +464,7 @@ class Ps_accounts extends Module
         $statusManager = $this->getService(\PrestaShop\Module\PsAccounts\Account\StatusManager::class);
 
         try {
-            if ($statusManager->getStatus(false, \PrestaShop\Module\PsAccounts\Account\StatusManager::CACHE_TTL, $source)->isVerified) {
+            if ($statusManager->withSource($source)->getStatus()->isVerified) {
                 return true;
             }
         } catch (\PrestaShop\Module\PsAccounts\Account\Exception\UnknownStatusException $e) {

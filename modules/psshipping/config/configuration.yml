@@ -2,12 +2,12 @@ services:
   _defaults:
     public: true
 
-  PrestaShop\Module\Psshipping\Domain\Carriers\StandardCarrierConfiguration:
-    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\StandardCarrierConfiguration'
+  PrestaShop\Module\Psshipping\Domain\Carriers\MbeStandardCarrierConfiguration:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\MbeStandardCarrierConfiguration'
     arguments:
       - 'prestashop.core.command_bus'
 
-  PrestaShop\Module\Psshipping\Domain\Carriers\PickupCarrierConfiguration:
-    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\PickupCarrierConfiguration'
+  PrestaShop\Module\Psshipping\Domain\Carriers\MbePickupCarrierConfiguration:
+    class: 'PrestaShop\Module\Psshipping\Domain\Carriers\MbePickupCarrierConfiguration'
     arguments:
       - 'prestashop.core.command_bus'

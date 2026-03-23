@@ -1,6 +1,6 @@
 name: classic
 display_name: Classic
-version: 3.0.5
+version: 3.1.1
 author:
   name: "PrestaShop SA and Contributors"
   email: "contact@prestashop.com"
@@ -58,25 +58,41 @@ global_settings:
     modules_to_hook:
       displayAfterBodyOpeningTag:
         - blockreassurance
+        # Keep existing hooks and append them after
+        - ~
       displayNavFullWidth:
         - blockreassurance
+        # Keep existing hooks and append them after
+        - ~
       displayAdminCustomers:
         - blockwishlist
+        # Keep existing hooks and append them after
+        - ~
       displayCustomerAccount:
         - blockwishlist
         - psgdpr
+        # Keep existing hooks and append them after
+        - ~
       displayMyAccountBlock:
         - blockwishlist
+        # Keep existing hooks and append them after
+        - ~
       displayNav1:
         - ps_contactinfo
+        # Keep existing hooks and append them after
+        - ~
       displayNav2:
         - ps_languageselector
         - ps_currencyselector
         - ps_customersignin
         - ps_shoppingcart
+        # Keep existing hooks and append them after
+        - ~
       displayTop:
         - ps_mainmenu
         - ps_searchbar
+        # Keep existing hooks and append them after
+        - ~
       displayHome:
         - ps_imageslider
         - ps_featuredproducts
@@ -85,41 +101,71 @@ global_settings:
         - ps_specials
         - ps_newproducts
         - ps_bestsellers
+        # Keep existing hooks and append them after
+        - ~
       displayFooterBefore:
         - ps_emailsubscription
         - ps_socialfollow
         - blockreassurance
+        # Keep existing hooks and append them after
+        - ~
       displayFooter:
         - ps_linklist
         - ps_customeraccountlinks
         - ps_contactinfo
         - blockwishlist
+        # Keep existing hooks and append them after
+        - ~
       displayFooterAfter:
         - blockreassurance
+        # Keep existing hooks and append them after
+        - ~
       displayFooterProduct:
         - productcomments
+        # Keep existing hooks and append them after
+        - ~
       displayLeftColumn:
         - ps_categorytree
         - ps_facetedsearch
+        # Keep existing hooks and append them after
+        - ~
       displayContactLeftColumn:
         - ps_contactinfo
+        # Keep existing hooks and append them after
+        - ~
       displayContactRightColumn:
         - ps_contactinfo
+        # Keep existing hooks and append them after
+        - ~
       displayContactContent:
         - contactform
+        # Keep existing hooks and append them after
+        - ~
       displaySearch:
         - ps_searchbar
+        # Keep existing hooks and append them after
+        - ~
       displayProductAdditionalInfo:
         - ps_sharebuttons
         - productcomments
+        # Keep existing hooks and append them after
+        - ~
       displayProductListReviews:
         - productcomments
+        # Keep existing hooks and append them after
+        - ~
       displayReassurance:
         - blockreassurance
+        # Keep existing hooks and append them after
+        - ~
       displayOrderConfirmation2:
         - ps_featuredproducts
+        # Keep existing hooks and append them after
+        - ~
       displayProductActions:
         - blockwishlist
+        # Keep existing hooks and append them after
+        - ~
 
   image_types:
     cart_default:

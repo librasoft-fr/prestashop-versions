@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -55,6 +57,7 @@ return [
     'CM' => 'Camerŵn',
     'CN' => 'Tsieina',
     'CO' => 'Colombia',
+    'CQ' => 'Sarc',
     'CR' => 'Costa Rica',
     'CU' => 'Ciwba',
     'CV' => 'Cabo Verde',
@@ -185,7 +188,7 @@ return [
     'PF' => 'Polynesia Ffrengig',
     'PG' => 'Papua Guinea Newydd',
     'PH' => 'Y Philipinau',
-    'PK' => 'Pakistan',
+    'PK' => 'Pacistan',
     'PL' => 'Gwlad Pwyl',
     'PM' => 'Saint-Pierre-et-Miquelon',
     'PN' => 'Ynysoedd Pitcairn',

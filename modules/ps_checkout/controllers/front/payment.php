@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,23 +17,28 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-use PrestaShop\Module\PrestashopCheckout\CommandBus\CommandBusInterface;
-use PrestaShop\Module\PrestashopCheckout\CommandBus\QueryBusInterface;
-use PrestaShop\Module\PrestashopCheckout\Controller\AbstractFrontController;
-use PrestaShop\Module\PrestashopCheckout\Exception\PsCheckoutException;
-use PrestaShop\Module\PrestashopCheckout\Order\Command\CreateOrderCommand;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Card3DSecure;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Command\CapturePayPalOrderCommand;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Entity\PayPalOrder;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Exception\PayPalOrderException;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Query\GetPayPalOrderForCheckoutCompletedQuery;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\Query\GetPayPalOrderForCheckoutCompletedQueryResult;
-use PrestaShop\Module\PrestashopCheckout\PayPal\Order\ValueObject\PayPalOrderId;
-use PrestaShop\Module\PrestashopCheckout\PayPal\PayPalConfiguration;
-use PrestaShop\Module\PrestashopCheckout\Repository\PaymentTokenRepository;
-use PrestaShop\Module\PrestashopCheckout\Repository\PayPalOrderRepository;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use PsCheckout\Api\ValueObject\PayPalOrderResponse;
+use PsCheckout\Core\Exception\PsCheckoutException;
+use PsCheckout\Core\Order\Action\CreateOrderAction;
+use PsCheckout\Core\PayPal\Card3DSecure\Card3DSecureConfiguration;
+use PsCheckout\Core\PayPal\Card3DSecure\Card3DSecureValidator;
+use PsCheckout\Core\PayPal\Order\Action\CapturePayPalOrderAction;
+use PsCheckout\Core\PayPal\Order\Configuration\PayPalOrderStatus;
+use PsCheckout\Core\PayPal\Order\Entity\PayPalOrder;
+use PsCheckout\Core\PayPal\Order\Exception\PayPalOrderException;
+use PsCheckout\Core\PayPal\Order\Provider\PayPalOrderProvider;
+use PsCheckout\Core\Settings\Configuration\PayPalConfiguration;
+use PsCheckout\Infrastructure\Adapter\Tools;
+use PsCheckout\Infrastructure\Controller\AbstractFrontController;
+use PsCheckout\Infrastructure\Repository\OrderRepository;
+use PsCheckout\Infrastructure\Repository\PaymentTokenRepository;
+use PsCheckout\Infrastructure\Repository\PayPalOrderRepository;
+use PsCheckout\Module\Presentation\Translator;
+use Psr\Log\LoggerInterface;
 
 class Ps_CheckoutPaymentModuleFrontController extends AbstractFrontController
 {
@@ -46,216 +50,320 @@ class Ps_CheckoutPaymentModuleFrontController extends AbstractFrontController
 
     public $display_header = true;
 
-    private string $orderPageUrl;
-    private PayPalOrderId $paypalOrderId;
-    private CommandBusInterface $commandBus;
-    private QueryBusInterface $queryBus;
+    private $orderPageUrl;
 
-    public function checkAccess()
+    private $paypalOrderId;
+
+    /**
+     * @return bool
+     */
+    public function checkAccess(): bool
     {
         return $this->context->customer && $this->context->cart;
     }
 
-    public function initContent()
-    {
-        $this->orderPageUrl = $this->context->link->getPageLink('order');
-        parent::initContent();
-        $this->setTemplate('module:ps_checkout/views/templates/front/payment.tpl');
-        $this->context->smarty->assign('css_url', $this->module->getPathUri() . 'views/css/payment.css');
-        $this->context->smarty->assign('order_url', $this->orderPageUrl);
-    }
-
-    public function setMedia()
-    {
-        $this->registerStylesheet('ps_checkout_payment', '/modules/ps_checkout/views/css/payment.css');
-
-        return parent::setMedia();
-    }
-
-    public function postProcess()
-    {
-        $orderId = Tools::getValue('orderID');
-
-        if (!$orderId) {
-            $this->redirectToOrderPage();
-        }
-
-        try {
-            $this->paypalOrderId = new PayPalOrderId($orderId);
-
-            $this->commandBus = $this->module->getService('ps_checkout.bus.command');
-            $this->queryBus = $this->module->getService('ps_checkout.bus.query');
-
-            /** @var PayPalConfiguration $payPalConfiguration */
-            $payPalConfiguration = $this->module->getService(PayPalConfiguration::class);
-            /** @var PayPalOrderRepository $payPalOrderRepository */
-            $payPalOrderRepository = $this->module->getService(PayPalOrderRepository::class);
-            /** @var AdapterInterface $payPalOrderCache */
-            $payPalOrderCache = $this->module->getService('ps_checkout.cache.paypal.order');
-
-            $payPalOrder = $payPalOrderRepository->getPayPalOrderById($this->paypalOrderId);
-
-            $orders = new PrestaShopCollection(Order::class);
-            $orders->where('id_cart', '=', $payPalOrder->getIdCart());
-
-            if ($orders->count()) {
-                if ($this->context->customer->isLogged()) {
-                    Tools::redirect('history');
-                } else {
-                    $payPalOrderQueryResult = $this->getPayPalOrder($orderId);
-                    $payPalOrderFromCache = $payPalOrderQueryResult->getPayPalOrder();
-
-                    $this->redirectToOrderConfirmationPage($payPalOrder->getIdCart(), $payPalOrderFromCache['purchase_units'][0]['payments']['captures'][0]['id'], $payPalOrderFromCache['status']);
-                }
-            }
-
-            if ($payPalOrder->getIdCart() !== $this->context->cart->id) {
-                $this->redirectToOrderPage();
-            }
-
-            $payPalOrderQueryResult = $this->getPayPalOrder($orderId);
-            $payPalOrderFromCache = $payPalOrderQueryResult->getPayPalOrder();
-
-            if ($payPalOrderFromCache['status'] === 'COMPLETED') {
-                $this->createOrder($payPalOrderFromCache, $payPalOrder);
-            }
-
-            if ($payPalOrderFromCache['status'] === 'PAYER_ACTION_REQUIRED') {
-                $this->redirectTo3DSVerification($payPalOrderFromCache);
-            }
-
-            // WHEN 3DS fails
-            if ($payPalOrderFromCache['status'] === 'CREATED') {
-                $card3DSecure = new Card3DSecure();
-                switch ($card3DSecure->continueWithAuthorization($payPalOrderFromCache)) {
-                    case Card3DSecure::RETRY:
-                        $this->redirectTo3DSVerification($payPalOrderFromCache);
-                        break;
-                    case Card3DSecure::PROCEED:
-                        $this->commandBus->handle(new CapturePayPalOrderCommand($orderId, array_keys($payPalOrderFromCache['payment_source'])[0]));
-                        $payPalOrderFromCache = $payPalOrderCache->getItem($orderId)->get();
-                        $this->createOrder($payPalOrderFromCache, $payPalOrder);
-                        break;
-                    case Card3DSecure::NO_DECISION:
-                        if ($payPalConfiguration->getHostedFieldsContingencies() === 'SCA_WHEN_REQUIRED') {
-                            $this->commandBus->handle(new CapturePayPalOrderCommand($orderId, array_keys($payPalOrderFromCache['payment_source'])[0]));
-                            $payPalOrderFromCache = $payPalOrderCache->getItem($orderId)->get();
-                            $this->createOrder($payPalOrderFromCache, $payPalOrder);
-                        }
-                        // no break
-                    default:
-                        break;
-                }
-            }
-
-            if ($payPalOrderFromCache['status'] === 'APPROVED') {
-                $this->commandBus->handle(new CapturePayPalOrderCommand($orderId, array_keys($payPalOrderFromCache['payment_source'])[0]));
-                $payPalOrderFromCache = $payPalOrderCache->getItem($orderId)->get();
-                $this->createOrder($payPalOrderFromCache, $payPalOrder);
-            }
-        } catch (Exception $exception) {
-            $this->context->smarty->assign('error', $exception->getMessage());
-        }
-    }
-
     /**
-     * @param array $payPalOrderFromCache
-     * @param PayPalOrder $payPalOrder
-     *
      * @return void
      *
      * @throws PrestaShopException
-     * @throws PsCheckoutException
-     * @throws PayPalOrderException
      */
-    private function createOrder($payPalOrderFromCache, $payPalOrder)
+    public function initContent()
     {
-        $capture = $payPalOrderFromCache['purchase_units'][0]['payments']['captures'][0] ?? null;
-        $captureId = $capture['id'] ?? null;
+        parent::initContent();
+        $this->setTemplate('module:' . $this->module->name . '/views/templates/front/payment.tpl');
 
-        $this->commandBus->handle(new CreateOrderCommand($payPalOrder->getId()->getValue(), $capture));
-
-        if ($payPalOrder->getPaymentTokenId() && $payPalOrder->checkCustomerIntent(PayPalOrder::CUSTOMER_INTENT_FAVORITE)) {
-            /** @var PaymentTokenRepository $paymentTokenRepository */
-            $paymentTokenRepository = $this->module->getService(PaymentTokenRepository::class);
-            $paymentTokenRepository->setTokenFavorite($payPalOrder->getPaymentTokenId());
-        }
-
-        $this->redirectToOrderConfirmationPage($payPalOrder->getIdCart(), $captureId, $payPalOrderFromCache['status']);
+        $this->context->smarty->assign([
+            'css_url' => $this->module->getPathUri() . 'views/css/payment.css',
+            'order_url' => $this->orderPageUrl,
+        ]);
     }
 
     /**
-     * @param array $order
-     *
-     * @return void
+     * @return bool|void
      */
-    private function redirectTo3DSVerification($order)
+    public function setMedia()
     {
-        $payerActionLinks = array_filter($order['links'], function ($link) {
-            return $link['rel'] === 'payer-action';
-        });
-        if (!empty($payerActionLinks)) {
-            Tools::redirect(reset($payerActionLinks)['href'] . '&redirect_uri=' . urlencode($this->context->link->getModuleLink('ps_checkout', 'payment', ['orderID' => $this->paypalOrderId->getValue()])));
-        }
+        $this->registerStylesheet('ps_checkout_payment', '/modules/' . $this->module->name . '/views/css/payment.css');
+        parent::setMedia();
     }
 
-    private function redirectToOrderPage()
+    /**
+     * @return void
+     */
+    public function postProcess()
     {
-        Tools::redirect($this->orderPageUrl);
+        $this->orderPageUrl = $this->context->link->getPageLink('order');
+        /** @var Tools $tools */
+        $tools = $this->module->getService(Tools::class);
+        /** @var LoggerInterface $logger */
+        $logger = $this->module->getService(LoggerInterface::class);
+
+        $orderId = $tools->getValue('orderID');
+        if (!$orderId) {
+            $logger->error('No PayPal Order ID found.');
+            $tools->redirect($this->orderPageUrl);
+        }
+
+        $this->paypalOrderId = $orderId;
+        $logger->info('Processing PayPal Order ID: ' . $this->paypalOrderId);
+
+        try {
+            /** @var PayPalOrderRepository $payPalOrderRepository */
+            $payPalOrderRepository = $this->module->getService(PayPalOrderRepository::class);
+
+            /** @var PayPalOrderProvider $payPalOrderProvider */
+            $payPalOrderProvider = $this->module->getService(PayPalOrderProvider::class);
+
+            /** @var OrderRepository $orderRepository */
+            $orderRepository = $this->module->getService(OrderRepository::class);
+
+            $payPalOrder = $payPalOrderRepository->getOneBy(['id' => $this->paypalOrderId]);
+
+            if (!$payPalOrder) {
+                $logger->error('PayPal Order not found: ' . $this->paypalOrderId);
+                $tools->redirect($this->orderPageUrl);
+            }
+
+            $orders = $orderRepository->getAllBy(['id_cart' => $payPalOrder->getIdCart()]);
+
+            if (!empty($orders)) {
+                $this->handleExistingOrder($payPalOrder->getIdCart());
+            }
+
+            if ($payPalOrder->getIdCart() !== $this->context->cart->id) {
+                $logger->error('Cart Id mismatch for PayPal Order: ' . $this->paypalOrderId);
+                $tools->redirect($this->orderPageUrl);
+            }
+
+            $payPalOrderResponse = $payPalOrderProvider->getById($this->paypalOrderId);
+            $this->handleOrderStatus($payPalOrderResponse, $payPalOrder);
+        } catch (Throwable $exception) {
+            $logger->error(
+                sprintf(
+                    'PaymentController - Exception %s : %s',
+                    $exception->getCode(),
+                    $exception->getMessage()
+                ),
+                ['exception' => $exception]
+            );
+            /** @var Translator $translator **/
+            $translator = $this->module->getService(Translator::class);
+            $this->context->smarty->assign('error', $translator->trans('There was an error during the payment. Please try again or contact the support.'));
+        }
     }
 
     /**
      * @param int $cartId
-     * @param string $captureId
-     * @param string $payPalOrderStatus
      *
      * @return void
-     *
-     * @throws PrestaShopException
      */
-    private function redirectToOrderConfirmationPage($cartId, $captureId, $payPalOrderStatus)
+    private function handleExistingOrder(int $cartId)
     {
-        $orders = new PrestaShopCollection(Order::class);
-        $orders->where('id_cart', '=', $cartId);
+        /** @var Tools $tools */
+        $tools = $this->module->getService(Tools::class);
 
-        if (!$orders->count()) {
-            return;
-        }
+        /** @var PayPalOrderProvider $payPalOrderProvider */
+        $payPalOrderProvider = $this->module->getService(PayPalOrderProvider::class);
 
-        /** @var Order $order */
-        $order = $orders->getFirst();
+        if ($this->context->customer->isLogged()) {
+            $tools->redirect($this->context->link->getPageLink('history'));
+        } else {
+            $payPalOrderResponse = $payPalOrderProvider->getById($this->paypalOrderId);
 
-        $cart = new Cart($cartId);
-
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            Tools::redirect($this->context->link->getPageLink(
-                'order-confirmation',
-                true,
-                (int) $order->id_lang,
-                [
-                    'paypal_status' => $payPalOrderStatus,
-                    'paypal_order' => $this->paypalOrderId->getValue(),
-                    'paypal_transaction' => $captureId,
-                    'id_cart' => $cartId,
-                    'id_module' => (int) $this->module->id,
-                    'id_order' => (int) $order->id,
-                    'key' => $cart->secure_key,
-                ]
-            ));
+            $this->redirectToOrderConfirmationPage(
+                $cartId,
+                $payPalOrderResponse->getCapture()['id'] ?? null,
+                $payPalOrderResponse->getStatus()
+            );
         }
     }
 
     /**
-     * @param string $orderId
+     * @param PayPalOrderResponse $payPalOrderResponse
+     * @param PayPalOrder $payPalOrder
      *
-     * @return GetPayPalOrderForCheckoutCompletedQueryResult
+     * @return void
      *
      * @throws PayPalOrderException
+     * @throws PsCheckoutException
      */
-    private function getPayPalOrder($orderId)
-    {
-        $payPalOrderQuery = new GetPayPalOrderForCheckoutCompletedQuery($orderId);
+    private function handleOrderStatus(
+        PayPalOrderResponse $payPalOrderResponse,
+        PayPalOrder $payPalOrder
+    ) {
+        /** @var LoggerInterface $logger */
+        $logger = $this->module->getService(LoggerInterface::class);
 
-        return $this->queryBus->handle($payPalOrderQuery);
+        /** @var CapturePayPalOrderAction $capturePayPalOrderAction */
+        $capturePayPalOrderAction = $this->module->getService(CapturePayPalOrderAction::class);
+
+        /** @var PayPalOrderProvider $payPalOrderProvider */
+        $payPalOrderProvider = $this->module->getService(PayPalOrderProvider::class);
+
+        switch ($payPalOrderResponse->getStatus()) {
+            case PayPalOrderStatus::COMPLETED:
+                $logger->info('PayPal Order Completed: ' . $this->paypalOrderId);
+                $this->createOrder($payPalOrderResponse, $payPalOrder);
+
+                break;
+            case PayPalOrderStatus::PAYER_ACTION_REQUIRED:
+                $logger->info('3DS Verification Required for PayPal Order: ' . $this->paypalOrderId);
+                $this->redirectTo3DSVerification($payPalOrderResponse);
+
+                break;
+            case PayPalOrderStatus::CREATED:
+                $this->handle3DSecureDecision($payPalOrderResponse, $payPalOrder);
+
+                break;
+            case PayPalOrderStatus::APPROVED:
+                $logger->info('Capturing PayPal Order: ' . $this->paypalOrderId);
+                $capturePayPalOrderAction->execute($payPalOrderResponse);
+                $this->createOrder($payPalOrderProvider->getById($this->paypalOrderId), $payPalOrder);
+
+                break;
+        }
+    }
+
+    /**
+     * @param PayPalOrderResponse $payPalOrderResponse
+     * @param PayPalOrder $payPalOrder
+     *
+     * @return void
+     *
+     * @throws PsCheckoutException
+     * @throws PayPalOrderException
+     */
+    private function handle3DSecureDecision(
+        PayPalOrderResponse $payPalOrderResponse,
+        PayPalOrder $payPalOrder
+    ) {
+        /** @var Card3DSecureValidator $card3DSecure */
+        $card3DSecure = $this->module->getService(Card3DSecureValidator::class);
+
+        /** @var CapturePayPalOrderAction $capturePayPalOrderAction */
+        $capturePayPalOrderAction = $this->module->getService(CapturePayPalOrderAction::class);
+
+        /** @var PayPalOrderProvider $payPalOrderProvider */
+        $payPalOrderProvider = $this->module->getService(PayPalOrderProvider::class);
+
+        /** @var PayPalConfiguration $payPalConfiguration */
+        $payPalConfiguration = $this->module->getService(PayPalConfiguration::class);
+
+        switch ($card3DSecure->getAuthorizationDecision($payPalOrderResponse)) {
+            case Card3DSecureConfiguration::DECISION_RETRY:
+                $this->redirectTo3DSVerification($payPalOrderResponse);
+
+                break;
+            case Card3DSecureConfiguration::DECISION_PROCEED:
+                $capturePayPalOrderAction->execute($payPalOrderResponse);
+                $this->createOrder($payPalOrderProvider->getById($this->paypalOrderId), $payPalOrder);
+
+                break;
+            case Card3DSecureConfiguration::DECISION_NO_DECISION:
+                if ($payPalConfiguration->getCardFieldsContingencies() !== 'SCA_ALWAYS') {
+                    $capturePayPalOrderAction->execute($payPalOrderResponse);
+                    $this->createOrder($payPalOrderProvider->getById($this->paypalOrderId), $payPalOrder);
+                }
+
+                break;
+        }
+    }
+
+    /**
+     * @param PayPalOrderResponse $payPalOrderResponse
+     * @param PayPalOrder $payPalOrder
+     *
+     * @return void
+     *
+     * @throws PsCheckoutException
+     */
+    private function createOrder(PayPalOrderResponse $payPalOrderResponse, PayPalOrder $payPalOrder)
+    {
+        /** @var CreateOrderAction $createOrderAction */
+        $createOrderAction = $this->module->getService(CreateOrderAction::class);
+        $createOrderAction->execute($payPalOrderResponse);
+
+        if ($payPalOrder->getPaymentTokenId() && $payPalOrder->checkCustomerIntent(PayPalConfiguration::PS_CHECKOUT_CUSTOMER_INTENT_FAVORITE)) {
+            /** @var PaymentTokenRepository $paymentTokenRepository */
+            $paymentTokenRepository = $this->module->getService(PaymentTokenRepository::class);
+            $paymentTokenRepository->setTokenFavorite($payPalOrder->getPaymentTokenId(), $payPalOrderResponse->getCustomerId());
+        }
+
+        $this->redirectToOrderConfirmationPage(
+            $payPalOrder->getIdCart(),
+            $payPalOrderResponse->getCapture()['id'] ?? null,
+            $payPalOrderResponse->getStatus()
+        );
+    }
+
+    /**
+     * @param PayPalOrderResponse $paypalOrder
+     *
+     * @return void
+     */
+    private function redirectTo3DSVerification(PayPalOrderResponse $payPalOrderResponse)
+    {
+        /** @var Tools $tools */
+        $tools = $this->module->getService(Tools::class);
+
+        $payerActionLinks = array_filter($payPalOrderResponse->getLinks(), function ($link) {
+            return $link['rel'] === 'payer-action';
+        });
+
+        if (!empty($payerActionLinks)) {
+            $redirectUrl = reset($payerActionLinks)['href'] . '&redirect_uri=' . urlencode(
+                $this->context->link->getModuleLink($this->module->name, 'payment', ['orderID' => $payPalOrderResponse->getId()])
+            );
+
+            /** @var LoggerInterface $logger */
+            $logger = $this->module->getService(LoggerInterface::class);
+            $logger->info('Redirecting to 3DS verification: ' . $redirectUrl);
+
+            $tools->redirect($redirectUrl);
+        }
+    }
+
+    /**
+     * @param int $cartId
+     * @param string|null $captureId
+     * @param string $payPalOrderStatus
+     *
+     * @return void
+     */
+    private function redirectToOrderConfirmationPage(int $cartId, $captureId, string $payPalOrderStatus)
+    {
+        /** @var Tools $tools */
+        $tools = $this->module->getService(Tools::class);
+        /** @var OrderRepository $orderRepository */
+        $orderRepository = $this->module->getService(OrderRepository::class);
+
+        $orders = $orderRepository->getAllBy(['id_cart' => $cartId]);
+
+        if (empty($orders)) {
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $orderConfirmationUrl = $this->context->link->getPageLink(
+                'order-confirmation',
+                true,
+                $orders[0]->id_lang ?? null,
+                [
+                    'paypal_status' => $payPalOrderStatus,
+                    'paypal_order' => $this->paypalOrderId,
+                    'paypal_transaction' => $captureId,
+                    'id_cart' => $cartId,
+                    'id_module' => (int) $this->module->id,
+                    'id_order' => $orders[0]->id ?? null,
+                    'key' => (new Cart($cartId))->secure_key,
+                ]
+            );
+
+            /** @var LoggerInterface $logger */
+            $logger = $this->module->getService(LoggerInterface::class);
+            $logger->info('Redirecting to order confirmation: ' . $orderConfirmationUrl);
+
+            $tools->redirect($orderConfirmationUrl);
+        }
     }
 }

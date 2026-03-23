@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -29,16 +28,17 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  */
-function upgrade_module_8_4_2_0($module)
+function upgrade_module_8_4_2_0(Ps_checkout $module)
 {
     try {
         $module->registerHook('moduleRoutes');
 
         $db = Db::getInstance();
-        $shopsList = Shop::getShops(false, null, true);
+        $shopsList = \Shop::getShops(false, null, true);
 
         foreach ($shopsList as $shopId) {
-            $hasFundingSourceApplePay = (bool) $db->getValue('
+            $hasFundingSourceApplePay = (bool) $db->getValue(
+                '
                 SELECT 1
                 FROM `' . _DB_PREFIX_ . 'pscheckout_funding_source`
                 WHERE `name` = "apple_pay"

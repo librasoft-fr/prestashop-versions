@@ -80,6 +80,7 @@ class PsshippingHomeController extends FrameworkBundleAdminController
                 'psBillingContext' => (new BillingService())->getBillingContext($this->module),
                 'isOnboardingDone' => (bool) $this->isOnboardingDone(),
                 'shops' => $this->getShops(),
+                'getMerchantIp' => $_SERVER['REMOTE_ADDR'],
                 'isMultiShopContext' => LegacyShop::isFeatureActive() && LegacyShop::getContext() !== LegacyShop::CONTEXT_SHOP,
                 'routes' => $this->generateRouteLink($router),
                 'phpVersion' => phpversion(),
@@ -158,7 +159,7 @@ class PsshippingHomeController extends FrameworkBundleAdminController
             'setOrderStatusMapping' => $router->generate('set_order_status_mapping'),
             'setStatusForOrderStatusMapping' => $router->generate('set_status_for_order_status_mapping'),
             'getStatusOrderStatusMapping' => $router->generate('get_status_order_status_mapping'),
-            'getItalyState' => $router->generate('get_italy_state'),
+            'getStates' => $router->generate('get_states'),
         ];
     }
 

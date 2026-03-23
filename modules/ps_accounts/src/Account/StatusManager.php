@@ -24,13 +24,24 @@ use DateTime;
 use PrestaShop\Module\PsAccounts\Account\Exception\RefreshTokenException;
 use PrestaShop\Module\PsAccounts\Account\Exception\UnknownStatusException;
 use PrestaShop\Module\PsAccounts\Account\Session\ShopSession;
+use PrestaShop\Module\PsAccounts\Log\Logger;
 use PrestaShop\Module\PsAccounts\Repository\ConfigurationRepository;
 use PrestaShop\Module\PsAccounts\Service\Accounts\AccountsException;
 use PrestaShop\Module\PsAccounts\Service\Accounts\AccountsService;
 use PrestaShop\Module\PsAccounts\Service\Accounts\Resource\ShopStatus;
+use PrestaShop\Module\PsAccounts\Traits\WithOriginAndSourceTrait;
 
+/**
+ * @method $this withThrowException(bool $throwException)
+ * @method bool getThrowException(bool $restoreDefault = true)
+ * @method void resetThrowException()
+ */
 class StatusManager
 {
+    use WithOriginAndSourceTrait {
+        getDefaults as WithOriginAndSourceTrait_getDefaults;
+    }
+
     /**
      * Status Cache TTL in seconds
      */
@@ -57,6 +68,11 @@ class StatusManager
     private $accountsService;
 
     /**
+     * @var bool
+     */
+    private $throwException;
+
+    /**
      * @param ShopSession $shopSession
      * @param AccountsService $accountsService
      * @param ConfigurationRepository $repository
@@ -69,6 +85,18 @@ class StatusManager
         $this->repository = $repository;
         $this->shopSession = $shopSession;
         $this->accountsService = $accountsService;
+
+        $this->resetProperties();
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaults()
+    {
+        return array_merge($this->WithOriginAndSourceTrait_getDefaults(), [
+            'throwException' => false,
+        ]);
     }
 
     /**
@@ -96,14 +124,22 @@ class StatusManager
     /**
      * @param bool $cachedOnly
      * @param int $cacheTtl
-     * @param string|null $source
      *
      * @return ShopStatus
      *
+     * @throws AccountsException
+     * @throws RefreshTokenException
      * @throws UnknownStatusException
      */
-    public function getStatus($cachedOnly = false, $cacheTtl = self::CACHE_TTL, $source = null)
+    public function getStatus($cachedOnly = false, $cacheTtl = self::CACHE_TTL)
     {
+        $handleException = function ($e) {
+            Logger::getInstance()->error($e->getMessage());
+            if ($this->getThrowException(false)) {
+                throw $e;
+            }
+        };
+
         if (!$cachedOnly) {
             try {
                 $cachedShopStatus = $this->getCachedStatus();
@@ -119,14 +155,17 @@ class StatusManager
                     $this->upsetCachedStatus(new CachedShopStatus([
                         'isValid' => true,
                         'updatedAt' => date('Y-m-d H:i:s'),
-                        'shopStatus' => $this->accountsService->shopStatus(
-                            $this->getCloudShopId(),
-                            $this->shopSession->getValidToken(),
-                            $source
-                        ),
+                        'shopStatus' => $this->accountsService
+                            ->withSource($this->getSource())
+                            ->shopStatus(
+                                $this->getCloudShopId(),
+                                $this->shopSession->getValidToken()
+                            ),
                     ]));
                 } catch (AccountsException $e) {
+                    $handleException($e);
                 } catch (RefreshTokenException $e) {
+                    $handleException($e);
                 }
             }
         }

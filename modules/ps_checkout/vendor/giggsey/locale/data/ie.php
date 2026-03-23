@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -6,13 +8,17 @@
  * @internal
  */
 return [
+    'AD' => 'Andorra',
     'AL' => 'Albania',
     'AQ' => 'Antarctica',
     'AT' => 'Austria',
+    'AX' => 'Insules Åland',
     'BA' => 'Bosnia e Herzegovina',
     'BE' => 'Belgia',
     'BG' => 'Bulgaria',
+    'BY' => 'Bielorussia',
     'CH' => 'Svissia',
+    'CQ' => 'Sark',
     'CZ' => 'Tchekia',
     'DE' => 'Germania',
     'DK' => 'Dania',
@@ -24,20 +30,28 @@ return [
     'FJ' => 'Fidji',
     'FR' => 'Francia',
     'GB' => 'Unit Reyia',
+    'GG' => 'Guernsey',
+    'GI' => 'Gibraltar',
     'GR' => 'Grecia',
     'GY' => 'Guyana',
     'HR' => 'Croatia',
     'HU' => 'Hungaria',
     'ID' => 'Indonesia',
     'IE' => 'Irland',
+    'IM' => 'Insul de Man',
     'IN' => 'India',
     'IR' => 'Iran',
     'IS' => 'Island',
     'IT' => 'Italia',
+    'JE' => 'Jersey',
     'KH' => 'Cambodja',
+    'LI' => 'Liechtenstein',
     'LK' => 'Sri-Lanka',
+    'LT' => 'Lituania',
     'LU' => 'Luxemburg',
+    'LV' => 'Lettonia',
     'MC' => 'Mónaco',
+    'MD' => 'Moldova',
     'ME' => 'Montenegro',
     'MK' => 'Nord-Macedonia',
     'MQ' => 'Martinica',
@@ -45,6 +59,8 @@ return [
     'MU' => 'Mauricio',
     'MV' => 'Maldivas',
     'NF' => 'Insul Norfolk',
+    'NL' => 'Nederland',
+    'NO' => 'Norvegia',
     'NR' => 'Nauru',
     'NZ' => 'Nov-Zeland',
     'PE' => 'Perú',
@@ -59,6 +75,7 @@ return [
     'RU' => 'Russia',
     'SE' => 'Svedia',
     'SI' => 'Slovenia',
+    'SJ' => 'Svalbard e Jan Mayen',
     'SK' => 'Slovakia',
     'SM' => 'San-Marino',
     'SX' => 'Sint-Maarten',
@@ -69,6 +86,7 @@ return [
     'TT' => 'Trinidad e Tobago',
     'TV' => 'Tuvalu',
     'UA' => 'Ukraina',
+    'VA' => 'Cité de Vatican',
     'VU' => 'Vanuatu',
     'WS' => 'Samoa',
     'XK' => 'Kosovo',

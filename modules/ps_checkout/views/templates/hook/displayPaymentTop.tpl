@@ -16,11 +16,10 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-
 <div id="ps_checkout-notification-container">
   <div id="ps_checkout-canceled" class="alert alert-warning-custom" style="display:none;">
     <img src="{$shoppingCartWarningPath|escape:'htmlall':'UTF-8'}" alt="{$warningTranslatedText|escape:'htmlall':'UTF-8'}">
-    <strong>{l s='Processing payment canceled, please choose another payment method or try again.' mod='ps_checkout'}</strong>
+    <strong>{l s='Processing payment canceled, please choose another payment method or try again.' d='Modules.Checkout.Pscheckout'}</strong>
   </div>
   <div id="ps_checkout-error" class="alert alert-danger-custom" style="display:none;">
     <img src="{$shoppingCartWarningPath|escape:'htmlall':'UTF-8'}" alt="{$warningTranslatedText|escape:'htmlall':'UTF-8'}">
@@ -29,12 +28,12 @@
 </div>
 
 {if $isExpressCheckout}
-<div class="express-checkout-block mb-2" id="ps_checkout-express-checkout-banner">
-  <img src="{$paypalLogoPath|escape:'htmlall':'UTF-8'}" class="express-checkout-img" alt="PayPal">
-  <p class="express-checkout-label">
-    {$translatedText|escape:'htmlall':'UTF-8'}
-  </p>
-</div>
+  <div class="express-checkout-block mb-2" id="ps_checkout-express-checkout-banner">
+    <img src="{$paypalLogoPath|escape:'htmlall':'UTF-8'}" class="express-checkout-img" alt="PayPal">
+    <p class="express-checkout-label">
+      {$translatedText|escape:'htmlall':'UTF-8'}
+    </p>
+  </div>
 {/if}
 
 <div id="ps_checkout-loader" class="express-checkout-block mb-2">

@@ -44,7 +44,11 @@ class OrdersService
     }
 
     /**
-     * @param array<int|string,?Carrier> $carriersFromShop
+     * @param array{
+     *     standard: array{mbe: ?Carrier, ups: ?Carrier},
+     *      express: array{mbe: ?Carrier, ups: ?Carrier},
+     *       pickup: array{mbe: ?Carrier, ups: ?Carrier}
+     *   } $carriersFromShop
      * @param PrestaShopAdapter $prestashopAdapter
      * @param int $limit
      * @param int $offset
@@ -56,8 +60,10 @@ class OrdersService
         $carriersId = [];
         $orderRepository = new OrdersRepository($this->module);
         foreach ($carriersFromShop as $carrier) {
-            if ($carrier && !empty($carrier['id_carrier'])) {
-                $carriersId[] = $carrier['id_carrier'];
+            foreach ($carrier as $carrierDetail) {
+                if ($carrierDetail && !empty($carrierDetail['id_carrier'])) {
+                    $carriersId[] = $carrierDetail['id_carrier'];
+                }
             }
         }
         $result = $orderRepository->getOrders($limit, $offset, $carriersId);
@@ -69,7 +75,7 @@ class OrdersService
 
         foreach ($result as $key => $value) {
             $result[$key]['order_link'] = $prestashopAdapter->generateOrderLink((int) $value['id_order']);
-            $result[$key]['type'] = $carrierMapping[$value['id_carrier']];
+            $result[$key]['type'] = $carrierMapping[$value['id_carrier']]['type'];
         }
 
         return [

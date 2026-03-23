@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -55,6 +57,7 @@ return [
     'CM' => 'କାମେରୁନ୍',
     'CN' => 'ଚୀନ୍‌',
     'CO' => 'କଲମ୍ବିଆ',
+    'CQ' => 'ସର୍କ୍‌',
     'CR' => 'କୋଷ୍ଟା ରିକା',
     'CU' => 'କ‍୍ୟୁବା',
     'CV' => 'କେପ୍ ଭର୍ଦେ',

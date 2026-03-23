@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -55,6 +57,7 @@ return [
     'CM' => '喀麥隆',
     'CN' => '中國',
     'CO' => '哥倫比亞',
+    'CQ' => '薩克',
     'CR' => '哥斯大黎加',
     'CU' => '古巴',
     'CV' => '維德角',

@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -48,13 +50,14 @@ return [
     'CD' => 'Kóńgò – Kinshasa',
     'CF' => 'Àrin gùngun Áfíríkà',
     'CG' => 'Kóńgò – Brazaville',
-    'CH' => 'switiṣilandi',
+    'CH' => 'Súwísìlanìdì',
     'CI' => 'Kóútè forà',
     'CK' => 'Etíokun Kùúkù',
     'CL' => 'Ṣílè',
     'CM' => 'Kamerúúnì',
     'CN' => 'Ṣáínà',
     'CO' => 'Kòlómíbìa',
+    'CQ' => 'Sáàkì',
     'CR' => 'Kuusita Ríkà',
     'CU' => 'Kúbà',
     'CV' => 'Etíokun Kápé féndè',
@@ -213,7 +216,7 @@ return [
     'SL' => 'Siria looni',
     'SM' => 'Sani Marino',
     'SN' => 'Sẹnẹga',
-    'SO' => 'Somalia',
+    'SO' => 'Sòmálíà',
     'SR' => 'Surinami',
     'SS' => 'Gúúsù Sudan',
     'ST' => 'Sao tomi ati piriiṣipi',

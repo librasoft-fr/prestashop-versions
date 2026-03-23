@@ -93,19 +93,28 @@ class HookDisplayHeader
                 throw new PsshippingException("The 'cart->id' field is null in the context.");
             }
 
-            $carrierId = array_search(CarrierService::CARRIERS_PICKUP, $this->carrierRepository->getShippingCarriersMapping());
+            $carrierId = null;
+            $carrierMapping = $this->carrierRepository->getShippingCarriersMapping();
 
-            try {
-                $gelConfig = $this->gelProximityService->getGelCredentials();
-            } catch (\Throwable $th) {
-                // if the module is configured, but there is an error while retrieving the gel IDs
-                if ($carrierId) {
+            foreach ($carrierMapping as $id => $carrier) {
+                if ($carrier['type'] === CarrierService::CARRIERS_PICKUP) {
+                    $carrierId = $id;
+                    break;
+                }
+            }
+
+            // only call gel proximity if the module is configured and the pickup up carrier is set up
+            if ($carrierId !== null) {
+                try {
+                    $gelConfig = $this->gelProximityService->getGelCredentials();
+                } catch (\Throwable $th) {
                     Media::addJsDef([
                         'pickupCarrierError' => $this->psshipping->getTranslator()->trans('Unable to use this carrier at the moment.', [], 'Modules.Psshipping.Admin'),
                     ]);
                 }
+            }
 
-                // if the module is not configured but installed
+            if (!isset($gelConfig)) {
                 return;
             }
 

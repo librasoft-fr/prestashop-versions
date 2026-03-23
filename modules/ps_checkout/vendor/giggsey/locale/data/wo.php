@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -55,6 +57,7 @@ return [
     'CM' => 'Kamerun',
     'CN' => 'Siin',
     'CO' => 'Kolombi',
+    'CQ' => 'Guernsey Pound',
     'CR' => 'Kosta Rika',
     'CU' => 'Kuba',
     'CV' => 'Kabo Werde',

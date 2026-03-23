@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -19,7 +21,7 @@ return [
     'AR' => 'Argentina',
     'AS' => 'Samoa thuộc Mỹ',
     'AT' => 'Áo',
-    'AU' => 'Australia',
+    'AU' => 'Úc',
     'AW' => 'Aruba',
     'AX' => 'Quần đảo Åland',
     'AZ' => 'Azerbaijan',
@@ -55,6 +57,7 @@ return [
     'CM' => 'Cameroon',
     'CN' => 'Trung Quốc',
     'CO' => 'Colombia',
+    'CQ' => 'Sark',
     'CR' => 'Costa Rica',
     'CU' => 'Cuba',
     'CV' => 'Cape Verde',

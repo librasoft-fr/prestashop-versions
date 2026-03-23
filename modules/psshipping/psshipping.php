@@ -82,6 +82,8 @@ class Psshipping extends Module
     const MBE_API_SERVICE_ID_CARRIER_STANDARD = 2;
     const MBE_API_SERVICE_ID_CARRIER_EXPRESS = 4;
     const MBE_API_SERVICE_ID_CARRIER_PICKUP = 12;
+    const UPS_DAP_API_SERVICE_ID_CARRIER_STANDARD = 13;
+    const UPS_DAP_API_SERVICE_ID_CARRIER_EXPRESS = 14;
 
     const HOOK_LIST = [
         'actionGetAdminOrderButtons',
@@ -117,7 +119,7 @@ class Psshipping extends Module
     {
         $this->name = 'psshipping';
         $this->tab = 'shipping_logistics';
-        $this->version = '2.0.9';
+        $this->version = '2.1.1';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->module_key = '8a4eff554bcb2ec847b3d4c70286b0e2';
@@ -531,6 +533,7 @@ class Psshipping extends Module
         /** @var CarrierRepository $carrierRepository */
         $carrierRepository = $this->getService(CarrierRepository::class);
         $carrierMapping = $carrierRepository->getShippingCarriersMapping();
+        /** @var array{type: string, provider: string} $carrierType */
         $carrierType = $carrierMapping[$carrier->id];
 
         return [
@@ -641,7 +644,7 @@ class Psshipping extends Module
 
     /**
      * @param Order $order
-     * @param string $carrierType
+     * @param array{type: string, provider: string} $carrierType
      * @param RecipientDTO $recipient
      *
      * @return array<string, array<int<0, max>|string,float|int>|int|string>
@@ -677,15 +680,15 @@ class Psshipping extends Module
             $productsWeight[] = (float) $product['weight'];
         }
 
-        switch ($carrierType) {
+        switch ($carrierType['type']) {
             case CarrierService::CARRIERS_STANDARD:
-                $serviceId = self::MBE_API_SERVICE_ID_CARRIER_STANDARD;
+                $serviceId = $carrierType['provider'] === CarrierService::PROVIDER_MBE ? self::MBE_API_SERVICE_ID_CARRIER_STANDARD : self::UPS_DAP_API_SERVICE_ID_CARRIER_STANDARD;
                 break;
             case CarrierService::CARRIERS_PICKUP:
                 $serviceId = self::MBE_API_SERVICE_ID_CARRIER_PICKUP;
                 break;
             case CarrierService::CARRIERS_EXPRESS:
-                $serviceId = self::MBE_API_SERVICE_ID_CARRIER_EXPRESS;
+                $serviceId = $carrierType['provider'] === CarrierService::PROVIDER_MBE ? self::MBE_API_SERVICE_ID_CARRIER_EXPRESS : self::UPS_DAP_API_SERVICE_ID_CARRIER_EXPRESS;
                 break;
             default:
                 $serviceId = 0;

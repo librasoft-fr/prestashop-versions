@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Locale data file
  * This file has been @generated from Locale data
@@ -55,6 +57,7 @@ return [
     'CM' => 'Kamerun',
     'CN' => 'Kina',
     'CO' => 'Kolumbija',
+    'CQ' => 'Sark',
     'CR' => 'Kostarika',
     'CU' => 'Kuba',
     'CV' => 'Zelenortska Republika',
@@ -81,7 +84,7 @@ return [
     'FJ' => 'Fidži',
     'FK' => 'Falklandski Otoci',
     'FM' => 'Mikronezija',
-    'FO' => 'Ovčji Otoci',
+    'FO' => 'Farski Otoci',
     'FR' => 'Francuska',
     'GA' => 'Gabon',
     'GB' => 'Ujedinjeno Kraljevstvo',

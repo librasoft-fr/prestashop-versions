@@ -103,7 +103,7 @@ class CarrierRepository
     }
 
     /**
-     * @return string[]
+     * @return array<int, array{type: string, provider: string}>
      */
     public function getShippingCarriersMapping(): array
     {
@@ -115,22 +115,25 @@ class CarrierRepository
             return [];
         }
 
-        /** @var string[] $value */
+        /** @var array<int, array{type: string, provider: string}> $value */
         $value = json_decode($mapping, true);
 
         return $value;
     }
 
-    public function addShippingCarrierMapping(int $carrierId, string $type): void
+    public function addShippingCarrierMapping(int $carrierId, string $type, string $provider): void
     {
         $mapping = $this->getShippingCarriersMapping();
-        $mapping[$carrierId] = $type;
+        $mapping[$carrierId] = [
+            'type' => $type,
+            'provider' => $provider,
+        ];
 
         Configuration::updateGlobalValue(self::PS_SHIPPING_CARRIER, json_encode($mapping));
     }
 
     /**
-     * @param string[] $mapping
+     * @param array<int, array{type: string, provider: string}> $mapping
      */
     public function updateShippingCarrierMapping(array $mapping): void
     {
@@ -141,8 +144,8 @@ class CarrierRepository
     {
         $carrierMapping = $this->getShippingCarriersMapping();
 
-        foreach ($carrierMapping as $carrierId => $type) {
-            if ($currentCarrierId === $carrierId && $type === CarrierService::CARRIERS_PICKUP) {
+        foreach ($carrierMapping as $carrierId => $carrierDetail) {
+            if ($currentCarrierId === $carrierId && CarrierService::CARRIERS_PICKUP === $carrierDetail['type']) {
                 return true;
             }
         }
