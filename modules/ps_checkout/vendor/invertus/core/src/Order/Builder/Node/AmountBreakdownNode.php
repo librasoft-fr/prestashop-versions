@@ -31,6 +31,11 @@ class AmountBreakdownNode implements AmountBreakdownNodeInterface
     private $cart;
 
     /**
+     * @var string|null
+     */
+    private $fundingSource;
+
+    /**
      * {@inheritDoc}
      */
     public function build(): array
@@ -50,27 +55,13 @@ class AmountBreakdownNode implements AmountBreakdownNodeInterface
             $totalWithoutTax = $value['total'];
             $totalWithTax = $value['total_wt'];
             $totalTax = $totalWithTax - $totalWithoutTax;
-            $quantity = $value['quantity'];
+            $quantity = (string) $value['quantity'];
             $unitPriceWithoutTax = NumberUtility::formatAmount($totalWithoutTax / $quantity, $currencyIsoCode);
             $unitTax = NumberUtility::formatAmount($totalTax / $quantity, $currencyIsoCode);
             $breakdownItemTotal += $unitPriceWithoutTax * $quantity;
             $breakdownTaxTotal += $unitTax * $quantity;
 
-            if (!empty($value['reference'])) {
-                $sku = $value['reference'];
-            }
-
-            if (!empty($value['ean13'])) {
-                $sku = $value['ean13'];
-            }
-
-            if (!empty($value['isbn'])) {
-                $sku = $value['isbn'];
-            }
-
-            if (!empty($value['upc'])) {
-                $sku = $value['upc'];
-            }
+            $sku = !empty($value['reference']) ? $value['reference'] : (int) $value['id_product'] . '-' . (int) $value['id_product_attribute'];
 
             $paypalItem = [];
             $paypalItem['name'] = StringUtility::truncate($value['name'], 127);
@@ -82,6 +73,10 @@ class AmountBreakdownNode implements AmountBreakdownNodeInterface
             $paypalItem['tax']['value'] = $unitTax;
             $paypalItem['quantity'] = $quantity;
             $paypalItem['category'] = $value['is_virtual'] === '1' ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS';
+
+            if ($this->fundingSource === 'pay_upon_invoice' && isset($value['rate'])) {
+                $paypalItem['tax_rate'] = NumberUtility::formatAmount($value['rate'], $currencyIsoCode);
+            }
 
             $node['items'][] = $paypalItem;
         }
@@ -98,6 +93,14 @@ class AmountBreakdownNode implements AmountBreakdownNodeInterface
             'tax_total' => [
                 'currency_code' => $currencyIsoCode,
                 'value' => NumberUtility::formatAmount($breakdownTaxTotal, $currencyIsoCode),
+            ],
+            'insurance' => [
+                'currency_code' => $currencyIsoCode,
+                'value' => '0.00',
+            ],
+            'shipping_discount' => [
+                'currency_code' => $currencyIsoCode,
+                'value' => '0.00',
             ],
         ];
 
@@ -134,6 +137,20 @@ class AmountBreakdownNode implements AmountBreakdownNodeInterface
     public function setCart(array $cart): self
     {
         $this->cart = $cart;
+
+        return $this;
+    }
+
+    /**
+     * Set the funding source to determine if tax_rate is required
+     *
+     * @param string|null $fundingSource
+     *
+     * @return $this
+     */
+    public function setFundingSource($fundingSource): self
+    {
+        $this->fundingSource = $fundingSource;
 
         return $this;
     }

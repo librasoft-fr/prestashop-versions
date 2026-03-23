@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a
+class ComposerStaticInit9eebf0c1496fd0c239585a0b73616ddd
 {
     public static $files = array (
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
@@ -5621,8 +5621,10 @@ class ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a
         'PrestaShopBundle\\Twig\\LayoutExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/LayoutExtension.php',
         'PrestaShopBundle\\Twig\\LocaleExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/LocaleExtension.php',
         'PrestaShopBundle\\Twig\\Locator\\ModuleTemplateLoader' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/Locator/ModuleTemplateLoader.php',
+        'PrestaShopBundle\\Twig\\RawPurifiedExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/RawPurifiedExtension.php',
         'PrestaShopBundle\\Twig\\TranslationsExtension' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Twig/TranslationsExtension.php',
         'PrestaShopBundle\\Utils\\FloatParser' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Utils/FloatParser.php',
+        'PrestaShopBundle\\Utils\\HTMLPurifier' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Utils/HTMLPurifier.php',
         'PrestaShopBundle\\Utils\\Tree' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Utils/Tree.php',
         'PrestaShopBundle\\Utils\\ZipManager' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Utils/ZipManager.php',
         'PrestaShop\\Autoload\\Autoloader' => __DIR__ . '/..' . '/prestashop/autoload/src/Autoloader.php',
@@ -12877,11 +12879,11 @@ class ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInitf9b25a35946393ab2b3328e72e3e778a::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9eebf0c1496fd0c239585a0b73616ddd::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9eebf0c1496fd0c239585a0b73616ddd::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit9eebf0c1496fd0c239585a0b73616ddd::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit9eebf0c1496fd0c239585a0b73616ddd::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit9eebf0c1496fd0c239585a0b73616ddd::$classMap;
 
         }, null, ClassLoader::class);
     }

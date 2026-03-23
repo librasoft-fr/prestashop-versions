@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'prestashopcorp/ps_accounts',
-        'pretty_version' => 'v7.2.2',
-        'version' => '7.2.2.0',
-        'reference' => 'af878fcc6c3ea719cd5a61f9a94c379d0d696a21',
+        'pretty_version' => 'v8.0.13',
+        'version' => '8.0.13.0',
+        'reference' => '92a50daa5f575b527463a65ee3868fc1f03499c6',
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -46,15 +46,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'phpseclib/phpseclib' => array(
-            'pretty_version' => '2.0.48',
-            'version' => '2.0.48.0',
-            'reference' => 'eaa7be704b8b93a6913b69eb7f645a59d7731b61',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../phpseclib/phpseclib',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'prestashopcorp/lightweight-container' => array(
             'pretty_version' => 'v0.1.0',
             'version' => '0.1.0.0',
@@ -65,9 +56,9 @@
             'dev_requirement' => false,
         ),
         'prestashopcorp/ps_accounts' => array(
-            'pretty_version' => 'v7.2.2',
-            'version' => '7.2.2.0',
-            'reference' => 'af878fcc6c3ea719cd5a61f9a94c379d0d696a21',
+            'pretty_version' => 'v8.0.13',
+            'version' => '8.0.13.0',
+            'reference' => '92a50daa5f575b527463a65ee3868fc1f03499c6',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -1,3 +1,0 @@
-parameters:
-  psxdesign.sentry_dsn: '%env(PSXDESIGN_SENTRY_DSN)%'
-  psxdesign.sentry_env: '%env(PSXDESIGN_SENTRY_ENV)%'

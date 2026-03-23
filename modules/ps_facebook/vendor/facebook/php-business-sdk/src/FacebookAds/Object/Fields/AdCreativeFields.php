@@ -43,6 +43,7 @@ class AdCreativeFields extends AbstractEnum {
   const CREATIVE_SOURCING_SPEC = 'creative_sourcing_spec';
   const DEGREES_OF_FREEDOM_SPEC = 'degrees_of_freedom_spec';
   const DESTINATION_SET_ID = 'destination_set_id';
+  const DESTINATION_SPEC = 'destination_spec';
   const DYNAMIC_AD_VOICE = 'dynamic_ad_voice';
   const EFFECTIVE_AUTHORIZATION_CATEGORY = 'effective_authorization_category';
   const EFFECTIVE_INSTAGRAM_MEDIA_ID = 'effective_instagram_media_id';
@@ -50,6 +51,7 @@ class AdCreativeFields extends AbstractEnum {
   const ENABLE_DIRECT_INSTALL = 'enable_direct_install';
   const ENABLE_LAUNCH_INSTANT_APP = 'enable_launch_instant_app';
   const FACEBOOK_BRANDED_CONTENT = 'facebook_branded_content';
+  const FORMAT_TRANSFORMATION_SPEC = 'format_transformation_spec';
   const ID = 'id';
   const IMAGE_CROPS = 'image_crops';
   const IMAGE_HASH = 'image_hash';
@@ -62,6 +64,7 @@ class AdCreativeFields extends AbstractEnum {
   const LINK_DESTINATION_DISPLAY_URL = 'link_destination_display_url';
   const LINK_OG_ID = 'link_og_id';
   const LINK_URL = 'link_url';
+  const MEDIA_SOURCING_SPEC = 'media_sourcing_spec';
   const MESSENGER_SPONSORED_MESSAGE = 'messenger_sponsored_message';
   const NAME = 'name';
   const OBJECT_ID = 'object_id';
@@ -81,6 +84,7 @@ class AdCreativeFields extends AbstractEnum {
   const PRODUCT_SET_ID = 'product_set_id';
   const RECOMMENDER_SETTINGS = 'recommender_settings';
   const REGIONAL_REGULATION_DISCLAIMER_SPEC = 'regional_regulation_disclaimer_spec';
+  const SOURCE_FACEBOOK_POST_ID = 'source_facebook_post_id';
   const SOURCE_INSTAGRAM_MEDIA_ID = 'source_instagram_media_id';
   const STATUS = 'status';
   const TEMPLATE_URL = 'template_url';
@@ -91,6 +95,7 @@ class AdCreativeFields extends AbstractEnum {
   const URL_TAGS = 'url_tags';
   const USE_PAGE_ACTOR_OVERRIDE = 'use_page_actor_override';
   const VIDEO_ID = 'video_id';
+  const EXECUTION_OPTIONS = 'execution_options';
   const IMAGE_FILE = 'image_file';
   const IS_DCO_INTERNAL = 'is_dco_internal';
 
@@ -117,6 +122,7 @@ class AdCreativeFields extends AbstractEnum {
       'creative_sourcing_spec' => 'AdCreativeSourcingSpec',
       'degrees_of_freedom_spec' => 'AdCreativeDegreesOfFreedomSpec',
       'destination_set_id' => 'string',
+      'destination_spec' => 'AdCreativeDestinationSpec',
       'dynamic_ad_voice' => 'string',
       'effective_authorization_category' => 'string',
       'effective_instagram_media_id' => 'string',
@@ -124,6 +130,7 @@ class AdCreativeFields extends AbstractEnum {
       'enable_direct_install' => 'bool',
       'enable_launch_instant_app' => 'bool',
       'facebook_branded_content' => 'AdCreativeFacebookBrandedContent',
+      'format_transformation_spec' => 'list<AdCreativeFormatTransformationSpec>',
       'id' => 'string',
       'image_crops' => 'AdsImageCrops',
       'image_hash' => 'string',
@@ -136,6 +143,7 @@ class AdCreativeFields extends AbstractEnum {
       'link_destination_display_url' => 'string',
       'link_og_id' => 'string',
       'link_url' => 'string',
+      'media_sourcing_spec' => 'AdCreativeMediaSourcingSpec',
       'messenger_sponsored_message' => 'string',
       'name' => 'string',
       'object_id' => 'string',
@@ -155,6 +163,7 @@ class AdCreativeFields extends AbstractEnum {
       'product_set_id' => 'string',
       'recommender_settings' => 'AdCreativeRecommenderSettings',
       'regional_regulation_disclaimer_spec' => 'AdCreativeRegionalRegulationDisclaimer',
+      'source_facebook_post_id' => 'string',
       'source_instagram_media_id' => 'string',
       'status' => 'Status',
       'template_url' => 'string',
@@ -165,6 +174,7 @@ class AdCreativeFields extends AbstractEnum {
       'url_tags' => 'string',
       'use_page_actor_override' => 'bool',
       'video_id' => 'string',
+      'execution_options' => 'list<ExecutionOptions>',
       'image_file' => 'string',
       'is_dco_internal' => 'bool',
     );

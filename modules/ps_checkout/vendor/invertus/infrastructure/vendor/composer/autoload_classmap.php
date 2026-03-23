@@ -15,6 +15,8 @@ return array(
     'PsCheckout\\Infrastructure\\Action\\CustomerAuthenticationActionInterface' => $baseDir . '/infrastructure/src/Action/CustomerAuthenticationActionInterface.php',
     'PsCheckout\\Infrastructure\\Action\\CustomerNotifyAction' => $baseDir . '/infrastructure/src/Action/CustomerNotifyAction.php',
     'PsCheckout\\Infrastructure\\Action\\CustomerNotifyActionInterface' => $baseDir . '/infrastructure/src/Action/CustomerNotifyActionInterface.php',
+    'PsCheckout\\Infrastructure\\Action\\SaveBatchConfigurationAction' => $baseDir . '/infrastructure/src/Action/SaveBatchConfigurationAction.php',
+    'PsCheckout\\Infrastructure\\Action\\SaveBatchConfigurationActionInterface' => $baseDir . '/infrastructure/src/Action/SaveBatchConfigurationActionInterface.php',
     'PsCheckout\\Infrastructure\\Adapter\\Address' => $baseDir . '/infrastructure/src/Adapter/Address.php',
     'PsCheckout\\Infrastructure\\Adapter\\AddressInterface' => $baseDir . '/infrastructure/src/Adapter/AddressInterface.php',
     'PsCheckout\\Infrastructure\\Adapter\\Cart' => $baseDir . '/infrastructure/src/Adapter/Cart.php',
@@ -110,4 +112,6 @@ return array(
     'PsCheckout\\Infrastructure\\Validator\\FrontControllerValidatorInterface' => $baseDir . '/infrastructure/src/Validator/FrontControllerValidatorInterface.php',
     'PsCheckout\\Infrastructure\\Validator\\MerchantValidator' => $baseDir . '/infrastructure/src/Validator/MerchantValidator.php',
     'PsCheckout\\Infrastructure\\Validator\\MerchantValidatorInterface' => $baseDir . '/infrastructure/src/Validator/MerchantValidatorInterface.php',
+    'PsCheckout\\Infrastructure\\Validator\\PayLaterValidator' => $baseDir . '/infrastructure/src/Validator/PayLaterValidator.php',
+    'PsCheckout\\Infrastructure\\Validator\\PayLaterValidatorInterface' => $baseDir . '/infrastructure/src/Validator/PayLaterValidatorInterface.php',
 );

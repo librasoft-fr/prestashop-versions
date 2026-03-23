@@ -4,10 +4,10 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit074b1e7d641aded8364f38772b135032
+class ComposerStaticInitee275996efc0a969cfd614e6774885c5
 {
     public static $prefixLengthsPsr4 = array (
-        'P' => 
+        'P' =>
         array (
             'PsCheckout\\Tests\\Core\\Integration\\' => 34,
             'PsCheckout\\Core\\' => 16,
@@ -15,11 +15,11 @@ class ComposerStaticInit074b1e7d641aded8364f38772b135032
     );
 
     public static $prefixDirsPsr4 = array (
-        'PsCheckout\\Tests\\Core\\Integration\\' => 
+        'PsCheckout\\Tests\\Core\\Integration\\' =>
         array (
             0 => __DIR__ . '/../../..' . '/core/tests',
         ),
-        'PsCheckout\\Core\\' => 
+        'PsCheckout\\Core\\' =>
         array (
             0 => __DIR__ . '/../../..' . '/core/src',
         ),
@@ -72,6 +72,10 @@ class ComposerStaticInit074b1e7d641aded8364f38772b135032
         'PsCheckout\\Core\\Order\\Builder\\Node\\PayPalPaymentSourceNodeBuilderInterface' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/PayPalPaymentSourceNodeBuilderInterface.php',
         'PsCheckout\\Core\\Order\\Builder\\Node\\PayerNodeBuilder' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/PayerNodeBuilder.php',
         'PsCheckout\\Core\\Order\\Builder\\Node\\PayerNodeBuilderInterface' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/PayerNodeBuilderInterface.php',
+        'PsCheckout\\Core\\Order\\Builder\\Node\\PaymentSource\\VenmoPaymentSourceNodeBuilder' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/PaymentSource/VenmoPaymentSourceNodeBuilder.php',
+        'PsCheckout\\Core\\Order\\Builder\\Node\\PaymentSource\\VenmoPaymentSourceNodeBuilderInterface' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/PaymentSource/VenmoPaymentSourceNodeBuilderInterface.php',
+        'PsCheckout\\Core\\Order\\Builder\\Node\\PuiPaymentSourceNodeBuilder' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/PuiPaymentSourceNodeBuilder.php',
+        'PsCheckout\\Core\\Order\\Builder\\Node\\PuiPaymentSourceNodeBuilderInterface' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/PuiPaymentSourceNodeBuilderInterface.php',
         'PsCheckout\\Core\\Order\\Builder\\Node\\ShippingNodeBuilder' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/ShippingNodeBuilder.php',
         'PsCheckout\\Core\\Order\\Builder\\Node\\ShippingNodeBuilderInterface' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/ShippingNodeBuilderInterface.php',
         'PsCheckout\\Core\\Order\\Builder\\Node\\SupplementaryDataNodeBuilder' => __DIR__ . '/../../..' . '/core/src/Order/Builder/Node/SupplementaryDataNodeBuilder.php',
@@ -160,6 +164,7 @@ class ComposerStaticInit074b1e7d641aded8364f38772b135032
         'PsCheckout\\Core\\PayPal\\Order\\Response\\ValueObject\\CreatePayPalOrderResponse' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Response/ValueObject/CreatePayPalOrderResponse.php',
         'PsCheckout\\Core\\PayPal\\Order\\Validator\\CreatedPayPalOrderValidator' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Validator/CreatedPayPalOrderValidator.php',
         'PsCheckout\\Core\\PayPal\\Order\\Validator\\CreatedPayPalOrderValidatorInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Validator/CreatedPayPalOrderValidatorInterface.php',
+        'PsCheckout\\Core\\PayPal\\Order\\Validator\\CreatedPayUponInvoiceOrderValidator' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Validator/CreatedPayUponInvoiceOrderValidator.php',
         'PsCheckout\\Core\\PayPal\\Order\\ValueObject\\PayPalOrderCompletionData' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/ValueObject/PayPalOrderCompletionData.php',
         'PsCheckout\\Core\\PayPal\\Refund\\Exception\\PayPalRefundException' => __DIR__ . '/../../..' . '/core/src/PayPal/Refund/Exception/PayPalRefundException.php',
         'PsCheckout\\Core\\PayPal\\Refund\\Provider\\PayPalRefundOrderProvider' => __DIR__ . '/../../..' . '/core/src/PayPal/Refund/Provider/PayPalRefundOrderProvider.php',
@@ -240,9 +245,9 @@ class ComposerStaticInit074b1e7d641aded8364f38772b135032
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit074b1e7d641aded8364f38772b135032::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit074b1e7d641aded8364f38772b135032::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit074b1e7d641aded8364f38772b135032::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitee275996efc0a969cfd614e6774885c5::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitee275996efc0a969cfd614e6774885c5::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitee275996efc0a969cfd614e6774885c5::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -23,7 +23,7 @@ use FacebookAds\Enum\AbstractEnum;
 class EventOnlineEventFormatValues extends AbstractEnum {
 
   const FB_LIVE = 'fb_live';
-  const HORIZON_WORLD = 'horizon_world';
+  const HORIZON_EVENT = 'horizon_event';
   const MESSENGER_ROOM = 'messenger_room';
   const NONE = 'none';
   const OTHER = 'other';

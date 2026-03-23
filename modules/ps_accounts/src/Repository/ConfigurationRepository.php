@@ -22,7 +22,6 @@ namespace PrestaShop\Module\PsAccounts\Repository;
 
 use PrestaShop\Module\PsAccounts\Adapter\Configuration;
 use PrestaShop\Module\PsAccounts\Adapter\ConfigurationKeys;
-use PrestaShop\Module\PsAccounts\Log\Logger;
 
 class ConfigurationRepository
 {
@@ -59,6 +58,24 @@ class ConfigurationRepository
     public function setShopId($shopId)
     {
         $this->configuration->setIdShop($shopId);
+    }
+
+    /**
+     * @return int
+     */
+    public function getShopGroupId()
+    {
+        return $this->configuration->getIdShopGroup();
+    }
+
+    /**
+     * @param int $groupId
+     *
+     * @return void
+     */
+    public function setShopGroupId($groupId)
+    {
+        $this->configuration->setIdShopGroup($groupId);
     }
 
     /**
@@ -165,23 +182,11 @@ class ConfigurationRepository
     }
 
     /**
-     * @return string|null
+     * @return \DateTime|null
      */
     public function getShopUuidDateUpd()
     {
-        try {
-            $entry = $this->configuration->getUncachedConfiguration(
-                ConfigurationKeys::PSX_UUID_V4,
-                $this->configuration->getIdShopGroup(),
-                $this->configuration->getIdShop()
-            );
-
-            return $entry->date_upd;
-        } catch (\Exception $e) {
-            Logger::getInstance()->warn(__METHOD__ . ': ' . $e->getMessage());
-
-            return null;
-        }
+        return $this->configuration->getDateUpd(ConfigurationKeys::PSX_UUID_V4);
     }
 
     /**
@@ -195,45 +200,6 @@ class ConfigurationRepository
             $this->configuration->set(ConfigurationKeys::PS_CHECKOUT_SHOP_UUID_V4, $uuid);
         }
         $this->configuration->set(ConfigurationKeys::PSX_UUID_V4, $uuid);
-    }
-
-    /**
-     * @return string
-     */
-    public function getAccountsRsaPrivateKey()
-    {
-        return $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_RSA_PRIVATE_KEY);
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return void
-     */
-    public function updateAccountsRsaPrivateKey($key)
-    {
-        $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_RSA_PRIVATE_KEY, $key);
-    }
-
-    /**
-     * @param bool $cached
-     * @param bool|mixed $default
-     *
-     * @return string|bool
-     */
-    public function getAccountsRsaPublicKey($default = false, $cached = true)
-    {
-        return $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_RSA_PUBLIC_KEY, $default, $cached);
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return void
-     */
-    public function updateAccountsRsaPublicKey($key)
-    {
-        $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_RSA_PUBLIC_KEY, $key);
     }
 
     /**
@@ -290,10 +256,18 @@ class ConfigurationRepository
      */
     public function getMainShop()
     {
-        $mainShopId = \Db::getInstance()->getValue('SELECT value FROM ' . _DB_PREFIX_ . "configuration WHERE name = 'PS_SHOP_DEFAULT'");
+        $mainShopId = $this->getMainShopId();
         $shop = new \Shop((int) $mainShopId);
 
         return $shop;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMainShopId()
+    {
+        return $this->configuration->getMainShopId();
     }
 
     /**
@@ -369,17 +343,27 @@ class ConfigurationRepository
     }
 
     /**
-     * @return void
+     * @param bool $force
      *
-     * @throws \Exception
+     * @return void
      */
-    public function fixMultiShopConfig()
+    public function fixMultiShopConfig($force = false)
     {
-        if ($this->isMultishopActive()) {
-            $this->migrateToMultiShop();
-        } else {
-            $this->migrateToSingleShop();
+        $isMultishopActive = $this->isMultishopActive();
+        $defaultShop = $this->getMainShop();
+
+        if (!$force && \Shop::isFeatureActive() === $isMultishopActive) {
+            return;
         }
+
+        $shopIdCondition = $isMultishopActive ? (int) $defaultShop->id : 'NULL';
+        $shopGroupIdCondition = $isMultishopActive ? (int) $defaultShop->id_shop_group : 'NULL';
+
+        \Db::getInstance()->query(
+            'UPDATE ' . _DB_PREFIX_ . 'configuration SET id_shop = ' . $shopIdCondition . ', id_shop_group = ' . $shopGroupIdCondition .
+            " WHERE name IN('" . join("','", array_values(ConfigurationKeys::cases())) . "')" .
+            ' AND id_shop ' . ($isMultishopActive ? 'IS NULL' : '= ' . (int) $defaultShop->id)
+        );
     }
 
     /**
@@ -410,58 +394,73 @@ class ConfigurationRepository
      */
     public function getLastUpgrade($cached = true)
     {
-        return $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_LAST_UPGRADE, false, $cached);
+        return $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_LAST_UPGRADE, false, $cached) ?: '0';
     }
 
     /**
      * @return string|null
      */
-    public function getUnlinkedOnError()
+    public function getShopProof()
     {
-        return $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_UNLINKED_ON_ERROR);
+        return $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_SHOP_PROOF);
     }
 
     /**
-     * @param string|null $error
+     * @param string|null $proof
      *
      * @return void
      */
-    public function updateUnlinkedOnError($error)
+    public function updateShopProof($proof)
     {
-        $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_UNLINKED_ON_ERROR, $error);
+        $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_SHOP_PROOF, $proof);
     }
 
     /**
-     * specify id_shop & id_shop_group for shop
-     *
-     * @return void
-     *
-     * @throws \PrestaShopDatabaseException
+     * @return string|null
      */
-    protected function migrateToMultiShop()
+    public function getCachedShopStatus()
     {
-        $shop = $this->getMainShop();
-        \Db::getInstance()->query(
-            'UPDATE ' . _DB_PREFIX_ . 'configuration SET id_shop = ' . (int) $shop->id . ', id_shop_group = ' . (int) $shop->id_shop_group .
-            " WHERE name IN('" . join("','", array_values(ConfigurationKeys::cases())) . "')" .
-            ' AND id_shop IS NULL AND id_shop_group IS NULL;'
-        );
+        return $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_CACHED_SHOP_STATUS, false, false);
     }
 
     /**
-     * nullify id_shop & id_shop_group for shop
+     * @return \DateTime|null
+     */
+    public function getCachedShopStatusDateUpd()
+    {
+        return $this->configuration->getDateUpd(ConfigurationKeys::PS_ACCOUNTS_CACHED_SHOP_STATUS);
+    }
+
+    /**
+     * @param string|null $status
      *
      * @return void
-     *
-     * @throws \PrestaShopDatabaseException
      */
-    protected function migrateToSingleShop()
+    public function updateCachedShopStatus($status)
     {
-        $shop = $this->getMainShop();
-        \Db::getInstance()->query(
-            'UPDATE ' . _DB_PREFIX_ . 'configuration SET id_shop = NULL, id_shop_group = NULL' .
-            " WHERE name IN('" . join("','", array_values(ConfigurationKeys::cases())) . "')" .
-            ' AND id_shop = ' . (int) $shop->id . ';'
-        );
+        $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_CACHED_SHOP_STATUS, $status);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getValidationLeeway()
+    {
+        $leeway = $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_VALIDATION_LEEWAY);
+        if (!empty($leeway) || $leeway === '0') {
+            return (int) $leeway;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param int $leeway
+     *
+     * @return void
+     */
+    public function updateValidationLeeway($leeway)
+    {
+        $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_VALIDATION_LEEWAY, (string) $leeway);
     }
 }

@@ -6,11 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'phpseclib\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Ramsey\\Uuid\\' => array($vendorDir . '/ramsey/uuid/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
-    'PrestaShop\\Module\\PsAccounts\\Vendor\\phpseclib\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'PrestaShop\\Module\\PsAccounts\\Vendor\\Ramsey\\Uuid\\' => array($vendorDir . '/ramsey/uuid/src'),
     'PrestaShop\\Module\\PsAccounts\\Vendor\\Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'PrestaShop\\Module\\PsAccounts\\Vendor\\PrestaShopCorp\\LightweightContainer\\' => array($vendorDir . '/prestashopcorp/lightweight-container/src'),

@@ -186,6 +186,7 @@ class IGMedia extends AbstractCrudObject {
     $this->assureId();
 
     $param_types = array(
+      'ad_id' => 'string',
       'message' => 'string',
     );
     $enums = array(
@@ -329,11 +330,35 @@ class IGMedia extends AbstractCrudObject {
     return $pending ? $request : $request->execute();
   }
 
+  public function deleteSelf(array $fields = array(), array $params = array(), $pending = false) {
+    $this->assureId();
+
+    $param_types = array(
+    );
+    $enums = array(
+    );
+
+    $request = new ApiRequest(
+      $this->api,
+      $this->data['id'],
+      RequestInterface::METHOD_DELETE,
+      '/',
+      new AbstractCrudObject(),
+      'NODE',
+      array(),
+      new TypeChecker($param_types, $enums)
+    );
+    $request->addParams($params);
+    $request->addFields($fields);
+    return $pending ? $request : $request->execute();
+  }
+
   public function getSelf(array $fields = array(), array $params = array(), $pending = false) {
     $this->assureId();
 
     $param_types = array(
       'ad_account_id' => 'unsigned int',
+      'boostable_media_callsite' => 'boostable_media_callsite_enum',
       'business_id' => 'string',
       'primary_fb_page_id' => 'string',
       'primary_ig_user_id' => 'string',
@@ -341,6 +366,10 @@ class IGMedia extends AbstractCrudObject {
       'secondary_ig_user_id' => 'string',
     );
     $enums = array(
+      'boostable_media_callsite_enum' => array(
+        'ADS_MANAGER_L1_EDITOR_DYNAMIC_ADS_WITH_EXISTING_POST',
+        'PA_HUB_CATALOG_INGESTION_CREATOR_ASSET',
+      ),
     );
 
     $request = new ApiRequest(

@@ -20,6 +20,8 @@
 
 namespace PrestaShop\Module\PsAccounts\Adapter;
 
+use PrestaShop\Module\PsAccounts\Log\Logger;
+
 class Configuration
 {
     /**
@@ -45,6 +47,8 @@ class Configuration
     public function __construct(\Context $context)
     {
         $this->setIdShop((int) $context->shop->id);
+        $this->setIdShopGroup((int) $context->shop->id_shop_group);
+        //$this->setIdLang((int) $context->language->id);
     }
 
     /**
@@ -131,7 +135,7 @@ class Configuration
      *
      * @return mixed
      */
-    public function getRaw($key, $idLang = null, $idShopGroup = null, $idShop = null, $default = false)
+    protected function getRaw($key, $idLang = null, $idShopGroup = null, $idShop = null, $default = false)
     {
         $value = \Configuration::get($key, $idLang, $idShopGroup, $idShop);
 
@@ -157,11 +161,21 @@ class Configuration
      * @param int|null $idShopGroup
      * @param int|null $idShop
      *
-     * @return mixed
+     * @return bool
      */
-    public function setRaw($key, $values, $html = false, $idShopGroup = null, $idShop = null)
+    protected function setRaw($key, $values, $html = false, $idShopGroup = null, $idShop = null)
     {
         return \Configuration::updateValue($key, $values, $html, $idShopGroup, $idShop);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getGlobal($key)
+    {
+        return \Configuration::getGlobalValue($key);
     }
 
     /**
@@ -189,6 +203,8 @@ class Configuration
         try {
             return $this->getUncachedConfiguration($key, $idShopGroup, $idShop)->value;
         } catch (\Exception $e) {
+            Logger::getInstance()->error(__METHOD__ . ': ' . $e->getMessage());
+
             return $default;
         }
     }
@@ -205,9 +221,20 @@ class Configuration
     public function getUncachedConfiguration($key, $idShopGroup = null, $idShop = null)
     {
         if (!$this->isMultishopActive()) {
+            // To avoid making 3 calls to the database in the single shop context
             $idShopGroup = $idShop = null;
+            $id = \Configuration::getIdByName($key, $idShopGroup, $idShop);
+        } else {
+            // mimic the condition of the original \Configuration::get method
+            $id = \Configuration::getIdByName($key, 0, $idShop);
+            if (!$id) {
+                $id = \Configuration::getIdByName($key, $idShopGroup, 0);
+            }
+            if (!$id) {
+                $id = \Configuration::getIdByName($key, 0, 0);
+            }
         }
-        $id = \Configuration::getIdByName($key, $idShopGroup, $idShop);
+
         if ($id > 0) {
             $found = (new \Configuration($id));
             $found->clearCache();
@@ -216,6 +243,28 @@ class Configuration
         }
 
         throw new \Exception('Configuration entry not found: ' . $key . '|grp:' . $idShopGroup . '|shop:' . $idShop);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return \DateTime|null
+     */
+    public function getDateUpd($key)
+    {
+        try {
+            $entry = $this->getUncachedConfiguration(
+                $key,
+                $this->getIdShopGroup(),
+                $this->getIdShop()
+            );
+
+            return new \DateTime($entry->date_upd);
+        } catch (\Exception $e) {
+            Logger::getInstance()->error(__METHOD__ . ': ' . $e->getMessage());
+
+            return null;
+        }
     }
 
     /**
@@ -228,5 +277,13 @@ class Configuration
         //return \Shop::isFeatureActive();
         return \Db::getInstance()->getValue('SELECT value FROM `' . _DB_PREFIX_ . 'configuration` WHERE `name` = "PS_MULTISHOP_FEATURE_ACTIVE"')
             && (\Db::getInstance()->getValue('SELECT COUNT(*) FROM ' . _DB_PREFIX_ . 'shop') > 1);
+    }
+
+    /**
+     * @return int
+     */
+    public function getMainShopId()
+    {
+        return (int) \Db::getInstance()->getValue('SELECT value FROM ' . _DB_PREFIX_ . "configuration WHERE name = 'PS_SHOP_DEFAULT'");
     }
 }

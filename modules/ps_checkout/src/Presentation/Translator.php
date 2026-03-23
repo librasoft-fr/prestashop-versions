@@ -78,6 +78,8 @@ class Translator implements TranslatorInterface
             'Pay in installments with PayPal Pay Later' => $this->translator->trans('Pay in installments with PayPal Pay Later', $parameters, 'Modules.Checkout.Pscheckout'),
             'Pay by %s' => $this->translator->trans('Pay by %s', $parameters, 'Modules.Checkout.Pscheckout'),
             'Pay with %s' => $this->translator->trans('Pay with %s', $parameters, 'Modules.Checkout.Pscheckout'),
+            'Pay later with invoice' => $this->translator->trans('Pay later with invoice', $parameters, 'Modules.Checkout.Pscheckout'),
+            'Pay upon Invoice' => $this->translator->trans('Pay upon Invoice', $parameters, 'Modules.Checkout.Pscheckout'),
 
             'Card holder name' => $this->translator->trans('Card holder name', $parameters, 'Modules.Checkout.Pscheckout'),
             'Card number' => $this->translator->trans('Card number', $parameters, 'Modules.Checkout.Pscheckout'),
@@ -169,6 +171,17 @@ class Translator implements TranslatorInterface
             'Payment' => $this->translator->trans('Payment', $parameters, 'Modules.Checkout.Pscheckout'),
             'Refund' => $this->translator->trans('Refund', $parameters, 'Modules.Checkout.Pscheckout'),
             'You are not authorized to refund this order.' => $this->translator->trans('You are not authorized to refund this order.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'PayPal Order is invalid.' => $this->translator->trans('PayPal Order is invalid.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'PayPal Transaction is invalid.' => $this->translator->trans('PayPal Transaction is invalid.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'PayPal refund currency is invalid.' => $this->translator->trans('PayPal refund currency is invalid.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'PayPal refund amount is invalid.' => $this->translator->trans('PayPal refund amount is invalid.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'PayPal refund failed.' => $this->translator->trans('PayPal refund failed.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'Refund has been processed by PayPal, but order status change or email sending failed.' => $this->translator->trans('Refund has been processed by PayPal, but order status change or email sending failed.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'Refund cannot be processed by PayPal.' => $this->translator->trans('Refund cannot be processed by PayPal.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'Refund has been processed by PayPal.' => $this->translator->trans('Refund has been processed by PayPal.', $parameters, 'Modules.Checkout.Pscheckout'),
+            'No PrestaShop Order identifier received' => $this->translator->trans('No PrestaShop Order identifier received', $parameters, 'Modules.Checkout.Pscheckout'),
+            'Unable to find PayPal Order associated to this PrestaShop Order %s' => $this->translator->trans('Unable to find PayPal Order associated to this PrestaShop Order %s', $parameters, 'Modules.Checkout.Pscheckout'),
+            'PayPal Order %s is not in the same environment as PrestaShop Checkout' => $this->translator->trans('PayPal Order %s is not in the same environment as PrestaShop Checkout', $parameters, 'Modules.Checkout.Pscheckout'),
 
             'Eligible' => $this->translator->trans('Eligible', $parameters, 'Modules.Checkout.Pscheckout'),
             'Partially eligible' => $this->translator->trans('Partially eligible', $parameters, 'Modules.Checkout.Pscheckout'),
@@ -182,6 +195,6 @@ class Translator implements TranslatorInterface
             'The payer did not authorize the payment.' => $this->translator->trans('The payer did not authorize the payment.', $parameters, 'Modules.Checkout.Pscheckout'),
         ];
 
-        return $map[$key] ?? $key;
+        return isset($map[$key]) && $map[$key] ? $map[$key] : $key;
     }
 }

@@ -22,10 +22,13 @@ use FacebookAds\Enum\AbstractEnum;
 
 class IGMediaFields extends AbstractEnum {
 
+  const ALT_TEXT = 'alt_text';
   const BOOST_ELIGIBILITY_INFO = 'boost_eligibility_info';
   const CAPTION = 'caption';
   const COMMENTS_COUNT = 'comments_count';
   const COPYRIGHT_CHECK_INFORMATION = 'copyright_check_information';
+  const HAS_POLL = 'has_poll';
+  const HAS_SLIDER = 'has_slider';
   const ID = 'id';
   const IG_ID = 'ig_id';
   const IS_COMMENT_ENABLED = 'is_comment_enabled';
@@ -41,13 +44,18 @@ class IGMediaFields extends AbstractEnum {
   const THUMBNAIL_URL = 'thumbnail_url';
   const TIMESTAMP = 'timestamp';
   const USERNAME = 'username';
+  const VIDEO_TITLE = 'video_title';
+  const VIEW_COUNT = 'view_count';
 
   public function getFieldTypes() {
     return array(
+      'alt_text' => 'string',
       'boost_eligibility_info' => 'IGMediaBoostEligibilityInfo',
       'caption' => 'string',
       'comments_count' => 'int',
       'copyright_check_information' => 'IGVideoCopyrightCheckMatchesInformation',
+      'has_poll' => 'bool',
+      'has_slider' => 'bool',
       'id' => 'string',
       'ig_id' => 'string',
       'is_comment_enabled' => 'bool',
@@ -63,6 +71,8 @@ class IGMediaFields extends AbstractEnum {
       'thumbnail_url' => 'string',
       'timestamp' => 'datetime',
       'username' => 'string',
+      'video_title' => 'string',
+      'view_count' => 'int',
     );
   }
 }

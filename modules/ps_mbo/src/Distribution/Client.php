@@ -21,17 +21,16 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\Mbo\Distribution;
 
-use Context;
-use GuzzleHttp\Exception\GuzzleException;
+use PrestaShop\Module\Mbo\Exception\ClientRequestException;
 use PrestaShop\Module\Mbo\Helpers\Config;
 use PrestaShop\Module\Mbo\Helpers\ErrorHelper;
-use stdClass;
+use Psr\Http\Client\ClientExceptionInterface;
 use Symfony\Component\Routing\Router;
 
 class Client extends BaseClient
 {
     /**
-     * @var Router
+     * @var Router|null
      */
     private $router;
 
@@ -45,11 +44,9 @@ class Client extends BaseClient
     /**
      * Get a new key from Distribution API.
      *
-     * @return stdClass
-     *
-     * @throws GuzzleException
+     * @return \stdClass
      */
-    public function retrieveNewKey(): stdClass
+    public function retrieveNewKey(): \stdClass
     {
         return $this->processRequestAndDecode('shops/get-pub-key');
     }
@@ -59,12 +56,13 @@ class Client extends BaseClient
      *
      * @param array $params
      *
-     * @return stdClass
+     * @return \stdClass
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws ClientExceptionInterface
+     * @throws ClientRequestException
      * @usage \PrestaShop\Module\Mbo\Traits\HaveShopOnExternalService::registerShop
      */
-    public function registerShop(array $params = []): stdClass
+    public function registerShop(array $params = []): \stdClass
     {
         return $this->processRequestAndDecode(
             'shops',
@@ -76,9 +74,10 @@ class Client extends BaseClient
     /**
      * Unregister a Shop on Distribution API.
      *
-     * @return stdClass
+     * @return \stdClass
      *
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
+     * @throws ClientRequestException
      */
     public function unregisterShop()
     {
@@ -93,12 +92,13 @@ class Client extends BaseClient
      *
      * @param array $params
      *
-     * @return stdClass
+     * @return \stdClass
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws ClientExceptionInterface
+     * @throws ClientRequestException
      * @usage \PrestaShop\Module\Mbo\Traits\HaveShopOnExternalService::updateShop
      */
-    public function updateShop(array $params): stdClass
+    public function updateShop(array $params): \stdClass
     {
         return $this->processRequestAndDecode(
             'shops/' . Config::getShopMboUuid(),
@@ -110,11 +110,11 @@ class Client extends BaseClient
     /**
      * Retrieve the user menu from NEST Api
      *
-     * @return false|stdClass
+     * @return false|\stdClass
      */
     public function getEmployeeMenu()
     {
-        $languageIsoCode = Context::getContext()->language->getIsoCode();
+        $languageIsoCode = \Context::getContext()->language->getIsoCode();
         $cacheKey = __METHOD__ . $languageIsoCode . _PS_VERSION_;
 
         if ($this->cacheProvider->contains($cacheKey)) {

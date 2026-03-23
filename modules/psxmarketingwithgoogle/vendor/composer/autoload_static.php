@@ -14,17 +14,17 @@ class ComposerStaticInite8c3d9c6317e100f45160c2e249acd3c
     );
 
     public static $prefixLengthsPsr4 = array (
-        'l' => 
+        'l' =>
         array (
             'libphonenumber\\' => 15,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
         ),
-        'P' => 
+        'P' =>
         array (
             'PrestaShop\\PsAccountsInstaller\\' => 31,
             'PrestaShop\\Module\\PsxMarketingWithGoogle\\' => 41,
@@ -33,79 +33,79 @@ class ComposerStaticInite8c3d9c6317e100f45160c2e249acd3c
             'PrestaShopCorp\\Billing\\' => 23,
             'PhpOption\\' => 10,
         ),
-        'G' => 
+        'G' =>
         array (
             'Giggsey\\Locale\\' => 15,
         ),
-        'D' => 
+        'D' =>
         array (
             'Dotenv\\' => 7,
         ),
-        'B' => 
+        'B' =>
         array (
             'Brick\\PhoneNumber\\' => 18,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'libphonenumber\\' => 
+        'libphonenumber\\' =>
         array (
             0 => __DIR__ . '/..' . '/giggsey/libphonenumber-for-php/src',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'PrestaShop\\PsAccountsInstaller\\' => 
+        'PrestaShop\\PsAccountsInstaller\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/prestashop-accounts-installer/src',
         ),
-        'PrestaShop\\Module\\PsxMarketingWithGoogle\\' => 
+        'PrestaShop\\Module\\PsxMarketingWithGoogle\\' =>
         array (
             0 => __DIR__ . '/../..' . '/classes',
         ),
-        'PrestaShop\\ModuleLibServiceContainer\\' => 
+        'PrestaShop\\ModuleLibServiceContainer\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/module-lib-service-container/src',
         ),
-        'PrestaShop\\ModuleLibCacheDirectoryProvider\\' => 
+        'PrestaShop\\ModuleLibCacheDirectoryProvider\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/module-lib-cache-directory-provider/src',
         ),
-        'PrestaShopCorp\\Billing\\' => 
+        'PrestaShopCorp\\Billing\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashopcorp/module-lib-billing/src',
         ),
-        'PhpOption\\' => 
+        'PhpOption\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
-        'Giggsey\\Locale\\' => 
+        'Giggsey\\Locale\\' =>
         array (
             0 => __DIR__ . '/..' . '/giggsey/locale/src',
         ),
-        'Dotenv\\' => 
+        'Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
-        'Brick\\PhoneNumber\\' => 
+        'Brick\\PhoneNumber\\' =>
         array (
             0 => __DIR__ . '/..' . '/brick/phonenumber/src',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'R' => 
+        'R' =>
         array (
-            'Raven_' => 
+            'Raven_' =>
             array (
                 0 => __DIR__ . '/..' . '/sentry/sentry/lib',
             ),

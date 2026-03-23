@@ -1,6 +1,0 @@
-services:
-  _defaults:
-    public: true
-
-  prestashop.module.psxdesign.validator.color_palette_validator:
-    class: PrestaShop\Module\PsxDesign\Validator\ColorPaletteValidator

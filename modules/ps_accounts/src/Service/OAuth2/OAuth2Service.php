@@ -25,6 +25,9 @@ use PrestaShop\Module\PsAccounts\Http\Client\Curl\Client as HttpClient;
 use PrestaShop\Module\PsAccounts\Http\Client\Factory;
 use PrestaShop\Module\PsAccounts\Http\Client\Request;
 use PrestaShop\Module\PsAccounts\Http\Client\Response;
+use PrestaShop\Module\PsAccounts\Service\OAuth2\Exception\ConnectException;
+use PrestaShop\Module\PsAccounts\Service\OAuth2\Exception\InvalidRequestException;
+use PrestaShop\Module\PsAccounts\Service\OAuth2\Exception\InvalidScopeException;
 use PrestaShop\Module\PsAccounts\Service\OAuth2\Resource\AccessToken;
 use PrestaShop\Module\PsAccounts\Service\OAuth2\Resource\UserInfo;
 use PrestaShop\Module\PsAccounts\Service\OAuth2\Resource\WellKnown;
@@ -120,6 +123,10 @@ class OAuth2Service
     {
         if (null === $this->httpClient) {
             $this->httpClient = (new Factory())->create($this->clientConfig);
+            $this->httpClient->getCircuitBreaker()->setFallbackResponse(new Response([
+                'error' => OAuth2ServerException::ERROR_CONNECT,
+                'error_description' => 'Circuit Breaker Open',
+            ], 500));
         }
 
         return $this->httpClient;
@@ -196,7 +203,7 @@ class OAuth2Service
         $response = $this->getHttpClient()->get('/.well-known/openid-configuration');
 
         if (!$response->isSuccessful) {
-            throw new OAuth2Exception($this->getResponseErrorMsg($response, 'Unable to get openid-configuration'));
+            $this->handleError($response, 'Unable to get openid-configuration');
         }
 
         return $response->body;
@@ -215,7 +222,7 @@ class OAuth2Service
             $response = $this->getHttpClient()->get($this->getWellKnown()->jwks_uri);
 
             if (!$response->isSuccessful) {
-                throw new OAuth2Exception($this->getResponseErrorMsg($response, 'Unable to get JWKS'));
+                $this->handleError($response, 'Unable to get JWKS');
             }
 
             $this->cachedJwks->write(
@@ -233,6 +240,8 @@ class OAuth2Service
      * @return AccessToken access token
      *
      * @throws OAuth2Exception
+     * @throws InvalidScopeException
+     * @throws InvalidRequestException
      */
     public function getAccessTokenByClientCredentials(array $scope = [], array $audience = [])
     {
@@ -253,7 +262,8 @@ class OAuth2Service
         );
 
         if (!$response->isSuccessful) {
-            throw new OAuth2Exception($this->getResponseErrorMsg($response, 'Unable to get access token'));
+            // throw new OAuth2ServerException($response, 'Unable to get access token');
+            $this->handleError($response, 'Unable to get access token');
         }
 
         return new AccessToken($response->body);
@@ -266,6 +276,7 @@ class OAuth2Service
      * @param string $uiLocales
      * @param string $acrValues
      * @param string $prompt
+     * @param int|null $shopId
      *
      * @return string authorization flow uri
      *
@@ -277,7 +288,8 @@ class OAuth2Service
         $pkceMethod = 'S256',
         $uiLocales = 'fr',
         $acrValues = 'prompt:login',
-        $prompt = 'none'
+        $prompt = 'none',
+        $shopId = null
     ) {
         $this->assertClientExists();
 
@@ -288,7 +300,7 @@ class OAuth2Service
                 'scope' => implode(' ', $this->defaultScopes),
                 'response_type' => 'code',
                 'approval_prompt' => 'auto',
-                'redirect_uri' => $this->getOAuth2Client()->getRedirectUri(),
+                'redirect_uri' => $this->getOAuth2Client()->getRedirectUri([], $shopId),
                 'client_id' => $this->oAuth2Client->getClientId(),
                 'acr_values' => $acrValues,
                 'prompt' => $prompt,
@@ -325,16 +337,20 @@ class OAuth2Service
      * @param string|null $pkceCode
      * @param array $scope
      * @param array $audience
+     * @param int|null $shopId
      *
      * @return AccessToken access token
      *
      * @throws OAuth2Exception
+     * @throws InvalidScopeException
+     * @throws InvalidRequestException
      */
     public function getAccessTokenByAuthorizationCode(
         $code,
         $pkceCode = null,
         array $scope = [],
-        array $audience = []
+        array $audience = [],
+        $shopId = null
     ) {
         $this->assertClientExists();
 
@@ -348,7 +364,7 @@ class OAuth2Service
                     'code' => $code,
                     'scope' => implode(' ', $scope),
                     'audience' => implode(' ', $audience),
-                    'redirect_uri' => $this->getOAuth2Client()->getRedirectUri(),
+                    'redirect_uri' => $this->getOAuth2Client()->getRedirectUri([], $shopId),
                 ], $pkceCode ? [
                     'code_verifier' => $pkceCode,
                 ] : []),
@@ -356,7 +372,7 @@ class OAuth2Service
         );
 
         if (!$response->isSuccessful) {
-            throw new OAuth2Exception($this->getResponseErrorMsg($response, 'Unable to get access token'));
+            $this->handleError($response, 'Unable to get access token');
         }
 
         return new AccessToken($response->body);
@@ -385,7 +401,7 @@ class OAuth2Service
         );
 
         if (!$response->isSuccessful) {
-            throw new OAuth2Exception($this->getResponseErrorMsg($response, 'Unable to refresh access token'));
+            $this->handleError($response, 'Unable to refresh access token');
         }
 
         return new AccessToken($response->body);
@@ -408,7 +424,7 @@ class OAuth2Service
         );
 
         if (!$response->isSuccessful) {
-            throw new OAuth2Exception($this->getResponseErrorMsg($response, 'Unable to get user infos'));
+            $this->handleError($response, 'Unable to get user infos');
         }
 
         return new UserInfo($response->body);
@@ -476,20 +492,27 @@ class OAuth2Service
 
     /**
      * @param Response $response
-     * @param string $defaultMessage
+     * @param string $defaultErrorMessage
+     * @param string $defaultErrorCode
      *
-     * @return string
+     * @return void
+     *
+     * @throws OAuth2ServerException
      */
-    protected function getResponseErrorMsg(Response $response, $defaultMessage = '')
+    protected function handleError(Response $response, $defaultErrorMessage = '', $defaultErrorCode = OAuth2ServerException::ERROR_UNKNOWN)
     {
-        $msg = $defaultMessage;
-        $body = $response->body;
-        if (isset($body['error']) &&
-            isset($body['error_description'])
-        ) {
-            $msg = $body['error'] . ': ' . $body['error_description'];
-        }
+        $errorCode = $response->getErrorCodeFromBody('error', $defaultErrorCode);
+        $errorMessage = $response->statusCode . ': ' . $response->getErrorMessageFromBody('error_description', $defaultErrorMessage);
 
-        return $response->statusCode . ' - ' . $msg;
+        switch ($errorCode) {
+            case OAuth2ServerException::ERROR_CONNECT:
+                throw new ConnectException($response, $errorMessage, $errorCode);
+            case OAuth2ServerException::ERROR_INVALID_REQUEST:
+                throw new InvalidRequestException($response, $errorMessage, $errorCode);
+            case OAuth2ServerException::ERROR_INVALID_SCOPE:
+                throw new InvalidScopeException($response, $errorMessage, $errorCode);
+            default:
+                throw new OAuth2ServerException($response, $errorMessage, $errorCode);
+        }
     }
 }

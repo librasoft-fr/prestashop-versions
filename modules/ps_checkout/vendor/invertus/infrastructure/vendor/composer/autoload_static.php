@@ -4,17 +4,17 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitedc45bfc5bef16fff4d4090bcc580ec4
+class ComposerStaticInita3ddec1df580f8c6dd4f83c3eca297b4
 {
     public static $prefixLengthsPsr4 = array (
-        'P' => 
+        'P' =>
         array (
             'PsCheckout\\Infrastructure\\' => 26,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'PsCheckout\\Infrastructure\\' => 
+        'PsCheckout\\Infrastructure\\' =>
         array (
             0 => __DIR__ . '/../../..' . '/infrastructure/src',
         ),
@@ -30,6 +30,8 @@ class ComposerStaticInitedc45bfc5bef16fff4d4090bcc580ec4
         'PsCheckout\\Infrastructure\\Action\\CustomerAuthenticationActionInterface' => __DIR__ . '/../../..' . '/infrastructure/src/Action/CustomerAuthenticationActionInterface.php',
         'PsCheckout\\Infrastructure\\Action\\CustomerNotifyAction' => __DIR__ . '/../../..' . '/infrastructure/src/Action/CustomerNotifyAction.php',
         'PsCheckout\\Infrastructure\\Action\\CustomerNotifyActionInterface' => __DIR__ . '/../../..' . '/infrastructure/src/Action/CustomerNotifyActionInterface.php',
+        'PsCheckout\\Infrastructure\\Action\\SaveBatchConfigurationAction' => __DIR__ . '/../../..' . '/infrastructure/src/Action/SaveBatchConfigurationAction.php',
+        'PsCheckout\\Infrastructure\\Action\\SaveBatchConfigurationActionInterface' => __DIR__ . '/../../..' . '/infrastructure/src/Action/SaveBatchConfigurationActionInterface.php',
         'PsCheckout\\Infrastructure\\Adapter\\Address' => __DIR__ . '/../../..' . '/infrastructure/src/Adapter/Address.php',
         'PsCheckout\\Infrastructure\\Adapter\\AddressInterface' => __DIR__ . '/../../..' . '/infrastructure/src/Adapter/AddressInterface.php',
         'PsCheckout\\Infrastructure\\Adapter\\Cart' => __DIR__ . '/../../..' . '/infrastructure/src/Adapter/Cart.php',
@@ -125,14 +127,16 @@ class ComposerStaticInitedc45bfc5bef16fff4d4090bcc580ec4
         'PsCheckout\\Infrastructure\\Validator\\FrontControllerValidatorInterface' => __DIR__ . '/../../..' . '/infrastructure/src/Validator/FrontControllerValidatorInterface.php',
         'PsCheckout\\Infrastructure\\Validator\\MerchantValidator' => __DIR__ . '/../../..' . '/infrastructure/src/Validator/MerchantValidator.php',
         'PsCheckout\\Infrastructure\\Validator\\MerchantValidatorInterface' => __DIR__ . '/../../..' . '/infrastructure/src/Validator/MerchantValidatorInterface.php',
+        'PsCheckout\\Infrastructure\\Validator\\PayLaterValidator' => __DIR__ . '/../../..' . '/infrastructure/src/Validator/PayLaterValidator.php',
+        'PsCheckout\\Infrastructure\\Validator\\PayLaterValidatorInterface' => __DIR__ . '/../../..' . '/infrastructure/src/Validator/PayLaterValidatorInterface.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitedc45bfc5bef16fff4d4090bcc580ec4::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitedc45bfc5bef16fff4d4090bcc580ec4::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitedc45bfc5bef16fff4d4090bcc580ec4::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita3ddec1df580f8c6dd4f83c3eca297b4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita3ddec1df580f8c6dd4f83c3eca297b4::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInita3ddec1df580f8c6dd4f83c3eca297b4::$classMap;
 
         }, null, ClassLoader::class);
     }

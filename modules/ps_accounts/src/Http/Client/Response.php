@@ -22,6 +22,7 @@ namespace PrestaShop\Module\PsAccounts\Http\Client;
 
 /**
  * @property array $body
+ * @property array $headers
  * @property mixed $raw
  * @property int $statusCode
  * @property bool $isSuccessful
@@ -30,6 +31,7 @@ namespace PrestaShop\Module\PsAccounts\Http\Client;
 class Response extends ConfigObject
 {
     const BODY = 'body';
+    const HEADERS = 'headers';
     const RAW = 'raw';
     const STATUS_CODE = 'statusCode';
     const IS_SUCCESSFUL = 'isSuccessful';
@@ -38,11 +40,13 @@ class Response extends ConfigObject
     /**
      * @param array|string $body
      * @param int $statusCode
+     * @param array $headers
      */
-    public function __construct($body, $statusCode)
+    public function __construct($body, $statusCode, $headers = [])
     {
         parent::__construct([
             self::RAW => $body,
+            self::HEADERS => $headers,
             self::BODY => $this->decodeBody($body),
             self::STATUS_CODE => (int) $statusCode,
             self::IS_SUCCESSFUL => '2' === substr((string) $statusCode, 0, 1),
@@ -59,6 +63,45 @@ class Response extends ConfigObject
             'httpCode' => $this->statusCode,
             'body' => $this->body,
         ];
+    }
+
+    /**
+     * @param string $key
+     * @param string $defaultMessage
+     *
+     * @return string
+     */
+    public function getErrorMessageFromBody($key, $defaultMessage = '')
+    {
+        return $this->getValueFromBody($key, $defaultMessage, static function ($value) {return is_string($value); });
+    }
+
+    /**
+     * @param string $key
+     * @param string $defaultCode
+     *
+     * @return string
+     */
+    public function getErrorCodeFromBody($key, $defaultCode = '')
+    {
+        return $this->getValueFromBody($key, $defaultCode, static function ($value) {return is_string($value); });
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $default
+     * @param callable $validator
+     *
+     * @return mixed
+     */
+    public function getValueFromBody($key, $default = null, $validator = null)
+    {
+        if (!isset($this->body[$key]) ||
+            ($validator && !$validator($this->body[$key]))) {
+            return $default;
+        }
+
+        return $this->body[$key];
     }
 
     /**

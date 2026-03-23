@@ -22,11 +22,12 @@ declare(strict_types=1);
 namespace PrestaShop\Module\Mbo\Distribution;
 
 use Doctrine\Common\Cache\CacheProvider;
-use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Exception\GuzzleException;
+use PrestaShop\Module\Mbo\Exception\ClientRequestException;
 use PrestaShop\Module\Mbo\Helpers\Config;
-use ps_mbo;
-use Symfony\Component\Routing\Router;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 class BaseClient
 {
@@ -34,10 +35,24 @@ class BaseClient
     public const HTTP_METHOD_POST = 'POST';
     public const HTTP_METHOD_PUT = 'PUT';
     public const HTTP_METHOD_DELETE = 'DELETE';
+
+    protected $apiUrl;
+
     /**
-     * @var HttpClient
+     * @var ClientInterface
      */
     protected $httpClient;
+
+    /**
+     * @var RequestFactoryInterface
+     */
+    protected $requestFactory;
+
+    /**
+     * @var StreamFactoryInterface
+     */
+    protected $streamFactory;
+
     /**
      * @var CacheProvider
      */
@@ -70,13 +85,17 @@ class BaseClient
      */
     protected $headers = [];
 
-    /**
-     * @param HttpClient $httpClient
-     * @param \Doctrine\Common\Cache\CacheProvider $cacheProvider
-     */
-    public function __construct(HttpClient $httpClient, CacheProvider $cacheProvider)
-    {
+    public function __construct(
+        string $apiUrl,
+        ClientInterface $httpClient,
+        RequestFactoryInterface $requestFactory,
+        StreamFactoryInterface $streamFactory,
+        CacheProvider $cacheProvider
+    ) {
+        $this->apiUrl = $apiUrl;
         $this->httpClient = $httpClient;
+        $this->requestFactory = $requestFactory;
+        $this->streamFactory = $streamFactory;
         $this->cacheProvider = $cacheProvider;
     }
 
@@ -130,7 +149,7 @@ class BaseClient
             'uuid' => Config::getShopMboUuid(),
             'shop_url' => Config::getShopUrl(),
             'admin_path' => sprintf('/%s/', trim(str_replace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_), '/')),
-            'mbo_version' => ps_mbo::VERSION,
+            'mbo_version' => \ps_mbo::VERSION,
             'ps_version' => _PS_VERSION_,
         ], $params);
     }
@@ -146,7 +165,7 @@ class BaseClient
      *
      * @return mixed
      *
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     protected function processRequestAndDecode(
         string $uri,
@@ -157,7 +176,7 @@ class BaseClient
         $response = json_decode($this->processRequest($uri, $method, $options));
 
         if (JSON_ERROR_NONE !== json_last_error()) {
-            return (object)$default;
+            return (object) $default;
         }
 
         return $response;
@@ -172,20 +191,37 @@ class BaseClient
      *
      * @return string
      *
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
+     * @throws ClientRequestException
      */
     protected function processRequest(
         string $uri = '',
         string $method = self::HTTP_METHOD_GET,
         array $options = []
     ): string {
-        $options = array_merge($options, [
-            'query' => $this->queryParameters,
-            'headers' => $this->headers,
-        ]);
+        $queryString = !empty($this->queryParameters) ? '?' . http_build_query($this->queryParameters) : '';
+        $request = $this->requestFactory->createRequest($method, $this->apiUrl . '/api/' . ltrim($uri, '/') . $queryString);
+        if (empty($this->headers['Content-Type'])) {
+            $this->headers['Accept'] = 'application/json';
+            $this->headers['Content-Type'] = 'application/json';
+        }
+        foreach ($this->headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
 
-        return (string) $this->httpClient
-            ->request($method, '/api/' . ltrim($uri, '/'), $options)
-            ->getBody();
+        if (!empty($options['form_params'])) {
+            if ($this->headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+                $request = $request->withBody($this->streamFactory->createStream(urlencode(serialize($options['form_params']))));
+            } else {
+                $request = $request->withBody($this->streamFactory->createStream(json_encode($options['form_params'])));
+            }
+        }
+
+        $response = $this->httpClient->sendRequest($request);
+        if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
+            throw new ClientRequestException($response->getReasonPhrase(), $response->getStatusCode());
+        }
+
+        return $response->getBody()->getContents();
     }
 }

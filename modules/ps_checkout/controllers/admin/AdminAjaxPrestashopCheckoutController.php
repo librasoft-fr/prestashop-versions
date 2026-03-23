@@ -22,7 +22,6 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use Monolog\Logger;
-use PsCheckout\Core\Exception\PsCheckoutException;
 use PsCheckout\Core\Order\Exception\OrderException;
 use PsCheckout\Core\OrderState\OrderStateException;
 use PsCheckout\Core\OrderState\Service\OrderStateMapper;
@@ -35,12 +34,12 @@ use PsCheckout\Core\Settings\Configuration\PayPalConfiguration;
 use PsCheckout\Core\Settings\Configuration\PayPalExpressCheckoutConfiguration;
 use PsCheckout\Core\Settings\Configuration\PayPalPayLaterConfiguration;
 use PsCheckout\Core\Webhook\Service\WebhookSecretToken;
+use PsCheckout\Infrastructure\Action\SaveBatchConfigurationActionInterface;
 use PsCheckout\Infrastructure\Adapter\Configuration;
 use PsCheckout\Infrastructure\Bootstrap\Install\ApplePayInstaller;
 use PsCheckout\Infrastructure\Bootstrap\Install\ApplePayInstallerException;
 use PsCheckout\Infrastructure\Bootstrap\Install\OrderStateInstaller;
 use PsCheckout\Infrastructure\Controller\AbstractAdminController;
-use PsCheckout\Infrastructure\Enum\PermissionType;
 use PsCheckout\Infrastructure\Logger\LoggerFileFinder;
 use PsCheckout\Infrastructure\Logger\LoggerFileReader;
 use PsCheckout\Infrastructure\Repository\FundingSourceRepository;
@@ -49,6 +48,7 @@ use PsCheckout\Infrastructure\Repository\PayPalOrderRepository;
 use PsCheckout\Infrastructure\Repository\PsAccountRepository;
 use PsCheckout\Module\Presentation\Translator;
 use PsCheckout\Presentation\Presenter\PayPalOrder\PayPalOrderPresenter;
+use Psr\Log\LoggerInterface;
 
 class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
 {
@@ -350,17 +350,13 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
 
     public function ajaxProcessBatchSaveConfiguration()
     {
-        /** @var Configuration $configurationService */
-        $configurationService = $this->module->getService(Configuration::class);
+        /** @var SaveBatchConfigurationActionInterface $saveBatchConfigurationAction */
+        $saveBatchConfigurationAction = $this->module->getService(SaveBatchConfigurationActionInterface::class);
 
         $configuration = json_decode(Tools::getValue('configuration'), true);
 
         try {
-            $this->validateBatchConfiguration($configuration);
-
-            foreach ($configuration as $configurationItem) {
-                $configurationService->set(pSQL($configurationItem['name']), pSQL($configurationItem['value']));
-            }
+            $saveBatchConfigurationAction->execute($configuration);
 
             $this->exitWithResponse([
                 'status' => true,
@@ -532,21 +528,9 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
      */
     public function ajaxProcessGetLogs()
     {
-        header('Content-type: application/json');
-
         $filename = Tools::getValue('file');
         $offset = (int) Tools::getValue('offset');
         $limit = (int) Tools::getValue('limit');
-
-        if (empty($filename) || false === Validate::isFileName($filename)) {
-            http_response_code(400);
-            $this->ajaxRender(json_encode([
-                'status' => false,
-                'errors' => [
-                    'Filename is invalid.',
-                ],
-            ]));
-        }
 
         /** @var LoggerFileReader $loggerFileReader */
         $loggerFileReader = $this->module->getService(LoggerFileReader::class);
@@ -554,21 +538,29 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
 
         try {
             $fileData = $loggerFileReader->read(
-                new SplFileObject(LoggerFileFinder::LOGGER_DIRECTORY_PATH . $filename),
+                $filename,
                 $offset,
                 $limit
             );
-        } catch (Exception $exception) {
-            http_response_code(500);
-            $this->ajaxRender(json_encode([
+        } catch (InvalidArgumentException $exception) {
+            $this->exitWithResponse([
                 'status' => false,
+                'httpCode' => 400,
                 'errors' => [
                     $exception->getMessage(),
                 ],
-            ]));
+            ]);
+        } catch (Exception $exception) {
+            $this->exitWithResponse([
+                'status' => false,
+                'httpCode' => 500,
+                'errors' => [
+                    $exception->getMessage(),
+                ],
+            ]);
         }
 
-        $this->ajaxRender(json_encode([
+        $this->exitWithResponse([
             'status' => true,
             'file' => $fileData['filename'],
             'offset' => $fileData['offset'],
@@ -576,7 +568,7 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
             'currentOffset' => $fileData['currentOffset'],
             'eof' => (int) $fileData['eof'],
             'lines' => $fileData['lines'],
-        ]));
+        ]);
     }
 
     /**
@@ -605,56 +597,6 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
     public function ajaxProcessToggleECProductPage()
     {
         $this->setConfiguration(PayPalExpressCheckoutConfiguration::PS_CHECKOUT_EC_PRODUCT_PAGE, (bool) Tools::getValue('status'));
-
-        $this->ajaxRender(json_encode(true));
-    }
-
-    /**
-     * AJAX: Toggle pay later message on order page
-     */
-    public function ajaxProcessTogglePayLaterOrderPageMessage()
-    {
-        $this->setConfiguration(PayPalPayLaterConfiguration::PS_CHECKOUT_PAY_LATER_ORDER_PAGE, (bool) Tools::getValue('status'));
-
-        $this->ajaxRender(json_encode(true));
-    }
-
-    /**
-     * AJAX: Toggle pay later message on product page
-     */
-    public function ajaxProcessTogglePayLaterProductPageMessage()
-    {
-        $this->setConfiguration(PayPalPayLaterConfiguration::PS_CHECKOUT_PAY_LATER_PRODUCT_PAGE, (bool) Tools::getValue('status'));
-
-        $this->ajaxRender(json_encode(true));
-    }
-
-    /**
-     * AJAX: Toggle pay later banner on home page
-     */
-    public function ajaxProcessTogglePayLaterHomePageBanner()
-    {
-        $this->setConfiguration(PayPalPayLaterConfiguration::PS_CHECKOUT_PAY_LATER_HOME_PAGE_BANNER, (bool) Tools::getValue('status'));
-
-        $this->ajaxRender(json_encode(true));
-    }
-
-    /**
-     * AJAX: Toggle pay later banner on cart page
-     */
-    public function ajaxProcessTogglePayLaterOrderPageBanner()
-    {
-        $this->setConfiguration(PayPalPayLaterConfiguration::PS_CHECKOUT_PAY_LATER_ORDER_PAGE_BANNER, (bool) Tools::getValue('status'));
-
-        $this->ajaxRender(json_encode(true));
-    }
-
-    /**
-     * AJAX: Toggle pay later banner on product page
-     */
-    public function ajaxProcessTogglePayLaterProductPageBanner()
-    {
-        $this->setConfiguration(PayPalPayLaterConfiguration::PS_CHECKOUT_PAY_LATER_PRODUCT_PAGE_BANNER, (bool) Tools::getValue('status'));
 
         $this->ajaxRender(json_encode(true));
     }
@@ -691,6 +633,8 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
 
     public function ajaxProcessFetchOrder()
     {
+        /** @var Translator $translator **/
+        $translator = $this->module->getService(Translator::class);
         $id_order = (int) Tools::getValue('id_order');
 
         if (empty($id_order)) {
@@ -698,7 +642,7 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
             $this->ajaxRender(json_encode([
                 'status' => false,
                 'errors' => [
-                    $this->trans('No PrestaShop Order identifier received'),
+                    $translator->trans('No PrestaShop Order identifier received'),
                 ],
             ]));
         }
@@ -710,11 +654,29 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
         $payPalOrder = $payPalOrderRepository->getOneByCartId($order->id_cart);
 
         if (!$payPalOrder) {
+            try {
+                $migrationSuccessful = $payPalOrderRepository->attemptToMigratePsCheckoutCart($order->id_cart);
+                if ($migrationSuccessful) {
+                    $payPalOrder = $payPalOrderRepository->getOneByCartId($order->id_cart);
+                }
+            } catch (\Exception $e) {
+                $logger = $this->module->getService(LoggerInterface::class);
+                $logger->error(
+                    'Attempted to migrate order to V5 database structure. Encoutered error: ' . $e->getMessage(),
+                    [
+                        'exception' => $e,
+                        'cart_id' => $order->id_cart,
+                    ]
+                );
+            }
+        }
+
+        if (!$payPalOrder) {
             http_response_code(500);
             $this->ajaxRender(json_encode([
                 'status' => false,
                 'errors' => [
-                    $this->trans('Unable to find PayPal Order associated to this PrestaShop Order %s', [$order->id]),
+                    $translator->trans('Unable to find PayPal Order associated to this PrestaShop Order %s', [$order->id]),
                 ],
             ]));
         }
@@ -727,14 +689,23 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
             $this->ajaxRender(json_encode([
                 'status' => false,
                 'errors' => [
-                    $this->trans('PayPal Order %s is not in the same environment as PrestaShop Checkout', [$payPalOrder->getId()]),
+                    $translator->trans('PayPal Order %s is not in the same environment as PrestaShop Checkout', [$payPalOrder->getId()]),
                 ],
             ]));
         }
 
         /** @var PayPalOrderProvider $paypalOrderProvider */
         $paypalOrderProvider = $this->module->getService(PayPalOrderProvider::class);
-        $paypalOrderResponse = $paypalOrderProvider->getById($payPalOrder->getId());
+
+        try {
+            $paypalOrderResponse = $paypalOrderProvider->getById($payPalOrder->getId());
+        } catch (Exception $exception) {
+            http_response_code(500);
+            $this->ajaxRender(json_encode([
+                'status' => false,
+                'errors' => [$exception->getMessage()],
+            ]));
+        }
 
         /** @var PayPalOrderPresenter $payPalOrderPresenter */
         $payPalOrderPresenter = $this->module->getService(PayPalOrderPresenter::class);
@@ -759,14 +730,6 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
         /** @var Translator $translator **/
         $translator = $this->module->getService(Translator::class);
 
-        if (!$this->ensureHasPermissions([PermissionType::EDIT])) {
-            $this->exitWithResponse([
-                'httpCode' => 403,
-                'status' => false,
-                'errors' => [$translator->trans('You are not authorized to refund this order.')],
-            ]);
-        }
-
         $payPalOrderId = Tools::getValue('orderPayPalRefundOrder');
         $captureId = Tools::getValue('orderPayPalRefundTransaction');
         $amount = Tools::getValue('orderPayPalRefundAmount');
@@ -782,23 +745,23 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
         } catch (PayPalRefundException $exception) {
             switch ($exception->getCode()) {
                 case PayPalRefundException::INVALID_ORDER_ID:
-                    $error = $this->trans('PayPal Order is invalid.');
+                    $error = $translator->trans('PayPal Order is invalid.');
 
                     break;
                 case PayPalRefundException::INVALID_TRANSACTION_ID:
-                    $error = $this->trans('PayPal Transaction is invalid.');
+                    $error = $translator->trans('PayPal Transaction is invalid.');
 
                     break;
                 case PayPalRefundException::INVALID_CURRENCY:
-                    $error = $this->trans('PayPal refund currency is invalid.');
+                    $error = $translator->trans('PayPal refund currency is invalid.');
 
                     break;
                 case PayPalRefundException::INVALID_AMOUNT:
-                    $error = $this->trans('PayPal refund amount is invalid.');
+                    $error = $translator->trans('PayPal refund amount is invalid.');
 
                     break;
                 case PayPalRefundException::REFUND_FAILED:
-                    $error = $this->trans('PayPal refund failed.');
+                    $error = $translator->trans('PayPal refund failed.');
 
                     break;
                 default:
@@ -816,7 +779,7 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
                 $this->exitWithResponse([
                     'httpCode' => 200,
                     'status' => true,
-                    'content' => $this->trans('Refund has been processed by PayPal, but order status change or email sending failed.'),
+                    'content' => $translator->trans('Refund has been processed by PayPal, but order status change or email sending failed.'),
                 ]);
             } elseif ($exception->getCode() !== OrderException::ORDER_HAS_ALREADY_THIS_STATUS) {
                 $this->exitWithResponse([
@@ -833,7 +796,7 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
                 'httpCode' => 500,
                 'status' => false,
                 'errors' => [
-                    $this->trans('Refund cannot be processed by PayPal.'),
+                    $translator->trans('Refund cannot be processed by PayPal.'),
                 ],
                 'error' => $exception->getMessage(),
             ]);
@@ -842,7 +805,7 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
         $this->exitWithResponse([
             'httpCode' => 200,
             'status' => true,
-            'content' => $this->trans('Refund has been processed by PayPal.'),
+            'content' => $translator->trans('Refund has been processed by PayPal.'),
         ]);
     }
 
@@ -881,34 +844,6 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
     }
 
     /**
-     * @param array $configuration
-     *
-     * @throws PsCheckoutException
-     */
-    private function validateBatchConfiguration(array $configuration)
-    {
-        $blacklistedConfigurationKeys = [
-            PayPalConfiguration::PS_CHECKOUT_PAYPAL_ID_MERCHANT,
-            PayPalConfiguration::PS_CHECKOUT_PAYPAL_EMAIL_STATUS,
-            PayPalConfiguration::PS_CHECKOUT_PAYPAL_PAYMENT_STATUS,
-        ];
-
-        if (empty($configuration)) {
-            throw new PsCheckoutException("Config can't be empty");
-        }
-
-        foreach ($configuration as $configurationItem) {
-            if (empty($configurationItem['name']) || 0 !== strpos($configurationItem['name'], 'PS_CHECKOUT_')) {
-                throw new PsCheckoutException('Received invalid configuration key');
-            }
-
-            if (array_search($configurationItem['name'], $blacklistedConfigurationKeys)) {
-                throw new PsCheckoutException('Received blacklisted configuration key');
-            }
-        }
-    }
-
-    /**
      * @param array $response
      *
      * @return void
@@ -938,12 +873,16 @@ class AdminAjaxPrestashopCheckoutController extends AbstractAdminController
     {
         $filename = Tools::getValue('file');
 
-        if (empty($filename) || false === Validate::isFileName($filename)) {
+        try {
+            /** @var LoggerFileReader $loggerFileReader */
+            $loggerFileReader = $this->module->getService(LoggerFileReader::class);
+            $loggerFileReader->validateFilename($filename);
+        } catch (InvalidArgumentException $exception) {
             $this->exitWithResponse([
                 'status' => false,
                 'httpCode' => 400,
                 'errors' => [
-                    'Filename is invalid.',
+                    $exception->getMessage(),
                 ],
             ]);
         }

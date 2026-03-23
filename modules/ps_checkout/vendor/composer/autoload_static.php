@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit8e310ae378687187823817536b41b10b
+class ComposerStaticInit51cf6ff61c1cb7c6f9a20181accdf8cb
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -16,15 +16,15 @@ class ComposerStaticInit8e310ae378687187823817536b41b10b
     );
 
     public static $prefixLengthsPsr4 = array (
-        'l' => 
+        'l' =>
         array (
             'libphonenumber\\' => 15,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
@@ -41,13 +41,13 @@ class ComposerStaticInit8e310ae378687187823817536b41b10b
             'PrestaShop\\ModuleLibServiceContainer\\' => 37,
             'PrestaShop\\ModuleLibCacheDirectoryProvider\\' => 43,
         ),
-        'H' => 
+        'H' =>
         array (
             'Http\\Promise\\' => 13,
             'Http\\Message\\' => 13,
             'Http\\Client\\' => 12,
         ),
-        'G' => 
+        'G' =>
         array (
             'GuzzleLogMiddleware\\' => 20,
             'GuzzleHttp\\Psr7\\' => 16,
@@ -55,111 +55,111 @@ class ComposerStaticInit8e310ae378687187823817536b41b10b
             'GuzzleHttp\\' => 11,
             'Giggsey\\Locale\\' => 15,
         ),
-        'C' => 
+        'C' =>
         array (
             'Clue\\StreamFilter\\' => 18,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'libphonenumber\\' => 
+        'libphonenumber\\' =>
         array (
             0 => __DIR__ . '/..' . '/giggsey/libphonenumber-for-php/src',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Http\\Client\\' => 
+        'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'PsCheckout\\Utility\\' => 
+        'PsCheckout\\Utility\\' =>
         array (
             0 => __DIR__ . '/..' . '/invertus/utility/src',
         ),
-        'PsCheckout\\Presentation\\' => 
+        'PsCheckout\\Presentation\\' =>
         array (
             0 => __DIR__ . '/..' . '/invertus/presentation/src',
         ),
-        'PsCheckout\\Module\\' => 
+        'PsCheckout\\Module\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
-        'PsCheckout\\Infrastructure\\' => 
+        'PsCheckout\\Infrastructure\\' =>
         array (
             0 => __DIR__ . '/..' . '/invertus/infrastructure/src',
         ),
-        'PsCheckout\\Core\\' => 
+        'PsCheckout\\Core\\' =>
         array (
             0 => __DIR__ . '/..' . '/invertus/core/src',
         ),
-        'PsCheckout\\Api\\' => 
+        'PsCheckout\\Api\\' =>
         array (
             0 => __DIR__ . '/..' . '/invertus/api/src',
         ),
-        'Prestashop\\ModuleLibMboInstaller\\' => 
+        'Prestashop\\ModuleLibMboInstaller\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/module-lib-mbo-installer/src',
         ),
-        'Prestashop\\ModuleLibGuzzleAdapter\\' => 
+        'Prestashop\\ModuleLibGuzzleAdapter\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/module-lib-guzzle-adapter/src',
         ),
-        'PrestaShop\\PsAccountsInstaller\\' => 
+        'PrestaShop\\PsAccountsInstaller\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/prestashop-accounts-installer/src',
         ),
-        'PrestaShop\\ModuleLibServiceContainer\\' => 
+        'PrestaShop\\ModuleLibServiceContainer\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/module-lib-service-container/src',
         ),
-        'PrestaShop\\ModuleLibCacheDirectoryProvider\\' => 
+        'PrestaShop\\ModuleLibCacheDirectoryProvider\\' =>
         array (
             0 => __DIR__ . '/..' . '/prestashop/module-lib-cache-directory-provider/src',
         ),
-        'Http\\Promise\\' => 
+        'Http\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/promise/src',
         ),
-        'Http\\Message\\' => 
+        'Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/message/src',
         ),
-        'Http\\Client\\' => 
+        'Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/httplug/src',
         ),
-        'GuzzleLogMiddleware\\' => 
+        'GuzzleLogMiddleware\\' =>
         array (
             0 => __DIR__ . '/..' . '/gmponos/guzzle_logger/src',
         ),
-        'GuzzleHttp\\Psr7\\' => 
+        'GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'GuzzleHttp\\Promise\\' => 
+        'GuzzleHttp\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
-        'GuzzleHttp\\' => 
+        'GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'Giggsey\\Locale\\' => 
+        'Giggsey\\Locale\\' =>
         array (
             0 => __DIR__ . '/..' . '/giggsey/locale/src',
         ),
-        'Clue\\StreamFilter\\' => 
+        'Clue\\StreamFilter\\' =>
         array (
             0 => __DIR__ . '/..' . '/clue/stream-filter/src',
         ),
@@ -421,9 +421,9 @@ class ComposerStaticInit8e310ae378687187823817536b41b10b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit8e310ae378687187823817536b41b10b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit8e310ae378687187823817536b41b10b::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit8e310ae378687187823817536b41b10b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit51cf6ff61c1cb7c6f9a20181accdf8cb::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit51cf6ff61c1cb7c6f9a20181accdf8cb::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit51cf6ff61c1cb7c6f9a20181accdf8cb::$classMap;
 
         }, null, ClassLoader::class);
     }

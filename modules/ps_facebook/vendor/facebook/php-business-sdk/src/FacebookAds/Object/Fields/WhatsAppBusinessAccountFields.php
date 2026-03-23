@@ -32,8 +32,10 @@ class WhatsAppBusinessAccountFields extends AbstractEnum {
   const HEALTH_STATUS = 'health_status';
   const ID = 'id';
   const IS_ENABLED_FOR_INSIGHTS = 'is_enabled_for_insights';
+  const IS_SHARED_WITH_PARTNERS = 'is_shared_with_partners';
   const LINKED_COMMERCE_ACCOUNT = 'linked_commerce_account';
   const MARKETING_MESSAGES_LITE_API_STATUS = 'marketing_messages_lite_api_status';
+  const MARKETING_MESSAGES_ONBOARDING_STATUS = 'marketing_messages_onboarding_status';
   const MESSAGE_TEMPLATE_NAMESPACE = 'message_template_namespace';
   const NAME = 'name';
   const ON_BEHALF_OF_BUSINESS_INFO = 'on_behalf_of_business_info';
@@ -45,6 +47,7 @@ class WhatsAppBusinessAccountFields extends AbstractEnum {
   const PURCHASE_ORDER_NUMBER = 'purchase_order_number';
   const STATUS = 'status';
   const TIMEZONE_ID = 'timezone_id';
+  const WHATSAPP_BUSINESS_MANAGER_MESSAGING_LIMIT = 'whatsapp_business_manager_messaging_limit';
 
   public function getFieldTypes() {
     return array(
@@ -58,8 +61,10 @@ class WhatsAppBusinessAccountFields extends AbstractEnum {
       'health_status' => 'WhatsAppBusinessHealthStatusForMessageSend',
       'id' => 'string',
       'is_enabled_for_insights' => 'bool',
+      'is_shared_with_partners' => 'bool',
       'linked_commerce_account' => 'CommerceMerchantSettings',
       'marketing_messages_lite_api_status' => 'string',
+      'marketing_messages_onboarding_status' => 'string',
       'message_template_namespace' => 'string',
       'name' => 'string',
       'on_behalf_of_business_info' => 'Object',
@@ -71,6 +76,7 @@ class WhatsAppBusinessAccountFields extends AbstractEnum {
       'purchase_order_number' => 'string',
       'status' => 'string',
       'timezone_id' => 'string',
+      'whatsapp_business_manager_messaging_limit' => 'WhatsappBusinessManagerMessagingLimit',
     );
   }
 }

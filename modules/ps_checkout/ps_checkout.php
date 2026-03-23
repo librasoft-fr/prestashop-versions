@@ -107,7 +107,7 @@ class Ps_Checkout extends PaymentModule
     {
         $this->name = 'ps_checkout';
         $this->tab = 'payments_gateways';
-        $this->version = '8.5.0.2';
+        $this->version = '8.5.1.1';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -603,6 +603,20 @@ class Ps_Checkout extends PaymentModule
                 )
             ) {
                 $paymentOption->setForm($this->context->smarty->fetch('module:' . $this->name . '/views/templates/hook/partials/cardFields.tpl'));
+            } elseif ($fundingSource->getName() === 'pay_upon_invoice') {
+                $customerBirthday = null;
+                if (
+                    !empty($this->context->customer->birthday)
+                    && $this->context->customer->birthday !== '0000-00-00'
+                ) {
+                    $customerBirthday = $this->context->customer->birthday;
+                }
+                $this->context->smarty->assign([
+                    'customerBirthday' => $customerBirthday,
+                    'min_date' => '1900-01-01',
+                    'max_date' => date('Y-m-d', strtotime('-18 years')),
+                ]);
+                $paymentOption->setForm($this->context->smarty->fetch('module:' . $this->name . '/views/templates/hook/partials/payUponInvoiceFields.tpl'));
             } elseif ($fundingSource->getName() === 'paypal' && empty($vaultedPayPal)) {
                 $paymentOption->setForm($this->context->smarty->fetch('module:' . $this->name . '/views/templates/hook/partials/vaultPaymentForm.tpl'));
             } elseif ($fundingSource->getName() === 'paypal' && $vaultedPayPal) {
@@ -639,15 +653,15 @@ class Ps_Checkout extends PaymentModule
         $this->context->smarty->assign([
             'isExpressCheckout' => $isExpressCheckout,
             'spinnerPath' => $this->getPathUri() . 'views/img/tail-spin.svg',
-            'loaderTranslatedText' => $this->trans('Please wait, loading additional payment methods.', [], 'Modules.Checkout.Pscheckout.checkout'),
+            'loaderTranslatedText' => $this->trans('Please wait, loading additional payment methods.', [], 'Modules.Checkout.Pscheckout'),
             'paypalLogoPath' => $this->getPathUri() . 'views/img/paypal_express.png',
             'translatedText' => $this->trans(
                 'You have selected your %s PayPal account to proceed to the payment.',
                 [$this->context->cookie->__get('paypalEmail') ?: ''],
-                'Modules.Checkout.Pscheckout.checkout'
+                'Modules.Checkout.Pscheckout'
             ),
             'shoppingCartWarningPath' => $this->getPathUri() . 'views/img/icons/shopping-cart-warning.svg',
-            'warningTranslatedText' => $this->trans('Warning', [], 'Modules.Checkout.Pscheckout.checkout'),
+            'warningTranslatedText' => $this->trans('Warning', [], 'Modules.Checkout.Pscheckout'),
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/displayPaymentTop.tpl');
@@ -679,7 +693,7 @@ class Ps_Checkout extends PaymentModule
 
         $paymentOptions = [];
 
-        foreach ($fundingSourceTokenPresenter->getFundingSourceTokens($cart->id_customer) as $fundingSource) {
+        foreach ($fundingSourceTokenPresenter->getFundingSourceTokens((int) $cart->id_customer) as $fundingSource) {
             $paymentOptions[] = $fundingSource->getName();
         }
 

@@ -228,6 +228,7 @@ class ModuleManagementEventSubscriber implements EventSubscriberInterface
         $data = $this->contextBuilder->getEventContext();
         $data['event_name'] = $eventName;
         $data['module_name'] = $event->getModule()->get('name');
+        $data['module_version'] = $event->getModule()->get('version');
         if (in_array($eventName, [
             ModuleManagementEvent::INSTALL,
             ModuleManagementEvent::UPGRADE,
@@ -242,7 +243,9 @@ class ModuleManagementEventSubscriber implements EventSubscriberInterface
     private function getModuleWatermark(ModuleInterface $module): string
     {
         $fileName = _PS_MODULE_DIR_ . $module->get('name') . self::WATERMARK_FILENAME;
-        if (! file_exists($fileName)) return '';
+        if (!file_exists($fileName)) {
+            return '';
+        }
 
         try {
             $fileHandle = fopen($fileName, 'r');
@@ -251,6 +254,7 @@ class ModuleManagementEventSubscriber implements EventSubscriberInterface
         } catch (\Exception $e) {
             $contents = '';
         }
+
         return $contents ?: '';
     }
 
