@@ -22,7 +22,6 @@ namespace PsCheckout\Core\Order\Builder\Node;
 
 use PsCheckout\Core\Exception\PsCheckoutException;
 use PsCheckout\Infrastructure\Repository\CountryRepositoryInterface;
-use PsCheckout\Infrastructure\Repository\GenderRepositoryInterface;
 use PsCheckout\Infrastructure\Repository\StateRepositoryInterface;
 use PsCheckout\Utility\Payload\OrderPayloadUtility;
 
@@ -75,7 +74,7 @@ class ShippingNodeBuilder implements ShippingNodeBuilderInterface
         return [
             'shipping' => [
                 'name' => [
-                    'full_name' => $this->cart['addresses']['shipping']->firstname  . ' ' . $this->cart['addresses']['shipping']->lastname,
+                    'full_name' => $address->firstname . ' ' . $address->lastname,
                 ],
                 'address' => OrderPayloadUtility::getAddressPortable($address, $countryIso, $stateName),
             ],

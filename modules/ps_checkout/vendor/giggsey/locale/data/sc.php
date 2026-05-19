@@ -197,7 +197,7 @@ return [
     'PT' => 'Portogallu',
     'PW' => 'Palau',
     'PY' => 'Paraguày',
-    'QA' => 'Catàr',
+    'QA' => 'Catar',
     'RE' => 'Riunione',
     'RO' => 'Romania',
     'RS' => 'Sèrbia',

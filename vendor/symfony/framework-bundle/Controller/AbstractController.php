@@ -157,6 +157,10 @@ abstract class AbstractController implements ServiceSubscriberInterface
             return new JsonResponse($json, $status, $headers, true);
         }
 
+        if (null === $data) {
+            return new JsonResponse('null', $status, $headers, true);
+        }
+
         return new JsonResponse($data, $status, $headers);
     }
 
@@ -289,7 +293,7 @@ abstract class AbstractController implements ServiceSubscriberInterface
 
         $twig = $this->container->get('twig');
 
-        $callback = function () use ($twig, $view, $parameters) {
+        $callback = static function () use ($twig, $view, $parameters) {
             $twig->display($view, $parameters);
         };
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -40,7 +41,7 @@ class dashgoals extends Module
     {
         $this->name = 'dashgoals';
         $this->tab = 'administration';
-        $this->version = '2.0.4';
+        $this->version = '2.0.5';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -99,8 +100,7 @@ class dashgoals extends Module
             && parent::install()
             && $this->registerHook('dashboardZoneTwo')
             && $this->registerHook('dashboardData')
-            && $this->registerHook('actionAdminControllerSetMedia')
-        ;
+            && $this->registerHook('actionAdminControllerSetMedia');
     }
 
     public function uninstall()

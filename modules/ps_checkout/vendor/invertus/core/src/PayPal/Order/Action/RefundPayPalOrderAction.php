@@ -20,11 +20,10 @@
 
 namespace PsCheckout\Core\PayPal\Order\Action;
 
-use PsCheckout\Api\Http\OrderHttpClientInterface;
+use PsCheckout\Api\Http\PaymentHttpClientInterface;
 use PsCheckout\Core\OrderState\Action\SetOrderStateActionInterface;
 use PsCheckout\Core\PayPal\Refund\Exception\PayPalRefundException;
 use PsCheckout\Core\PayPal\Refund\ValueObject\PayPalRefund;
-use PsCheckout\Core\Settings\Configuration\PayPalConfiguration;
 use PsCheckout\Infrastructure\Adapter\ConfigurationInterface;
 
 class RefundPayPalOrderAction implements RefundPayPalOrderActionInterface
@@ -35,9 +34,9 @@ class RefundPayPalOrderAction implements RefundPayPalOrderActionInterface
     private $configuration;
 
     /**
-     * @var OrderHttpClientInterface
+     * @var PaymentHttpClientInterface
      */
-    private $orderHttpClient;
+    private $paymentHttpClient;
 
     /**
      * @var SetOrderStateActionInterface
@@ -46,16 +45,16 @@ class RefundPayPalOrderAction implements RefundPayPalOrderActionInterface
 
     /**
      * @param ConfigurationInterface $configuration
-     * @param OrderHttpClientInterface $orderHttpClient
+     * @param PaymentHttpClientInterface $paymentHttpClient
      * @param SetOrderStateActionInterface $setRefundedOrderStateAction
      */
     public function __construct(
         ConfigurationInterface $configuration,
-        OrderHttpClientInterface $orderHttpClient,
+        PaymentHttpClientInterface $paymentHttpClient,
         SetOrderStateActionInterface $setRefundedOrderStateAction
     ) {
         $this->configuration = $configuration;
-        $this->orderHttpClient = $orderHttpClient;
+        $this->paymentHttpClient = $paymentHttpClient;
         $this->setRefundedOrderStateAction = $setRefundedOrderStateAction;
     }
 
@@ -65,11 +64,6 @@ class RefundPayPalOrderAction implements RefundPayPalOrderActionInterface
     public function execute(PayPalRefund $payPalRefund)
     {
         $payload = [
-            'orderId' => $payPalRefund->getPayPalOrderId(),
-            'captureId' => $payPalRefund->getCaptureId(),
-            'payee' => [
-                'merchant_id' => $this->configuration->get(PayPalConfiguration::PS_CHECKOUT_PAYPAL_ID_MERCHANT),
-            ],
             'amount' => [
                 'currency_code' => $payPalRefund->getCurrencyCode(),
                 'value' => $payPalRefund->getAmount(),
@@ -77,7 +71,7 @@ class RefundPayPalOrderAction implements RefundPayPalOrderActionInterface
             'note_to_payer' => 'Refund by ' . $this->configuration->get('PS_SHOP_NAME'),
         ];
 
-        $response = $this->orderHttpClient->refundOrder($payload);
+        $response = $this->paymentHttpClient->refundOrder($payPalRefund->getCaptureId(), $payload);
 
         $refund = json_decode($response->getBody(), true);
 

@@ -57,7 +57,6 @@ return [
     'CM' => 'Kamerun',
     'CN' => 'Çin',
     'CO' => 'Kolumbiya',
-    'CQ' => 'sark (ingilis dili) dialekti',
     'CR' => 'Kosta Rika',
     'CU' => 'Kuba',
     'CV' => 'Kabo-Verde',

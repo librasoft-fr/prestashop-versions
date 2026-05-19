@@ -29,7 +29,6 @@ use PsCheckout\Core\PayPal\Order\Handler\EventHandlerInterface;
 use PsCheckout\Core\PayPal\Order\Provider\PayPalOrderProviderInterface;
 use PsCheckout\Core\PayPal\Order\Repository\PayPalOrderRepositoryInterface;
 use PsCheckout\Core\PayPal\Order\Response\PayPalProcessorResponse;
-use PsCheckout\Core\Settings\Configuration\PayPalConfiguration;
 use PsCheckout\Infrastructure\Adapter\ConfigurationInterface;
 
 class CapturePayPalOrderAction implements CapturePayPalOrderActionInterface
@@ -106,20 +105,7 @@ class CapturePayPalOrderAction implements CapturePayPalOrderActionInterface
      */
     public function execute(PayPalOrderResponse $payPalOrder): PayPalOrderResponse
     {
-        $payload = [
-            'mode' => $payPalOrder->getFundingSource() ?:
-                $this->payPalOrderRepository->getOneBy(['id' => $payPalOrder->getId()])->getFundingSource(),
-            'orderId' => $payPalOrder->getId(),
-            'payee' => ['merchant_id' => $this->configuration->get(PayPalConfiguration::PS_CHECKOUT_PAYPAL_ID_MERCHANT)],
-        ];
-
-        $order = $this->payPalOrderRepository->getOneBy(['id' => $payPalOrder->getId()]);
-
-        if (in_array(PayPalConfiguration::PS_CHECKOUT_CUSTOMER_INTENT_USES_VAULTING, $order->getCustomerIntent())) {
-            $payload['vault'] = true;
-        }
-
-        $response = $this->orderHttpClient->captureOrder($payload);
+        $response = $this->orderHttpClient->captureOrder($payPalOrder->getId(), []);
 
         $orderPayPal = json_decode($response->getBody(), true);
         $cachedOrder = $this->payPalOrderCache->getValue($orderPayPal['id']);
@@ -130,6 +116,14 @@ class CapturePayPalOrderAction implements CapturePayPalOrderActionInterface
 
         if (!$payPalOrderResponse) {
             throw new PsCheckoutException('Capture declined', PsCheckoutException::PAYPAL_PAYMENT_CAPTURE_DECLINED);
+        }
+
+        if ($payPalOrderResponse->getPaymentSource()) {
+            $payPalOrderEntity = $this->payPalOrderRepository->getOneBy(['id' => $orderPayPal['id']]);
+            if ($payPalOrderEntity) {
+                $payPalOrderEntity->setPaymentSource($payPalOrderResponse->getPaymentSource());
+                $this->payPalOrderRepository->save($payPalOrderEntity);
+            }
         }
 
         if ($payPalOrderResponse->getStatus() === PayPalCaptureStatus::COMPLETED) {

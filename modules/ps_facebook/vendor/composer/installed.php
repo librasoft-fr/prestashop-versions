@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'prestashopcorp/ps_facebook',
-        'pretty_version' => 'dev-ca9566e3e5bf31363a5c1a420f494434ea590075',
-        'version' => 'dev-ca9566e3e5bf31363a5c1a420f494434ea590075',
-        'reference' => 'ca9566e3e5bf31363a5c1a420f494434ea590075',
+        'pretty_version' => 'v1.38.18',
+        'version' => '1.38.18.0',
+        'reference' => '7f0b7638ec990345dc3a1e6bfaae1d4c27a11eb5',
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -65,9 +65,9 @@
             'dev_requirement' => false,
         ),
         'prestashopcorp/ps_facebook' => array(
-            'pretty_version' => 'dev-ca9566e3e5bf31363a5c1a420f494434ea590075',
-            'version' => 'dev-ca9566e3e5bf31363a5c1a420f494434ea590075',
-            'reference' => 'ca9566e3e5bf31363a5c1a420f494434ea590075',
+            'pretty_version' => 'v1.38.18',
+            'version' => '1.38.18.0',
+            'reference' => '7f0b7638ec990345dc3a1e6bfaae1d4c27a11eb5',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

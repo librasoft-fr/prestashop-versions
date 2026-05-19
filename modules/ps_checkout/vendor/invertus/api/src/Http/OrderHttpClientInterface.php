@@ -31,56 +31,54 @@ interface OrderHttpClientInterface
 {
     /**
      * @param array $payload
-     * @param array $headers
+     * @param string|null $requestId
+     * @param string|null $clientMetadataId
      *
      * @return ResponseInterface
      *
      * @throws NetworkException|HttpException|RequestException|TransferException|PayPalException
      */
-    public function createOrder(array $payload, array $headers = []): ResponseInterface;
+    public function createOrder(array $payload, ?string $requestId, ?string $clientMetadataId): ResponseInterface;
 
     /**
-     * @param array $payload
+     * @param string $orderId
      *
      * @return ResponseInterface
      *
      * @throws NetworkException|HttpException|RequestException|TransferException|PayPalException
      */
-    public function fetchOrder(array $payload): ResponseInterface;
+    public function fetchOrder(string $orderId): ResponseInterface;
 
     /**
      * @param array $payload
+     * @param string $orderId
+     * @param string|null $requestId
+     * @param string|null $clientMetadataId
+
      *
      * @return ResponseInterface
      *
      * @throws NetworkException|HttpException|RequestException|TransferException|PayPalException
      */
-    public function captureOrder(array $payload): ResponseInterface;
+    public function captureOrder(string $orderId, array $payload, ?string $requestId = null, ?string $clientMetadataId = null): ResponseInterface;
 
     /**
      * @param array $payload
+     * @param string $orderId
      *
      * @return ResponseInterface
      *
      * @throws NetworkException|HttpException|RequestException|TransferException|PayPalException
      */
-    public function updateOrder(array $payload): ResponseInterface;
+    public function updateOrder(string $orderId, array $payload): ResponseInterface;
 
     /**
      * @param array $payload
+     * @param string $orderId
      *
      * @return ResponseInterface
      *
      * @throws NetworkException|HttpException|RequestException|TransferException|PayPalException
      */
-    public function refundOrder(array $payload): ResponseInterface;
-
-    /**
-     * Tells if the webhook came from the PSL
-     *
-     * @param array $payload
-     *
-     * @return array
-     */
-    public function getShopSignature(array $payload): array;
+    public function authorizeOrder(string $orderId, array $payload): ResponseInterface;
 }

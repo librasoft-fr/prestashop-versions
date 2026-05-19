@@ -21,20 +21,20 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use PsCheckout\Core\Webhook\WebhookException;
 use PsCheckout\Core\WebhookDispatcher\Action\CheckPSLSignatureAction;
+use PsCheckout\Core\WebhookDispatcher\Action\VerifyWebhookAction;
 use PsCheckout\Core\WebhookDispatcher\Processor\DispatchWebhookProcessor;
+use PsCheckout\Core\WebhookDispatcher\Provider\WebhookHeaderProvider;
 use PsCheckout\Core\WebhookDispatcher\Validator\BodyValuesValidator;
 use PsCheckout\Core\WebhookDispatcher\Validator\HeaderValuesValidator;
 use PsCheckout\Core\WebhookDispatcher\Validator\WebhookShopIdValidator;
 use PsCheckout\Core\WebhookDispatcher\ValueObject\DispatchWebhookRequest;
+use PsCheckout\Core\Webhook\Service\WebhookOrderIdResolver;
 use PsCheckout\Infrastructure\Controller\AbstractFrontController;
 use Psr\Log\LoggerInterface;
 
 class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontController
 {
-    const PS_CHECKOUT_PAYPAL_ID_LABEL = 'PS_CHECKOUT_PAYPAL_ID_MERCHANT';
-
     /**
      * @var bool If set to true, will be redirected to authentication page
      */
@@ -42,31 +42,62 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
 
     /**
      * @return bool
+     *
+     * @throws \PsCheckout\Core\Exception\PsCheckoutException
      */
     public function display(): bool
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->exitWithResponse([
+                'httpCode' => 405,
+                'body' => 'Method Not Allowed',
+            ]);
+        }
+
         /** @var LoggerInterface $logger */
         $logger = $this->module->getService(LoggerInterface::class);
 
         $logger->info('Webhook dispatch initiated');
 
         try {
+            /** @var WebhookHeaderProvider $headerProvider */
+            $headerProvider = $this->module->getService(WebhookHeaderProvider::class);
             /** @var HeaderValuesValidator $headerValuesValidator */
             $headerValuesValidator = $this->module->getService(HeaderValuesValidator::class);
+
             $headerValues = $headerValuesValidator->validate();
             $logger->info('Headers validated', $headerValues);
 
+            $isSvixWebhook = isset($headerValues['Svix-Id']);
+
             /** @var BodyValuesValidator $bodyValuesValidator */
             $bodyValuesValidator = $this->module->getService(BodyValuesValidator::class);
-            $bodyValues = $bodyValuesValidator->validate();
-            $logger->info('Body validated', $bodyValues);
 
-            $dispatchWebhookRequest = DispatchWebhookRequest::createFromRequest($bodyValues, $headerValues);
+            if ($isSvixWebhook) {
+                $bodyValues = $bodyValuesValidator->validate();
+                $logger->info('Body validated', $bodyValues);
 
-            /** @var CheckPSLSignatureAction $checkPSLSignatureAction */
-            $checkPSLSignatureAction = $this->module->getService(CheckPSLSignatureAction::class);
-            $checkPSLSignatureAction->execute($bodyValues);
-            $logger->info('PSL Signature validated', $bodyValues);
+                /** @var VerifyWebhookAction $verifyWebhookAction */
+                $verifyWebhookAction = $this->module->getService(VerifyWebhookAction::class);
+                $verifyWebhookAction->execute(file_get_contents('php://input'), $headerValues);
+                $logger->info('Webhook Signature validated', $bodyValues);
+
+                /** @var WebhookOrderIdResolver $orderIdResolver */
+                $orderIdResolver = $this->module->getService(WebhookOrderIdResolver::class);
+                $bodyValues['orderId'] = $orderIdResolver->resolve($bodyValues);
+
+                $dispatchWebhookRequest = DispatchWebhookRequest::createFromRequest($bodyValues);
+            } else {
+                $bodyValues = $bodyValuesValidator->validateMaasland();
+                $logger->info('Body validated', $bodyValues);
+
+                /** @var CheckPSLSignatureAction $checkPSLSignatureAction */
+                $checkPSLSignatureAction = $this->module->getService(CheckPSLSignatureAction::class);
+                $checkPSLSignatureAction->execute($bodyValues);
+                $logger->info('PSL Signature validated', $bodyValues);
+
+                $dispatchWebhookRequest = DispatchWebhookRequest::createFromMaaslandRequest($bodyValues, $headerValues);
+            }
 
             /** @var WebhookShopIdValidator $webhookShopIdValidator */
             $webhookShopIdValidator = $this->module->getService(WebhookShopIdValidator::class);
@@ -86,12 +117,19 @@ class ps_checkoutDispatchWebHookModuleFrontController extends AbstractFrontContr
             }
 
             return $processed;
-        } catch (WebhookException $e) {
+        } catch (Exception $e) {
             // Handle the exception
-            $logger->error('Webhook Dispatcher error: ' . $e->getMessage());
-            http_response_code($e->getCode());
+            $logger->error('Webhook Dispatcher error', [
+                'message' => $e->getMessage(),
+                'headers' => $headerProvider->getHeaders(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            http_response_code(400);
 
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode([
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
         } catch (Throwable $e) {
             $logger->error(
                 sprintf(

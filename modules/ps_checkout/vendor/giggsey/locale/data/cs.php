@@ -57,7 +57,6 @@ return [
     'CM' => 'Kamerun',
     'CN' => 'Čína',
     'CO' => 'Kolumbie',
-    'CQ' => 'Sark',
     'CR' => 'Kostarika',
     'CU' => 'Kuba',
     'CV' => 'Kapverdy',

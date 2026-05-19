@@ -105,16 +105,14 @@ class HookDisplayHeader
 
             // only call gel proximity if the module is configured and the pickup up carrier is set up
             if ($carrierId !== null) {
-                try {
-                    $gelConfig = $this->gelProximityService->getGelCredentials();
-                } catch (\Throwable $th) {
-                    Media::addJsDef([
-                        'pickupCarrierError' => $this->psshipping->getTranslator()->trans('Unable to use this carrier at the moment.', [], 'Modules.Psshipping.Admin'),
-                    ]);
-                }
+                $gelConfig = $this->gelProximityService->getGelCredentials();
             }
 
             if (!isset($gelConfig)) {
+                Media::addJsDef([
+                    'pickupCarrierError' => $this->psshipping->getTranslator()->trans('Unable to use this carrier at the moment.', [], 'Modules.Psshipping.Admin'),
+                ]);
+
                 return;
             }
 

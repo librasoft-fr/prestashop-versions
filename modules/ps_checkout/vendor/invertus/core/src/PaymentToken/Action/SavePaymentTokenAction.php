@@ -129,7 +129,10 @@ class SavePaymentTokenAction implements SavePaymentTokenActionInterface
         $resource['metadata'] = ['order_id' => $payPalOrderResponse->getId()];
 
         $resource['payment_source'] = $payPalOrderResponse->getPaymentSource();
-        $resource['payment_source'][$payPalOrderResponse->getFundingSource()]['verification_status'] = $resource['status'];
+
+        if ($payPalOrderResponse->getFundingSource()) {
+            $resource['payment_source'][$payPalOrderResponse->getFundingSource()]['verification_status'] = $resource['status'];
+        }
 
         return $resource;
     }
@@ -170,6 +173,11 @@ class SavePaymentTokenAction implements SavePaymentTokenActionInterface
 
             if ($token->isFavorite()) {
                 $this->paymentTokenRepository->setTokenFavorite($token->getId(), $token->getPaypalCustomerId());
+            }
+
+            if (isset($order)) {
+                $order->setPaymentTokenId($token->getId());
+                $this->payPalOrderRepository->save($order);
             }
         } catch (\Exception $exception) {
             $this->logger->error('Failed to save payment token.', [

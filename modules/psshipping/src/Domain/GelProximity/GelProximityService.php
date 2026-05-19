@@ -26,7 +26,6 @@ namespace PrestaShop\Module\Psshipping\Domain\GelProximity;
 use PrestaShop\Module\Psshipping\Domain\Accounts\AccountsService;
 use PrestaShop\Module\Psshipping\Domain\GelProximity\Models\GelProximityCredentials;
 use PrestaShop\Module\Psshipping\Domain\Http\HttpClient;
-use PrestaShop\Module\Psshipping\Exception\PsshippingException;
 use Psshipping;
 
 class GelProximityService
@@ -39,10 +38,7 @@ class GelProximityService
         $this->module = $module;
     }
 
-    /**
-     * @throws PsshippingException
-     */
-    public function getGelCredentials(): GelProximityCredentials
+    public function getGelCredentials(): ?GelProximityCredentials
     {
         $jwt = (new AccountsService())->getPsAccountToken($this->module);
         $httpClient = new HttpClient($this->module->getApiUrl());
@@ -55,7 +51,7 @@ class GelProximityService
         $response = $httpClient->get('/user/gel-config');
 
         if (substr(strval($response->getStatusCode()), 0, 1) !== '2') {
-            throw new PsshippingException(sprintf('An error occured while sending the secret to the API (details: %s)', $response->getError()), 400);
+            return null;
         }
 
         /** @var array{'merchantCode': string, 'apiKey': string} $config */

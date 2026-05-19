@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit0d6a6856f5ea3293d1b509e2e764e066
+class ComposerStaticInita853ec45b3e217d2f188741699bae80a
 {
     public static $prefixLengthsPsr4 = array (
         'P' =>
@@ -35,6 +35,7 @@ class ComposerStaticInit0d6a6856f5ea3293d1b509e2e764e066
         'PsCheckout\\Presentation\\Presenter\\FundingSource\\LogoPresenterInterface' => __DIR__ . '/../../..' . '/presentation/src/Presenter/FundingSource/LogoPresenterInterface.php',
         'PsCheckout\\Presentation\\Presenter\\OrderSummary\\OrderSummaryPresenter' => __DIR__ . '/../../..' . '/presentation/src/Presenter/OrderSummary/OrderSummaryPresenter.php',
         'PsCheckout\\Presentation\\Presenter\\OrderSummary\\OrderSummaryPresenterInterface' => __DIR__ . '/../../..' . '/presentation/src/Presenter/OrderSummary/OrderSummaryPresenterInterface.php',
+        'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\MerchantOrderViewPresenter' => __DIR__ . '/../../..' . '/presentation/src/Presenter/PayPalOrder/MerchantOrderViewPresenter.php',
         'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\PayPalOrderPresenter' => __DIR__ . '/../../..' . '/presentation/src/Presenter/PayPalOrder/PayPalOrderPresenter.php',
         'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\PayPalOrderPresenterInterface' => __DIR__ . '/../../..' . '/presentation/src/Presenter/PayPalOrder/PayPalOrderPresenterInterface.php',
         'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\PayPalOrderTotalsPresenter' => __DIR__ . '/../../..' . '/presentation/src/Presenter/PayPalOrder/PayPalOrderTotalsPresenter.php',
@@ -57,9 +58,9 @@ class ComposerStaticInit0d6a6856f5ea3293d1b509e2e764e066
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit0d6a6856f5ea3293d1b509e2e764e066::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit0d6a6856f5ea3293d1b509e2e764e066::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit0d6a6856f5ea3293d1b509e2e764e066::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita853ec45b3e217d2f188741699bae80a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita853ec45b3e217d2f188741699bae80a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInita853ec45b3e217d2f188741699bae80a::$classMap;
 
         }, null, ClassLoader::class);
     }

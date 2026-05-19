@@ -21,7 +21,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use PsCheckout\Core\Exception\PsCheckoutException;
 use PsCheckout\Core\PayPal\GooglePay\Builder\GooglePayPaymentRequestDataBuilder;
 use PsCheckout\Infrastructure\Controller\AbstractFrontController;
 use PsCheckout\Utility\Common\InputStreamUtility;
@@ -31,6 +30,7 @@ use PsCheckout\Utility\Common\InputStreamUtility;
  */
 class Ps_CheckoutGooglepayModuleFrontController extends AbstractFrontController
 {
+
     /**
      * @see FrontController::postProcess()
      */
@@ -52,16 +52,13 @@ class Ps_CheckoutGooglepayModuleFrontController extends AbstractFrontController
             if ($action === 'getTransactionInfo') {
                 $this->getTransactionInfo();
             } else {
-                $this->exitWithExceptionMessage(new Exception('Invalid request', 400));
+                $this->exitWithResponse([
+                    'httpCode' => 400,
+                    'body' => 'Invalid request',
+                ]);
             }
         } catch (Exception $exception) {
             $this->exitWithExceptionMessage($exception);
-        } catch (Throwable $exception) {
-            $this->exitWithExceptionMessage(new PsCheckoutException(
-                'An error occurred while processing the Google Pay request.',
-                PsCheckoutException::UNKNOWN,
-                $exception
-            ));
         }
     }
 
@@ -70,6 +67,13 @@ class Ps_CheckoutGooglepayModuleFrontController extends AbstractFrontController
      */
     private function getTransactionInfo()
     {
+        if (!Validate::isLoadedObject($this->context->cart)) {
+            $this->exitWithResponse([
+                'httpCode' => 400,
+                'body' => 'No cart found.',
+            ]);
+        }
+
         /** @var GooglePayPaymentRequestDataBuilder $googlePayPaymentRequestDataBuilder */
         $googlePayPaymentRequestDataBuilder = $this->module->getService(GooglePayPaymentRequestDataBuilder::class);
         $transactionInfo = $googlePayPaymentRequestDataBuilder->build($this->context->cart->id);

@@ -1,4 +1,22 @@
 <?php
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ */
 
 namespace PsCheckout\Infrastructure\Validator;
 
@@ -40,7 +58,8 @@ class PayLaterValidator implements PayLaterValidatorInterface
             'IT' => 'EUR', // Italy
             'ES' => 'EUR', // Spain
             'GB' => 'GBP', // United Kingdom
-            'US' => 'USD', // United States
+            'US' => 'USD', // United States,
+            'CA' => 'CAD', // Canada
         ];
 
         // Define locale to country mapping for website locale validation
@@ -52,6 +71,8 @@ class PayLaterValidator implements PayLaterValidatorInterface
             'es-ES' => 'ES', // Spain
             'en-GB' => 'GB', // United Kingdom
             'en-US' => 'US', // United States
+            'fr-CA' => 'CA', // Canada
+            'en-CA' => 'CA', // Canada
         ];
 
         return in_array($merchantCountry, $countries, true)

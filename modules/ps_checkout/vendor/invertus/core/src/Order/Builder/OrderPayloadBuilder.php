@@ -101,8 +101,11 @@ class OrderPayloadBuilder implements OrderPayloadBuilderInterface
     /** @var PuiPaymentSourceNodeBuilderInterface */
     private $puiPaymentSourceNodeBuilder;
 
-    /** @var PuiPaymentSourceNodeBuilderInterface */
+    /** @var ?string */
     private $birthDate;
+
+    /** @var ?string */
+    private $phone;
 
     public function __construct(
         BaseNodeBuilderInterface $baseNodeBuilder,
@@ -179,38 +182,40 @@ class OrderPayloadBuilder implements OrderPayloadBuilderInterface
                 ->setFundingSource($this->fundingSource)
                 ->build();
             if (!empty($amountBreakdown)) {
-                $this->payload = array_replace_recursive($this->payload, $amountBreakdown);
+                $this->payload['purchase_units'][0] = array_replace_recursive($this->payload['purchase_units'][0], $amountBreakdown);
             }
         }
 
-        if (!$this->expressCheckout || $this->isUpdate) {
-            $optionalPayload[] = $this->shippingNodeBuilder->setCart($this->cart)->build();
+        if ($this->shippingAddressExists()) {
+            $this->payload['purchase_units'][0] = array_merge($this->payload['purchase_units'][0], $this->shippingNodeBuilder->setCart($this->cart)->build());
         }
 
         if (!$this->expressCheckout && !$this->isUpdate) {
             $optionalPayload[] = $this->payerNodeBuilder->setCart($this->cart)->build();
         }
 
-        if (!$this->isUpdate) {
-            $optionalPayload[] = $this->applicationContextNodeBuilder
-                ->setIsExpressCheckout($this->expressCheckout)
-                ->setIsVirtualCart($this->cart['cart']['is_virtual'])
-                ->build();
-        }
-
         if ($this->isCard) {
             $optionalPayload[] = $this->buildCardPaymentSource();
-            $optionalPayload[] = $this->buildSupplementaryData();
+            $this->payload['purchase_units'][0] = array_merge($this->payload['purchase_units'][0], $this->buildSupplementaryData());
         }
 
         if ($isFullPayload) {
-            $optionalPayload[] = $this->buildPaymentSource();
+            $paymentSource = $this->buildPaymentSource();
+
+            if (!empty($paymentSource)) {
+                $optionalPayload[] = $paymentSource;
+            }
         }
 
-        // Add processing_instruction for PUI orders
         if ($this->fundingSource === 'pay_upon_invoice' && !$this->isUpdate) {
-            $optionalPayload[] = [
-                'processing_instruction' => 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL'];
+            $optionalPayload[] = ['processing_instruction' => 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL'];
+        }
+
+        if (!$this->isUpdate && !isset($paymentSource['payment_source'][$this->fundingSource]['experience_context'])) {
+            $optionalPayload[] = $this->applicationContextNodeBuilder
+                ->setShippingAddressExists($this->shippingAddressExists())
+                ->setIsVirtualCart($this->cart['cart']['is_virtual'])
+                ->build();
         }
 
         return $optionalPayload;
@@ -281,11 +286,12 @@ class OrderPayloadBuilder implements OrderPayloadBuilderInterface
             case 'google_pay':
                 return $this->googlePayPaymentSourceNodeBuilder->build();
             case 'paypal':
-                $this->payPalPaymentSourceNodeBuilder->setSavePaymentMethod($this->savePaymentMethod)
+                return $this->payPalPaymentSourceNodeBuilder->setSavePaymentMethod($this->savePaymentMethod)
                     ->setPaypalCustomerId($this->paypalCustomerId)
-                    ->setPaypalVaultId($this->paypalVaultId);
-
-                return $this->payPalPaymentSourceNodeBuilder->build();
+                    ->setPaypalVaultId($this->paypalVaultId)
+                    ->setShippingAddressExists($this->shippingAddressExists())
+                    ->setVirtualCart((bool) $this->cart['cart']['is_virtual'])
+                    ->build();
             case 'venmo':
                 return $this->venmoPaymentSourceNodeBuilder->setSavePaymentMethod($this->savePaymentMethod)
                     ->setCart($this->cart)
@@ -295,6 +301,7 @@ class OrderPayloadBuilder implements OrderPayloadBuilderInterface
             case 'pay_upon_invoice':
                 return $this->puiPaymentSourceNodeBuilder->setCart($this->cart)
                     ->setBirthDate($this->birthDate)
+                    ->setPhone($this->phone)
                     ->build();
         }
 
@@ -381,10 +388,27 @@ class OrderPayloadBuilder implements OrderPayloadBuilderInterface
         return $this;
     }
 
+    private function shippingAddressExists(): bool
+    {
+        if (isset($this->cart['addresses']['shipping'])) {
+            return $this->cart['addresses']['shipping']->id !== null;
+        }
+
+        return false;
+    }
+
     /** {@inheritDoc} */
     public function setCustomerBirthDay($birthDate): self
     {
         $this->birthDate = $birthDate;
+
+        return $this;
+    }
+
+    /** {@inheritDoc} */
+    public function setCustomerPhone($phone): self
+    {
+        $this->phone = $phone;
 
         return $this;
     }

@@ -20,6 +20,7 @@ return array(
     'PsCheckout\\Presentation\\Presenter\\FundingSource\\LogoPresenterInterface' => $baseDir . '/presentation/src/Presenter/FundingSource/LogoPresenterInterface.php',
     'PsCheckout\\Presentation\\Presenter\\OrderSummary\\OrderSummaryPresenter' => $baseDir . '/presentation/src/Presenter/OrderSummary/OrderSummaryPresenter.php',
     'PsCheckout\\Presentation\\Presenter\\OrderSummary\\OrderSummaryPresenterInterface' => $baseDir . '/presentation/src/Presenter/OrderSummary/OrderSummaryPresenterInterface.php',
+    'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\MerchantOrderViewPresenter' => $baseDir . '/presentation/src/Presenter/PayPalOrder/MerchantOrderViewPresenter.php',
     'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\PayPalOrderPresenter' => $baseDir . '/presentation/src/Presenter/PayPalOrder/PayPalOrderPresenter.php',
     'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\PayPalOrderPresenterInterface' => $baseDir . '/presentation/src/Presenter/PayPalOrder/PayPalOrderPresenterInterface.php',
     'PsCheckout\\Presentation\\Presenter\\PayPalOrder\\PayPalOrderTotalsPresenter' => $baseDir . '/presentation/src/Presenter/PayPalOrder/PayPalOrderTotalsPresenter.php',

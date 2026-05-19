@@ -127,7 +127,7 @@ class LogoUploader
                 }
             }
 
-            $idShop = $this->shop->id;
+            $idShop = null;
             $idShopGroup = null;
 
             // on updating PS_LOGO if the new file is an svg, copy old logo for mail and invoice
@@ -173,9 +173,9 @@ class LogoUploader
             $idShopGroup = Shop::getContextShopGroupID();
             Shop::setContext(Shop::CONTEXT_ALL);
             $logoAll = Configuration::get($fieldName);
-            Shop::setContext(Shop::CONTEXT_GROUP);
+            Shop::setContext(Shop::CONTEXT_GROUP, $idShopGroup);
             $logoGroup = Configuration::get($fieldName);
-            Shop::setContext(Shop::CONTEXT_SHOP);
+            Shop::setContext(Shop::CONTEXT_SHOP, $idShop);
             $logoShop = Configuration::get($fieldName);
             if ($logoAll != $logoShop && $logoGroup != $logoShop && $logoShop != false) {
                 @unlink($this->imageDirection . Configuration::get($fieldName));
@@ -184,7 +184,7 @@ class LogoUploader
             $idShopGroup = Shop::getContextShopGroupID();
             Shop::setContext(Shop::CONTEXT_ALL);
             $logoAll = Configuration::get($fieldName);
-            Shop::setContext(Shop::CONTEXT_GROUP);
+            Shop::setContext(Shop::CONTEXT_GROUP, $idShopGroup);
             if ($logoAll != Configuration::get($fieldName)) {
                 @unlink($this->imageDirection . Configuration::get($fieldName));
             }

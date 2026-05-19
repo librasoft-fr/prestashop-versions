@@ -22,14 +22,14 @@ namespace PsCheckout\Api\Http;
 
 use GuzzleHttp\Psr7\Request;
 use Http\Client\Exception\HttpException;
-use PsCheckout\Api\Http\Configuration\OrderShipmentTrackingConfigurationBuilderInterface;
+use PsCheckout\Api\Http\Configuration\HttpClientConfigurationBuilderInterface;
 use PsCheckout\Api\Http\Exception\PayPalError;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class OrderShipmentTrackingHttpClient extends PsrHttpClientAdapter implements OrderShipmentTrackingHttpClientInterface
 {
-    public function __construct(OrderShipmentTrackingConfigurationBuilderInterface $configurationBuilder)
+    public function __construct(HttpClientConfigurationBuilderInterface $configurationBuilder)
     {
         parent::__construct($configurationBuilder->build());
     }
@@ -43,8 +43,8 @@ class OrderShipmentTrackingHttpClient extends PsrHttpClientAdapter implements Or
             return parent::sendRequest($request);
         } catch (HttpException $exception) {
             $response = $exception->getResponse();
-            $body = json_decode($response->getBody(), true);
-            $message = $this->extractMessage($body ?? []);
+            $decodedBody = json_decode((string) $response->getBody(), true);
+            $message = $this->extractMessage(is_array($decodedBody) ? $decodedBody : []);
 
             if ($message) {
                 (new PayPalError($message))->throwException($exception);

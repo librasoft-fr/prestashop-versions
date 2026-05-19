@@ -4,20 +4,25 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit828b2fac81294ad5a8624df437de1558
+class ComposerStaticInitadac240f12dc7adfc2559e58d48d2b05
 {
     public static $prefixLengthsPsr4 = array (
         'P' =>
         array (
+            'PsCheckout\\Tests\\Core\\Unit\\' => 27,
             'PsCheckout\\Tests\\Core\\Integration\\' => 34,
             'PsCheckout\\Core\\' => 16,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'PsCheckout\\Tests\\Core\\Unit\\' =>
+        array (
+            0 => __DIR__ . '/../../..' . '/core/tests/Unit',
+        ),
         'PsCheckout\\Tests\\Core\\Integration\\' =>
         array (
-            0 => __DIR__ . '/../../..' . '/core/tests',
+            0 => __DIR__ . '/../../..' . '/core/tests/Integration',
         ),
         'PsCheckout\\Core\\' =>
         array (
@@ -32,20 +37,44 @@ class ComposerStaticInit828b2fac81294ad5a8624df437de1558
         'PsCheckout\\Core\\Customer\\Request\\ValueObject\\ExpressCheckoutRequest' => __DIR__ . '/../../..' . '/core/src/Customer/Request/ValueObject/ExpressCheckoutRequest.php',
         'PsCheckout\\Core\\Exception\\PsCheckoutException' => __DIR__ . '/../../..' . '/core/src/Exception/PsCheckoutException.php',
         'PsCheckout\\Core\\FundingSource\\Constraint\\FundingSourceConstraint' => __DIR__ . '/../../..' . '/core/src/FundingSource/Constraint/FundingSourceConstraint.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\ApplePayEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/ApplePayEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\BancontactEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/BancontactEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\BaseFundingSourceEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/BaseFundingSourceEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\BlikEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/BlikEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\CardEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/CardEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\EpsEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/EpsEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\FundingSourceEligibilityCheckerInterface' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/FundingSourceEligibilityCheckerInterface.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\GooglePayEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/GooglePayEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\IdealEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/IdealEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\MybankEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/MybankEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\P24EligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/P24EligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\PayPalEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/PayPalEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\PayUponInvoiceEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/PayUponInvoiceEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\PaylaterEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/PaylaterEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\Checker\\VenmoEligibilityChecker' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/Checker/VenmoEligibilityChecker.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\FundingSourceEligibilityService' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/FundingSourceEligibilityService.php',
+        'PsCheckout\\Core\\FundingSource\\Eligibility\\FundingSourceEligibilityServiceInterface' => __DIR__ . '/../../..' . '/core/src/FundingSource/Eligibility/FundingSourceEligibilityServiceInterface.php',
         'PsCheckout\\Core\\FundingSource\\Factory\\FundingSourceTokenFactory' => __DIR__ . '/../../..' . '/core/src/FundingSource/Factory/FundingSourceTokenFactory.php',
         'PsCheckout\\Core\\FundingSource\\Factory\\FundingSourceTokenFactoryInterface' => __DIR__ . '/../../..' . '/core/src/FundingSource/Factory/FundingSourceTokenFactoryInterface.php',
         'PsCheckout\\Core\\FundingSource\\Repository\\FundingSourceRepositoryInterface' => __DIR__ . '/../../..' . '/core/src/FundingSource/Repository/FundingSourceRepositoryInterface.php',
         'PsCheckout\\Core\\FundingSource\\ValueObject\\FundingSource' => __DIR__ . '/../../..' . '/core/src/FundingSource/ValueObject/FundingSource.php',
         'PsCheckout\\Core\\FundingSource\\ValueObject\\FundingSourceToken' => __DIR__ . '/../../..' . '/core/src/FundingSource/ValueObject/FundingSourceToken.php',
+        'PsCheckout\\Core\\Hook\\Handlers\\HookHandlerInterface' => __DIR__ . '/../../..' . '/core/src/Hook/Handlers/HookHandlerInterface.php',
+        'PsCheckout\\Core\\Hook\\Handlers\\HookHandlerResult' => __DIR__ . '/../../..' . '/core/src/Hook/Handlers/HookHandlerResult.php',
+        'PsCheckout\\Core\\Hook\\Handlers\\HookParamsInterface' => __DIR__ . '/../../..' . '/core/src/Hook/Handlers/HookParamsInterface.php',
+        'PsCheckout\\Core\\Hook\\Handlers\\OrderCaptureAuthorizationStatusPostUpdateHookHandler' => __DIR__ . '/../../..' . '/core/src/Hook/Handlers/OrderCaptureAuthorizationStatusPostUpdateHookHandler.php',
+        'PsCheckout\\Core\\Hook\\Handlers\\OrderCaptureAuthorizationStatusPostUpdateHookParams' => __DIR__ . '/../../..' . '/core/src/Hook/Handlers/OrderCaptureAuthorizationStatusPostUpdateHookParams.php',
         'PsCheckout\\Core\\OrderState\\Action\\ChangeOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/ChangeOrderStateAction.php',
         'PsCheckout\\Core\\OrderState\\Action\\ChangeOrderStateActionInterface' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/ChangeOrderStateActionInterface.php',
         'PsCheckout\\Core\\OrderState\\Action\\SetApprovalReversedOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetApprovalReversedOrderStateAction.php',
+        'PsCheckout\\Core\\OrderState\\Action\\SetAuthorizedOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetAuthorizedOrderStateAction.php',
         'PsCheckout\\Core\\OrderState\\Action\\SetCompletedOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetCompletedOrderStateAction.php',
         'PsCheckout\\Core\\OrderState\\Action\\SetDeclinedOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetDeclinedOrderStateAction.php',
         'PsCheckout\\Core\\OrderState\\Action\\SetOrderStateActionInterface' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetOrderStateActionInterface.php',
         'PsCheckout\\Core\\OrderState\\Action\\SetPendingOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetPendingOrderStateAction.php',
         'PsCheckout\\Core\\OrderState\\Action\\SetRefundedOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetRefundedOrderStateAction.php',
         'PsCheckout\\Core\\OrderState\\Action\\SetReversedOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetReversedOrderStateAction.php',
+        'PsCheckout\\Core\\OrderState\\Action\\SetVoidedOrderStateAction' => __DIR__ . '/../../..' . '/core/src/OrderState/Action/SetVoidedOrderStateAction.php',
         'PsCheckout\\Core\\OrderState\\Configuration\\OrderStateConfiguration' => __DIR__ . '/../../..' . '/core/src/OrderState/Configuration/OrderStateConfiguration.php',
         'PsCheckout\\Core\\OrderState\\OrderStateException' => __DIR__ . '/../../..' . '/core/src/OrderState/OrderStateException.php',
         'PsCheckout\\Core\\OrderState\\Service\\OrderStateMapper' => __DIR__ . '/../../..' . '/core/src/OrderState/Service/OrderStateMapper.php',
@@ -111,6 +140,8 @@ class ComposerStaticInit828b2fac81294ad5a8624df437de1558
         'PsCheckout\\Core\\PayPal\\OrderStatus\\Action\\PayPalCheckOrderStatusAction' => __DIR__ . '/../../..' . '/core/src/PayPal/OrderStatus/Action/PayPalCheckOrderStatusAction.php',
         'PsCheckout\\Core\\PayPal\\OrderStatus\\Action\\PayPalCheckOrderStatusActionInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/OrderStatus/Action/PayPalCheckOrderStatusActionInterface.php',
         'PsCheckout\\Core\\PayPal\\OrderStatus\\Configuration\\PayPalOrderStatusConfiguration' => __DIR__ . '/../../..' . '/core/src/PayPal/OrderStatus/Configuration/PayPalOrderStatusConfiguration.php',
+        'PsCheckout\\Core\\PayPal\\Order\\Action\\AuthorizePayPalOrderAction' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Action/AuthorizePayPalOrderAction.php',
+        'PsCheckout\\Core\\PayPal\\Order\\Action\\AuthorizePayPalOrderActionInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Action/AuthorizePayPalOrderActionInterface.php',
         'PsCheckout\\Core\\PayPal\\Order\\Action\\CancelPayPalOrderAction' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Action/CancelPayPalOrderAction.php',
         'PsCheckout\\Core\\PayPal\\Order\\Action\\CancelPayPalOrderActionInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Action/CancelPayPalOrderActionInterface.php',
         'PsCheckout\\Core\\PayPal\\Order\\Action\\CapturePayPalOrderAction' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Action/CapturePayPalOrderAction.php',
@@ -123,7 +154,9 @@ class ComposerStaticInit828b2fac81294ad5a8624df437de1558
         'PsCheckout\\Core\\PayPal\\Order\\Action\\UpdatePayPalOrderPurchaseUnitActionInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Action/UpdatePayPalOrderPurchaseUnitActionInterface.php',
         'PsCheckout\\Core\\PayPal\\Order\\Cache\\PayPalOrderCache' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Cache/PayPalOrderCache.php',
         'PsCheckout\\Core\\PayPal\\Order\\Cache\\PayPalOrderCacheInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Cache/PayPalOrderCacheInterface.php',
+        'PsCheckout\\Core\\PayPal\\Order\\Configuration\\PayPalAuthorizationStatus' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Configuration/PayPalAuthorizationStatus.php',
         'PsCheckout\\Core\\PayPal\\Order\\Configuration\\PayPalCaptureStatus' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Configuration/PayPalCaptureStatus.php',
+        'PsCheckout\\Core\\PayPal\\Order\\Configuration\\PayPalOrderIntent' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Configuration/PayPalOrderIntent.php',
         'PsCheckout\\Core\\PayPal\\Order\\Configuration\\PayPalOrderStatus' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Configuration/PayPalOrderStatus.php',
         'PsCheckout\\Core\\PayPal\\Order\\Entity\\PayPalOrder' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Entity/PayPalOrder.php',
         'PsCheckout\\Core\\PayPal\\Order\\Entity\\PayPalOrderAuthorization' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Entity/PayPalOrderAuthorization.php',
@@ -131,6 +164,8 @@ class ComposerStaticInit828b2fac81294ad5a8624df437de1558
         'PsCheckout\\Core\\PayPal\\Order\\Entity\\PayPalOrderPurchaseUnit' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Entity/PayPalOrderPurchaseUnit.php',
         'PsCheckout\\Core\\PayPal\\Order\\Entity\\PayPalOrderRefund' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Entity/PayPalOrderRefund.php',
         'PsCheckout\\Core\\PayPal\\Order\\Exception\\PayPalOrderException' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Exception/PayPalOrderException.php',
+        'PsCheckout\\Core\\PayPal\\Order\\Handler\\AuthorizationCreatedEventHandler' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Handler/AuthorizationCreatedEventHandler.php',
+        'PsCheckout\\Core\\PayPal\\Order\\Handler\\AuthorizationVoidedEventHandler' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Handler/AuthorizationVoidedEventHandler.php',
         'PsCheckout\\Core\\PayPal\\Order\\Handler\\EventHandlerInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Handler/EventHandlerInterface.php',
         'PsCheckout\\Core\\PayPal\\Order\\Handler\\OrderApprovalReversedEventHandler' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Handler/OrderApprovalReversedEventHandler.php',
         'PsCheckout\\Core\\PayPal\\Order\\Handler\\OrderApprovedEventHandler' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Handler/OrderApprovedEventHandler.php',
@@ -166,6 +201,15 @@ class ComposerStaticInit828b2fac81294ad5a8624df437de1558
         'PsCheckout\\Core\\PayPal\\Order\\Validator\\CreatedPayPalOrderValidatorInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Validator/CreatedPayPalOrderValidatorInterface.php',
         'PsCheckout\\Core\\PayPal\\Order\\Validator\\CreatedPayUponInvoiceOrderValidator' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/Validator/CreatedPayUponInvoiceOrderValidator.php',
         'PsCheckout\\Core\\PayPal\\Order\\ValueObject\\PayPalOrderCompletionData' => __DIR__ . '/../../..' . '/core/src/PayPal/Order/ValueObject/PayPalOrderCompletionData.php',
+        'PsCheckout\\Core\\PayPal\\Payment\\Authorization\\Action\\AuthorizationActionInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Payment/Authorization/Action/AuthorizationActionInterface.php',
+        'PsCheckout\\Core\\PayPal\\Payment\\Authorization\\Action\\CaptureAuthorizationAction' => __DIR__ . '/../../..' . '/core/src/PayPal/Payment/Authorization/Action/CaptureAuthorizationAction.php',
+        'PsCheckout\\Core\\PayPal\\Payment\\Authorization\\Action\\ReauthorizeAuthorizationAction' => __DIR__ . '/../../..' . '/core/src/PayPal/Payment/Authorization/Action/ReauthorizeAuthorizationAction.php',
+        'PsCheckout\\Core\\PayPal\\Payment\\Authorization\\Action\\VoidAuthorizationAction' => __DIR__ . '/../../..' . '/core/src/PayPal/Payment/Authorization/Action/VoidAuthorizationAction.php',
+        'PsCheckout\\Core\\PayPal\\Payment\\Authorization\\Configuration\\AuthorizationAction' => __DIR__ . '/../../..' . '/core/src/PayPal/Payment/Authorization/Configuration/AuthorizationAction.php',
+        'PsCheckout\\Core\\PayPal\\Payment\\Authorization\\Processor\\AuthorizationActionProcessor' => __DIR__ . '/../../..' . '/core/src/PayPal/Payment/Authorization/Processor/AuthorizationActionProcessor.php',
+        'PsCheckout\\Core\\PayPal\\Payment\\Authorization\\Processor\\AuthorizationActionProcessorInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Payment/Authorization/Processor/AuthorizationActionProcessorInterface.php',
+        'PsCheckout\\Core\\PayPal\\Refund\\Exception\\Handler\\RefundExceptionHandler' => __DIR__ . '/../../..' . '/core/src/PayPal/Refund/Exception/Handler/RefundExceptionHandler.php',
+        'PsCheckout\\Core\\PayPal\\Refund\\Exception\\Handler\\RefundExceptionHandlerInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Refund/Exception/Handler/RefundExceptionHandlerInterface.php',
         'PsCheckout\\Core\\PayPal\\Refund\\Exception\\PayPalRefundException' => __DIR__ . '/../../..' . '/core/src/PayPal/Refund/Exception/PayPalRefundException.php',
         'PsCheckout\\Core\\PayPal\\Refund\\Provider\\PayPalRefundOrderProvider' => __DIR__ . '/../../..' . '/core/src/PayPal/Refund/Provider/PayPalRefundOrderProvider.php',
         'PsCheckout\\Core\\PayPal\\Refund\\Provider\\PayPalRefundOrderProviderInterface' => __DIR__ . '/../../..' . '/core/src/PayPal/Refund/Provider/PayPalRefundOrderProviderInterface.php',
@@ -218,8 +262,39 @@ class ComposerStaticInit828b2fac81294ad5a8624df437de1558
         'PsCheckout\\Core\\Settings\\Configuration\\PayPalExpressCheckoutConfiguration' => __DIR__ . '/../../..' . '/core/src/Settings/Configuration/PayPalExpressCheckoutConfiguration.php',
         'PsCheckout\\Core\\Settings\\Configuration\\PayPalPayLaterConfiguration' => __DIR__ . '/../../..' . '/core/src/Settings/Configuration/PayPalPayLaterConfiguration.php',
         'PsCheckout\\Core\\Settings\\Configuration\\PayPalSdkConfiguration' => __DIR__ . '/../../..' . '/core/src/Settings/Configuration/PayPalSdkConfiguration.php',
+        'PsCheckout\\Core\\Tests\\Integration\\BaseTestCase' => __DIR__ . '/../../..' . '/core/tests/Integration/BaseTestCase.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\CartFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/CartFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\CustomerFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/CustomerFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\OrderFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/OrderFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\PayPalOrderFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/PayPalOrderFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\PayPalOrderPurchaseUnitFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/PayPalOrderPurchaseUnitFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\PayPalOrderResponseFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/PayPalOrderResponseFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\PayPalRefundOrderFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/PayPalRefundOrderFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Factory\\ValidateOrderDataFactory' => __DIR__ . '/../../..' . '/core/tests/Integration/Factory/ValidateOrderDataFactory.php',
+        'PsCheckout\\Core\\Tests\\Integration\\OrderState\\Action\\ChangeOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/OrderState/Action/ChangeOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\OrderState\\Action\\SetCompletedOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/OrderState/Action/SetCompletedOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\OrderState\\Action\\SetDeclinedOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/OrderState/Action/SetDeclinedOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\OrderState\\Action\\SetPendingOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/OrderState/Action/SetPendingOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\OrderState\\Action\\SetRefundedOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/OrderState/Action/SetRefundedOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\OrderState\\Action\\SetReversedOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/OrderState/Action/SetReversedOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Order\\Action\\CreateValidateOrderDataActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/Order/Action/CreateValidateOrderDataActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\PayPal\\Order\\Action\\CancelPayPalOrderActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/PayPal/Order/Action/CancelPayPalOrderActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\PayPal\\Order\\Action\\UpdatePayPalOrderPurchaseUnitActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/PayPal/Order/Action/UpdatePayPalOrderPurchaseUnitActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\PayPal\\Order\\Handler\\OrderCompletedEventHandlerTest' => __DIR__ . '/../../..' . '/core/tests/Integration/PayPal/Order/Handler/OrderCompletedEventHandlerTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\PaymentToken\\Action\\SavePaymentTokenActionTest' => __DIR__ . '/../../..' . '/core/tests/Integration/PaymentToken/Action/SavePaymentTokenActionTest.php',
+        'PsCheckout\\Core\\Tests\\Integration\\Response\\CaptureOrderResponse' => __DIR__ . '/../../..' . '/core/tests/Integration/Response/CaptureOrderResponse.php',
+        'PsCheckout\\Core\\Tests\\Unit\\OrderState\\Action\\SetAuthorizedOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Unit/OrderState/Action/SetAuthorizedOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Unit\\OrderState\\Action\\SetVoidedOrderStateActionTest' => __DIR__ . '/../../..' . '/core/tests/Unit/OrderState/Action/SetVoidedOrderStateActionTest.php',
+        'PsCheckout\\Core\\Tests\\Unit\\PayPal\\Payment\\Authorization\\Action\\CaptureAuthorizationActionTest' => __DIR__ . '/../../..' . '/core/tests/Unit/PayPal/Payment/Authorization/Action/CaptureAuthorizationActionTest.php',
+        'PsCheckout\\Core\\Tests\\Unit\\PayPal\\Payment\\Authorization\\Action\\ReauthorizeAuthorizationActionTest' => __DIR__ . '/../../..' . '/core/tests/Unit/PayPal/Payment/Authorization/Action/ReauthorizeAuthorizationActionTest.php',
+        'PsCheckout\\Core\\Tests\\Unit\\PayPal\\Payment\\Authorization\\Action\\VoidAuthorizationActionTest' => __DIR__ . '/../../..' . '/core/tests/Unit/PayPal/Payment/Authorization/Action/VoidAuthorizationActionTest.php',
+        'PsCheckout\\Core\\Tests\\Unit\\PayPal\\Payment\\Authorization\\Processor\\AuthorizationActionProcessorTest' => __DIR__ . '/../../..' . '/core/tests/Unit/PayPal/Payment/Authorization/Processor/AuthorizationActionProcessorTest.php',
+        'PsCheckout\\Core\\Util\\CountryResolver' => __DIR__ . '/../../..' . '/core/src/Util/CountryResolver.php',
+        'PsCheckout\\Core\\Util\\CountryResolverInterface' => __DIR__ . '/../../..' . '/core/src/Util/CountryResolverInterface.php',
         'PsCheckout\\Core\\WebhookDispatcher\\Action\\CheckPSLSignatureAction' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Action/CheckPSLSignatureAction.php',
         'PsCheckout\\Core\\WebhookDispatcher\\Action\\CheckPSLSignatureActionInterface' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Action/CheckPSLSignatureActionInterface.php',
+        'PsCheckout\\Core\\WebhookDispatcher\\Action\\VerifyWebhookAction' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Action/VerifyWebhookAction.php',
+        'PsCheckout\\Core\\WebhookDispatcher\\Action\\VerifyWebhookActionInterface' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Action/VerifyWebhookActionInterface.php',
         'PsCheckout\\Core\\WebhookDispatcher\\Processor\\DispatchWebhookProcessor' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Processor/DispatchWebhookProcessor.php',
         'PsCheckout\\Core\\WebhookDispatcher\\Processor\\DispatchWebhookProcessorInterface' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Processor/DispatchWebhookProcessorInterface.php',
         'PsCheckout\\Core\\WebhookDispatcher\\Provider\\WebhookBodyProvider' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Provider/WebhookBodyProvider.php',
@@ -233,21 +308,27 @@ class ComposerStaticInit828b2fac81294ad5a8624df437de1558
         'PsCheckout\\Core\\WebhookDispatcher\\Validator\\WebhookShopIdValidator' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Validator/WebhookShopIdValidator.php',
         'PsCheckout\\Core\\WebhookDispatcher\\Validator\\WebhookShopIdValidatorInterface' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/Validator/WebhookShopIdValidatorInterface.php',
         'PsCheckout\\Core\\WebhookDispatcher\\ValueObject\\DispatchWebhookRequest' => __DIR__ . '/../../..' . '/core/src/WebhookDispatcher/ValueObject/DispatchWebhookRequest.php',
+        'PsCheckout\\Core\\Webhook\\Configuration\\WebhookCategoryConfiguration' => __DIR__ . '/../../..' . '/core/src/Webhook/Configuration/WebhookCategoryConfiguration.php',
+        'PsCheckout\\Core\\Webhook\\Configuration\\WebhookEventTypeConfiguration' => __DIR__ . '/../../..' . '/core/src/Webhook/Configuration/WebhookEventTypeConfiguration.php',
         'PsCheckout\\Core\\Webhook\\Handler\\WebhookEventConfigurationUpdatedHandler' => __DIR__ . '/../../..' . '/core/src/Webhook/Handler/WebhookEventConfigurationUpdatedHandler.php',
         'PsCheckout\\Core\\Webhook\\Handler\\WebhookEventHandlerInterface' => __DIR__ . '/../../..' . '/core/src/Webhook/Handler/WebhookEventHandlerInterface.php',
         'PsCheckout\\Core\\Webhook\\Handler\\WebhookHandler' => __DIR__ . '/../../..' . '/core/src/Webhook/Handler/WebhookHandler.php',
         'PsCheckout\\Core\\Webhook\\Handler\\WebhookHandlerInterface' => __DIR__ . '/../../..' . '/core/src/Webhook/Handler/WebhookHandlerInterface.php',
+        'PsCheckout\\Core\\Webhook\\Service\\WebhookOrderIdResolver' => __DIR__ . '/../../..' . '/core/src/Webhook/Service/WebhookOrderIdResolver.php',
         'PsCheckout\\Core\\Webhook\\Service\\WebhookSecretToken' => __DIR__ . '/../../..' . '/core/src/Webhook/Service/WebhookSecretToken.php',
         'PsCheckout\\Core\\Webhook\\Service\\WebhookTokenInterface' => __DIR__ . '/../../..' . '/core/src/Webhook/Service/WebhookTokenInterface.php',
         'PsCheckout\\Core\\Webhook\\WebhookException' => __DIR__ . '/../../..' . '/core/src/Webhook/WebhookException.php',
+        'Tests\\Unit\\PsCheckout\\Core\\Order\\Builder\\Node\\GooglePayPaymentSourceNodeBuilderTest' => __DIR__ . '/../../..' . '/core/tests/Unit/Order/Builder/Node/GooglePayPaymentSourceNodeBuilderTest.php',
+        'Tests\\Unit\\PsCheckout\\Core\\Order\\Builder\\Node\\PayPalPaymentSourceNodeBuilderTest' => __DIR__ . '/../../..' . '/core/tests/Unit/Order/Builder/Node/PayPalPaymentSourceNodeBuilderTest.php',
+        'Tests\\Unit\\PsCheckout\\Core\\Order\\Builder\\Node\\SupplementaryDataNodeBuilderTest' => __DIR__ . '/../../..' . '/core/tests/Unit/Order/Builder/Node/SupplementaryDataNodeBuilderTest.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit828b2fac81294ad5a8624df437de1558::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit828b2fac81294ad5a8624df437de1558::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit828b2fac81294ad5a8624df437de1558::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitadac240f12dc7adfc2559e58d48d2b05::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitadac240f12dc7adfc2559e58d48d2b05::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitadac240f12dc7adfc2559e58d48d2b05::$classMap;
 
         }, null, ClassLoader::class);
     }

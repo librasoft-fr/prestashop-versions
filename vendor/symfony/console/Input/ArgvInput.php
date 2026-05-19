@@ -130,9 +130,8 @@ class ArgvInput extends Input
                 $this->addLongOption($option->getName(), $i === $len - 1 ? null : substr($name, $i + 1));
 
                 break;
-            } else {
-                $this->addLongOption($option->getName(), null);
             }
+            $this->addLongOption($option->getName(), null);
         }
     }
 
@@ -176,7 +175,7 @@ class ArgvInput extends Input
         } else {
             $all = $this->definition->getArguments();
             $symfonyCommandName = null;
-            if (($inputArgument = $all[$key = array_key_first($all)] ?? null) && 'command' === $inputArgument->getName()) {
+            if (($inputArgument = $all[$key = array_key_first($all) ?? ''] ?? null) && 'command' === $inputArgument->getName()) {
                 $symfonyCommandName = $this->arguments['command'] ?? null;
                 unset($all[$key]);
             }

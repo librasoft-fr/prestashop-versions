@@ -47,4 +47,18 @@ interface PayPalPaymentSourceNodeBuilderInterface
      * @return PayPalPaymentSourceNodeBuilder
      */
     public function setSavePaymentMethod(bool $savePaymentMethod): PayPalPaymentSourceNodeBuilder;
+
+    /**
+     * @param bool $shippingAddressExists
+     *
+     * @return PayPalPaymentSourceNodeBuilder
+     */
+    public function setShippingAddressExists(bool $shippingAddressExists): PayPalPaymentSourceNodeBuilder;
+
+    /**
+     * @param bool $isVirtualCart
+     *
+     * @return PayPalPaymentSourceNodeBuilder
+     */
+    public function setVirtualCart(bool $isVirtualCart): PayPalPaymentSourceNodeBuilder;
 }

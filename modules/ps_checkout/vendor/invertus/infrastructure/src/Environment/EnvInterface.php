@@ -49,6 +49,13 @@ interface EnvInterface
     public function getPaymentApiUrl(): string;
 
     /**
+     * Retrieve order api url
+     *
+     * @return string
+     */
+    public function getOrderApiUrl(): string;
+
+    /**
      * @return string
      */
     public function getPaypalClientId(): string;
@@ -59,4 +66,18 @@ interface EnvInterface
      * @return string
      */
     public function getBnCode(): string;
+
+    /**
+     * Retrieve payment api url
+     *
+     * @return string
+     */
+    public function getWebhookApiUrl(): string;
+
+    /**
+     * Retrieve Maasland order api url
+     *
+     * @return string
+     */
+    public function getMaaslandOrderApiUrl(): string;
 }

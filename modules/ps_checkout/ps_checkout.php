@@ -25,6 +25,10 @@ use Prestashop\ModuleLibMboInstaller\DependencyBuilder;
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts;
 use PrestaShop\PsAccountsInstaller\Installer\Presenter\InstallerPresenter;
+use PsCheckout\Core\Hook\Handlers\HookHandlerResult;
+use PsCheckout\Core\Hook\Handlers\OrderCaptureAuthorizationStatusPostUpdateHookHandler;
+use PsCheckout\Core\Hook\Handlers\OrderCaptureAuthorizationStatusPostUpdateHookParams;
+use PsCheckout\Core\FundingSource\Eligibility\FundingSourceEligibilityService;
 use PsCheckout\Core\PayPal\Order\Provider\PayPalOrderProvider;
 use PsCheckout\Core\PayPal\ShippingTracking\Action\AddTrackingAction;
 use PsCheckout\Core\PayPal\ShippingTracking\Action\ProcessExternalShipmentAction;
@@ -45,7 +49,6 @@ use PsCheckout\Infrastructure\Repository\PayPalOrderRepository;
 use PsCheckout\Infrastructure\Validator\FrontControllerValidator;
 use PsCheckout\Infrastructure\Validator\MerchantValidator;
 use PsCheckout\Module\Presentation\Translator;
-use PsCheckout\Presentation\Presenter\FundingSource\FundingSourcePresenter;
 use PsCheckout\Presentation\Presenter\FundingSource\FundingSourceTokenPresenter;
 use PsCheckout\Presentation\Presenter\FundingSource\FundingSourceTranslationProvider;
 use PsCheckout\Presentation\Presenter\OrderSummary\OrderSummaryPresenter;
@@ -84,6 +87,7 @@ class Ps_Checkout extends PaymentModule
         'actionObjectOrderPaymentUpdateAfter',
         'actionObjectOrderCarrierUpdateAfter',
         'actionGetOrderShipments',
+        'actionOrderStatusPostUpdate',
         'paymentOptions',
         'displayPaymentTop',
         'displayPaymentByBinaries',
@@ -107,7 +111,7 @@ class Ps_Checkout extends PaymentModule
     {
         $this->name = 'ps_checkout';
         $this->tab = 'payments_gateways';
-        $this->version = '9.5.1.1';
+        $this->version = '9.5.3.2';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -266,6 +270,27 @@ class Ps_Checkout extends PaymentModule
                 );
                 $this->context->controller->addCss(
                     $this->_path . 'views/css/adminOrderView.css?version=' . $this->version,
+                    'all',
+                    null,
+                    false
+                );
+
+                /** @var Env $env */
+                $env = $this->getService(Env::class);
+                $merchantSdkUrl = $env->getEnv('CHECKOUT_MERCHANT_SDK_URL');
+
+                if (substr($merchantSdkUrl, -3) !== '.js') {
+                    $merchantSdkVersion = $env->getEnv('CHECKOUT_MERCHANT_SDK_VERSION');
+                    $merchantSdkUrl = $merchantSdkUrl . $merchantSdkVersion . PayPalSdkConfiguration::SDK_MERCHANT_ENDPOINT;
+                }
+
+                $this->context->controller->addJS($merchantSdkUrl, false);
+                $this->context->controller->addJS(
+                    $this->getPathUri() . 'views/js/adminOrderViewSdk.js?version=' . $this->version,
+                    false
+                );
+                $this->context->controller->addCss(
+                    $this->_path . 'views/css/adminOrderViewSdk.css?version=' . $this->version,
                     'all',
                     null,
                     false
@@ -530,8 +555,8 @@ class Ps_Checkout extends PaymentModule
 
         /** @var Configuration $configuration */
         $configuration = $this->getService(Configuration::class);
-        /** @var FundingSourcePresenter $fundingSourcePresenter */
-        $fundingSourcePresenter = $this->getService(FundingSourcePresenter::class);
+        /** @var FundingSourceEligibilityService $eligibilityService */
+        $eligibilityService = $this->getService(FundingSourceEligibilityService::class);
         /** @var FundingSourceTokenPresenter $fundingSourceTokenPresenter */
         $fundingSourceTokenPresenter = $this->getService(FundingSourceTokenPresenter::class);
         /** @var FundingSourceTranslationProvider $fundingSourceTranslationProvider */
@@ -580,7 +605,7 @@ class Ps_Checkout extends PaymentModule
                 $paymentOptions[] = $paymentOption;
             }
         }
-        foreach ($fundingSourcePresenter->getAllActiveForSpecificShop($this->context->shop->id) as $fundingSource) {
+        foreach ($eligibilityService->getEligibleFundingSources() as $fundingSource) {
             $paymentOption = new PaymentOption();
             $paymentOption->setModuleName($this->name . '-' . $fundingSource->getName());
             $paymentOption->setCallToActionText($fundingSourceTranslationProvider->getPaymentMethodName(
@@ -611,8 +636,19 @@ class Ps_Checkout extends PaymentModule
                 ) {
                     $customerBirthday = $this->context->customer->birthday;
                 }
+                $customerPhone = '';
+                $cart = $this->context->cart;
+                if ($cart && $cart->id_address_invoice) {
+                    $invoiceAddress = new \Address((int) $cart->id_address_invoice);
+                    if (\Validate::isLoadedObject($invoiceAddress)) {
+                        $customerPhone = !empty($invoiceAddress->phone)
+                            ? $invoiceAddress->phone
+                            : (!empty($invoiceAddress->phone_mobile) ? $invoiceAddress->phone_mobile : '');
+                    }
+                }
                 $this->context->smarty->assign([
                     'customerBirthday' => $customerBirthday,
+                    'customerPhone' => $customerPhone,
                     'min_date' => '1900-01-01',
                     'max_date' => date('Y-m-d', strtotime('-18 years')),
                 ]);
@@ -649,19 +685,23 @@ class Ps_Checkout extends PaymentModule
         $payPalOrder = $payPalOrderRepository->getOneByCartId($this->context->cart->id);
 
         $isExpressCheckout = $payPalOrder && $payPalOrder->isExpressCheckout();
+        $cookieEmail = $this->context->cookie->__get('paypalEmail');
+        $email = ($cookieEmail && Validate::isEmail($cookieEmail)) ? $cookieEmail : '';
+
+        /** @var Translator $translator */
+        $translator = $this->getService(Translator::class);
 
         $this->context->smarty->assign([
             'isExpressCheckout' => $isExpressCheckout,
             'spinnerPath' => $this->getPathUri() . 'views/img/tail-spin.svg',
-            'loaderTranslatedText' => $this->trans('Please wait, loading additional payment methods.', [], 'Modules.Checkout.Pscheckout'),
+            'loaderTranslatedText' => $translator->trans('Please wait, loading additional payment methods.'),
             'paypalLogoPath' => $this->getPathUri() . 'views/img/paypal_express.png',
-            'translatedText' => $this->trans(
+            'translatedText' => $translator->trans(
                 'You have selected your %s PayPal account to proceed to the payment.',
-                [$this->context->cookie->__get('paypalEmail') ?: ''],
-                'Modules.Checkout.Pscheckout'
+                [$email]
             ),
             'shoppingCartWarningPath' => $this->getPathUri() . 'views/img/icons/shopping-cart-warning.svg',
-            'warningTranslatedText' => $this->trans('Warning', [], 'Modules.Checkout.Pscheckout'),
+            'warningTranslatedText' => $translator->trans('Warning'),
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/displayPaymentTop.tpl');
@@ -688,8 +728,8 @@ class Ps_Checkout extends PaymentModule
 
         /** @var FundingSourceTokenPresenter $fundingSourceTokenPresenter */
         $fundingSourceTokenPresenter = $this->getService(FundingSourceTokenPresenter::class);
-        /** @var FundingSourcePresenter $fundingSourcePresenter */
-        $fundingSourcePresenter = $this->getService(FundingSourcePresenter::class);
+        /** @var FundingSourceEligibilityService $eligibilityService */
+        $eligibilityService = $this->getService(FundingSourceEligibilityService::class);
 
         $paymentOptions = [];
 
@@ -697,7 +737,7 @@ class Ps_Checkout extends PaymentModule
             $paymentOptions[] = $fundingSource->getName();
         }
 
-        foreach ($fundingSourcePresenter->getAllActiveForSpecificShop($this->context->shop->id) as $fundingSource) {
+        foreach ($eligibilityService->getEligibleFundingSources() as $fundingSource) {
             $paymentOptions[] = $fundingSource->getName();
         }
 
@@ -860,7 +900,7 @@ class Ps_Checkout extends PaymentModule
 
         foreach ($orderPayments as $orderPayment) {
             if (!empty($orderPayment->transaction_id)) {
-                $legalFreeText .= $this->trans('Transaction identifier') . ' ' . $orderPayment->transaction_id . PHP_EOL;
+                $legalFreeText .= $translator->trans('Transaction identifier') . ' ' . $orderPayment->transaction_id . PHP_EOL;
             }
         }
 
@@ -958,6 +998,7 @@ class Ps_Checkout extends PaymentModule
             'moduleName' => $this->displayName,
             'orderPrestaShopId' => $order->id,
             'orderPayPalBaseUrl' => $this->context->link->getAdminLink('AdminAjaxPrestashopCheckout'),
+            'locale' => $this->context->language->iso_code,
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/displayAdminOrderMainBottom.tpl');
@@ -1062,9 +1103,11 @@ class Ps_Checkout extends PaymentModule
     }
 
     /**
-     * @param string $serviceName
+     * @template T
      *
-     * @return object|null
+     * @param class-string<T> $serviceName
+     *
+     * @return T|null
      */
     public function getService(string $serviceName)
     {
@@ -1184,6 +1227,36 @@ class Ps_Checkout extends PaymentModule
                     'order_id' => $order->id ?? 'unknown',
                     'exception' => $exception->getMessage()
                 ]);
+            }
+        }
+    }
+
+    /**
+     * @param array{cookie: Cookie, cart: Cart, altern: int, id_order: int, newOrderStatus: OrderState, oldOrderStatus: OrderState} $params
+     *
+     * @return void
+     */
+    public function hookActionOrderStatusPostUpdate(array $params)
+    {
+        $order = new Order((int) $params['id_order']);
+
+        if (!Validate::isLoadedObject($order) || $order->module !== $this->name) {
+            return;
+        }
+
+        /** @var OrderCaptureAuthorizationStatusPostUpdateHookHandler $handler */
+        $handler = $this->getService(OrderCaptureAuthorizationStatusPostUpdateHookHandler::class);
+
+        $result = $handler->handle(new OrderCaptureAuthorizationStatusPostUpdateHookParams(
+            $params['newOrderStatus'],
+            (int) $params['id_order']
+        ));
+
+        if ($result instanceof HookHandlerResult) {
+            if ($result->isError()) {
+                $this->context->controller->errors[] = $this->trans($result->getMessage(), [], 'Modules.Checkout.Pscheckout');
+            } else {
+                $this->context->controller->confirmations[] = $this->trans($result->getMessage(), [], 'Modules.Checkout.Pscheckout');
             }
         }
     }

@@ -20,35 +20,22 @@
 
 namespace PsCheckout\Core\PayPal\Order\Provider;
 
+use Psr\Log\LoggerInterface;
 use PsCheckout\Api\Http\Exception\PayPalException;
 use PsCheckout\Api\Http\OrderHttpClientInterface;
 use PsCheckout\Api\ValueObject\PayPalOrderResponse;
 use PsCheckout\Core\Exception\PsCheckoutException;
 use PsCheckout\Core\PayPal\Order\Cache\PayPalOrderCacheInterface;
-use PsCheckout\Core\PayPal\Order\Entity\PayPalOrder;
 use PsCheckout\Core\PayPal\Order\Exception\PayPalOrderException;
-use PsCheckout\Core\PayPal\Order\Repository\PayPalOrderRepositoryInterface;
 use PsCheckout\Core\PayPal\OrderStatus\Configuration\PayPalOrderStatusConfiguration;
-use PsCheckout\Core\Settings\Configuration\PayPalConfiguration;
-use PsCheckout\Infrastructure\Adapter\ConfigurationInterface;
 use PsCheckout\Infrastructure\Repository\PayPalOrderRepository;
 
 class PayPalOrderProvider implements PayPalOrderProviderInterface
 {
     /**
-     * @var ConfigurationInterface
-     */
-    private $configuration;
-
-    /**
      * @var PayPalOrderCacheInterface
      */
     private $payPalOrderCache;
-
-    /**
-     * @var PayPalOrderRepositoryInterface
-     */
-    private $payPalOrderRepository;
 
     /**
      * @var OrderHttpClientInterface
@@ -56,21 +43,23 @@ class PayPalOrderProvider implements PayPalOrderProviderInterface
     private $orderHttpClient;
 
     /**
-     * @param ConfigurationInterface $configuration
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param PayPalOrderCacheInterface $payPalOrderCache
-     * @param PayPalOrderRepositoryInterface $payPalOrderRepository
      * @param OrderHttpClientInterface $orderHttpClient
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        ConfigurationInterface $configuration,
         PayPalOrderCacheInterface $payPalOrderCache,
-        PayPalOrderRepositoryInterface $payPalOrderRepository,
-        OrderHttpClientInterface $orderHttpClient
+        OrderHttpClientInterface $orderHttpClient,
+        LoggerInterface $logger
     ) {
-        $this->configuration = $configuration;
         $this->payPalOrderCache = $payPalOrderCache;
-        $this->payPalOrderRepository = $payPalOrderRepository;
         $this->orderHttpClient = $orderHttpClient;
+        $this->logger = $logger;
     }
 
     /**
@@ -114,27 +103,20 @@ class PayPalOrderProvider implements PayPalOrderProviderInterface
     {
         $data = null;
 
-        $payPalOrder = $this->payPalOrderRepository->getOneBy(['id' => $id]);
-
-        $payload = [
-            'orderId' => $id,
-        ];
-
-        if ($payPalOrder && $payPalOrder->checkCustomerIntent(PayPalOrder::CUSTOMER_INTENT_USES_VAULTING)) {
-            $payload['vault'] = true;
-            $payload['payee'] = [
-                'merchant_id' => $this->configuration->get(PayPalConfiguration::PS_CHECKOUT_PAYPAL_ID_MERCHANT),
-            ];
-        }
-
         try {
-            $response = $this->orderHttpClient->fetchOrder($payload);
+            $response = $this->orderHttpClient->fetchOrder($id);
             $responseData = json_decode($response->getBody(), true);
 
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300 && !empty($responseData)) {
                 $data = $responseData;
             }
         } catch (PayPalException $exception) {
+            $this->logger->error('Failed to fetch PayPal order', [
+                'orderId' => $id,
+                'exception' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+            ]);
+
             if ($exception->getCode() === PayPalException::INVALID_RESOURCE_ID) {
                 \Db::getInstance()->update(
                     PayPalOrderRepository::TABLE_NAME,
@@ -143,7 +125,11 @@ class PayPalOrderProvider implements PayPalOrderProviderInterface
                     ],
                     'id = "' . pSQL($id) . '"'
                 );
+
+                return $data;
             }
+
+            throw $exception;
         }
 
         return $data;

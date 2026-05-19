@@ -57,7 +57,6 @@ return [
     'CM' => 'Kamerun',
     'CN' => 'Kinë',
     'CO' => 'Kolumbi',
-    'CQ' => 'Sark',
     'CR' => 'Kosta-Rikë',
     'CU' => 'Kubë',
     'CV' => 'Kepi i Gjelbër',

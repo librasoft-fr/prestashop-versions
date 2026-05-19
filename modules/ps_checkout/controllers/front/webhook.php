@@ -44,6 +44,13 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
      */
     public function postProcess()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->exitWithResponse([
+                'httpCode' => 405,
+                'body' => 'Method Not Allowed',
+            ]);
+        }
+
         /** @var LoggerInterface $logger */
         $logger = $this->module->getService(LoggerInterface::class);
 
@@ -93,7 +100,17 @@ class Ps_CheckoutWebhookModuleFrontController extends AbstractFrontController
 
             exit;
         } catch (Exception $exception) {
-            $this->exitWithExceptionMessage($exception);
+            $logger->error(
+                'Webhook cannot be handled',
+                [
+                    'exception' => $exception,
+                ]
+            );
+            $this->exitWithResponse([
+                'httpCode' => 500,
+            ]);
+
+            exit;
         } catch (Throwable $exception) {
             $this->exitWithExceptionMessage(new PsCheckoutException(
                 'An error occurred while processing the webhook.',

@@ -79,6 +79,7 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
                     $item->expiresAt(\DateTimeImmutable::createFromFormat('U.u', \sprintf('%.6F', $item->metadata[CacheItem::METADATA_EXPIRY])));
                 } elseif (0 < $defaultLifetime) {
                     $item->expiresAfter($defaultLifetime);
+                    $item->newMetadata[CacheItem::METADATA_EXPIRY] = $item->expiry;
                 }
 
                 return $item;
@@ -106,7 +107,7 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
                 $callback = $wrap;
                 $beta = \INF === $beta ? \INF : 0;
             }
-            if ($adapter instanceof CacheInterface) {
+            if ($adapter instanceof CacheInterface && $i !== $this->adapterCount) {
                 $value = $adapter->get($key, $callback, $beta, $metadata);
             } else {
                 $value = $this->doGet($adapter, $key, $callback, $beta, $metadata);

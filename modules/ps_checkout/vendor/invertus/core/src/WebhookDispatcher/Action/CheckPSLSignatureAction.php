@@ -20,18 +20,19 @@
 
 namespace PsCheckout\Core\WebhookDispatcher\Action;
 
-use PsCheckout\Api\Http\OrderHttpClientInterface;
+use PsCheckout\Api\Http\MaaslandOrderHttpClientInterface;
 use PsCheckout\Core\Webhook\WebhookException;
 
+// TODO: Remove this class and references when maasland webhooks are no longer needed
 class CheckPSLSignatureAction implements CheckPSLSignatureActionInterface
 {
     /**
-     * @var OrderHttpClientInterface
+     * @var MaaslandOrderHttpClientInterface
      */
     private $orderHttpClient;
 
     public function __construct(
-        OrderHttpClientInterface $orderHttpClient
+        MaaslandOrderHttpClientInterface $orderHttpClient
     ) {
         $this->orderHttpClient = $orderHttpClient;
     }

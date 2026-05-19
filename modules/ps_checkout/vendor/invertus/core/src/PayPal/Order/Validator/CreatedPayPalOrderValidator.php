@@ -21,6 +21,7 @@
 namespace PsCheckout\Core\PayPal\Order\Validator;
 
 use PsCheckout\Core\PayPal\Order\Configuration\PayPalCaptureStatus;
+use PsCheckout\Core\PayPal\Order\Configuration\PayPalOrderIntent;
 use PsCheckout\Core\PayPal\Order\Provider\PayPalOrderProviderInterface;
 use PsCheckout\Core\PayPal\Order\ValueObject\PayPalOrderCompletionData;
 use PsCheckout\Infrastructure\Adapter\CartInterface;
@@ -67,24 +68,26 @@ class CreatedPayPalOrderValidator implements CreatedPayPalOrderValidatorInterfac
     {
         $order = $this->orderRepository->getOneBy(['id_cart' => $cartId]);
 
-        //NOTE: order must be created in shop
+        // NOTE: order must be created in shop
         if (!$order) {
             return null;
         }
 
         $paypalOrderResponse = $this->payPalOrderProvider->getById($payPalOrderId);
 
-        //NOTE: order must exist in paypal and have correct status
+        // NOTE: order must exist in paypal and have correct status
         if ($paypalOrderResponse->getStatus() !== PayPalCaptureStatus::PENDING
             && $paypalOrderResponse->getStatus() !== PayPalCaptureStatus::COMPLETED
         ) {
             return null;
         }
 
+        $transactionModel = $paypalOrderResponse->getIntent() === PayPalOrderIntent::AUTHORIZE ? $paypalOrderResponse->getAuthorization() : $paypalOrderResponse->getCapture();
+
         return new PayPalOrderCompletionData(
             $paypalOrderResponse->getStatus(),
             $paypalOrderResponse->getId(),
-            $paypalOrderResponse->getCapture()['id'],
+            $transactionModel['id'],
             $cartId,
             $this->moduleId,
             (int) $order->id,

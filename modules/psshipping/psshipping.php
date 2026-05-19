@@ -93,7 +93,6 @@ class Psshipping extends Module
         'displayAdminOrderTabLink',
         'displayAdminOrderContentShip',
         'displayAdminOrderTabShip',
-        'displayBackOfficeHeader',
         'displayCarrierExtraContent',
         'displayOrderConfirmation',
         'actionObjectCarrierUpdateAfter',
@@ -119,7 +118,7 @@ class Psshipping extends Module
     {
         $this->name = 'psshipping';
         $this->tab = 'shipping_logistics';
-        $this->version = '2.1.1';
+        $this->version = '2.1.3';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->module_key = '8a4eff554bcb2ec847b3d4c70286b0e2';
@@ -332,53 +331,6 @@ class Psshipping extends Module
 
         // Otherwise use PrestaShop’s main container
         return $this->get($serviceName);
-    }
-
-    /**
-     * Hook executed on the header of each pages in the backoffice
-     *
-     * @return string|void
-     */
-    public function hookDisplayBackOfficeHeader()
-    {
-        return $this->renderPromoteBanner();
-    }
-
-    /**
-     * Render the banner promoting the shipping module.
-     * Only display the banner on the carrier page.
-     * To be called on the backofficeHeader hook.
-     *
-     * @return string
-     */
-    private function renderPromoteBanner(): string
-    {
-        if (empty($this->context->controller)) {
-            return '';
-        }
-
-        $controller = $this->context->controller;
-
-        if (empty($controller->controller_name)) {
-            return '';
-        }
-
-        $controllerName = $controller->controller_name;
-
-        if ($controllerName !== 'AdminCarriers') {
-            return '';
-        }
-
-        Media::addJsDef([
-            'psshippingModuleLink' => (new PrestaShopAdapter($this))->generateRoute('home', ['route' => 'home']),
-            'defaultIsoCode' => $this->context->language->iso_code ?? 'en',
-        ]);
-
-        if (empty($this->context->smarty)) {
-            return '';
-        }
-
-        return $this->display(__DIR__, 'views/templates/hook/promoteBanner.tpl');
     }
 
     /**

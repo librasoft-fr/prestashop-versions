@@ -5,6 +5,7 @@
  */
 use PrestaShop\PrestaShop\Adapter\ContainerFinder;
 use PrestaShop\PrestaShop\Adapter\ServiceLocator;
+use PrestaShop\PrestaShop\Core\Domain\Carrier\ValueObject\OutOfRangeBehavior;
 use PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagSettings;
 use PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagStateCheckerInterface;
 
@@ -19,6 +20,7 @@ class CarrierCore extends ObjectModel
     public const PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE = 4;
     public const ALL_CARRIERS = 5;
 
+    // Shipping methods
     public const SHIPPING_METHOD_DEFAULT = 0;
     public const SHIPPING_METHOD_WEIGHT = 1;
     public const SHIPPING_METHOD_PRICE = 2;
@@ -66,6 +68,7 @@ class CarrierCore extends ObjectModel
      * @var bool Behavior if the carrier is not within configured ranges.
      *           If set to true, carrier will be disabled.
      *           If false, the most expensive range will be used.
+     *           Watch out - this value is passed around as an integer in the new part of the core.
      */
     public $range_behavior;
 
@@ -746,7 +749,7 @@ class CarrierCore extends ObjectModel
                  * Second, if out-of-range behavior carrier is set to "Deactivate carrier", we have to specifically check
                  * for current weight/price of the cart and remove the carrier if it is not available for the current cart.
                  */
-                if ($row['range_behavior']) {
+                if ($row['range_behavior'] == OutOfRangeBehavior::DISABLED) {
                     /*
                      * Resolve default zone to use for shipping if no address is provided yet. Country in the context is
                      * always assigned. It may be a default country or a geolocated country set it FrontController.

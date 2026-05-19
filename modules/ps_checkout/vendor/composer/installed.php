@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'v5.1.1',
-        'version' => '5.1.1.0',
-        'reference' => '5846da751d8542e6814651626eacd7fe5470c270',
+        'pretty_version' => 'v5.3.2',
+        'version' => '5.3.2.0',
+        'reference' => '6744840e3dd4b17342a10948b3bc031627f3a888',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'v5.1.1',
-            'version' => '5.1.1.0',
-            'reference' => '5846da751d8542e6814651626eacd7fe5470c270',
+            'pretty_version' => 'v5.3.2',
+            'version' => '5.3.2.0',
+            'reference' => '6744840e3dd4b17342a10948b3bc031627f3a888',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -44,9 +44,9 @@
             ),
         ),
         'giggsey/locale' => array(
-            'pretty_version' => '2.9.0',
-            'version' => '2.9.0.0',
-            'reference' => 'fe741e99ae6ccbe8132f3d63d8ec89924e689778',
+            'pretty_version' => '2.8.0',
+            'version' => '2.8.0.0',
+            'reference' => '1cd8b3ad2d43e04f4c2c6a240495af44780f809b',
             'type' => 'library',
             'install_path' => __DIR__ . '/../giggsey/locale',
             'aliases' => array(),

@@ -32,7 +32,7 @@ if (!defined('_PS_VERSION_')) {
 class UpsExpressCarrierConfiguration extends CarrierConfiguration
 {
     const DEFAULT_CONFIGURATION = [
-        'name' => 'UPS DAP Express delivery',
+        'name' => 'UPS Express®',
         'freeShipping' => false,
         'active' => false,
         'deleted' => false,

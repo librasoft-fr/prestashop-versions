@@ -57,7 +57,6 @@ return [
     'CM' => 'Kamẹrun',
     'CN' => 'Chaína',
     'CO' => 'Kolómbia',
-    'CQ' => 'Sák',
     'CR' => 'Kósta Ríka',
     'CU' => 'Kiúbá',
     'CV' => 'Kép Vẹ́d',

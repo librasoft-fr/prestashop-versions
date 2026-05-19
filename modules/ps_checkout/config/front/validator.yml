@@ -37,10 +37,10 @@ services:
     arguments:
       - '@PsCheckout\Core\WebhookDispatcher\Provider\WebhookBodyProvider'
 
-  PsCheckout\Core\WebhookDispatcher\Action\CheckPSLSignatureAction:
-    class: PsCheckout\Core\WebhookDispatcher\Action\CheckPSLSignatureAction
+  PsCheckout\Core\WebhookDispatcher\Action\VerifyWebhookAction:
+    class: PsCheckout\Core\WebhookDispatcher\Action\VerifyWebhookAction
     arguments:
-      - '@PsCheckout\Api\Http\OrderHttpClient'
+      - '@PsCheckout\Api\Http\WebhookHttpClient'
 
   PsCheckout\Core\WebhookDispatcher\Validator\WebhookShopIdValidator:
     class: PsCheckout\Core\WebhookDispatcher\Validator\WebhookShopIdValidator
@@ -54,6 +54,11 @@ services:
       - '@PsCheckout\Infrastructure\Repository\OrderRepository'
       - '@PsCheckout\Infrastructure\Adapter\Cart'
       - '@=service("ps_checkout.module").id'
+
+  PsCheckout\Core\WebhookDispatcher\Action\CheckPSLSignatureAction:
+    class: PsCheckout\Core\WebhookDispatcher\Action\CheckPSLSignatureAction
+    arguments:
+      - '@PsCheckout\Api\Http\MaaslandOrderHttpClient'
 
   PsCheckout\Core\PayPal\Order\Validator\CreatedPayUponInvoiceOrderValidator:
     class: PsCheckout\Core\PayPal\Order\Validator\CreatedPayUponInvoiceOrderValidator

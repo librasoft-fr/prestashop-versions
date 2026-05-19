@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
-    'PsCheckout\\Tests\\Core\\Integration\\' => array($baseDir . '/core/tests'),
+    'PsCheckout\\Tests\\Core\\Unit\\' => array($baseDir . '/core/tests/Unit'),
+    'PsCheckout\\Tests\\Core\\Integration\\' => array($baseDir . '/core/tests/Integration'),
     'PsCheckout\\Core\\' => array($baseDir . '/core/src'),
 );

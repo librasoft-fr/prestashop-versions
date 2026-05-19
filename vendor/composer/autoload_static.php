@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
+class ComposerStaticInit818da2c884d55e471928cb5272d29a31
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -25,6 +25,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
         '6a47392539ca2329373e0d33e1dba053' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/bootstrap.php',
+        '9d2b9fc6db0f153a0a149fefb182415e' => __DIR__ . '/..' . '/symfony/polyfill-php84/bootstrap.php',
         'e40631d46120a9c38ea139981f8dab26' => __DIR__ . '/..' . '/ircmaxell/password-compat/lib/password.php',
         '877d5940585e94b79d9d1f31ecaeb5fe' => __DIR__ . '/..' . '/martinlindhe/php-mb-helpers/src/mb_helpers.php',
         '0d59ee240a4cd96ddbb4ff164fccea4d' => __DIR__ . '/..' . '/symfony/polyfill-php73/bootstrap.php',
@@ -52,6 +53,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         array (
             'Symfony\\UX\\TwigComponent\\' => 25,
             'Symfony\\UX\\Icons\\' => 17,
+            'Symfony\\Polyfill\\Php84\\' => 23,
             'Symfony\\Polyfill\\Php83\\' => 23,
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Php73\\' => 23,
@@ -128,7 +130,6 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
             'Psr\\Log\\' => 8,
             'Psr\\Link\\' => 9,
             'Psr\\Http\\Message\\' => 17,
-            'Psr\\Http\\Client\\' => 16,
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'Psr\\Clock\\' => 10,
@@ -262,6 +263,10 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\UX\\Icons\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/ux-icons/src',
+        ),
+        'Symfony\\Polyfill\\Php84\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php84',
         ),
         'Symfony\\Polyfill\\Php83\\' =>
         array (
@@ -501,7 +506,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         ),
         'Symfony\\Bundle\\MonologBundle\\' =>
         array (
-            0 => __DIR__ . '/..' . '/symfony/monolog-bundle',
+            0 => __DIR__ . '/..' . '/symfony/monolog-bundle/src',
         ),
         'Symfony\\Bundle\\FrameworkBundle\\' =>
         array (
@@ -555,10 +560,6 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
-        ),
-        'Psr\\Http\\Client\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
         'Psr\\EventDispatcher\\' =>
         array (
@@ -1729,6 +1730,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Defuse\\Crypto\\KeyOrPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyOrPassword.php',
         'Defuse\\Crypto\\KeyProtectedByPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyProtectedByPassword.php',
         'Defuse\\Crypto\\RuntimeTests' => __DIR__ . '/..' . '/defuse/php-encryption/src/RuntimeTests.php',
+        'Deprecated' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/Deprecated.php',
         'Detection\\MobileDetect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/src/MobileDetect.php',
         'DoctrineExtensions\\Query\\MysqlWalker' => __DIR__ . '/..' . '/beberlei/doctrineextensions/src/Query/MysqlWalker.php',
         'DoctrineExtensions\\Query\\Mysql\\Acos' => __DIR__ . '/..' . '/beberlei/doctrineextensions/src/Query/Mysql/Acos.php',
@@ -3325,6 +3327,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Intervention\\HttpAuth\\Vault\\BasicVault' => __DIR__ . '/..' . '/intervention/httpauth/src/Vault/BasicVault.php',
         'Intervention\\HttpAuth\\Vault\\DigestVault' => __DIR__ . '/..' . '/intervention/httpauth/src/Vault/DigestVault.php',
         'IntlDateFormatter' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Resources/stubs/IntlDateFormatter.php',
+        'IntlListFormatter' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Resources/stubs/IntlListFormatter.php',
         'JSMin\\JSMin' => __DIR__ . '/..' . '/mrclay/jsmin-php/src/JSMin/JSMin.php',
         'JSMin\\UnterminatedCommentException' => __DIR__ . '/..' . '/mrclay/jsmin-php/src/JSMin/UnterminatedCommentException.php',
         'JSMin\\UnterminatedRegExpException' => __DIR__ . '/..' . '/mrclay/jsmin-php/src/JSMin/UnterminatedRegExpException.php',
@@ -4033,6 +4036,12 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'PHPSQLParser\\utils\\ExpressionToken' => __DIR__ . '/..' . '/greenlion/php-sql-parser/src/PHPSQLParser/utils/ExpressionToken.php',
         'PHPSQLParser\\utils\\ExpressionType' => __DIR__ . '/..' . '/greenlion/php-sql-parser/src/PHPSQLParser/utils/ExpressionType.php',
         'PHPSQLParser\\utils\\PHPSQLParserConstants' => __DIR__ . '/..' . '/greenlion/php-sql-parser/src/PHPSQLParser/utils/PHPSQLParserConstants.php',
+        'Pdo\\Dblib' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/Pdo/Dblib.php',
+        'Pdo\\Firebird' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/Pdo/Firebird.php',
+        'Pdo\\Mysql' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/Pdo/Mysql.php',
+        'Pdo\\Odbc' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/Pdo/Odbc.php',
+        'Pdo\\Pgsql' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/Pdo/Pgsql.php',
+        'Pdo\\Sqlite' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/Pdo/Sqlite.php',
         'Pelago\\Emogrifier\\Caching\\SimpleStringCache' => __DIR__ . '/..' . '/pelago/emogrifier/src/Caching/SimpleStringCache.php',
         'Pelago\\Emogrifier\\CssInliner' => __DIR__ . '/..' . '/pelago/emogrifier/src/CssInliner.php',
         'Pelago\\Emogrifier\\Css\\CssDocument' => __DIR__ . '/..' . '/pelago/emogrifier/src/Css/CssDocument.php',
@@ -4846,6 +4855,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'PrestaShopBundle\\ApiPlatform\\Metadata\\Resource\\Factory\\ExperimentalOperationsMetadataCollectionFactoryDecorator' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/Resource/Factory/ExperimentalOperationsMetadataCollectionFactoryDecorator.php',
         'PrestaShopBundle\\ApiPlatform\\Metadata\\UpdatePosition' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Metadata/UpdatePosition.php',
         'PrestaShopBundle\\ApiPlatform\\NormalizationMapper' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/NormalizationMapper.php',
+        'PrestaShopBundle\\ApiPlatform\\Normalizer\\BulkCommandExceptionNormalizer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Normalizer/BulkCommandExceptionNormalizer.php',
         'PrestaShopBundle\\ApiPlatform\\Normalizer\\CQRSApiNormalizer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Normalizer/CQRSApiNormalizer.php',
         'PrestaShopBundle\\ApiPlatform\\Normalizer\\DateImmutableNormalizer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Normalizer/DateImmutableNormalizer.php',
         'PrestaShopBundle\\ApiPlatform\\Normalizer\\DateTimeImmutableNormalizer' => __DIR__ . '/../..' . '/src/PrestaShopBundle/ApiPlatform/Normalizer/DateTimeImmutableNormalizer.php',
@@ -5112,6 +5122,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'PrestaShopBundle\\Entity\\TabLang' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/TabLang.php',
         'PrestaShopBundle\\Entity\\Translation' => __DIR__ . '/../..' . '/src/PrestaShopBundle/Entity/Translation.php',
         'PrestaShopBundle\\EventListener\\API\\AdminAPIFeatureListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/API/AdminAPIFeatureListener.php',
+        'PrestaShopBundle\\EventListener\\API\\BulkCommandExceptionListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/API/BulkCommandExceptionListener.php',
         'PrestaShopBundle\\EventListener\\API\\Context\\ApiClientContextListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/API/Context/ApiClientContextListener.php',
         'PrestaShopBundle\\EventListener\\API\\Context\\ApiLegacyContextListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/API/Context/ApiLegacyContextListener.php',
         'PrestaShopBundle\\EventListener\\API\\Context\\CurrencyContextListener' => __DIR__ . '/../..' . '/src/PrestaShopBundle/EventListener/API/Context/CurrencyContextListener.php',
@@ -5837,13 +5848,8 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'PrestaShop\\Decimal\\Operation\\Multiplication' => __DIR__ . '/..' . '/prestashop/decimal/src/Operation/Multiplication.php',
         'PrestaShop\\Decimal\\Operation\\Rounding' => __DIR__ . '/..' . '/prestashop/decimal/src/Operation/Rounding.php',
         'PrestaShop\\Decimal\\Operation\\Subtraction' => __DIR__ . '/..' . '/prestashop/decimal/src/Operation/Subtraction.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\BulkDeleteCustomerCommandDenormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/BulkDeleteCustomerCommandDenormalizer.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\CartAddressNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/CartAddressNormalizer.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\CountryIdNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/CountryIdNormalizer.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\GenerateCombinationsSerializer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/GenerateCombinationsSerializer.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\OrderAddressNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/OrderAddressNormalizer.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\StateIdInterfaceNormalizer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/StateIdInterfaceNormalizer.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Processor\\BulkCustomersDeleteProcessor' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Processor/BulkCustomersDeleteProcessor.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Normalizer\\GetSearchTermAliasesQuerySerializer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Normalizer/GetSearchTermAliasesQuerySerializer.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\Address' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/Address.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\AddressList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/AddressList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Address\\BulkAddresses' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Address/BulkAddresses.php',
@@ -5868,17 +5874,19 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\CategoryList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/CategoryList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Contact\\Contact' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Contact/Contact.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Contact\\ContactList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Contact/ContactList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Country\\Country' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Country/Country.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\BulkCustomers' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/BulkCustomers.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\BulkDeleteCustomers' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/BulkDeleteCustomers.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\Customer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/Customer.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerDetails' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerDetails.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerGroup' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerGroup.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\CustomerGroupList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/CustomerGroupList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\FoundCustomer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/FoundCustomer.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\DiscountType\\DiscountTypeList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/DiscountType/DiscountTypeList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\BulkDeleteDiscounts' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/BulkDeleteDiscounts.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\BulkUpdateStatusDiscounts' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/BulkUpdateStatusDiscounts.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\Discount' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/Discount.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\DiscountList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/DiscountList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Discount\\DiscountTypeList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Discount/DiscountTypeList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Feature\\BulkFeatureValues' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Feature/BulkFeatureValues.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Feature\\BulkFeatures' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Feature/BulkFeatures.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Feature\\Feature' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Feature/Feature.php',
@@ -5886,6 +5894,9 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Feature\\FeatureValue' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Feature/FeatureValue.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Feature\\FeatureValueList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Feature/FeatureValueList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Hook' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Hook.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Manufacturer\\BulkManufacturers' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Manufacturer/BulkManufacturers.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Manufacturer\\Manufacturer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Manufacturer/Manufacturer.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Manufacturer\\ManufacturerList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Manufacturer/ManufacturerList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\BulkModules' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/BulkModules.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\Module' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/Module.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\ResetModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/ResetModule.php',
@@ -5899,15 +5910,19 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\GenerateCombinations' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/GenerateCombinations.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\NewProductImage' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/NewProductImage.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\Product' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/Product.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductCategory' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductCategory.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductImage' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductImage.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductImageList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductImageList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\ProductShops' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/ProductShops.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Profile\\Profile' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Profile/Profile.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchAlias\\BulkDeleteSearchAliases' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchAlias/BulkDeleteSearchAliases.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchAlias\\DeleteSearchAlias' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchAlias/DeleteSearchAlias.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchAlias\\SearchAlias' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchAlias/SearchAlias.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchAlias\\SearchAliasList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchAlias/SearchAliasList.php',
-        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchAlias\\UpdateSearchAlias' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchAlias/UpdateSearchAlias.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchEngine\\BulkDeleteSearchEngines' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchEngine/BulkDeleteSearchEngines.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchEngine\\DeleteSearchEngine' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchEngine/DeleteSearchEngine.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchEngine\\SearchEngine' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchEngine/SearchEngine.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\SearchEngine\\SearchEngineList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/SearchEngine/SearchEngineList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\ShowcaseCard\\ShowcaseCard' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/ShowcaseCard/ShowcaseCard.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Store\\BulkDeleteStores' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Store/BulkDeleteStores.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Store\\BulkUpdateStatusStores' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Store/BulkUpdateStatusStores.php',
@@ -10472,10 +10487,6 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Psr\\EventDispatcher\\EventDispatcherInterface' => __DIR__ . '/..' . '/psr/event-dispatcher/src/EventDispatcherInterface.php',
         'Psr\\EventDispatcher\\ListenerProviderInterface' => __DIR__ . '/..' . '/psr/event-dispatcher/src/ListenerProviderInterface.php',
         'Psr\\EventDispatcher\\StoppableEventInterface' => __DIR__ . '/..' . '/psr/event-dispatcher/src/StoppableEventInterface.php',
-        'Psr\\Http\\Client\\ClientExceptionInterface' => __DIR__ . '/..' . '/psr/http-client/src/ClientExceptionInterface.php',
-        'Psr\\Http\\Client\\ClientInterface' => __DIR__ . '/..' . '/psr/http-client/src/ClientInterface.php',
-        'Psr\\Http\\Client\\NetworkExceptionInterface' => __DIR__ . '/..' . '/psr/http-client/src/NetworkExceptionInterface.php',
-        'Psr\\Http\\Client\\RequestExceptionInterface' => __DIR__ . '/..' . '/psr/http-client/src/RequestExceptionInterface.php',
         'Psr\\Http\\Message\\MessageInterface' => __DIR__ . '/..' . '/psr/http-message/src/MessageInterface.php',
         'Psr\\Http\\Message\\RequestFactoryInterface' => __DIR__ . '/..' . '/psr/http-factory/src/RequestFactoryInterface.php',
         'Psr\\Http\\Message\\RequestInterface' => __DIR__ . '/..' . '/psr/http-message/src/RequestInterface.php',
@@ -10526,6 +10537,8 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'RandomLib\\Source\\URandom' => __DIR__ . '/..' . '/ircmaxell/random-lib/lib/RandomLib/Source/URandom.php',
         'RandomLib\\Source\\UniqID' => __DIR__ . '/..' . '/ircmaxell/random-lib/lib/RandomLib/Source/UniqID.php',
         'ReassuranceActivity' => __DIR__ . '/../..' . '/modules/blockreassurance/classes/ReassuranceActivity.php',
+        'ReflectionConstant' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/ReflectionConstant.php',
+        'RoundingMode' => __DIR__ . '/..' . '/symfony/polyfill-php84/Resources/stubs/RoundingMode.php',
         'SQLite3Exception' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/SQLite3Exception.php',
         'Sabberworm\\CSS\\CSSList\\AtRuleBlockList' => __DIR__ . '/..' . '/sabberworm/php-css-parser/src/CSSList/AtRuleBlockList.php',
         'Sabberworm\\CSS\\CSSList\\CSSBlockList' => __DIR__ . '/..' . '/sabberworm/php-css-parser/src/CSSList/CSSBlockList.php',
@@ -11002,15 +11015,15 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Bundle\\FrameworkBundle\\Test\\WebTestAssertionsTrait' => __DIR__ . '/..' . '/symfony/framework-bundle/Test/WebTestAssertionsTrait.php',
         'Symfony\\Bundle\\FrameworkBundle\\Test\\WebTestCase' => __DIR__ . '/..' . '/symfony/framework-bundle/Test/WebTestCase.php',
         'Symfony\\Bundle\\FrameworkBundle\\Translation\\Translator' => __DIR__ . '/..' . '/symfony/framework-bundle/Translation/Translator.php',
-        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\AddProcessorsPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/DependencyInjection/Compiler/AddProcessorsPass.php',
-        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\AddSwiftMailerTransportPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/DependencyInjection/Compiler/AddSwiftMailerTransportPass.php',
-        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\DebugHandlerPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/DependencyInjection/Compiler/DebugHandlerPass.php',
-        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\FixEmptyLoggerPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/DependencyInjection/Compiler/FixEmptyLoggerPass.php',
-        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\LoggerChannelPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/DependencyInjection/Compiler/LoggerChannelPass.php',
-        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Configuration' => __DIR__ . '/..' . '/symfony/monolog-bundle/DependencyInjection/Configuration.php',
-        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\MonologExtension' => __DIR__ . '/..' . '/symfony/monolog-bundle/DependencyInjection/MonologExtension.php',
-        'Symfony\\Bundle\\MonologBundle\\MonologBundle' => __DIR__ . '/..' . '/symfony/monolog-bundle/MonologBundle.php',
-        'Symfony\\Bundle\\MonologBundle\\SwiftMailer\\MessageFactory' => __DIR__ . '/..' . '/symfony/monolog-bundle/SwiftMailer/MessageFactory.php',
+        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\AddProcessorsPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/DependencyInjection/Compiler/AddProcessorsPass.php',
+        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\AddSwiftMailerTransportPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/DependencyInjection/Compiler/AddSwiftMailerTransportPass.php',
+        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\DebugHandlerPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/DependencyInjection/Compiler/DebugHandlerPass.php',
+        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\FixEmptyLoggerPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/DependencyInjection/Compiler/FixEmptyLoggerPass.php',
+        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Compiler\\LoggerChannelPass' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/DependencyInjection/Compiler/LoggerChannelPass.php',
+        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\Configuration' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/DependencyInjection/Configuration.php',
+        'Symfony\\Bundle\\MonologBundle\\DependencyInjection\\MonologExtension' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/DependencyInjection/MonologExtension.php',
+        'Symfony\\Bundle\\MonologBundle\\MonologBundle' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/MonologBundle.php',
+        'Symfony\\Bundle\\MonologBundle\\SwiftMailer\\MessageFactory' => __DIR__ . '/..' . '/symfony/monolog-bundle/src/SwiftMailer/MessageFactory.php',
         'Symfony\\Bundle\\SecurityBundle\\CacheWarmer\\ExpressionCacheWarmer' => __DIR__ . '/..' . '/symfony/security-bundle/CacheWarmer/ExpressionCacheWarmer.php',
         'Symfony\\Bundle\\SecurityBundle\\Command\\DebugFirewallCommand' => __DIR__ . '/..' . '/symfony/security-bundle/Command/DebugFirewallCommand.php',
         'Symfony\\Bundle\\SecurityBundle\\DataCollector\\SecurityDataCollector' => __DIR__ . '/..' . '/symfony/security-bundle/DataCollector/SecurityDataCollector.php',
@@ -11164,11 +11177,15 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Component\\Cache\\Traits\\FilesystemTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/FilesystemTrait.php',
         'Symfony\\Component\\Cache\\Traits\\ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/ProxyTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Redis5Proxy' => __DIR__ . '/..' . '/symfony/cache/Traits/Redis5Proxy.php',
+        'Symfony\\Component\\Cache\\Traits\\Redis61ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Redis61ProxyTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\Redis62ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Redis62ProxyTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\Redis63ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Redis63ProxyTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Redis6Proxy' => __DIR__ . '/..' . '/symfony/cache/Traits/Redis6Proxy.php',
-        'Symfony\\Component\\Cache\\Traits\\Redis6ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Redis6ProxyTrait.php',
         'Symfony\\Component\\Cache\\Traits\\RedisCluster5Proxy' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisCluster5Proxy.php',
+        'Symfony\\Component\\Cache\\Traits\\RedisCluster61ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisCluster61ProxyTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\RedisCluster62ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisCluster62ProxyTrait.php',
+        'Symfony\\Component\\Cache\\Traits\\RedisCluster63ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisCluster63ProxyTrait.php',
         'Symfony\\Component\\Cache\\Traits\\RedisCluster6Proxy' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisCluster6Proxy.php',
-        'Symfony\\Component\\Cache\\Traits\\RedisCluster6ProxyTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisCluster6ProxyTrait.php',
         'Symfony\\Component\\Cache\\Traits\\RedisClusterNodeProxy' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisClusterNodeProxy.php',
         'Symfony\\Component\\Cache\\Traits\\RedisClusterProxy' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisClusterProxy.php',
         'Symfony\\Component\\Cache\\Traits\\RedisProxy' => __DIR__ . '/..' . '/symfony/cache/Traits/RedisProxy.php',
@@ -11187,6 +11204,11 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Component\\Cache\\Traits\\Relay\\NullableReturnTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/NullableReturnTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\PfcountTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/PfcountTrait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\Relay11Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay11Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay121Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay121Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay12Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay12Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay20Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay20Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay21Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay21Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay22Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay22Trait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\SwapdbTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/SwapdbTrait.php',
         'Symfony\\Component\\Clock\\Clock' => __DIR__ . '/..' . '/symfony/clock/Clock.php',
         'Symfony\\Component\\Clock\\ClockAwareTrait' => __DIR__ . '/..' . '/symfony/clock/ClockAwareTrait.php',
@@ -11360,6 +11382,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Component\\Console\\Helper\\TableRows' => __DIR__ . '/..' . '/symfony/console/Helper/TableRows.php',
         'Symfony\\Component\\Console\\Helper\\TableSeparator' => __DIR__ . '/..' . '/symfony/console/Helper/TableSeparator.php',
         'Symfony\\Component\\Console\\Helper\\TableStyle' => __DIR__ . '/..' . '/symfony/console/Helper/TableStyle.php',
+        'Symfony\\Component\\Console\\Helper\\TerminalInputHelper' => __DIR__ . '/..' . '/symfony/console/Helper/TerminalInputHelper.php',
         'Symfony\\Component\\Console\\Input\\ArgvInput' => __DIR__ . '/..' . '/symfony/console/Input/ArgvInput.php',
         'Symfony\\Component\\Console\\Input\\ArrayInput' => __DIR__ . '/..' . '/symfony/console/Input/ArrayInput.php',
         'Symfony\\Component\\Console\\Input\\Input' => __DIR__ . '/..' . '/symfony/console/Input/Input.php',
@@ -11490,6 +11513,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Component\\DependencyInjection\\Compiler\\CheckCircularReferencesPass' => __DIR__ . '/..' . '/symfony/dependency-injection/Compiler/CheckCircularReferencesPass.php',
         'Symfony\\Component\\DependencyInjection\\Compiler\\CheckDefinitionValidityPass' => __DIR__ . '/..' . '/symfony/dependency-injection/Compiler/CheckDefinitionValidityPass.php',
         'Symfony\\Component\\DependencyInjection\\Compiler\\CheckExceptionOnInvalidReferenceBehaviorPass' => __DIR__ . '/..' . '/symfony/dependency-injection/Compiler/CheckExceptionOnInvalidReferenceBehaviorPass.php',
+        'Symfony\\Component\\DependencyInjection\\Compiler\\CheckFactoryBuilderCircularReferencePass' => __DIR__ . '/..' . '/symfony/dependency-injection/Compiler/CheckFactoryBuilderCircularReferencePass.php',
         'Symfony\\Component\\DependencyInjection\\Compiler\\CheckReferenceValidityPass' => __DIR__ . '/..' . '/symfony/dependency-injection/Compiler/CheckReferenceValidityPass.php',
         'Symfony\\Component\\DependencyInjection\\Compiler\\CheckTypeDeclarationsPass' => __DIR__ . '/..' . '/symfony/dependency-injection/Compiler/CheckTypeDeclarationsPass.php',
         'Symfony\\Component\\DependencyInjection\\Compiler\\Compiler' => __DIR__ . '/..' . '/symfony/dependency-injection/Compiler/Compiler.php',
@@ -11661,6 +11685,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Component\\Dotenv\\Exception\\FormatException' => __DIR__ . '/..' . '/symfony/dotenv/Exception/FormatException.php',
         'Symfony\\Component\\Dotenv\\Exception\\FormatExceptionContext' => __DIR__ . '/..' . '/symfony/dotenv/Exception/FormatExceptionContext.php',
         'Symfony\\Component\\Dotenv\\Exception\\PathException' => __DIR__ . '/..' . '/symfony/dotenv/Exception/PathException.php',
+        'Symfony\\Component\\Dotenv\\Exception\\VariableCircularReferenceException' => __DIR__ . '/..' . '/symfony/dotenv/Exception/VariableCircularReferenceException.php',
         'Symfony\\Component\\ErrorHandler\\BufferingLogger' => __DIR__ . '/..' . '/symfony/error-handler/BufferingLogger.php',
         'Symfony\\Component\\ErrorHandler\\Debug' => __DIR__ . '/..' . '/symfony/error-handler/Debug.php',
         'Symfony\\Component\\ErrorHandler\\DebugClassLoader' => __DIR__ . '/..' . '/symfony/error-handler/DebugClassLoader.php',
@@ -13156,6 +13181,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Component\\Serializer\\Mapping\\Factory\\ClassMetadataFactoryInterface' => __DIR__ . '/..' . '/symfony/serializer/Mapping/Factory/ClassMetadataFactoryInterface.php',
         'Symfony\\Component\\Serializer\\Mapping\\Factory\\ClassResolverTrait' => __DIR__ . '/..' . '/symfony/serializer/Mapping/Factory/ClassResolverTrait.php',
         'Symfony\\Component\\Serializer\\Mapping\\Factory\\CompiledClassMetadataFactory' => __DIR__ . '/..' . '/symfony/serializer/Mapping/Factory/CompiledClassMetadataFactory.php',
+        'Symfony\\Component\\Serializer\\Mapping\\Loader\\AccessorCollisionResolverTrait' => __DIR__ . '/..' . '/symfony/serializer/Mapping/Loader/AccessorCollisionResolverTrait.php',
         'Symfony\\Component\\Serializer\\Mapping\\Loader\\AnnotationLoader' => __DIR__ . '/..' . '/symfony/serializer/Mapping/Loader/AnnotationLoader.php',
         'Symfony\\Component\\Serializer\\Mapping\\Loader\\AttributeLoader' => __DIR__ . '/..' . '/symfony/serializer/Mapping/Loader/AttributeLoader.php',
         'Symfony\\Component\\Serializer\\Mapping\\Loader\\FileLoader' => __DIR__ . '/..' . '/symfony/serializer/Mapping/Loader/FileLoader.php',
@@ -13599,7 +13625,6 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Component\\VarDumper\\Cloner\\Cursor' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/Cursor.php',
         'Symfony\\Component\\VarDumper\\Cloner\\Data' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/Data.php',
         'Symfony\\Component\\VarDumper\\Cloner\\DumperInterface' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/DumperInterface.php',
-        'Symfony\\Component\\VarDumper\\Cloner\\Internal\\NoDefault' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/Internal/NoDefault.php',
         'Symfony\\Component\\VarDumper\\Cloner\\Stub' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/Stub.php',
         'Symfony\\Component\\VarDumper\\Cloner\\VarCloner' => __DIR__ . '/..' . '/symfony/var-dumper/Cloner/VarCloner.php',
         'Symfony\\Component\\VarDumper\\Command\\Descriptor\\CliDescriptor' => __DIR__ . '/..' . '/symfony/var-dumper/Command/Descriptor/CliDescriptor.php',
@@ -13718,6 +13743,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Polyfill\\Intl\\Icu\\Exception\\RuntimeException' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Exception/RuntimeException.php',
         'Symfony\\Polyfill\\Intl\\Icu\\Icu' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Icu.php',
         'Symfony\\Polyfill\\Intl\\Icu\\IntlDateFormatter' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/IntlDateFormatter.php',
+        'Symfony\\Polyfill\\Intl\\Icu\\IntlListFormatter' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/IntlListFormatter.php',
         'Symfony\\Polyfill\\Intl\\Icu\\Locale' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Locale.php',
         'Symfony\\Polyfill\\Intl\\Icu\\NumberFormatter' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/NumberFormatter.php',
         'Symfony\\Polyfill\\Intl\\Idn\\Idn' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/Idn.php',
@@ -13730,6 +13756,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\Polyfill\\Php80\\Php80' => __DIR__ . '/..' . '/symfony/polyfill-php80/Php80.php',
         'Symfony\\Polyfill\\Php80\\PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/PhpToken.php',
         'Symfony\\Polyfill\\Php83\\Php83' => __DIR__ . '/..' . '/symfony/polyfill-php83/Php83.php',
+        'Symfony\\Polyfill\\Php84\\Php84' => __DIR__ . '/..' . '/symfony/polyfill-php84/Php84.php',
         'Symfony\\UX\\Icons\\Command\\ImportIconCommand' => __DIR__ . '/..' . '/symfony/ux-icons/src/Command/ImportIconCommand.php',
         'Symfony\\UX\\Icons\\Command\\LockIconsCommand' => __DIR__ . '/..' . '/symfony/ux-icons/src/Command/LockIconsCommand.php',
         'Symfony\\UX\\Icons\\Command\\SearchIconCommand' => __DIR__ . '/..' . '/symfony/ux-icons/src/Command/SearchIconCommand.php',
@@ -13756,6 +13783,7 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
         'Symfony\\UX\\TwigComponent\\AnonymousComponent' => __DIR__ . '/..' . '/symfony/ux-twig-component/src/AnonymousComponent.php',
         'Symfony\\UX\\TwigComponent\\Attribute\\AsTwigComponent' => __DIR__ . '/..' . '/symfony/ux-twig-component/src/Attribute/AsTwigComponent.php',
         'Symfony\\UX\\TwigComponent\\Attribute\\ExposeInTemplate' => __DIR__ . '/..' . '/symfony/ux-twig-component/src/Attribute/ExposeInTemplate.php',
+        'Symfony\\UX\\TwigComponent\\Attribute\\FromMethod' => __DIR__ . '/..' . '/symfony/ux-twig-component/src/Attribute/FromMethod.php',
         'Symfony\\UX\\TwigComponent\\Attribute\\PostMount' => __DIR__ . '/..' . '/symfony/ux-twig-component/src/Attribute/PostMount.php',
         'Symfony\\UX\\TwigComponent\\Attribute\\PreMount' => __DIR__ . '/..' . '/symfony/ux-twig-component/src/Attribute/PreMount.php',
         'Symfony\\UX\\TwigComponent\\BlockStack' => __DIR__ . '/..' . '/symfony/ux-twig-component/src/BlockStack.php',
@@ -14117,11 +14145,11 @@ class ComposerStaticInit43741f3d554561f19643c148c44fe3d4
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit43741f3d554561f19643c148c44fe3d4::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit43741f3d554561f19643c148c44fe3d4::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit43741f3d554561f19643c148c44fe3d4::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit43741f3d554561f19643c148c44fe3d4::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit43741f3d554561f19643c148c44fe3d4::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit818da2c884d55e471928cb5272d29a31::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit818da2c884d55e471928cb5272d29a31::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit818da2c884d55e471928cb5272d29a31::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit818da2c884d55e471928cb5272d29a31::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit818da2c884d55e471928cb5272d29a31::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -590,9 +590,15 @@ class ValidateCore
     {
         $zxcvbn = new Zxcvbn();
         $result = $zxcvbn->passwordStrength($password);
-        $minScore = Configuration::hasKey(PasswordPolicyConfiguration::CONFIGURATION_MINIMUM_SCORE) ?
-                  Configuration::get(PasswordPolicyConfiguration::CONFIGURATION_MINIMUM_SCORE) :
-                  PasswordPolicyConfiguration::PASSWORD_SAFELY_UNGUESSABLE;
+
+        // During install, Configuration is not available; require strong password (score 3) without relying on DB
+        if (defined('PS_INSTALLATION_IN_PROGRESS')) {
+            $minScore = PasswordPolicyConfiguration::PASSWORD_SAFELY_UNGUESSABLE;
+        } else {
+            $minScore = Configuration::hasKey(PasswordPolicyConfiguration::CONFIGURATION_MINIMUM_SCORE) ?
+                      Configuration::get(PasswordPolicyConfiguration::CONFIGURATION_MINIMUM_SCORE) :
+                      PasswordPolicyConfiguration::PASSWORD_SAFELY_UNGUESSABLE;
+        }
 
         return isset($result['score']) && $result['score'] >= $minScore;
     }

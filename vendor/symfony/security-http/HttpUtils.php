@@ -70,7 +70,25 @@ class HttpUtils
      */
     public function createRequest(Request $request, string $path): Request
     {
-        $newRequest = Request::create($this->generateUri($request, $path), 'get', [], $request->cookies->all(), [], $request->server->all());
+        if ($trustedProxies = Request::getTrustedProxies()) {
+            Request::setTrustedProxies([], Request::getTrustedHeaderSet());
+        }
+
+        $context = $this->urlGenerator?->getContext();
+        if ($baseUrl = $context?->getBaseUrl()) {
+            $context->setBaseUrl('');
+        }
+
+        try {
+            $newRequest = Request::create($this->generateUri($request, $path), 'get', [], $request->cookies->all(), [], $request->server->all());
+        } finally {
+            if ($trustedProxies) {
+                Request::setTrustedProxies($trustedProxies, Request::getTrustedHeaderSet());
+            }
+            if ($baseUrl) {
+                $context->setBaseUrl($baseUrl);
+            }
+        }
 
         static $setSession;
 

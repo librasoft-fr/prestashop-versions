@@ -26,13 +26,11 @@ use Symfony\Component\Messenger\Stamp\SentToFailureTransportStamp;
  */
 class SendFailedMessageToFailureTransportListener implements EventSubscriberInterface
 {
-    private ContainerInterface $failureSenders;
-    private ?LoggerInterface $logger;
-
-    public function __construct(ContainerInterface $failureSenders, ?LoggerInterface $logger = null)
-    {
-        $this->failureSenders = $failureSenders;
-        $this->logger = $logger;
+    public function __construct(
+        private ContainerInterface $failureSenders,
+        private ?LoggerInterface $logger = null,
+        private array $failureTransportsByName = [],
+    ) {
     }
 
     /**
@@ -52,8 +50,13 @@ class SendFailedMessageToFailureTransportListener implements EventSubscriberInte
 
         $envelope = $event->getEnvelope();
 
-        // avoid re-sending to the failed sender
-        if (null !== $envelope->last(SentToFailureTransportStamp::class)) {
+        // avoid re-sending to the failed sender: when the envelope has already been marked as sent
+        // to the failure transport of the current receiver (either by a previous run or manually
+        // from a subscriber that wants to opt out of the failure transport)
+        if (($stamp = $envelope->last(SentToFailureTransportStamp::class)) && $stamp->getOriginalReceiverName() === $event->getReceiverName()) {
+            return;
+        }
+        if (($this->failureTransportsByName[$event->getReceiverName()] ?? null) === $event->getReceiverName()) {
             return;
         }
 

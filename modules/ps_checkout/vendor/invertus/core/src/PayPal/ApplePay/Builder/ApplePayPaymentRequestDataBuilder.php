@@ -64,12 +64,12 @@ class ApplePayPaymentRequestDataBuilder implements ApplePayPaymentRequestDataBui
         $payload = $this->orderPayloadBuilder->build();
 
         $applePayTotal = new ApplePayTotalData(
-            $this->translator->trans('Total ApplePay'),
-            $payload['amount']['value']
+            $this->translator->trans('Total'),
+            $payload['purchase_units'][0]['amount']['value']
         );
 
         $applePayPaymentRequestData = new ApplePayPaymentRequestData(
-            $payload['amount']['currency_code'],
+            $payload['purchase_units'][0]['amount']['currency_code'],
             $applePayTotal
         );
 

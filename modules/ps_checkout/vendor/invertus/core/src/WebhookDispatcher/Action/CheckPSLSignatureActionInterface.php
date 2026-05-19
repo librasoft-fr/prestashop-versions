@@ -20,10 +20,11 @@
 
 namespace PsCheckout\Core\WebhookDispatcher\Action;
 
+// TODO: Remove this class and references when maasland webhooks are no longer needed
 interface CheckPSLSignatureActionInterface
 {
     /**
-     * @param array $bodyValues
+     * @param array<string, mixed> $bodyValues
      *
      * @return bool
      */

@@ -43,16 +43,21 @@
           </div>
         </div>
 
-        <div class="form-group row">
-          <label class="col-md-3 form-control-label" for="id_contact">{l s='Subject' d='Shop.Forms.Labels'}</label>
-          <div class="col-md-6">
-            <select name="id_contact" id="id_contact" class="form-control form-control-select">
-              {foreach from=$contact.contacts item=contact_elt}
-                <option value="{$contact_elt.id_contact}">{$contact_elt.name}</option>
-              {/foreach}
-            </select>
+        {if $contact.contacts|count === 1}
+          {assign var=firstContact value=current($contact.contacts)}
+          <input type="hidden" name="id_contact" value="{$firstContact.id_contact|escape:'htmlall':'UTF-8'}"/>
+        {else}
+          <div class="form-group row">
+            <label class="col-md-3 form-control-label" for="id_contact">{l s='Subject' d='Shop.Forms.Labels'}</label>
+            <div class="col-md-6">
+              <select name="id_contact" id="id_contact" class="form-control form-control-select">
+                {foreach from=$contact.contacts item=contact_elt}
+                  <option value="{$contact_elt.id_contact|escape:'htmlall':'UTF-8'}">{$contact_elt.name|escape:'htmlall':'UTF-8'}</option>
+                {/foreach}
+              </select>
+            </div>
           </div>
-        </div>
+        {/if}
 
         <div class="form-group row">
           <label class="col-md-3 form-control-label" for="email">{l s='Email address' d='Shop.Forms.Labels'}</label>

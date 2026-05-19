@@ -45,7 +45,7 @@ class Worker
     private bool $shouldStop = false;
     private WorkerMetadata $metadata;
     private array $acks = [];
-    private \SplObjectStorage $unacks;
+    private ?\SplObjectStorage $unacks = null;
 
     /**
      * @param ReceiverInterface[] $receivers Where the key is the transport name
@@ -61,7 +61,6 @@ class Worker
         $this->metadata = new WorkerMetadata([
             'transportNames' => array_keys($receivers),
         ]);
-        $this->unacks = new \SplObjectStorage();
     }
 
     /**
@@ -69,14 +68,17 @@ class Worker
      *
      * Valid options are:
      *  * sleep (default: 1000000): Time in microseconds to sleep after no messages are found
+     *  * time_limit: The time limit in seconds the worker can handle new messages
      *  * queues: The queue names to consume from, instead of consuming from all queues. When this is used, all receivers must implement the QueueReceiverInterface
      */
     public function run(array $options = []): void
     {
         $options = array_merge([
             'sleep' => 1000000,
+            'time_limit' => null,
         ], $options);
         $queueNames = $options['queues'] ?? null;
+        $endTime = null !== $options['time_limit'] ? $this->clock->now()->format('U.u') + $options['time_limit'] : null;
 
         $this->metadata->set(['queueNames' => $queueNames]);
 
@@ -92,6 +94,11 @@ class Worker
         }
 
         while (!$this->shouldStop) {
+            if (null !== $endTime && $this->clock->now()->format('U.u') >= $endTime) {
+                $this->logger?->info('Worker stopped due to time limit of {timeLimit}s exceeded', ['timeLimit' => $options['time_limit']]);
+                break;
+            }
+
             $envelopeHandled = false;
             $envelopeHandledStart = $this->clock->now();
             foreach ($this->receivers as $transportName => $receiver) {
@@ -125,11 +132,21 @@ class Worker
                 continue;
             }
 
-            if (!$envelopeHandled) {
+            if (!$this->flush(30.0) && !$envelopeHandled) {
                 $this->eventDispatcher?->dispatch(new WorkerRunningEvent($this, true));
 
+                if ($this->shouldStop) {
+                    continue;
+                }
+
                 if (0 < $sleep = (int) ($options['sleep'] - 1e6 * ($this->clock->now()->format('U.u') - $envelopeHandledStart->format('U.u')))) {
-                    $this->clock->sleep($sleep / 1e6);
+                    if (null !== $endTime) {
+                        $sleep = min($sleep, (int) (1e6 * ($endTime - $this->clock->now()->format('U.u'))));
+                    }
+
+                    if (0 < $sleep) {
+                        $this->clock->sleep($sleep / 1e6);
+                    }
                 }
             }
         }
@@ -165,7 +182,8 @@ class Worker
         if (!$acked && !$noAutoAckStamp) {
             $this->acks[] = [$transportName, $envelope, $e];
         } elseif ($noAutoAckStamp) {
-            $this->unacks[$noAutoAckStamp->getHandlerDescriptor()->getBatchHandler()] = [$envelope->withoutAll(AckStamp::class), $transportName];
+            $this->unacks ??= new \SplObjectStorage();
+            $this->unacks[$noAutoAckStamp->getHandlerDescriptor()->getBatchHandler()] = [$envelope->withoutAll(AckStamp::class), $transportName, $this->clock->now()->format('U.u')];
         }
 
         $this->ack();
@@ -243,21 +261,40 @@ class Worker
         $rateLimiter->consume();
     }
 
-    private function flush(bool $force): bool
+    private function flush(bool|float $force): bool
     {
-        $unacks = $this->unacks;
+        if (!$this->unacks) {
+            return false;
+        }
+
+        if (\is_bool($force)) {
+            $unacks = $this->unacks;
+            $this->unacks = null;
+        } else {
+            $now = $this->clock->now()->format('U.u');
+            $remaining = new \SplObjectStorage();
+            $unacks = new \SplObjectStorage();
+
+            foreach ($this->unacks as $handler) {
+                if ($force <= $now - $this->unacks[$handler][2]) {
+                    $unacks[$handler] = $this->unacks[$handler];
+                } else {
+                    $remaining[$handler] = $this->unacks[$handler];
+                }
+            }
+
+            $this->unacks = $remaining->count() ? $remaining : null;
+            $force = true;
+        }
 
         if (!$unacks->count()) {
             return false;
         }
 
-        $this->unacks = new \SplObjectStorage();
-
-        foreach ($unacks as $batchHandler) {
-            [$envelope, $transportName] = $unacks[$batchHandler];
+        foreach ($unacks as $handler) {
+            [$envelope, $transportName] = $unacks[$handler];
             try {
                 $this->bus->dispatch($envelope->with(new FlushBatchHandlersStamp($force)));
-                unset($unacks[$batchHandler], $batchHandler);
             } catch (\Throwable $e) {
                 $envelope = $envelope->withoutAll(NoAutoAckStamp::class);
                 $this->acks[] = [$transportName, $envelope, $e];

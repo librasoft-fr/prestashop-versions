@@ -27,7 +27,6 @@ use PsCheckout\Core\Order\Builder\OrderPayloadBuilderInterface;
 use PsCheckout\Core\PayPal\Order\Action\UpdatePayPalOrderPurchaseUnitActionInterface;
 use PsCheckout\Core\PayPal\Order\Cache\PayPalOrderCacheInterface;
 use PsCheckout\Core\PayPal\Order\Configuration\PayPalOrderStatus;
-use PsCheckout\Core\PayPal\Order\Entity\PayPalOrder;
 use PsCheckout\Core\PayPal\Order\Exception\PayPalOrderException;
 use PsCheckout\Core\PayPal\Order\Provider\PayPalOrderProviderInterface;
 use PsCheckout\Core\PayPal\Order\Repository\PayPalOrderRepositoryInterface;
@@ -129,22 +128,22 @@ class UpdateExternalPayPalOrderProcessor implements UpdateExternalPayPalOrderPro
 
         $needToUpdate = false;
 
-        if ($paypalOrderResponse->getOrderAmount() && isset($payload['amount'])) {
-            $amountDiff = OrderPayloadUtility::amountWithBreakdownDiff($paypalOrderResponse->getOrderAmount(), $payload['amount']);
+        if ($paypalOrderResponse->getOrderAmount() && isset($payload['purchase_units'][0]['amount'])) {
+            $amountDiff = OrderPayloadUtility::amountWithBreakdownDiff($paypalOrderResponse->getOrderAmount(), $payload['purchase_units'][0]['amount']);
             if (!empty($amountDiff)) {
                 $needToUpdate = true;
             }
         }
 
-        if ($paypalOrderResponse->getItems() && isset($payload['items'])) {
-            $itemsDiff = ArrayUtility::arrayRecursiveDiff($paypalOrderResponse->getItems(), $payload['items']);
+        if ($paypalOrderResponse->getItems() && isset($payload['purchase_units'][0]['items'])) {
+            $itemsDiff = ArrayUtility::arrayRecursiveDiff($paypalOrderResponse->getItems(), $payload['purchase_units'][0]['items']);
             if (!empty($itemsDiff)) {
                 $needToUpdate = true;
             }
         }
 
-        if (isset($paypalOrderResponse->getPurchaseUnits()['shipping'], $payload['shipping'])) {
-            $shippingDiff = ArrayUtility::arrayRecursiveDiff($paypalOrderResponse->getPurchaseUnits()['shipping'], $payload['shipping']);
+        if (isset($paypalOrderResponse->getPurchaseUnits()['shipping'], $payload['purchase_units'][0]['shipping'])) {
+            $shippingDiff = ArrayUtility::arrayRecursiveDiff($paypalOrderResponse->getPurchaseUnits()['shipping'], $payload['purchase_units'][0]['shipping']);
             if (!empty($shippingDiff)) {
                 $needToUpdate = true;
             }
@@ -154,7 +153,17 @@ class UpdateExternalPayPalOrderProcessor implements UpdateExternalPayPalOrderPro
             return;
         }
 
-        $response = $this->httpClient->updateOrder($payload);
+        $purchaseUnitReferenceId = $paypalOrderResponse->getPurchaseUnits()['purchase_units'][0]['reference_id'] ?? 'default';
+
+        $payloadToSend = [
+            [
+                'op' => 'replace',
+                'path' => "/purchase_units/@reference_id=='$purchaseUnitReferenceId'",
+                'value' => $payload['purchase_units'][0],
+            ],
+        ];
+
+        $response = $this->httpClient->updateOrder($request->getOrderId(), $payloadToSend);
 
         if ($response->getStatusCode() !== 204) {
             throw new PayPalOrderException('Failed to update PayPal Order', PayPalOrderException::PAYPAL_ORDER_UPDATE_FAILED);

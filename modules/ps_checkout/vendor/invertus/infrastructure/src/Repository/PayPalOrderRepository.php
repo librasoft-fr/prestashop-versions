@@ -107,7 +107,7 @@ class PayPalOrderRepository implements PayPalOrderRepositoryInterface
 
         // Check if record exists using primary key
         $exists = $this->getOneBy(['id' => $payPalOrder->getId()]);
-        
+
         if ($exists) {
             return $this->db->update(
                 self::TABLE_NAME,
@@ -196,6 +196,10 @@ class PayPalOrderRepository implements PayPalOrderRepositoryInterface
         $psCheckoutCart = $this->db->getRow($query);
 
         if (!$psCheckoutCart) {
+            return false;
+        }
+
+        if ($this->getOneBy(['id' => $psCheckoutCart['paypal_order']])) {
             return false;
         }
 
