@@ -118,10 +118,6 @@ final class SandboxExtension extends AbstractExtension
     }
 
     /**
-     * @param mixed $obj
-     *
-     * @return mixed
-     *
      * @throws SecurityNotAllowedMethodError
      */
     public function ensureToStringAllowed($obj, int $lineno = -1, ?Source $source = null)
@@ -142,6 +138,24 @@ final class SandboxExtension extends AbstractExtension
                 throw $e;
             }
         }
+
+        return $obj;
+    }
+
+    /**
+     * Materialises a spread operand and runs the policy on every element.
+     *
+     * @internal
+     *
+     * @throws SecurityNotAllowedMethodError
+     */
+    public function ensureSpreadAllowed(iterable $obj, int $lineno = -1, ?Source $source = null): array
+    {
+        if ($obj instanceof \Traversable) {
+            $obj = iterator_to_array($obj);
+        }
+
+        $this->ensureToStringAllowedForArray($obj, $lineno, $source);
 
         return $obj;
     }
