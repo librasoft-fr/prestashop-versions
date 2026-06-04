@@ -1024,9 +1024,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/ps_facetedsearch' => array(
-            'pretty_version' => 'v4.0.0',
-            'version' => '4.0.0.0',
-            'reference' => 'edb3292ebb699e1067845a50c5a554a28ca3c523',
+            'pretty_version' => 'v4.0.4',
+            'version' => '4.0.4.0',
+            'reference' => '08d80f46ef101389a8128232b1a208142c28a718',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/ps_facetedsearch',
             'aliases' => array(),
