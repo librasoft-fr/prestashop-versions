@@ -862,9 +862,9 @@
             'dev_requirement' => false,
         ),
         'prestashop/productcomments' => array(
-            'pretty_version' => 'v7.0.0',
-            'version' => '7.0.0.0',
-            'reference' => '7287476cb44969af58721cb9ad7b5cb89393b2c8',
+            'pretty_version' => '8.0.1',
+            'version' => '8.0.1.0',
+            'reference' => '6314ef9fa92867a6008f92194caac64bc305cf52',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../modules/productcomments',
             'aliases' => array(),
