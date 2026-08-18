@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
+class ComposerStaticInit94004bce793d9988e98ff46bca5fa015
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -5867,6 +5867,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\AttributePosition' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/AttributePosition.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\BulkAttribute' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/BulkAttribute.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Attribute\\BulkAttributeGroups' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Attribute/BulkAttributeGroups.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\CartRule\\FoundCartRule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/CartRule/FoundCartRule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\BulkDeleteCategories' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/BulkDeleteCategories.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\BulkUpdateStatusCategories' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/BulkUpdateStatusCategories.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Category\\Category' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Category/Category.php',
@@ -5875,6 +5876,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Contact\\Contact' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Contact/Contact.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Contact\\ContactList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Contact/ContactList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Country\\Country' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Country/Country.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Country\\CountryList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Country/CountryList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\BulkCustomers' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/BulkCustomers.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\BulkDeleteCustomers' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/BulkDeleteCustomers.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Customer\\Customer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Customer/Customer.php',
@@ -5903,6 +5905,13 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UninstallModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UninstallModule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UpgradeModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UpgradeModule.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Module\\UploadModule' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Module/UploadModule.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\OrderMessage\\BulkDeleteOrderMessages' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/OrderMessage/BulkDeleteOrderMessages.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\OrderMessage\\OrderMessage' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/OrderMessage/OrderMessage.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\OrderMessage\\OrderMessageList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/OrderMessage/OrderMessageList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\OrderReturnState\\BulkDeleteOrderReturnState' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/OrderReturnState/BulkDeleteOrderReturnState.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\OrderReturnState\\OrderReturnState' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/OrderReturnState/OrderReturnState.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\OrderReturnState\\OrderReturnStateList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/OrderReturnState/OrderReturnStateList.php',
+        'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\OrderReturn\\OrderReturn' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/OrderReturn/OrderReturn.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\Combination' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/Combination.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\CombinationIdList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/CombinationIdList.php',
         'PrestaShop\\Module\\APIResources\\ApiPlatform\\Resources\\Product\\CombinationList' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/ApiPlatform/Resources/Product/CombinationList.php',
@@ -5952,6 +5961,8 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'PrestaShop\\Module\\APIResources\\List\\ModuleGridDataFactory' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/List/ModuleGridDataFactory.php',
         'PrestaShop\\Module\\APIResources\\List\\ModuleQueryBuilder' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/List/ModuleQueryBuilder.php',
         'PrestaShop\\Module\\APIResources\\Serializer\\QueryParameterTypeCastSerializer' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/Serializer/QueryParameterTypeCastSerializer.php',
+        'PrestaShop\\Module\\APIResources\\Validation\\Constraints\\ValidAddressFormat' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/Validation/Constraints/ValidAddressFormat.php',
+        'PrestaShop\\Module\\APIResources\\Validation\\Constraints\\ValidAddressFormatValidator' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/Validation/Constraints/ValidAddressFormatValidator.php',
         'PrestaShop\\Module\\APIResources\\Validation\\IframeValidationGroupsResolver' => __DIR__ . '/../..' . '/modules/ps_apiresources/src/Validation/IframeValidationGroupsResolver.php',
         'PrestaShop\\Module\\BlockWishList\\Access\\CustomerAccess' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Access/CustomerAccess.php',
         'PrestaShop\\Module\\BlockWishList\\Calculator\\StatisticsCalculator' => __DIR__ . '/../..' . '/modules/blockwishlist/src/Calculator/StatisticsCalculator.php',
@@ -6269,6 +6280,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'PrestaShop\\PrestaShop\\Adapter\\Category\\QueryHandler\\GetCategoryIsEnabledHandler' => __DIR__ . '/../..' . '/src/Adapter/Category/QueryHandler/GetCategoryIsEnabledHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Category\\Repository\\CategoryPreviewRepository' => __DIR__ . '/../..' . '/src/Adapter/Category/Repository/CategoryPreviewRepository.php',
         'PrestaShop\\PrestaShop\\Adapter\\Category\\Repository\\CategoryRepository' => __DIR__ . '/../..' . '/src/Adapter/Category/Repository/CategoryRepository.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Combination' => __DIR__ . '/../..' . '/src/Adapter/Combination.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration' => __DIR__ . '/../..' . '/src/Adapter/Configuration.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration\\CommandHandler\\SwitchDebugModeHandler' => __DIR__ . '/../..' . '/src/Adapter/Configuration/CommandHandler/SwitchDebugModeHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Configuration\\DatabaseLogsConfiguration' => __DIR__ . '/../..' . '/src/Adapter/Configuration/DatabaseLogsConfiguration.php',
@@ -6569,6 +6581,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'PrestaShop\\PrestaShop\\Adapter\\Module\\Module' => __DIR__ . '/../..' . '/src/Adapter/Module/Module.php',
         'PrestaShop\\PrestaShop\\Adapter\\Module\\ModuleDataProvider' => __DIR__ . '/../..' . '/src/Adapter/Module/ModuleDataProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\Module\\ModuleDataUpdater' => __DIR__ . '/../..' . '/src/Adapter/Module/ModuleDataUpdater.php',
+        'PrestaShop\\PrestaShop\\Adapter\\Module\\ModuleHtmlAuthorizationChecker' => __DIR__ . '/../..' . '/src/Adapter/Module/ModuleHtmlAuthorizationChecker.php',
         'PrestaShop\\PrestaShop\\Adapter\\Module\\PaymentModuleListProvider' => __DIR__ . '/../..' . '/src/Adapter/Module/PaymentModuleListProvider.php',
         'PrestaShop\\PrestaShop\\Adapter\\Module\\QueryHandler\\GetModuleInfosHandler' => __DIR__ . '/../..' . '/src/Adapter/Module/QueryHandler/GetModuleInfosHandler.php',
         'PrestaShop\\PrestaShop\\Adapter\\Module\\Repository\\CachedModuleRepository' => __DIR__ . '/../..' . '/src/Adapter/Module/Repository/CachedModuleRepository.php',
@@ -10004,6 +10017,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'PrestaShop\\PrestaShop\\Core\\Order\\OrderStateDataProviderInterface' => __DIR__ . '/../..' . '/src/Core/Order/OrderStateDataProviderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\PDF\\Exception\\MissingDataException' => __DIR__ . '/../..' . '/src/Core/PDF/Exception/MissingDataException.php',
         'PrestaShop\\PrestaShop\\Core\\PDF\\Exception\\PdfException' => __DIR__ . '/../..' . '/src/Core/PDF/Exception/PdfException.php',
+        'PrestaShop\\PrestaShop\\Core\\PDF\\GeneratedPdf' => __DIR__ . '/../..' . '/src/Core/PDF/GeneratedPdf.php',
         'PrestaShop\\PrestaShop\\Core\\PDF\\PDFGeneratorInterface' => __DIR__ . '/../..' . '/src/Core/PDF/PDFGeneratorInterface.php',
         'PrestaShop\\PrestaShop\\Core\\PDF\\PDFTemplateTypeProviderInterface' => __DIR__ . '/../..' . '/src/Core/PDF/PDFTemplateTypeProviderInterface.php',
         'PrestaShop\\PrestaShop\\Core\\Payment\\PaymentModulePreferencesConfiguration' => __DIR__ . '/../..' . '/src/Core/Payment/PaymentModulePreferencesConfiguration.php',
@@ -11209,6 +11223,8 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'Symfony\\Component\\Cache\\Traits\\Relay\\Relay20Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay20Trait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\Relay21Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay21Trait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\Relay22Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay22Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay30Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay30Trait.php',
+        'Symfony\\Component\\Cache\\Traits\\Relay\\Relay40Trait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/Relay40Trait.php',
         'Symfony\\Component\\Cache\\Traits\\Relay\\SwapdbTrait' => __DIR__ . '/..' . '/symfony/cache/Traits/Relay/SwapdbTrait.php',
         'Symfony\\Component\\Clock\\Clock' => __DIR__ . '/..' . '/symfony/clock/Clock.php',
         'Symfony\\Component\\Clock\\ClockAwareTrait' => __DIR__ . '/..' . '/symfony/clock/ClockAwareTrait.php',
@@ -12041,6 +12057,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'Symfony\\Component\\HttpClient\\Internal\\Canary' => __DIR__ . '/..' . '/symfony/http-client/Internal/Canary.php',
         'Symfony\\Component\\HttpClient\\Internal\\ClientState' => __DIR__ . '/..' . '/symfony/http-client/Internal/ClientState.php',
         'Symfony\\Component\\HttpClient\\Internal\\CurlClientState' => __DIR__ . '/..' . '/symfony/http-client/Internal/CurlClientState.php',
+        'Symfony\\Component\\HttpClient\\Internal\\Dechunker' => __DIR__ . '/..' . '/symfony/http-client/Internal/Dechunker.php',
         'Symfony\\Component\\HttpClient\\Internal\\DnsCache' => __DIR__ . '/..' . '/symfony/http-client/Internal/DnsCache.php',
         'Symfony\\Component\\HttpClient\\Internal\\HttplugWaitLoop' => __DIR__ . '/..' . '/symfony/http-client/Internal/HttplugWaitLoop.php',
         'Symfony\\Component\\HttpClient\\Internal\\LegacyHttplugInterface' => __DIR__ . '/..' . '/symfony/http-client/Internal/LegacyHttplugInterface.php',
@@ -13705,6 +13722,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'Symfony\\Contracts\\Service\\Attribute\\Required' => __DIR__ . '/..' . '/symfony/service-contracts/Attribute/Required.php',
         'Symfony\\Contracts\\Service\\Attribute\\SubscribedService' => __DIR__ . '/..' . '/symfony/service-contracts/Attribute/SubscribedService.php',
         'Symfony\\Contracts\\Service\\ContainerAwareInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ContainerAwareInterface.php',
+        'Symfony\\Contracts\\Service\\ContainerProviderInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ContainerProviderInterface.php',
         'Symfony\\Contracts\\Service\\ResetInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ResetInterface.php',
         'Symfony\\Contracts\\Service\\ServiceCollectionInterface' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceCollectionInterface.php',
         'Symfony\\Contracts\\Service\\ServiceLocatorTrait' => __DIR__ . '/..' . '/symfony/service-contracts/ServiceLocatorTrait.php',
@@ -13769,6 +13787,7 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
         'Symfony\\UX\\Icons\\Exception\\IconNotFoundException' => __DIR__ . '/..' . '/symfony/ux-icons/src/Exception/IconNotFoundException.php',
         'Symfony\\UX\\Icons\\Icon' => __DIR__ . '/..' . '/symfony/ux-icons/src/Icon.php',
         'Symfony\\UX\\Icons\\IconCacheWarmer' => __DIR__ . '/..' . '/symfony/ux-icons/src/IconCacheWarmer.php',
+        'Symfony\\UX\\Icons\\IconFactory' => __DIR__ . '/..' . '/symfony/ux-icons/src/IconFactory.php',
         'Symfony\\UX\\Icons\\IconRegistryInterface' => __DIR__ . '/..' . '/symfony/ux-icons/src/IconRegistryInterface.php',
         'Symfony\\UX\\Icons\\IconRenderer' => __DIR__ . '/..' . '/symfony/ux-icons/src/IconRenderer.php',
         'Symfony\\UX\\Icons\\IconRendererInterface' => __DIR__ . '/..' . '/symfony/ux-icons/src/IconRendererInterface.php',
@@ -14191,11 +14210,11 @@ class ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae::$prefixesPsr0;
-            $loader->fallbackDirsPsr0 = ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae::$fallbackDirsPsr0;
-            $loader->classMap = ComposerStaticInit89bfcfe19a11e7b004d81ec69cd203ae::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit94004bce793d9988e98ff46bca5fa015::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit94004bce793d9988e98ff46bca5fa015::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit94004bce793d9988e98ff46bca5fa015::$prefixesPsr0;
+            $loader->fallbackDirsPsr0 = ComposerStaticInit94004bce793d9988e98ff46bca5fa015::$fallbackDirsPsr0;
+            $loader->classMap = ComposerStaticInit94004bce793d9988e98ff46bca5fa015::$classMap;
 
         }, null, ClassLoader::class);
     }

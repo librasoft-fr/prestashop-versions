@@ -74,6 +74,7 @@ class DiscountFormDataHandler implements FormDataHandlerInterface
         $command = new UpdateDiscountCommand($id);
 
         $command->setLocalizedNames($data['information']['names']);
+        $command->setActive((bool) $data['information']['active']);
 
         $this->fillCommandFromData($command, $data);
 
@@ -113,6 +114,7 @@ class DiscountFormDataHandler implements FormDataHandlerInterface
 
         // Set description
         $command->setDescription($data['information']['description'] ?? '');
+        $command->setHighlightInCart((bool) ($data['information']['highlight_in_cart'] ?? false));
 
         // Set code
         if ($data['usability']['mode']['children_selector'] === DiscountUsabilityModeType::CODE_MODE) {

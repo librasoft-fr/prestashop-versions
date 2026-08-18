@@ -24,7 +24,7 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
     /** @var int|null */
     protected $id_product_attribute;
 
-    /** @var Product */
+    /** @var Product|null */
     protected $product;
 
     /** @var Category|null */
@@ -131,6 +131,8 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
 
         // Otherwise immediately show 404
         if (!Validate::isLoadedObject($this->product)) {
+            Hook::exec('actionNotFound');
+            $this->product = null;
             header('HTTP/1.1 404 Not Found');
             header('Status: 404 Not Found');
             $this->errors[] = $this->trans('This product is no longer available.', [], 'Shop.Notifications.Error');
@@ -296,6 +298,12 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
      */
     public function initContent(): void
     {
+        if ($this->product === null) {
+            parent::initContent();
+
+            return;
+        }
+
         // Assign template vars related to the category + execute hooks related to the category
         $this->assignCategory();
 
@@ -992,9 +1000,9 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
     }
 
     /**
-     * @return Product
+     * @return Product|null
      */
-    public function getProduct(): Product
+    public function getProduct(): ?Product
     {
         return $this->product;
     }
@@ -1378,6 +1386,10 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
     public function getBreadcrumbLinks(): array
     {
         $breadcrumb = parent::getBreadcrumbLinks();
+
+        if ($this->product === null) {
+            return $breadcrumb;
+        }
 
         // $productBreadcrumbCategory can have two possible values
         // - current : Category the product was accessed from

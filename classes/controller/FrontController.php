@@ -1104,8 +1104,13 @@ class FrontControllerCore extends Controller
         $params = array_merge($default_params, $params);
 
         if (Tools::hasMediaServer() && !Configuration::get('PS_CSS_THEME_CACHE')) {
-            $relativePath = Tools::getCurrentUrlProtocolPrefix() . Tools::getMediaServer($relativePath)
-                . ($this->stylesheetManager->getFullPath($relativePath) ?? $relativePath);
+            $fullPath = $this->stylesheetManager->getFullPath($relativePath);
+
+            if (!$fullPath) {
+                return;
+            }
+
+            $relativePath = Tools::getCurrentUrlProtocolPrefix() . Tools::getMediaServer($relativePath) . $fullPath;
             $params['server'] = 'remote';
         }
 
@@ -1134,8 +1139,13 @@ class FrontControllerCore extends Controller
         $params = array_merge($default_params, $params);
 
         if (Tools::hasMediaServer() && !Configuration::get('PS_JS_THEME_CACHE')) {
-            $relativePath = Tools::getCurrentUrlProtocolPrefix() . Tools::getMediaServer($relativePath)
-                . ($this->javascriptManager->getFullPath($relativePath) ?? $relativePath);
+            $fullPath = $this->javascriptManager->getFullPath($relativePath);
+
+            if (!$fullPath) {
+                return;
+            }
+
+            $relativePath = Tools::getCurrentUrlProtocolPrefix() . Tools::getMediaServer($relativePath) . $fullPath;
             $params['server'] = 'remote';
         }
         $this->javascriptManager->register($id, $relativePath, $params['position'], $params['priority'], $params['inline'], $params['attributes'], $params['server'], $params['version']);

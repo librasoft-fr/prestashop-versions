@@ -24,14 +24,17 @@ namespace PrestaShop\Module\APIResources\ApiPlatform\Resources\Country;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use PrestaShop\Module\APIResources\Validation\Constraints\ValidAddressFormat;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 use PrestaShop\PrestaShop\Core\Domain\Country\Command\AddCountryCommand;
 use PrestaShop\PrestaShop\Core\Domain\Country\Command\DeleteCountryCommand;
+use PrestaShop\PrestaShop\Core\Domain\Country\Command\EditCountryCommand;
 use PrestaShop\PrestaShop\Core\Domain\Country\Exception\CountryNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\Country\Query\GetCountryForEditing;
 use PrestaShopBundle\ApiPlatform\Metadata\CQRSCreate;
 use PrestaShopBundle\ApiPlatform\Metadata\CQRSDelete;
 use PrestaShopBundle\ApiPlatform\Metadata\CQRSGet;
+use PrestaShopBundle\ApiPlatform\Metadata\CQRSPartialUpdate;
 use PrestaShopBundle\ApiPlatform\Metadata\LocalizedValue;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -52,8 +55,19 @@ use Symfony\Component\Validator\Constraints as Assert;
             scopes: ['country_read'],
             CQRSQueryMapping: self::QUERY_MAPPING,
         ),
+        new CQRSPartialUpdate(
+            uriTemplate: '/countries/{countryId}',
+            requirements: ['countryId' => '\d+'],
+            validationContext: ['groups' => ['Default', 'Update']],
+            CQRSCommand: EditCountryCommand::class,
+            CQRSQuery: GetCountryForEditing::class,
+            scopes: ['country_write'],
+            CQRSQueryMapping: self::QUERY_MAPPING,
+            CQRSCommandMapping: self::COMMAND_MAPPING,
+        ),
         new CQRSDelete(
             uriTemplate: '/countries/{countryId}',
+            requirements: ['countryId' => '\d+'],
             CQRSCommand: DeleteCountryCommand::class,
             scopes: ['country_write'],
         ),
@@ -90,7 +104,8 @@ class Country
 
     public ?string $zipCodeFormat;
 
-    #[Assert\NotNull(groups: ['Create'])]
+    #[Assert\NotBlank(groups: ['Create'])]
+    #[ValidAddressFormat(groups: ['Create', 'Update'])]
     public string $addressFormat;
 
     #[Assert\NotNull(groups: ['Create'])]

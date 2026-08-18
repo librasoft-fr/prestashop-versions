@@ -35,7 +35,7 @@ class dashactivity extends Module
     {
         $this->name = 'dashactivity';
         $this->tab = 'administration';
-        $this->version = '2.1.1';
+        $this->version = '2.1.2';
         $this->author = 'PrestaShop';
 
         parent::__construct();
@@ -429,5 +429,25 @@ class dashactivity extends Module
             'DASHACTIVITY_CART_ABANDONED_MAX' => Tools::getValue('DASHACTIVITY_CART_ABANDONED_MAX', Configuration::get('DASHACTIVITY_CART_ABANDONED_MAX')),
             'DASHACTIVITY_VISITOR_ONLINE' => Tools::getValue('DASHACTIVITY_VISITOR_ONLINE', Configuration::get('DASHACTIVITY_VISITOR_ONLINE')),
         ];
+    }
+
+    /**
+     * Save dashboard configuration
+     *
+     * @param array $config
+     *
+     * @return bool determines if there are errors or not
+     */
+    public function saveDashConfig(array $config)
+    {
+        if (!$this->getPermission('configure')) {
+            return true;
+        }
+
+        foreach (array_keys($this->getConfigFieldsValues()) as $fieldName) {
+            Configuration::updateValue($fieldName, (int) $config[$fieldName]);
+        }
+
+        return false;
     }
 }

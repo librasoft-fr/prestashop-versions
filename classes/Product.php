@@ -2481,7 +2481,7 @@ class ProductCore extends ObjectModel
 
         $combinationIds = array_keys($combinations);
 
-        $lang = Db::getInstance()->executeS('SELECT pac.id_product_attribute, GROUP_CONCAT(agl.`name`, \'' . pSQL($attribute_value_separator) . '\',al.`name` ORDER BY agl.`id_attribute_group` SEPARATOR \'' . pSQL($attribute_separator) . '\') as attribute_designation
+        $lang = Db::getInstance()->executeS('SELECT pac.id_product_attribute, GROUP_CONCAT(agl.`name`, \'' . pSQL($attribute_value_separator) . '\',al.`name` ORDER BY ag.`position`, a.`position` SEPARATOR \'' . pSQL($attribute_separator) . '\') as attribute_designation
                 FROM `' . _DB_PREFIX_ . 'product_attribute_combination` pac
                 LEFT JOIN `' . _DB_PREFIX_ . 'attribute` a ON a.`id_attribute` = pac.`id_attribute`
                 LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group` ag ON ag.`id_attribute_group` = a.`id_attribute_group`
@@ -2537,7 +2537,7 @@ class ProductCore extends ObjectModel
         }
 
         $sql = 'SELECT pa.*, product_attribute_shop.*, ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, al.`name` AS attribute_name, ' .
-            'a.`id_attribute`, stock.location ' .
+            'a.`id_attribute`, a.`position` AS attribute_position, stock.location ' .
             'FROM `' . _DB_PREFIX_ . 'product_attribute` pa ' .
             Shop::addSqlAssociation('product_attribute', 'pa') . ' ' .
             'LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_combination` pac ON pac.`id_product_attribute` = pa.`id_product_attribute` ' .
@@ -2548,7 +2548,7 @@ class ProductCore extends ObjectModel
             'LEFT JOIN `' . _DB_PREFIX_ . 'stock_available` stock ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(pa.`id_product_attribute`, 0)) ' .
             'WHERE pa.`id_product` = ' . (int) $this->id . ' ' .
             'GROUP BY pa.`id_product_attribute`' . ($groupByIdAttributeGroup ? ', ag.`id_attribute_group` ' : '') .
-            'ORDER BY pa.`id_product_attribute`';
+            'ORDER BY pa.`id_product_attribute`, ag.`position`, a.`position`';
 
         $res = Db::getInstance()->executeS($sql);
 
@@ -2595,7 +2595,7 @@ class ProductCore extends ObjectModel
                 WHERE pa.`id_product` = ' . (int) $this->id . '
                 AND pa.`id_product_attribute` = ' . (int) $id_product_attribute . '
                 GROUP BY pa.`id_product_attribute`' . ($groupByIdAttributeGroup ? ',ag.`id_attribute_group`' : '') . '
-                ORDER BY pa.`id_product_attribute`';
+                ORDER BY pa.`id_product_attribute`, ag.`position`, a.`position`';
 
         $res = Db::getInstance()->executeS($sql);
 
@@ -5614,7 +5614,7 @@ class ProductCore extends ObjectModel
         ]);
 
         // Always recompute unit prices based on initial ratio so that discounts are applied on unit price as well
-        $unitPriceRatio = self::computeUnitPriceRatio($row, $id_product_attribute, $quantityToUseForPriceCalculations, $context);
+        $unitPriceRatio = self::computeUnitPriceRatio($row, $id_product_attribute, $context);
         $row['unit_price_ratio'] = $unitPriceRatio;
         $row['unit_price_tax_excluded'] = $unitPriceRatio != 0 ? $priceTaxExcluded / $unitPriceRatio : 0.0;
         $row['unit_price_tax_included'] = $unitPriceRatio != 0 ? $priceTaxIncluded / $unitPriceRatio : 0.0;
@@ -5631,61 +5631,49 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * Compute unit price ratio based on the saved unit price, we make sure that quantities, currency rates and
-     * combination impact are taken into account.
+     * Compute unit price ratio based on the saved prices on both product and combinations.
      *
      * @param array $productRow
      * @param int $combinationId
-     * @param int $quantity
      * @param Context $context
      *
      * @return float
      */
-    private static function computeUnitPriceRatio(array $productRow, int $combinationId, int $quantity, Context $context): float
+    private static function computeUnitPriceRatio(array $productRow, int $combinationId, Context $context): float
     {
+        // If we have a combination Id, we will prepare it
+        if ($combinationId) {
+            $combination = new Combination($combinationId);
+        }
+
+        // First, we get the unit price without tax saved in the database
         $baseUnitPrice = 0.0;
         if (isset($productRow['unit_price'])) {
-            // Unit price is supposed to be in DB and accessible in the row
             $baseUnitPrice = (float) $productRow['unit_price'];
         }
 
-        // Then if combination has an impact we apply it on unit price
+        // Then, if combination has an impact we apply it on unit price
         if ($combinationId) {
-            $combination = new Combination($combinationId);
             $baseUnitPrice = $baseUnitPrice + $combination->unit_price_impact;
         }
 
+        // If there is none, nothing to calculate
         if ($baseUnitPrice == 0) {
             return 0;
         }
 
-        // Finally, we apply the currency rate
-        $defaultCurrencyId = Currency::getDefaultCurrencyId();
-        $currencyId = Validate::isLoadedObject($context->currency) ? (int) $context->currency->id : $defaultCurrencyId;
-        if ($currencyId !== $defaultCurrencyId) {
-            $baseUnitPrice = Tools::convertPrice($baseUnitPrice, $currencyId);
+        // Now, we get a basic price of this product, with no discounts, exactly as in the backoffice.
+        // We are not using new Product because that "breaks" the price attribute in the constructor.
+        $baseProductPrice = (float) Db::getInstance()->getValue('
+            SELECT price
+            FROM ' . _DB_PREFIX_ . 'product_shop
+            WHERE id_product = ' . (int) $productRow['id_product'] . ' AND id_shop = ' . (int) $context->shop->id
+        );
+        if ($combinationId) {
+            $baseProductPrice = $baseProductPrice + $combination->price;
         }
 
-        // Compute price ratio based on initial product price and initial unit price (without taxes, group discount, cart rules)
-        $noSpecificPrice = null;
-        $baseProductPrice = Product::getPriceStatic(
-            (int) $productRow['id_product'],
-            false,
-            $combinationId,
-            6,
-            null,
-            false,
-            false,
-            $quantity,
-            false,
-            null,
-            null,
-            null,
-            $noSpecificPrice,
-            true,
-            false
-        );
-
+        // And we calculate the precise ratio
         return $baseProductPrice / $baseUnitPrice;
     }
 
@@ -7210,11 +7198,14 @@ class ProductCore extends ObjectModel
             ' . Shop::addSqlAssociation('product_attribute', 'pa') . '
             LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_lang` pal
                 ON (pal.`id_product_attribute` = pac.`id_product_attribute` AND pal.`id_lang` = ' . (int) $id_lang . ')
+            LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group` ag
+                ON (a.`id_attribute_group` = ag.`id_attribute_group`)
             LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl
                 ON (a.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = ' . (int) $id_lang . ')
             WHERE pa.`id_product` = ' . (int) $id_product . '
                 AND pac.`id_product_attribute` = ' . (int) $id_product_attribute . '
-                AND agl.`id_lang` = ' . (int) $id_lang);
+                AND agl.`id_lang` = ' . (int) $id_lang . '
+            ORDER BY ag.`position` ASC, a.`position` ASC');
             Cache::store($cache_id, $result);
         } else {
             $result = Cache::retrieve($cache_id);
@@ -7235,6 +7226,8 @@ class ProductCore extends ObjectModel
         FROM `' . _DB_PREFIX_ . 'attribute` a
         LEFT JOIN `' . _DB_PREFIX_ . 'attribute_lang` al
             ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = ' . (int) Context::getContext()->language->id . ')
+        LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group` ag
+            ON (a.`id_attribute_group` = ag.`id_attribute_group`)
         LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl
             ON (a.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = ' . (int) Context::getContext()->language->id . ')
         LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_combination` pac
@@ -7243,7 +7236,8 @@ class ProductCore extends ObjectModel
             ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
         ' . Shop::addSqlAssociation('product_attribute', 'pa') . '
         ' . Shop::addSqlAssociation('attribute', 'pac') . '
-        WHERE pa.`id_product` = ' . (int) $id_product);
+        WHERE pa.`id_product` = ' . (int) $id_product . '
+        ORDER BY ag.`position` ASC, a.`position` ASC');
 
         return $result;
     }
