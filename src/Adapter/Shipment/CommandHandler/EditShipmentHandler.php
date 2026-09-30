@@ -8,7 +8,11 @@ declare(strict_types=1);
 
 namespace PrestaShop\PrestaShop\Adapter\Shipment\CommandHandler;
 
+use PrestaShop\PrestaShop\Adapter\Carrier\Repository\CarrierRepository;
+use PrestaShop\PrestaShop\Adapter\Configuration as AdapterConfiguration;
+use PrestaShop\PrestaShop\Adapter\Shipment\ShipmentShippingCostUpdater;
 use PrestaShop\PrestaShop\Core\CommandBus\Attributes\AsCommandHandler;
+use PrestaShop\PrestaShop\Core\Domain\Carrier\Exception\CarrierNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\Shipment\Command\EditShipment;
 use PrestaShop\PrestaShop\Core\Domain\Shipment\CommandHandler\EditShipmentHandlerInterface;
 use PrestaShop\PrestaShop\Core\Domain\Shipment\Exception\CannotSaveShipmentException;
@@ -26,7 +30,10 @@ class EditShipmentHandler implements EditShipmentHandlerInterface
 {
     public function __construct(
         private readonly ShipmentRepository $shipmentRepository,
+        private readonly CarrierRepository $carrierRepository,
         private TranslatorInterface $translator,
+        private ShipmentShippingCostUpdater $shipmentShippingCostUpdater,
+        private AdapterConfiguration $configuration,
     ) {
     }
 
@@ -34,13 +41,16 @@ class EditShipmentHandler implements EditShipmentHandlerInterface
      * {@inheritdoc}
      *
      * @throws ShipmentNotFoundException
+     * @throws CarrierNotFoundException
      * @throws CannotSaveShipmentException
      */
     public function handle(EditShipment $command): void
     {
         $shipmentId = $command->getShipmentId()->getValue();
         $carrierId = $command->getCarrierId()->getValue();
-        $trackingNumber = $command->getTrackingNumber();
+
+        // There is no foreign key on the shipment table, an unknown carrier id would silently be stored
+        $this->carrierRepository->get($command->getCarrierId());
 
         try {
             /** @var Shipment|null $shipment */
@@ -68,10 +78,13 @@ class EditShipmentHandler implements EditShipmentHandlerInterface
         }
 
         $shipment->setCarrierId($carrierId);
-        $shipment->setTrackingNumber($trackingNumber);
 
         try {
             $this->shipmentRepository->save($shipment);
+
+            if ($this->configuration->get('PS_ORDER_RECALCULATE_SHIPPING')) {
+                $this->shipmentShippingCostUpdater->recalculateForOrder($shipment->getOrderId());
+            }
         } catch (Throwable $e) {
             throw new CannotSaveShipmentException(
                 $this->translator->trans(

@@ -166,6 +166,14 @@ mbe_login:
     _legacy_controller: PsshippingKeycloakAuthController
     _legacy_link: PsshippingKeycloakAuthController
 
+set_ups_dap_first_label_created:
+  path: /psshipping/configuration/setUpsDapFirstLabelCreated
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\Psshipping\Controller\Admin\PsshippingConfigurationController::setUpsDapFirstLabelCreated'
+    _legacy_controller: PsshippingConfigurationController
+    _legacy_link: PsshippingConfigurationController
+
 faq_list:
   path: /psshipping/faq/list
   methods: [GET]

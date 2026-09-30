@@ -131,7 +131,7 @@ class MigrateOrCreateIdentityV8Handler
 
         // FIXME: shouldn't this condition be a specific flag
         if ($notIdentified || $migratedToV8) {
-            $this->registerLatestVersion();
+            $this->registerLatestVersion($command->version);
             $this->createOrVerifyIdentity($command);
 
             return;
@@ -161,10 +161,10 @@ class MigrateOrCreateIdentityV8Handler
 
             $this->clearTokens();
             $this->statusManager->invalidateCache();
-            $this->registerLatestVersion();
+            $this->registerLatestVersion($command->version);
         } catch (StoreLegacyNotFoundException $e) {
             if ($command->origin !== AccountsService::ORIGIN_ADVANCED_SETTINGS) {
-                $this->registerLatestVersion();
+                $this->registerLatestVersion($command->version);
                 $this->cleanupIdentity();
                 $this->createOrVerifyIdentity($command);
 
@@ -265,10 +265,20 @@ class MigrateOrCreateIdentityV8Handler
     }
 
     /**
+     * Prefer $version from the upgrade script (always fresh) over \Ps_accounts::VERSION (stale on PS9).
+     *
+     * @param string|null $version
+     *
      * @return void
      */
-    private function registerLatestVersion()
+    private function registerLatestVersion($version = null)
     {
+        if ($version) {
+            $this->upgradeService->setVersion($version);
+
+            return;
+        }
+
         $this->upgradeService->setVersion();
     }
 }

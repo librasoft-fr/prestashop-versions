@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {extends file='page.tpl'}
 
@@ -28,10 +28,10 @@
 
     <section class="form-fields">
       <div class="mb-3">
-        <label class="form-label required">{l s='Email address' d='Shop.Forms.Labels'}</label>
-        <input type="email" name="email" id="email" value="{if isset($smarty.post.email)}{stripslashes($smarty.post.email)}{/if}" class="form-control" autocomplete="email" required>
+        <label for="email" class="form-label required">{l s='Email address' d='Shop.Forms.Labels'}</label>
+        <input type="email" name="email" id="email" value="{if isset($smarty.post.email)}{stripslashes($smarty.post.email)}{/if}" class="form-control" autocomplete="username" required>
       </div>
-      
+
       <div class="buttons-wrapper">
         <button id="send-reset-link" class="btn btn-primary" name="submit" type="submit" data-ps-action="form-validation-submit">
           {l s='Send reset link' d='Shop.Theme.Actions'}

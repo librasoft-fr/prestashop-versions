@@ -17,6 +17,7 @@ return array(
     'PrestaShop\\Module\\PsEventbus\\Factory\\ContextFactory' => $baseDir . '/src/Factory/ContextFactory.php',
     'PrestaShop\\Module\\PsEventbus\\Formatter\\ArrayFormatter' => $baseDir . '/src/Formatter/ArrayFormatter.php',
     'PrestaShop\\Module\\PsEventbus\\Handler\\ErrorHandler\\ErrorHandler' => $baseDir . '/src/Handler/ErrorHandler/ErrorHandler.php',
+    'PrestaShop\\Module\\PsEventbus\\Helper\\DateHelper' => $baseDir . '/src/Helper/DateHelper.php',
     'PrestaShop\\Module\\PsEventbus\\Helper\\ModuleHelper' => $baseDir . '/src/Helper/ModuleHelper.php',
     'PrestaShop\\Module\\PsEventbus\\Module\\Install' => $baseDir . '/src/Module/Install.php',
     'PrestaShop\\Module\\PsEventbus\\Module\\Uninstall' => $baseDir . '/src/Module/Uninstall.php',

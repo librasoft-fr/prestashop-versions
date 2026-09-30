@@ -1,10 +1,10 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {block name='order_products_table'}
   <form id="order-return-form" class="js-order-return-form" action="{$urls.pages.order_follow}" method="post" data-ps-action="form-validation">
-    <div class="grid-table grid-table--collapse mb-0" role="table" data-ps-ref="order-return-products-table" aria-label="{l s='Products details' d='Shop.Theme.Catalog'}" aria-describedby="order_products_heading">
+    <div class="grid-table grid-table--collapse mb-0" role="table" data-ps-ref="order-return-products-table" aria-label="{l s='Products details' d='Shop.Theme.Catalog'}">
       <div class="grid-table__inner grid-table__inner--6" role="rowgroup">
         <div class="grid-table__header" role="row">
           <span class="grid-table__cell" role="columnheader" aria-label="{l s='Select product to return' d='Shop.Theme.Catalog'}">
@@ -122,12 +122,13 @@
                       <div class="customization">
                         <a class="btn btn-sm btn-link p-0" href="#" data-bs-toggle="modal"
                           data-bs-target="#product-customizations-modal-{$customization.id_customization}">
-                          <i class="material-icons">&#xE8F4;</i>
+                          <i class="material-icons" aria-hidden="true">&#xE8F4;</i>
                           {l s='Product customization' d='Shop.Theme.Catalog'}
                         </a>
                       </div>
                     {/foreach}
                   {/if}
+                  {hook h='displayOrderDetailProductLine' id_order=$product.id_order id_order_detail=$product.id_order_detail id_product=$product.id_product}
                 </span>
               </span>
             </span>
@@ -185,7 +186,7 @@
     <hr class="order-separator">
 
     <section class="order-merchandise-return">
-      <h3 class="h3">{l s='Merchandise return' d='Shop.Theme.Customeraccount'}</h3>
+      <h2>{l s='Merchandise return' d='Shop.Theme.Customeraccount'}</h2>
 
       <label class="form-label required" for="return_notes">{l s='Return notes' d='Shop.Forms.Labels'}</label>
 
@@ -207,7 +208,7 @@
         <button class="btn btn-primary" type="submit" name="submitReturnMerchandise" data-ps-action="form-validation-submit">
           {l s='Request a return' d='Shop.Theme.Customeraccount'}
         </button>
-      </footer>
-    </div>
+      </div>
+    </section>
   </form>
 {/block}

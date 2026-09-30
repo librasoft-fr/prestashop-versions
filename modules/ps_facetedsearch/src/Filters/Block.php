@@ -67,11 +67,6 @@ class Block
     private $database;
 
     /**
-     * @var array
-     */
-    private $attributesGroup;
-
-    /**
      * @var DataAccessor
      */
     private $dataAccessor;
@@ -249,7 +244,7 @@ class Block
         );
 
         list($priceBlock['min'], $priceBlock['max']) = $this->searchAdapter->getInitialPopulation()->getMinMaxPriceValue();
-        $priceBlock['value'] = !empty($selectedFilters['price']) ? $selectedFilters['price'] : null;
+        $priceBlock['value'] = !empty($selectedFilters['price']) ? array_map('floatval', $selectedFilters['price']) : null;
 
         $this->restorePriceAndWeightFilters(
             $this->searchAdapter->getInitialPopulation(),
@@ -343,7 +338,7 @@ class Block
             return [];
         }
 
-        $weightBlock['value'] = !empty($selectedFilters['weight']) ? $selectedFilters['weight'] : null;
+        $weightBlock['value'] = !empty($selectedFilters['weight']) ? array_map('floatval', $selectedFilters['weight']) : null;
 
         $this->restorePriceAndWeightFilters(
             $this->searchAdapter->getInitialPopulation(),
@@ -828,7 +823,10 @@ class Block
         $idFeature = $filter['id_value'];
         $filteredSearchAdapter = null;
 
-        if (!empty($selectedFilters['id_feature'])) {
+        // Keep current selections while counting additional values for an AND feature facet.
+        if ((int) (isset($filter['filter_type']) ? $filter['filter_type'] : Converter::WIDGET_TYPE_CHECKBOX) !== Converter::WIDGET_TYPE_CHECKBOX_AND
+            && !empty($selectedFilters['id_feature'])
+        ) {
             foreach ($selectedFilters['id_feature'] as $key => $selectedFilter) {
                 if ($key == $idFeature) {
                     $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter('with_features_' . $idFeature);
@@ -887,6 +885,9 @@ class Block
                 'name' => $featureValues[$idFeatureValue]['value'],
                 'url_name' => $featureValues[$idFeatureValue]['url_name'],
                 'meta_title' => $featureValues[$idFeatureValue]['meta_title'],
+                'position' => isset($featureValues[$idFeatureValue]['position'])
+                    ? (int) $featureValues[$idFeatureValue]['position']
+                    : 0,
             ];
 
             if (array_key_exists('id_feature', $selectedFilters)) {

@@ -1,0 +1,181 @@
+/**
+ * Copyright (c) 2026 PrestaShop SA
+ * This file is part of PrestaShop AskAI.
+ */
+
+/* ── Layout ──────────────────────────────────────────────── */
+#ps-ask-ai-page { max-width: 650px; margin: 0 auto; }
+
+/* ── Card ────────────────────────────────────────────────── */
+.psai-card { background: var(--color-white, #fff); border: 1px solid var(--color-primary-400, #ddd); margin-top: 20px; }
+.psai-card__header { display: flex; align-items: center; gap: 8px; padding: 16px 24px; border-bottom: 1px solid var(--color-primary-300, #eee); }
+.psai-card__body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+/* ── Form fields ─────────────────────────────────────────── */
+.psai-field { display: flex; flex-direction: column; gap: 6px; }
+.psai-label { font-size: 14px; font-weight: 600; color: var(--color-primary, #1d1d1b); margin-bottom: 0; }
+.psai-input {
+    width: 100%; padding: 8px 12px; border: 1px solid var(--color-primary-400, #ddd); border-radius: 2px;
+    font-size: 14px; color: var(--color-primary, #1d1d1b); box-sizing: border-box; background: var(--color-white, #fff); line-height: 1.5;
+}
+.psai-input:hover    { border-color: var(--color-primary, #1d1d1b); }
+.psai-input:focus    { border-color: var(--color-primary, #1d1d1b); outline: none; box-shadow: 0 0 0 2px rgba(23,78,239,0.12) inset; }
+.psai-input:disabled { background: var(--color-white, #fff) !important; color: var(--color-primary-500, #bbb); border-color: var(--color-primary-400, #ddd); cursor: not-allowed; }
+.psai-input--readonly { background: var(--color-white, #fff) !important; cursor: default; font-family: monospace; letter-spacing: 1px; color: var(--color-primary-600, #5e5e5e); }
+
+/* ── Select ──────────────────────────────────────────────── */
+.psai-select {
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%235e5e5e' d='M12 5.83L15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; padding-right: 38px;
+}
+
+/* ── Masked key wrapper ───────────────────────────────────── */
+.psai-masked-wrapper { position: relative; display: flex; align-items: center; }
+.psai-masked-wrapper .psai-input { width: 100%; padding-right: 80px; }
+.psai-input__replace {
+    position: absolute; right: 10px; background: none; border: none; padding: 0;
+    font-size: 13px; font-weight: 600; color: var(--color-primary, #1d1d1b); text-decoration: underline;
+    cursor: pointer; white-space: nowrap;
+}
+.psai-input__replace:hover { color: var(--color-primary-700, #3f3f3d); }
+
+/* ── Password reveal ─────────────────────────────────────── */
+.psai-password-wrapper { position: relative; display: flex; align-items: center; }
+.psai-password-wrapper .psai-input { width: 100%; padding-right: 36px; }
+.psai-input__reveal {
+    position: absolute; right: 10px; display: flex; align-items: center;
+    cursor: pointer; color: var(--color-primary-700, #3f3f3d); user-select: none; background: none; border: none; padding: 0; line-height: 1;
+}
+.psai-input__reveal:hover { color: var(--color-primary, #1d1d1b); }
+.psai-input__reveal .material-symbols-rounded { font-size: 16px; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.psai-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 9px 20px; font-size: 13px; font-weight: 600; border-radius: 0;
+    cursor: pointer; border: none; text-decoration: none; line-height: 1; transition: background 0.15s;
+}
+.psai-btn--primary                      { background: var(--color-primary, #1d1d1b); color: var(--color-white, #fff); }
+.psai-btn--primary:hover:not(:disabled) { background: var(--color-primary-700, #3f3f3d); color: var(--color-white, #fff); }
+.psai-btn--primary:disabled             { background: var(--color-primary-500, #bbb); border-color: var(--color-primary-500, #bbb); cursor: not-allowed; }
+.psai-btn--secondary                    { background: var(--color-white, #fff); color: var(--color-primary, #1d1d1b); border: 1px solid var(--color-primary, #1d1d1b); }
+.psai-btn--secondary:hover              { background: var(--color-primary-300, #eee); color: var(--color-primary, #1d1d1b); }
+.psai-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding-top: 4px; }
+.psai-help { font-size: 12px; color: var(--color-primary-600, #5e5e5e); font-style: italic; margin: 0; }
+
+/* ── Provider API key help ───────────────────────────────── */
+.psai-help-toggle { background:none; border:none; padding:0; font-size:12px; color:var(--color-blue, #174eef); text-decoration:none; cursor:pointer; white-space:nowrap; }
+.psai-help-toggle:hover { text-decoration:underline; }
+.psai-help-toggle:focus:not(:focus-visible) { outline:none; }
+.psai-provider-help { background:#f7f8fc; border-left:3px solid var(--color-primary, #1d1d1b); padding:10px 14px; font-size:13px; color:var(--color-primary-700, #3f3f3d); line-height:1.5; }
+.psai-provider-help ol { margin:4px 0 0 16px; padding:0; }
+.psai-provider-help li { margin-bottom:2px; }
+.psai-provider-help a { color:var(--color-primary, #1d1d1b); text-decoration:underline; }
+.psai-provider-help a:hover { color:var(--color-primary-700, #3f3f3d); }
+.psai-provider-help a:focus:not(:focus-visible) { outline:none !important; }
+.psai-provider-help__warning { margin:6px 0 0 0; font-size:12px; color:#7d4500; }
+
+/* ── Puik alert ──────────────────────────────────────────── */
+.puik-alert { position: relative; display: flex; flex-direction: row; align-items: flex-start; padding: 1rem; border: 1px solid; color: var(--color-primary, #1d1d1b); font-size: 14px; }
+.puik-alert__container { display: flex; flex-direction: column; flex: 1; gap: 8px; }
+.puik-alert__content   { display: flex; flex-direction: row; align-items: flex-start; gap: 9px; }
+.puik-alert__icon      { flex-shrink: 0; margin-top: 1px; font-size: 1.25rem !important; }
+.puik-alert__text      { flex: 1; }
+.puik-alert__title       { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.puik-alert__description { font-size: 14px; margin: 0; }
+.puik-alert--success { background-color: var(--color-green-50, #eaf8ef); border-color: var(--color-green, #207f4b); }
+.puik-alert--success .puik-alert__icon { color: var(--color-green, #207f4b); font-variation-settings: 'FILL' 1; }
+.puik-alert--danger  { background-color: var(--color-red-50, #ffe4e6); border-color: var(--color-red, #ba151a); }
+.puik-alert--danger .puik-alert__icon  { color: var(--color-red, #ba151a); font-variation-settings: 'FILL' 1; }
+.puik-alert--warning { background-color: var(--color-yellow-50, #fff5e5); border-color: var(--color-yellow, #ffb000); }
+.puik-alert--warning .puik-alert__icon { color: var(--color-yellow, #ffb000); font-variation-settings: 'FILL' 1; }
+.puik-alert--info    { background-color: var(--color-blue-50, #e8edfd); border-color: var(--color-blue, #174eef); }
+.puik-alert--info .puik-alert__icon    { color: var(--color-blue, #174eef); font-variation-settings: 'FILL' 1; }
+.puik-alert--warning .puik-alert__button {
+    background: var(--color-yellow-50, #fff5e5); color: var(--color-primary, #1d1d1b) !important; border: 1px solid var(--color-yellow, #ffb000); border-radius: 0;
+    padding: 9px 20px; font-size: 13px; font-weight: 600; text-decoration: none !important;
+    white-space: nowrap; display: inline-flex; align-items: center;
+    font-family: inherit; cursor: pointer;
+}
+.puik-alert--warning .puik-alert__button:hover  { background: var(--color-yellow-100, #ffeccc); color: var(--color-primary, #1d1d1b) !important; text-decoration: none !important; }
+.puik-alert--warning .puik-alert__button:active { background: var(--color-yellow-300, #ffd999); }
+.puik-alert--warning .puik-alert__button:disabled { opacity: 0.6; cursor: default; }
+
+/* ── Store-access alert banner ───────────────────────────── */
+.ps-ask-ai-alert { display: flex; align-items: center; gap: 16px; padding: 16px 20px; margin-top: 20px; background: var(--color-white, #fff); border: 1px solid #e0e0e0; box-sizing: border-box; }
+.ps-ask-ai-alert__icon { flex-shrink: 0; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--color-primary, #1d1d1b); color: var(--color-white, #fff); font-size: 22px; }
+.ps-ask-ai-alert__body  { flex: 1; min-width: 0; }
+.ps-ask-ai-alert__title { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--color-primary, #1d1d1b); }
+.ps-ask-ai-alert__desc  { font-size: 13px; color: #6c757d; }
+.ps-ask-ai-alert__btn {
+    flex-shrink: 0; display: inline-block; padding: 10px 20px; background: var(--color-primary, #1d1d1b);
+    color: var(--color-white, #fff) !important; font-size: 13px; font-weight: 600; text-decoration: none !important;
+    white-space: nowrap; border: 1px solid var(--color-primary, #1d1d1b);
+    /* button reset (the 'disabled' variant is a <button>, not an <a>) */
+    cursor: pointer; font-family: inherit; line-height: normal; border-radius: 0; -webkit-appearance: none; appearance: none;
+}
+.ps-ask-ai-alert__btn:hover,
+.ps-ask-ai-alert__btn:focus              { color: var(--color-white, #fff) !important; text-decoration: none !important; background: var(--color-primary-700, #3f3f3d); }
+.ps-ask-ai-alert__btn--secondary         { background: var(--color-white, #fff); color: var(--color-primary, #1d1d1b) !important; }
+.ps-ask-ai-alert__btn--secondary:hover,
+.ps-ask-ai-alert__btn--secondary:focus   { background: var(--color-primary-300, #eee); color: var(--color-primary, #1d1d1b) !important; }
+
+/* ── Module update banner (PUiK "info" look, mirrors the playground config banner) ── */
+.psai-update-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 0;
+    padding: 12px 16px;
+    border: 1px solid var(--color-blue, #174eef);
+    border-radius: 6px;
+    background-color: var(--color-blue-50, #e8edfd);
+    color: var(--color-primary, #1d1d1b);
+    font-size: 14px;
+}
+.psai-update-banner__icon {
+    flex-shrink: 0;
+    font-size: 20px;
+    color: var(--color-blue, #174eef);
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.psai-update-banner__row      { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.psai-update-banner__spacer   { flex: 1; }
+.psai-update-banner__progress { display: flex; flex-direction: column; gap: 6px; flex: 1; font-size: 13px; }
+/* Progress bar cloned from the drawer's PUiK progress bar: 8px track, rounded. */
+.psai-update-banner__bar {
+    height: 8px; border-radius: 1.5rem; background-color: var(--color-primary-400, #ddd); overflow: hidden;
+}
+.psai-update-banner__bar .progress-bar {
+    border-radius: 1.5rem; background-color: var(--color-blue, #174eef); transition: width 0.15s ease;
+}
+.psai-update-banner__bar .progress-bar.bg-success { background-color: var(--color-green, #207f4b) !important; }
+.psai-update-banner__bar .progress-bar.bg-danger  { background-color: var(--color-red, #ba151a) !important; }
+#psai-update-banner .text-success { color: var(--color-green, #207f4b) !important; }
+#psai-update-banner .text-danger  { color: var(--color-red, #ba151a) !important; }
+.psai-update-banner__close {
+    flex-shrink: 0; background: transparent; border: 0; padding: 2px; cursor: pointer;
+    color: var(--color-primary-600, #5e5e5e); display: flex; align-items: center; transition: color 0.15s ease;
+}
+.psai-update-banner__close:hover { color: var(--color-primary, #1d1d1b); }
+.psai-update-banner__close .material-symbols-rounded { font-size: 16px; }
+/* Install / Refresh / Retry = PUiK "info" button: a LIGHT button (not solid blue). */
+.psai-update-banner .btn-primary {
+    background-color: var(--color-blue-50, #e8edfd); border: 1px solid var(--color-blue, #174eef); color: var(--color-primary, #1d1d1b); box-shadow: none;
+}
+.psai-update-banner .btn-primary:hover,
+.psai-update-banner .btn-primary:focus {
+    background-color: var(--color-blue-100, #d1dcfc); border-color: var(--color-blue, #174eef); color: var(--color-primary, #1d1d1b);
+}
+.psai-update-banner .btn-primary:active {
+    background-color: var(--color-blue-300, #a2b8f9); border-color: var(--color-blue, #174eef); color: var(--color-primary, #1d1d1b);
+}
+/* PUiK purple tag: purple bg/border, dark primary label. */
+.psai-update-tag {
+    display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px;
+    background: var(--color-purple-50, #f8f0f7); color: var(--color-primary, #1d1d1b); border: 1px solid var(--color-purple-500, #decde7);
+    font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.psai-card--locked            { pointer-events: none; opacity: 0.6; }

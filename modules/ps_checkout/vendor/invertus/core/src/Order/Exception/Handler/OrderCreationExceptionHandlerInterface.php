@@ -30,4 +30,12 @@ interface OrderCreationExceptionHandlerInterface
      * @return array
      */
     public function handle(Exception $exception, string $paypalOrderId);
+
+    /**
+     * @param Exception   $exception
+     * @param string|null $fundingSource
+     *
+     * @return array
+     */
+    public function handleOrderCreateException(Exception $exception, ?string $fundingSource): array;
 }

@@ -1,0 +1,9 @@
+ps_mcp_server_config:
+    path: /ps_mcp_server/config
+    controller: "PrestaShop\\Module\\PsMcpServer\\Controller\\Admin\\McpServerConfigController::index"
+    methods: [GET, POST]
+
+ps_mcp_server_ajax:
+    path: /ps_mcp_server/ajax
+    controller: "PrestaShop\\Module\\PsMcpServer\\Controller\\Admin\\McpServerAjaxController::ajax"
+    methods: [POST]

@@ -44,6 +44,8 @@ class OrderRepository extends AbstractRepository implements RepositoryInterface
      */
     public function generateFullQuery($langIso, $withSelecParameters)
     {
+        $langId = (int) \Language::getIdByIso($langIso);
+
         $this->generateMinimalQuery(self::TABLE_NAME, 'o');
 
         // minimal query for countable query
@@ -54,7 +56,12 @@ class OrderRepository extends AbstractRepository implements RepositoryInterface
             ->leftJoin('address', 'ai', 'ai.id_address = o.id_address_invoice')
             ->leftJoin('country', 'cntd', 'cntd.id_country = ad.id_country')
             ->leftJoin('country', 'cnti', 'cnti.id_country = ai.id_country')
-            ->leftJoin('order_state_lang', 'osl', 'o.current_state = osl.id_order_state')
+            // Filter order_state_lang by the synced language, like the other *_lang
+            // joins. order_state_lang has one row per installed language; without this
+            // filter the join fans out on multi-lang shops and, combined with the 1:n
+            // order_slip join, multiplies the refund SUM by the language count and
+            // makes status_label arbitrary.
+            ->leftJoin('order_state_lang', 'osl', 'o.current_state = osl.id_order_state AND osl.id_lang = ' . $langId)
             ->leftJoin('order_state', 'ost', 'o.current_state = ost.id_order_state')
             ->where('o.id_shop = ' . (int) parent::getShopContext()->id)
             ->select('o.id_order')
@@ -78,7 +85,6 @@ class OrderRepository extends AbstractRepository implements RepositoryInterface
                 ->select('o.date_add as created_at')
                 ->select('o.date_upd as updated_at')
                 ->select('o.id_carrier')
-                ->select('o.payment as payment_name')
                 ->select('o.valid as is_validated')
                 ->select('ost.paid as is_paid')
                 ->select('ost.shipped as is_shipped')
@@ -112,12 +118,15 @@ class OrderRepository extends AbstractRepository implements RepositoryInterface
                 ->select('SUM(os.total_products_tax_excl + os.total_shipping_tax_excl) as refund_tax_excl')
                 ->select('CONCAT(CONCAT("delivery", ":", cntd.iso_code), ",", CONCAT("invoice", ":", cnti.iso_code)) as address_iso')
                 ->select('IF((SELECT so.id_order FROM `' . _DB_PREFIX_ . 'orders` so WHERE so.id_customer = o.id_customer AND so.id_order < o.id_order LIMIT 1) > 0, 0, 1) as new_customer')
+                ->orderBy('o.id_order ASC')
             ;
         }
     }
 
     /**
-     * @param int $offset
+     * Seek-based page: returns rows strictly after $lastSeekKey, ordered by o.id_order.
+     *
+     * @param string|null $lastSeekKey
      * @param int $limit
      * @param string $langIso
      *
@@ -126,13 +135,68 @@ class OrderRepository extends AbstractRepository implements RepositoryInterface
      * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function retrieveContentsForFull($offset, $limit, $langIso)
+    public function retrieveContentsForFull($lastSeekKey, $limit, $langIso)
     {
+        // Two-step (deferred join) pagination.
+        //
+        // The full query LEFT-joins 8 tables, aggregates (SUM over order_slip)
+        // and runs a correlated subquery (new_customer) per row. If we paginate
+        // it directly with "id_order > seek ... LIMIT n", the optimizer sees a
+        // range estimate of ~all orders in the shop and can pick a plan with
+        // "Using filesort"/temp table that materializes the whole range BEFORE
+        // applying LIMIT. Cost then scales with total orders, not the page size,
+        // so even limit=1 times out on shops with >1M orders.
+        //
+        // Instead: first pick the page's ids with a bare, covering index range
+        // scan (id_shop index = (id_shop, id_order)) that LIMIT bounds to n rows,
+        // then run the heavy query filtered on those ids. The joins/aggregate/
+        // subquery then run for exactly n rows whatever plan the optimizer picks.
+        $pageIds = $this->getFullSyncPageIds($lastSeekKey, (int) $limit);
+
+        if (empty($pageIds)) {
+            return [];
+        }
+
         $this->generateFullQuery($langIso, true);
 
-        $this->query->limit((int) $limit, (int) $offset);
+        $this->query->where('o.id_order IN (' . implode(',', $pageIds) . ')');
 
         return $this->runQuery();
+    }
+
+    /**
+     * Bare, covering index range scan to select the next page of order ids.
+     *
+     * @param string|null $lastSeekKey
+     * @param int $limit
+     *
+     * @return array<int>
+     *
+     * @throws \PrestaShopException
+     * @throws \PrestaShopDatabaseException
+     */
+    private function getFullSyncPageIds($lastSeekKey, $limit)
+    {
+        $this->generateMinimalQuery(self::TABLE_NAME, 'o');
+
+        $this->query
+            ->select('o.id_order')
+            ->where('o.id_shop = ' . (int) parent::getShopContext()->id)
+            ->orderBy('o.id_order ASC')
+            ->limit($limit)
+        ;
+
+        if ($lastSeekKey !== null) {
+            $this->query->where('o.id_order > ' . (int) $lastSeekKey);
+        }
+
+        $result = $this->db->executeS($this->query->build());
+
+        if (!is_array($result)) {
+            return [];
+        }
+
+        return array_map('intval', array_column($result, 'id_order'));
     }
 
     /**
@@ -158,8 +222,9 @@ class OrderRepository extends AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @param int $offset
-     * @param int $limit
+     * Count rows with o.id_order > cursor.
+     *
+     * @param string|null $lastSeekKey
      * @param string $langIso
      *
      * @return int
@@ -167,15 +232,25 @@ class OrderRepository extends AbstractRepository implements RepositoryInterface
      * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function countFullSyncContentLeft($offset, $limit, $langIso)
+    public function countFullSyncContentLeft($lastSeekKey, $langIso)
     {
-        $this->generateFullQuery($langIso, false);
+        // full query only LEFT-joins and filters on o.*, grouping by the PK, so
+        // none of its joins/aggregates change the set of counted orders. Count
+        // the table directly (id_shop index + PK) instead of materializing the
+        // joins and per-row aggregates for every remaining order.
+        $this->generateMinimalQuery(self::TABLE_NAME, 'o');
 
-        $result = $this->db->executeS('
-            SELECT COUNT(*) - ' . (int) $offset . ' AS count
-            FROM (' . $this->query->build() . ') as subquery;
-        ');
+        $this->query
+            ->select('COUNT(*) AS count')
+            ->where('o.id_shop = ' . (int) parent::getShopContext()->id)
+        ;
 
-        return is_array($result) ? $result[0]['count'] : 0;
+        if ($lastSeekKey !== null) {
+            $this->query->where('o.id_order > ' . (int) $lastSeekKey);
+        }
+
+        $result = $this->db->executeS($this->query->build());
+
+        return is_array($result) && isset($result[0]['count']) ? (int) $result[0]['count'] : 0;
     }
 }

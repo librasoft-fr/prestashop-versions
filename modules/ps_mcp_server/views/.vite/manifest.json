@@ -1,0 +1,50 @@
+{
+  "_vendor-C6E7MN2d.js": {
+    "file": "js/vendor-C6E7MN2d.js",
+    "name": "vendor"
+  },
+  "js/main.js": {
+    "file": "js/main-D423Y6ud.js",
+    "name": "main",
+    "src": "js/main.js",
+    "isEntry": true,
+    "imports": [
+      "_vendor-C6E7MN2d.js"
+    ],
+    "dynamicImports": [
+      "translations/en.json",
+      "translations/es.json",
+      "translations/fr.json",
+      "translations/it.json",
+      "translations/en.json"
+    ]
+  },
+  "style.css": {
+    "file": "css/style-BX8VDT1z.css",
+    "src": "style.css"
+  },
+  "translations/en.json": {
+    "file": "js/translations/en-C2FzA81f.js",
+    "name": "translations/en",
+    "src": "translations/en.json",
+    "isDynamicEntry": true
+  },
+  "translations/es.json": {
+    "file": "js/translations/es-FSr2Twu6.js",
+    "name": "translations/es",
+    "src": "translations/es.json",
+    "isDynamicEntry": true
+  },
+  "translations/fr.json": {
+    "file": "js/translations/fr-DgI7XMqP.js",
+    "name": "translations/fr",
+    "src": "translations/fr.json",
+    "isDynamicEntry": true
+  },
+  "translations/it.json": {
+    "file": "js/translations/it-BBmU5FMV.js",
+    "name": "translations/it",
+    "src": "translations/it.json",
+    "isDynamicEntry": true
+  }
+}

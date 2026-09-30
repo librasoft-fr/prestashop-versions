@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInitad5e124e2e7361657c2472a85ef312a0
 {
     public static $prefixLengthsPsr4 = array (
-        'P' => 
+        'P' =>
         array (
             'PrestaShop\\Module\\PsEventbus\\' => 29,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'PrestaShop\\Module\\PsEventbus\\' => 
+        'PrestaShop\\Module\\PsEventbus\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
@@ -32,6 +32,7 @@ class ComposerStaticInitad5e124e2e7361657c2472a85ef312a0
         'PrestaShop\\Module\\PsEventbus\\Factory\\ContextFactory' => __DIR__ . '/../..' . '/src/Factory/ContextFactory.php',
         'PrestaShop\\Module\\PsEventbus\\Formatter\\ArrayFormatter' => __DIR__ . '/../..' . '/src/Formatter/ArrayFormatter.php',
         'PrestaShop\\Module\\PsEventbus\\Handler\\ErrorHandler\\ErrorHandler' => __DIR__ . '/../..' . '/src/Handler/ErrorHandler/ErrorHandler.php',
+        'PrestaShop\\Module\\PsEventbus\\Helper\\DateHelper' => __DIR__ . '/../..' . '/src/Helper/DateHelper.php',
         'PrestaShop\\Module\\PsEventbus\\Helper\\ModuleHelper' => __DIR__ . '/../..' . '/src/Helper/ModuleHelper.php',
         'PrestaShop\\Module\\PsEventbus\\Module\\Install' => __DIR__ . '/../..' . '/src/Module/Install.php',
         'PrestaShop\\Module\\PsEventbus\\Module\\Uninstall' => __DIR__ . '/../..' . '/src/Module/Uninstall.php',

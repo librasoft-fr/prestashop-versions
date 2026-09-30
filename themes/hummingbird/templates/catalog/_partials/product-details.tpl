@@ -1,3 +1,7 @@
+{**
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ *}
 <div
   class="js-product-details"
   data-product="{$product.embedded_attributes|json_encode}"
@@ -14,21 +18,21 @@
       <div class="accordion-body">
         <ul class="details__list">
           {block name='product_manufacturer'}
-            {if isset($product_manufacturer->id)}
+            {if isset($product_manufacturer->id) && $product_manufacturer->active}
               <li class="details__item details__item--manufacturer">
                 <div class="details__left">
                   <span class="details__title">{l s='Brand' d='Shop.Theme.Catalog'}</span>
                 </div>
 
                 <div class="details__right">
-                  {if isset($product_manufacturer.image.bySize.small_default.url)}
+                  {if isset($product_manufacturer.image.bySize.manufacturer_product_page.url)}
                     <a href="{$product_manufacturer->url}">
-                      <img src="{$product_manufacturer.image.bySize.small_default.url}"
+                      <img src="{$product_manufacturer.image.bySize.manufacturer_product_page.url}"
                         class="img-fluid details__manufacturer-logo"
                         alt="{$product_manufacturer->name}"
                         loading="lazy"
-                        width="{$product_manufacturer.image.bySize.small_default.width}"
-                        height="{$product_manufacturer.image.bySize.small_default.height}"
+                        width="{$product_manufacturer.image.bySize.manufacturer_product_page.width}"
+                        height="{$product_manufacturer.image.bySize.manufacturer_product_page.height}"
                         aria-label="{l s='Brand: %brand_name%' sprintf=['%brand_name%' => $product_manufacturer->name] d='Shop.Theme.Catalog'}"
                       >
                     </a>

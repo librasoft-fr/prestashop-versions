@@ -2,7 +2,6 @@
 
 namespace Prestashop\ModuleLibMboInstaller;
 
-use Psr\Http\Client\ClientExceptionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Router;
 
@@ -46,7 +45,6 @@ class DependencyBuilder
      * }
      *
      * @throws \Exception
-     * @throws ClientExceptionInterface
      */
     public function handleDependencies()
     {
@@ -83,7 +81,7 @@ class DependencyBuilder
      *
      * @return void
      *
-     * @throws \Exception|ClientExceptionInterface
+     * @throws \Exception
      */
     protected function handleMboInstallation()
     {
@@ -314,14 +312,14 @@ class DependencyBuilder
                 // For PS < 8.0, enable/disable for a module is decided by the shop association
                 // We assume that if the module is disabled for one shop, i's considered as disabled
                 $isModuleActiveForAllShops = (bool) \DbCore::getInstance()->getValue(
-                    sprintf("SELECT id_module
+                    sprintf('SELECT id_module
                             FROM `%smodule_shop`
-                            WHERE id_module=%d AND id_shop IN ('%s')
+                            WHERE id_module=%d AND id_shop IN (%s)
                             GROUP BY id_module
-                            HAVING COUNT(*)=%d",
+                            HAVING COUNT(*)=%d',
                         _DB_PREFIX_,
                         (int) $dependencyData['id_module'],
-                        implode(',', array_map('intval', \Shop::getContextListShopID())),
+                        implode(', ', array_map('intval', \Shop::getContextListShopID())),
                         (int) count(\Shop::getContextListShopID())
                     )
                 );

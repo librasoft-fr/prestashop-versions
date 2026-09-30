@@ -29,7 +29,7 @@ use PrestaShop\Module\Mbo\Helpers\Config;
 use PrestaShop\Module\Mbo\Helpers\UrlHelper;
 use PrestaShop\Module\Mbo\Module\Module;
 use PrestaShop\Module\Mbo\Module\ModuleOverrideChecker;
-use PrestaShop\Module\Mbo\Module\Workflow\TransitionInterface;
+use PrestaShop\Module\Mbo\Module\ModuleStatus;
 use PrestaShop\PrestaShop\Adapter\Module\Module as CoreModule;
 use PrestaShop\PrestaShop\Core\Context\CountryContext;
 use PrestaShop\PrestaShop\Core\Context\CurrencyContext;
@@ -86,7 +86,7 @@ class ContextBuilder
         $modules = [];
         // Filter : remove uninstalled modules
         foreach ($this->listInstalledModulesAndStatuses() as $installedModule) {
-            if ($installedModule['status'] !== TransitionInterface::STATUS_UNINSTALLED) {
+            if ($installedModule['status'] !== ModuleStatus::UNINSTALLED->value) {
                 $modules[] = $installedModule['name'];
             }
         }
@@ -184,16 +184,31 @@ class ContextBuilder
             'shop_business_sector' => $shopActivity['name'],
             'overrides_on_shop' => $overrideChecker->listOverridesFromPsDirectory(),
             'actions_token' => UrlHelper::getQueryParameterValue($mboResetUrl, '_token'),
-            'actions_url' => [
-                'install' => $this->generateActionUrl('install'),
-                'uninstall' => $this->generateActionUrl('uninstall'),
-                'delete' => $this->generateActionUrl('delete'),
-                'enable' => $this->generateActionUrl('enable'),
-                'disable' => $this->generateActionUrl('disable'),
-                'reset' => $this->generateActionUrl('reset'),
-                'upgrade' => $this->generateActionUrl('upgrade'),
-            ],
+            'actions_url' => $this->getActionsUrl(),
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getActionsUrl(): array
+    {
+        $actionsUrl = [
+            'install' => $this->generateActionUrl('install'),
+            'uninstall' => $this->generateActionUrl('uninstall'),
+            'delete' => $this->generateActionUrl('delete'),
+            'enable' => $this->generateActionUrl('enable'),
+            'disable' => $this->generateActionUrl('disable'),
+            'reset' => $this->generateActionUrl('reset'),
+            'upgrade' => $this->generateActionUrl('upgrade'),
+        ];
+
+        // The 'upload' action on route admin_module_manage_action exists only since PS 9.1.0
+        if (version_compare(_PS_VERSION_, '9.1.0', '>=')) {
+            $actionsUrl['upload'] = $this->generateActionUrl('upload');
+        }
+
+        return $actionsUrl;
     }
 
     private function generateActionUrl(string $action): string
@@ -203,7 +218,7 @@ class ContextBuilder
             'module_name' => ':module',
         ];
 
-        if (in_array($action, ['install', 'upgrade'])) {
+        if (in_array($action, ['install', 'upgrade', 'upload'])) {
             $params['id'] = '_module_id_';
             $params['source'] = '_download_url_';
         }

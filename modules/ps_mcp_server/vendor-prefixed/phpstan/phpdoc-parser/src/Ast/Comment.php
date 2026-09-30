@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PsMcpServerDeps\PHPStan\PhpDocParser\Ast;
+
+class Comment
+{
+    public string $text;
+
+    public int $startLine;
+
+    public int $startIndex;
+
+    public function __construct(string $text, int $startLine = -1, int $startIndex = -1)
+    {
+        $this->text = $text;
+        $this->startLine = $startLine;
+        $this->startIndex = $startIndex;
+    }
+
+    public function getReformattedText(): string
+    {
+        return \trim($this->text);
+    }
+
+    public static function __set_state(array $properties): self
+    {
+        return new self($properties['text'], $properties['startLine'], $properties['startIndex']);
+    }
+}

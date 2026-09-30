@@ -1,10 +1,8 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {extends file='page.tpl'}
-
-{block name='breadcrumb'}{/block}
 
 {block name='container_class'}container container--limited-md text-center{/block}
 

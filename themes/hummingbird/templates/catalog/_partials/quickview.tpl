@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 <div id="quickview-modal-{$product.id}-{$product.id_product_attribute}" class="modal fade quickview in" tabindex="-1" role="dialog" aria-hidden="true" data-id-product="{$product.id}" data-ps-ref="quickview-modal" aria-labelledby="quickview-modal-{$product.id}-title">
   <div class="quickview__dialog modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -21,12 +21,12 @@
         </div>
 
         <div class="product__right">
-          <p class="product__name h2 {if !empty($product_manufacturer->name) && !empty($product_brand_url)}mb-1{/if}">
+          <p class="product__name h2 {if isset($product_manufacturer->id) && $product_manufacturer->active}mb-1{/if}">
             {$product.name}
           </p>
 
           {block name='product_manufacturer'}
-            {if !empty($product_manufacturer->name) && !empty($product_brand_url)}
+            {if isset($product_manufacturer->id) && $product_manufacturer->active}
               <div class="product__manufacturer">
                 <a href="{$product_brand_url}" aria-label="{l s='Product brand: %brand_name%' sprintf=['%brand_name%' => $product_manufacturer->name] d='Shop.Theme.Catalog'}">
                   {$product_manufacturer->name}

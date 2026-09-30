@@ -28,6 +28,7 @@
 namespace PrestaShop\Module\PsEventbus\Service;
 
 use PrestaShop\Module\PsEventbus\Api\CloudSyncClient;
+use PrestaShop\Module\PsEventbus\Config\Config;
 use PrestaShop\Module\PsEventbus\Exception\EnvVarException;
 use PrestaShop\Module\PsEventbus\Exception\FirebaseException;
 use PrestaShop\Module\PsEventbus\Handler\ErrorHandler\ErrorHandler;
@@ -81,7 +82,7 @@ class ApiAuthorizationService
             }
 
             try {
-                $token = $this->psAccountsAdapterService->getOrRefreshToken();
+                $token = $this->psAccountsAdapterService->getShopToken();
             } catch (\Exception $exception) {
                 throw new FirebaseException($exception->getMessage());
             }
@@ -120,21 +121,19 @@ class ApiAuthorizationService
      */
     private function authorizeCall($jobId)
     {
-        // Check if the job already exists
-        $job = $this->syncRepository->findJobById($jobId);
+        if (empty($jobId)) {
+            return false;
+        }
 
-        if ($job) {
+        // Check if the job already exists
+        if ($this->syncRepository->findJobById($jobId)) {
             return true;
         }
 
         // Check the jobId validity to avoid Denial Of Service
         $jobValidationResponse = $this->cloudSyncClient->validateJobId($jobId);
 
-        if ((int) $jobValidationResponse['httpCode'] !== 201) {
-            return false;
-        }
-
-        // Cache the valid jobId
-        return $this->syncRepository->insertJob($jobId, date(DATE_ATOM));
+        return (int) $jobValidationResponse['httpCode'] === 201
+            && $this->syncRepository->insertJob($jobId, date(Config::MYSQL_DATE_FORMAT));
     }
 }

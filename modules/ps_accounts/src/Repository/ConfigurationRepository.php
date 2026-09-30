@@ -37,7 +37,7 @@ class ConfigurationRepository
      *
      * @throws \Exception
      */
-    public function __construct(Configuration $configuration = null)
+    public function __construct($configuration = null)
     {
         $this->configuration = $configuration;
     }
@@ -58,24 +58,6 @@ class ConfigurationRepository
     public function setShopId($shopId)
     {
         $this->configuration->setIdShop($shopId);
-    }
-
-    /**
-     * @return int
-     */
-    public function getShopGroupId()
-    {
-        return $this->configuration->getIdShopGroup();
-    }
-
-    /**
-     * @param int $groupId
-     *
-     * @return void
-     */
-    public function setShopGroupId($groupId)
-    {
-        $this->configuration->setIdShopGroup($groupId);
     }
 
     /**
@@ -357,12 +339,57 @@ class ConfigurationRepository
         }
 
         $shopIdCondition = $isMultishopActive ? (int) $defaultShop->id : 'NULL';
-        $shopGroupIdCondition = $isMultishopActive ? (int) $defaultShop->id_shop_group : 'NULL';
+        $keysList = "'" . join("','", array_values(ConfigurationKeys::cases())) . "'";
 
         \Db::getInstance()->query(
-            'UPDATE ' . _DB_PREFIX_ . 'configuration SET id_shop = ' . $shopIdCondition . ', id_shop_group = ' . $shopGroupIdCondition .
-            " WHERE name IN('" . join("','", array_values(ConfigurationKeys::cases())) . "')" .
+            'UPDATE ' . _DB_PREFIX_ . 'configuration SET id_shop = ' . $shopIdCondition . ', id_shop_group = NULL' .
+            ' WHERE name IN(' . $keysList . ')' .
             ' AND id_shop ' . ($isMultishopActive ? 'IS NULL' : '= ' . (int) $defaultShop->id)
+        );
+
+        if ($isMultishopActive) {
+            $this->normalizeGroupRows($keysList);
+        }
+    }
+
+    /**
+     * Normalize group-scoped rows for all module keys:
+     * 1. Copy the group row value to the NULL row when the group row is more recent.
+     * 2. Drop group rows that have a NULL counterpart — NULL row is now authoritative.
+     * 3. Promote remaining orphan group rows (no NULL counterpart) to NULL.
+     *
+     * Covers all module keys (not just token keys) to prevent the silent-staleness
+     * issue where MySQL returns a stale group row because getIdByName has no ORDER BY.
+     *
+     * @param string $keysList SQL-quoted, comma-separated configuration key names
+     *
+     * @return void
+     */
+    private function normalizeGroupRows($keysList)
+    {
+        \Db::getInstance()->query(
+            'UPDATE ' . _DB_PREFIX_ . 'configuration n' .
+            ' INNER JOIN ' . _DB_PREFIX_ . 'configuration g' .
+            ' ON g.name = n.name AND g.id_shop = n.id_shop AND g.id_shop_group IS NOT NULL' .
+            ' SET n.value = g.value' .
+            ' WHERE n.name IN(' . $keysList . ')' .
+            ' AND n.id_shop_group IS NULL' .
+            ' AND g.date_upd > n.date_upd'
+        );
+
+        \Db::getInstance()->query(
+            'DELETE g FROM ' . _DB_PREFIX_ . 'configuration g' .
+            ' INNER JOIN ' . _DB_PREFIX_ . 'configuration n' .
+            ' ON n.name = g.name AND n.id_shop = g.id_shop AND n.id_shop_group IS NULL' .
+            ' WHERE g.name IN(' . $keysList . ')' .
+            ' AND g.id_shop_group IS NOT NULL'
+        );
+
+        \Db::getInstance()->query(
+            'UPDATE ' . _DB_PREFIX_ . 'configuration' .
+            ' SET id_shop_group = NULL' .
+            ' WHERE name IN(' . $keysList . ')' .
+            ' AND id_shop_group IS NOT NULL'
         );
     }
 
@@ -462,5 +489,28 @@ class ConfigurationRepository
     public function updateValidationLeeway($leeway)
     {
         $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_VALIDATION_LEEWAY, (string) $leeway);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getTokenExpirationLeeway()
+    {
+        $leeway = $this->configuration->get(ConfigurationKeys::PS_ACCOUNTS_TOKEN_EXPIRATION_LEEWAY);
+        if (!empty($leeway) || $leeway === '0') {
+            return (int) $leeway;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param int $leeway
+     *
+     * @return void
+     */
+    public function updateTokenExpirationLeeway($leeway)
+    {
+        $this->configuration->set(ConfigurationKeys::PS_ACCOUNTS_TOKEN_EXPIRATION_LEEWAY, (string) $leeway);
     }
 }

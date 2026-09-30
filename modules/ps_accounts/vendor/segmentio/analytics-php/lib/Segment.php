@@ -109,7 +109,7 @@ class Segment {
   public static function validate($message, $type){
     $userId = (array_key_exists('userId', $message) && strlen((string) $message['userId']) > 0);
     $anonId = !empty($message['anonymousId']);
-    self::assert($userId || $anonId, "Segment::${type}() requires userId or anonymousId");
+    self::assert($userId || $anonId, "Segment::{$type}() requires userId or anonymousId");
   }
 
   /**

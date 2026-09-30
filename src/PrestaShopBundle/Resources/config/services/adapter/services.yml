@@ -67,9 +67,6 @@ services:
   prestashop.adapter.legacy.kpi_configuration:
     class: PrestaShop\PrestaShop\Adapter\Configuration\KpiConfiguration
 
-  prestashop.adapter.legacy.logger:
-    class: PrestaShop\PrestaShop\Adapter\LegacyLogger
-
   PrestaShop\PrestaShop\Adapter\Hook\HookInformationProvider:
     public: false
 
@@ -125,6 +122,7 @@ services:
       - '@prestashop.service.translation'
       - '@=service("PrestaShop\\PrestaShop\\Adapter\\LegacyContext").getContext().link'
       - '@PrestaShop\PrestaShop\Core\Module\ModuleRepository'
+      - '@PrestaShop\PrestaShop\Core\FeatureFlag\FeatureFlagStateCheckerInterface'
 
   PrestaShop\PrestaShop\Adapter\Shop\ShopUrlDataProvider:
     public: false

@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {block name='order_messages_table'}
   {if $order.messages}
@@ -20,6 +20,7 @@
           </div>
         </div>
       {/foreach}
+      </div>
     </section>
 
     <hr class="order-separator">
@@ -29,7 +30,7 @@
 {block name='order_message_form'}
   <section class="order-message-form">
     <form action="{$urls.pages.order_detail}" method="post" data-ps-action="form-validation">
-      <h3 class="h3">{l s='Add a message' d='Shop.Theme.Customeraccount'}</h3>
+      <h2>{l s='Add a message' d='Shop.Theme.Customeraccount'}</h2>
 
       <p>
         {l s='If you would like to add a comment about your order, please write it in the field below.' d='Shop.Theme.Customeraccount'}
@@ -63,7 +64,7 @@
         <button type="submit" name="submitMessage" class="btn btn-primary" data-ps-action="form-validation-submit">
           {l s='Send your message' d='Shop.Theme.Actions'}
         </button>
-      </footer>
+      </div>
     </form>
   </section>
 {/block}

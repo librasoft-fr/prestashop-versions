@@ -4,6 +4,7 @@
  * docs/licenses/LICENSE.txt file that was distributed with this source code.
  */
 
+use PrestaShop\PrestaShop\Adapter\Order\Checkout\CheckoutProcessProviderResolver;
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
 use PrestaShop\PrestaShop\Adapter\Shipment\DeliveryOptionsProvider;
 use PrestaShop\PrestaShop\Core\Checkout\TermsAndConditions;
@@ -94,6 +95,23 @@ class OrderControllerCore extends FrontController
     public function getCheckoutProcess(): CheckoutProcess
     {
         return $this->checkoutProcess;
+    }
+
+    /**
+     * Without an entry of its own the breadcrumb holds nothing but the home link, and a
+     * one-level breadcrumb is what themes hide as empty. The cart page it is reached from
+     * already carries one, so the checkout was the last step of that path with none.
+     */
+    public function getBreadcrumbLinks(): array
+    {
+        $breadcrumb = parent::getBreadcrumbLinks();
+
+        $breadcrumb['links'][] = [
+            'title' => $this->getTranslator()->trans('Checkout', [], 'Shop.Theme.Actions'),
+            'url' => $this->context->link->getPageLink('order'),
+        ];
+
+        return $breadcrumb;
     }
 
     /**
@@ -378,6 +396,13 @@ class OrderControllerCore extends FrontController
      */
     protected function buildCheckoutProcess(CheckoutSession $session, $translator)
     {
+        /** @var CheckoutProcessProviderResolver $checkoutProcessProviderResolver */
+        $checkoutProcessProviderResolver = $this->get(CheckoutProcessProviderResolver::class);
+        $resolvedCheckoutProcess = $checkoutProcessProviderResolver->resolve($session, $translator);
+        if ($resolvedCheckoutProcess instanceof CheckoutProcess) {
+            return $resolvedCheckoutProcess;
+        }
+
         $checkoutProcess = new CheckoutProcess(
             $this->context,
             $session

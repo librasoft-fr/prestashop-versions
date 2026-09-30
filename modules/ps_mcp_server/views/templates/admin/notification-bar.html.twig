@@ -1,0 +1,33 @@
+{#**
+ * Copyright (c) 2025 PrestaShop SA
+ *
+ * All Rights Reserved.
+ *
+ * This module is proprietary software owned by PrestaShop SA. All intellectual property rights, including copyrights, trademarks, and trade secrets, are reserved by PrestaShop SA.
+ *
+ * The PS MCP Server module was developed by PrestaShop, which holds all associated intellectual property rights. The license granted to the user does not entail any transfer of rights. The user shall refrain from any act that may infringe upon PrestaShop's rights and undertakes to strictly comply with the limitations of the license set out below. PrestaShop grants the user a personal, non-exclusive, non-transferable, and non-sublicensable license to use the MCP Server module, worldwide and for the entire duration of use of the module. This license is strictly limited to installing the module and using it solely for the operation of the user's PrestaShop store.
+ *#}
+{#
+  notification-bar.html.twig
+  Injected on every BO page via the displayBackOfficeHeader hook.
+
+  Variables expected (passed by UseHooks::hookDisplayBackOfficeHeader):
+    - LIVE_MODE_VUEJS    (bool)   : true  → load from Vite dev server
+                                    false → load from built asset
+    - wc_js_url          (string) : URL to the built WC JS file
+    - wc_css_url         (string) : URL to the built WC CSS file
+    - current_version    (string) : current version of the module
+    - module_manager_url (string) : URL to the module manager page in BO
+#}
+{% if LIVE_MODE_VUEJS %}
+  <script type="module" src="http://localhost:5173/@vite/client"></script>
+  <script type="module" src="http://localhost:5173/js/web-components/main.wc.js"></script>
+{% else %}
+  <link rel="stylesheet" href="{{ wc_css_url }}">
+  <script type="module" src="{{ wc_js_url }}?v={{ current_version }}"></script>
+{% endif %}
+
+<mcp-notification-banner
+  current-version="{{ current_version }}"
+  module-manager-url="{{ module_manager_url }}"
+></mcp-notification-banner>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * For the full copyright and license information, please view the
  * docs/licenses/LICENSE.txt file that was distributed with this source code.
@@ -10,6 +11,9 @@ use PrestaShop\PrestaShop\Adapter\Tools;
 use PrestaShop\PrestaShop\Core\Domain\Notification\Command\UpdateEmployeeNotificationLastElementCommand;
 use PrestaShop\PrestaShop\Core\Domain\Notification\Query\GetNotificationLastElements;
 use PrestaShop\PrestaShop\Core\Domain\Notification\QueryResult\NotificationsResults;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Definition\ExtraPropertyDefinition;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Definition\ExtraPropertyDefinitionRepositoryInterface;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Value\ExtraPropertyWriterInterface;
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\AbstractGridDefinitionFactory;
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\FilterableGridDefinitionFactoryInterface;
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\GridDefinitionFactoryProvider;
@@ -25,6 +29,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * Admin controller for the common actions across the whole admin interface.
@@ -35,6 +40,8 @@ class CommonController extends PrestaShopAdminController
     {
         return parent::getSubscribedServices() + [
             ControllerResponseBuilder::class => ControllerResponseBuilder::class,
+            ExtraPropertyDefinitionRepositoryInterface::class => ExtraPropertyDefinitionRepositoryInterface::class,
+            ExtraPropertyWriterInterface::class => ExtraPropertyWriterInterface::class,
         ];
     }
 
@@ -69,6 +76,80 @@ class CommonController extends PrestaShopAdminController
         $this->dispatchCommand(new UpdateEmployeeNotificationLastElementCommand($request->request->get('type')));
 
         return new JsonResponse(true);
+    }
+
+    /**
+     * Toggle one extra property value from a grid toggle column.
+     *
+     * This endpoint is designed for ToggleColumn async usage in BO grids.
+     * It performs an UPSERT and toggles the value in SQL without doing a preliminary SELECT.
+     *
+     * Security: the permission subject is the registry-hydrated definition's controller name
+     * (ExtraPropertyDefinition::getControllerName()), NOT any client-supplied value. This
+     * prevents privilege escalation where an authenticated admin could bypass per-entity
+     * permission checks by forging a _legacy_controller value they hold rights on. An unknown
+     * definition returns the same 403 as a denied one, so the endpoint never discloses whether
+     * a definition exists.
+     *
+     * The shop context of shop-scoped properties is resolved from ShopContext (not from the
+     * route): the writer receives the current ShopConstraint and toggles the matching row.
+     *
+     * @param string $entityName
+     * @param int $entityId
+     * @param string $moduleName normalized module name, can be "_core" for core properties
+     * @param string $propertyName
+     */
+    #[AdminSecurity("is_granted('ROLE_EMPLOYEE')")]
+    public function toggleExtraPropertyAction(
+        string $entityName,
+        int $entityId,
+        string $moduleName,
+        string $propertyName,
+    ): JsonResponse {
+        /** @var ExtraPropertyDefinitionRepositoryInterface $repository */
+        $repository = $this->container->get(ExtraPropertyDefinitionRepositoryInterface::class);
+
+        // '_core' is the display sentinel for core properties; the DB stores null.
+        $resolvedModuleName = ExtraPropertyDefinition::CORE_MODULE_KEY === $moduleName ? null : $moduleName;
+
+        // (entity, module, property) is unique across scopes — the definition carries its own scope.
+        // The permission subject comes from the registry-hydrated definition (its stored
+        // override, or the map/convention deduction) — never from any client-supplied
+        // _legacy_controller value, which would allow privilege escalation. An unknown
+        // definition gets the same 403 as a denied one: the response never discloses
+        // whether a definition exists.
+        $matched = $repository->findDefinitionByModuleAndField($entityName, $resolvedModuleName, $propertyName);
+        if (null === $matched || !$this->isGranted('update', $matched->getControllerName())) {
+            return new JsonResponse([
+                'status' => false,
+                'message' => 'Access denied.',
+            ], 403);
+        }
+
+        /** @var ExtraPropertyWriterInterface $writer */
+        $writer = $this->container->get(ExtraPropertyWriterInterface::class);
+
+        try {
+            // Shop scope comes from the ShopContext (single shop, group or all shops — the
+            // writer fans out accordingly); LANG-scoped toggles target the grid's display
+            // language, i.e. the employee's context language.
+            $writer->toggleExtraProperty(
+                $matched,
+                $entityId,
+                $this->getShopContext()->getShopConstraint(),
+                $this->getLanguageContext()->getId()
+            );
+        } catch (Throwable) {
+            return new JsonResponse([
+                'status' => false,
+                'message' => $this->trans('An error occurred while saving.', [], 'Admin.Notifications.Error'),
+            ], 500);
+        }
+
+        return new JsonResponse([
+            'status' => true,
+            'message' => $this->trans('Update successful.', [], 'Admin.Notifications.Success'),
+        ]);
     }
 
     /**
@@ -275,7 +356,7 @@ class CommonController extends PrestaShopAdminController
         Request $request,
         string $gridDefinitionFactoryServiceId,
         string $redirectRoute,
-        array $redirectQueryParamsToKeep = []
+        array $redirectQueryParamsToKeep = [],
     ) {
         $definitionFactory = $gridDefinitionFactoryCollection->getFactory($gridDefinitionFactoryServiceId);
 

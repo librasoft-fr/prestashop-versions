@@ -43,20 +43,6 @@ trait UseHooks
     use Hooks\UseActionBeforeUpgradeModule;
 
     /**
-     * Try to call the "bootHookClassName" method on each hook class.
-     *
-     * @return void
-     */
-    protected function bootHooks(): void
-    {
-        foreach ($this->getTraitNames() as $traitName) {
-            if (method_exists($this, "boot{$traitName}")) {
-                $this->{"boot{$traitName}"}();
-            }
-        }
-    }
-
-    /**
      * Try to call the "hookClassNameExtraOperations" method on each hook class.
      *
      * @return void

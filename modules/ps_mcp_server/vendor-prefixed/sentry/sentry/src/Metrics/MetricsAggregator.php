@@ -1,0 +1,152 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PsMcpServerDeps\Sentry\Metrics;
+
+use PsMcpServerDeps\Sentry\Client;
+use PsMcpServerDeps\Sentry\Event;
+use PsMcpServerDeps\Sentry\EventId;
+use PsMcpServerDeps\Sentry\Metrics\Types\CounterMetric;
+use PsMcpServerDeps\Sentry\Metrics\Types\DistributionMetric;
+use PsMcpServerDeps\Sentry\Metrics\Types\GaugeMetric;
+use PsMcpServerDeps\Sentry\SentrySdk;
+use PsMcpServerDeps\Sentry\State\HubInterface;
+use PsMcpServerDeps\Sentry\State\Scope;
+use PsMcpServerDeps\Sentry\Tracing\SpanId;
+use PsMcpServerDeps\Sentry\Tracing\TraceId;
+use PsMcpServerDeps\Sentry\Unit;
+use PsMcpServerDeps\Sentry\Util\TelemetryStorage;
+
+final class MetricsAggregator
+{
+    public const METRICS_BUFFER_SIZE = 1000;
+
+    private const METRIC_TYPES = [
+        CounterMetric::TYPE => CounterMetric::class,
+        DistributionMetric::TYPE => DistributionMetric::class,
+        GaugeMetric::TYPE => GaugeMetric::class,
+    ];
+
+    private $metrics;
+
+    public function add(
+        string $type,
+        string $name,
+        $value,
+        array $attributes,
+        ?Unit $unit,
+    ): void {
+        $hub = SentrySdk::getCurrentHub();
+        $client = $hub->getClient();
+        $metricFlushThreshold = null;
+
+        if (!\is_int($value) && !\is_float($value)) {
+            if ($client !== null) {
+                $client->getOptions()->getLoggerOrNullLogger()->debug('Metrics value is neither int nor float. Metric will be discarded');
+            }
+
+            return;
+        }
+
+        if ($client !== null) {
+            $options = $client->getOptions();
+            $metricFlushThreshold = $options->getMetricFlushThreshold();
+
+            if ($options->getEnableMetrics() === false) {
+                return;
+            }
+
+            $defaultAttributes = [
+                'sentry.environment' => $options->getEnvironment() ?? Event::DEFAULT_ENVIRONMENT,
+                'server.address' => $options->getServerName(),
+            ];
+
+            if ($client instanceof Client) {
+                $defaultAttributes['sentry.sdk.name'] = $client->getSdkIdentifier();
+                $defaultAttributes['sentry.sdk.version'] = $client->getSdkVersion();
+            }
+
+            $hub->configureScope(static function (Scope $scope) use (&$defaultAttributes) {
+                $user = $scope->getUser();
+                if ($user !== null) {
+                    if ($user->getId() !== null) {
+                        $defaultAttributes['user.id'] = $user->getId();
+                    }
+                    if ($user->getEmail() !== null) {
+                        $defaultAttributes['user.email'] = $user->getEmail();
+                    }
+                    if ($user->getUsername() !== null) {
+                        $defaultAttributes['user.name'] = $user->getUsername();
+                    }
+                }
+            });
+
+            $release = $options->getRelease();
+            if ($release !== null) {
+                $defaultAttributes['sentry.release'] = $release;
+            }
+
+            $attributes += $defaultAttributes;
+        }
+
+        $traceContext = $this->getTraceContext($hub);
+        $traceId = new TraceId($traceContext['trace_id']);
+        $spanId = new SpanId($traceContext['span_id']);
+
+        $metricTypeClass = self::METRIC_TYPES[$type];
+
+        $metric = new $metricTypeClass($name, $value, $traceId, $spanId, $attributes, microtime(true), $unit);
+
+        if ($client !== null) {
+            $beforeSendMetric = $client->getOptions()->getBeforeSendMetricCallback();
+            $metric = $beforeSendMetric($metric);
+            if ($metric === null) {
+                return;
+            }
+        }
+
+        $metrics = $this->getStorage($metricFlushThreshold);
+        $metrics->push($metric);
+
+        if ($metricFlushThreshold !== null && \count($metrics) >= $metricFlushThreshold) {
+            $this->flush($hub);
+        }
+    }
+
+    public function flush(?HubInterface $hub = null): ?EventId
+    {
+        if ($this->metrics === null || $this->metrics->isEmpty()) {
+            return null;
+        }
+
+        $hub = $hub ?? SentrySdk::getCurrentHub();
+        $event = Event::createMetrics()->setMetrics($this->metrics->drain());
+
+        return $hub->captureEvent($event);
+    }
+
+    private function getTraceContext(HubInterface $hub): array
+    {
+        $traceContext = null;
+
+        $hub->configureScope(static function (Scope $scope) use (&$traceContext): void {
+            $traceContext = $scope->getTraceContext();
+        });
+
+        return $traceContext;
+    }
+
+    private function getStorage(?int $metricFlushThreshold = null): TelemetryStorage
+    {
+        if ($this->metrics === null) {
+            $metrics = $metricFlushThreshold !== null
+                ? TelemetryStorage::unbounded()
+                : TelemetryStorage::bounded(self::METRICS_BUFFER_SIZE);
+
+            $this->metrics = $metrics;
+        }
+
+        return $this->metrics;
+    }
+}

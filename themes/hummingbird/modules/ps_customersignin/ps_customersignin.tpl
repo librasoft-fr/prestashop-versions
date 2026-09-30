@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 
 <div id="_desktop_ps_customersignin">
@@ -119,7 +119,7 @@
 
           <div class="dropdown-divider"></div>
 
-          <a 
+          <a
             href="{$logout_url}"
             class="dropdown-item"
             rel="nofollow"
@@ -132,7 +132,11 @@
     {else}
       <div class="header-block">
         <a
-          href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
+          {if $urls.pages.authentication|strpos:'back=' !== false}
+            href="{$urls.pages.authentication}"
+          {else}
+            href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
+          {/if}
           class="header-block__action-btn"
           rel="nofollow"
           aria-label="{l s='Sign in' d='Shop.Theme.Actions'}"

@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
  {block name='account_transformation_form'}
   <h3>{l s='Save time on your next order, sign up now' d='Shop.Theme.Checkout'}</h3>
@@ -15,6 +15,13 @@
 
   <form method="post">
     <input type="hidden" name="submitTransformGuestToCustomer" value="1">
+    {* WHY: the guest tracking form is posted, so the order lookup is no longer in the URL this form posts back
+       to, and the controller finds nothing to transform without it. Order confirmation includes this partial
+       without these parameters and resolves the order from the cart instead. *}
+    {if isset($order_reference) && isset($guest_email)}
+      <input type="hidden" name="order_reference" value="{$order_reference}">
+      <input type="hidden" name="email" value="{$guest_email}">
+    {/if}
 
     <div class="mb-3">
       <label class="form-label" for="field-email">

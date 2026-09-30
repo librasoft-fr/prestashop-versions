@@ -103,6 +103,11 @@ class FrontControllerCore extends Controller
     protected $urls;
 
     /**
+     * @var array Contains the result of getTemplateVarPage method
+     */
+    protected $templateVarPageCache = null;
+
+    /**
      * Set this parameter to false if you don't want cart's invoice address
      * to be set automatically (this behavior is kept for legacy and BC purpose)
      *
@@ -535,25 +540,29 @@ class FrontControllerCore extends Controller
             ]
         );
 
-        $templateVars = [
-            'cart' => $this->cart_presenter->present($cart, true),
-            'currency' => $this->getTemplateVarCurrency(),
-            'customer' => $this->getTemplateVarCustomer(),
-            'country' => $this->objectPresenter->present($this->context->country),
-            'language' => $this->objectPresenter->present($this->context->language),
-            'page' => $this->getTemplateVarPage(),
-            'shop' => $this->getTemplateVarShop(),
-            'core_js_public_path' => $this->getCoreJsPublicPath(),
-            'urls' => $this->getTemplateVarUrls(),
-            'configuration' => $this->getTemplateVarConfiguration(),
-            'field_required' => $this->context->customer->validateFieldsRequiredDatabase(),
-            'breadcrumb' => $this->getBreadcrumb(),
-            'link' => $this->context->link,
-            'time' => time(),
-            'static_token' => Tools::getToken(false),
-            'token' => Tools::getToken(),
-            'debug' => _PS_MODE_DEV_,
-        ];
+        $templateVars = array_merge(
+            [
+                'cart' => $this->cart_presenter->present($cart, true),
+                'currency' => $this->getTemplateVarCurrency(),
+                'customer' => $this->getTemplateVarCustomer(),
+                'country' => $this->objectPresenter->present($this->context->country),
+                'language' => $this->objectPresenter->present($this->context->language),
+                'page' => $this->getTemplateVarPage(),
+                'shop' => $this->getTemplateVarShop(),
+                'core_js_public_path' => $this->getCoreJsPublicPath(),
+                'urls' => $this->getTemplateVarUrls(),
+                'configuration' => $this->getTemplateVarConfiguration(),
+                'field_required' => $this->context->customer->validateFieldsRequiredDatabase(),
+                'breadcrumb' => $this->getBreadcrumb(),
+                'structured_data' => $this->getStructuredData(),
+                'link' => $this->context->link,
+                'time' => time(),
+                'static_token' => Tools::getToken(false),
+                'token' => Tools::getToken(),
+                'debug' => _PS_MODE_DEV_,
+            ],
+            $templateVars
+        );
 
         // An array [module_name => module_output] will be returned
         $modulesVariables = Hook::exec(
@@ -870,7 +879,7 @@ class FrontControllerCore extends Controller
      */
     protected function canonicalRedirection(string $canonical_url = '')
     {
-        if (!$canonical_url || !Configuration::get('PS_CANONICAL_REDIRECT') || strtoupper($_SERVER['REQUEST_METHOD']) != 'GET') {
+        if (!$canonical_url || !Configuration::get('PS_CANONICAL_REDIRECT') || !in_array(strtoupper($_SERVER['REQUEST_METHOD']), ['GET', 'HEAD'])) {
             return;
         }
 
@@ -1510,81 +1519,110 @@ class FrontControllerCore extends Controller
      */
     public function getTemplateVarUrls()
     {
-        if ($this->urls === null) {
-            $http = Tools::getCurrentUrlProtocolPrefix();
-            $base_url = $this->context->shop->getBaseURL(true, true);
-
-            $urls = [
-                'base_url' => $base_url,
-                'current_url' => $this->context->shop->getBaseURL(true, false) . $_SERVER['REQUEST_URI'],
-                'shop_domain_url' => $this->context->shop->getBaseURL(true, false),
-            ];
-
-            $assign_array = [
-                'img_ps_url' => _PS_IMG_,
-                'img_cat_url' => _THEME_CAT_DIR_,
-                'img_lang_url' => _THEME_LANG_DIR_,
-                'img_prod_url' => _THEME_PROD_DIR_,
-                'img_manu_url' => _THEME_MANU_DIR_,
-                'img_sup_url' => _THEME_SUP_DIR_,
-                'img_ship_url' => _THEME_SHIP_DIR_,
-                'img_store_url' => _THEME_STORE_DIR_,
-                'img_col_url' => _THEME_COL_DIR_,
-                'img_url' => _THEME_IMG_DIR_,
-                'css_url' => _THEME_CSS_DIR_,
-                'js_url' => _THEME_JS_DIR_,
-                'pic_url' => _THEME_PROD_PIC_DIR_,
-                'theme_assets' => _THEME_DIR_ . 'assets/',
-                'theme_dir' => _THEME_DIR_,
-            ];
-
-            $themeAssetsConfig = $this->context->shop->theme->get('assets', false);
-
-            if (!empty($themeAssetsConfig['use_parent_assets'])) {
-                $assign_array['theme_assets'] = _PS_PARENT_THEME_URI_ . 'assets/';
-                $assign_array['img_url'] = $assign_array['theme_assets'] . 'img/';
-                $assign_array['css_url'] = $assign_array['theme_assets'] . 'css/';
-                $assign_array['js_url'] = $assign_array['theme_assets'] . 'js/';
-                $assign_array['child_theme_assets'] = _THEME_DIR_ . 'assets/';
-                $assign_array['child_img_url'] = $assign_array['child_theme_assets'] . 'img/';
-                $assign_array['child_css_url'] = $assign_array['child_theme_assets'] . 'css/';
-                $assign_array['child_js_url'] = $assign_array['child_theme_assets'] . 'js/';
-            }
-
-            foreach ($assign_array as $assign_key => $assign_value) {
-                $urls[$assign_key] = $http . Tools::getMediaServer($assign_value) . $assign_value;
-            }
-
-            $pages = [];
-            $p = [
-                'address', 'addresses', 'authentication', 'manufacturer', 'cart', 'category', 'cms', 'contact',
-                'discount', 'guest-tracking', 'history', 'identity', 'index', 'my-account',
-                'order-confirmation', 'order-detail', 'order-follow', 'order', 'order-return',
-                'order-slip', 'pagenotfound', 'password', 'pdf-invoice', 'pdf-order-return', 'pdf-order-slip',
-                'prices-drop', 'product', 'registration', 'search', 'sitemap', 'stores', 'supplier', 'new-products',
-            ];
-            foreach ($p as $page_name) {
-                $index = str_replace('-', '_', $page_name);
-                $pages[$index] = $this->context->link->getPageLink($page_name);
-            }
-            $pages['brands'] = $pages['manufacturer'];
-            $pages['register'] = $this->context->link->getPageLink('registration');
-            $pages['order_login'] = $this->context->link->getPageLink('order', null, null, ['login' => '1']);
-            $urls['pages'] = $pages;
-
-            $urls['alternative_langs'] = $this->getAlternativeLangsUrl();
-
-            $urls['actions'] = [
-                'logout' => $this->context->link->getPageLink('index', null, null, 'mylogout'),
-            ];
-
-            $imageRetriever = new ImageRetriever($this->context->link);
-            $urls['no_picture_image'] = $imageRetriever->getNoPictureImage($this->context->language);
-
-            $this->urls = $urls;
+        if ($this->urls !== null) {
+            return $this->urls;
         }
 
+        // Add base URLs for shop
+        $urls = [
+            'base_url' => $this->context->shop->getBaseURL(true, true),
+            'current_url' => $this->context->shop->getBaseURL(true, false) . $_SERVER['REQUEST_URI'],
+            'shop_domain_url' => $this->context->shop->getBaseURL(true, false),
+        ];
+
+        // Assign URLs for content delivery and assets
+        $assign_array = [
+            'img_ps_url' => _PS_IMG_,
+            'img_cat_url' => _THEME_CAT_DIR_,
+            'img_lang_url' => _THEME_LANG_DIR_,
+            'img_prod_url' => _THEME_PROD_DIR_,
+            'img_manu_url' => _THEME_MANU_DIR_,
+            'img_sup_url' => _THEME_SUP_DIR_,
+            'img_ship_url' => _THEME_SHIP_DIR_,
+            'img_store_url' => _THEME_STORE_DIR_,
+            'img_col_url' => _THEME_COL_DIR_,
+            'img_url' => _THEME_IMG_DIR_,
+            'css_url' => _THEME_CSS_DIR_,
+            'js_url' => _THEME_JS_DIR_,
+            'pic_url' => _THEME_PROD_PIC_DIR_,
+            'theme_assets' => _THEME_DIR_ . 'assets/',
+            'theme_dir' => _THEME_DIR_,
+        ];
+
+        $themeAssetsConfig = $this->context->shop->theme->get('assets', false);
+        if (!empty($themeAssetsConfig['use_parent_assets'])) {
+            $assign_array['theme_assets'] = _PS_PARENT_THEME_URI_ . 'assets/';
+            $assign_array['img_url'] = $assign_array['theme_assets'] . 'img/';
+            $assign_array['css_url'] = $assign_array['theme_assets'] . 'css/';
+            $assign_array['js_url'] = $assign_array['theme_assets'] . 'js/';
+            $assign_array['child_theme_assets'] = _THEME_DIR_ . 'assets/';
+            $assign_array['child_img_url'] = $assign_array['child_theme_assets'] . 'img/';
+            $assign_array['child_css_url'] = $assign_array['child_theme_assets'] . 'css/';
+            $assign_array['child_js_url'] = $assign_array['child_theme_assets'] . 'js/';
+        }
+
+        foreach ($assign_array as $assign_key => $assign_value) {
+            $urls[$assign_key] = Tools::getCurrentUrlProtocolPrefix() . Tools::getMediaServer($assign_value) . $assign_value;
+        }
+
+        // Add URLs for native pages and controllers
+        $pages = [];
+        $p = [
+            'address', 'addresses', 'authentication', 'manufacturer', 'cart', 'category', 'cms', 'contact',
+            'discount', 'guest-tracking', 'history', 'identity', 'index', 'my-account',
+            'order-confirmation', 'order-detail', 'order-follow', 'order', 'order-return',
+            'order-slip', 'pagenotfound', 'password', 'pdf-invoice', 'pdf-order-return', 'pdf-order-slip',
+            'prices-drop', 'product', 'registration', 'search', 'sitemap', 'stores', 'supplier', 'new-products',
+        ];
+        foreach ($p as $page_name) {
+            $index = str_replace('-', '_', $page_name);
+            $pages[$index] = $this->getPageLinkForTemplate($page_name);
+        }
+
+        // Add aliases for some pages and special lings
+        $pages['brands'] = $pages['manufacturer'];
+        $pages['register'] = $pages['registration'];
+        $pages['order_login'] = $this->context->link->getPageLink('order', null, null, ['login' => '1']);
+        $urls['pages'] = $pages;
+
+        // Add URLs for alternative languages (xhref tags)
+        $urls['alternative_langs'] = $this->getAlternativeLangsUrl();
+
+        // And logout action
+        $urls['actions'] = [
+            'logout' => $this->context->link->getPageLink('index', null, null, 'mylogout'),
+        ];
+
+        // Add placeholder image URLs
+        $urls['no_picture_image'] = (new ImageRetriever($this->context->link))->getNoPictureImage($this->context->language);
+
+        $this->urls = $urls;
+
         return $this->urls;
+    }
+
+    /**
+     * Provides customer URLs with a validated back parameter so templates do not inject it themselves.
+     *
+     * @param string $pageName
+     *
+     * @return string
+     */
+    protected function getPageLinkForTemplate(string $pageName): string
+    {
+        $params = [];
+        if (
+            in_array($pageName, ['authentication', 'registration', 'password'], true)
+            && ($back = Tools::getValue('back', ''))
+            && is_string($back)
+            && Tools::urlBelongsToShop($back)
+        ) {
+            $params['back'] = $back;
+        }
+
+        return empty($params)
+            ? $this->context->link->getPageLink($pageName)
+            : $this->context->link->getPageLink($pageName, null, null, $params);
     }
 
     /**
@@ -1781,6 +1819,10 @@ class FrontControllerCore extends Controller
      */
     public function getTemplateVarPage()
     {
+        if ($this->templateVarPageCache !== null) {
+            return $this->templateVarPageCache;
+        }
+
         $page_name = $this->getPageName();
         $meta_tags = Meta::getMetaTags($this->context->language->id, $page_name);
 
@@ -1861,7 +1903,122 @@ class FrontControllerCore extends Controller
             $page['body_classes']['page-customer-account'] = true;
         }
 
+        $this->templateVarPageCache = $page;
+
         return $page;
+    }
+
+    /**
+     * Returns structured data for this page. This parent method renders the basic data for the shop. Other controllers (product, cms) should
+     * further enrich it.
+     *
+     * If you are building a module and want to enrich structured data in your controller, override this method and enrich parent::getStructuredData()
+     * result with your module data, then return it.
+     *
+     * @return array
+     */
+    public function getStructuredData()
+    {
+        // Basic organization, website and webpage
+        $structuredData = [
+            'organization' => [
+                '@context' => 'https://schema.org',
+                '@type' => 'Organization',
+                'name' => $this->context->shop->name,
+                'url' => $this->getTemplateVarUrls()['pages']['index'],
+            ],
+            'website' => [
+                '@context' => 'https://schema.org',
+                '@type' => 'WebSite',
+                'url' => $this->getTemplateVarUrls()['pages']['index'],
+                'name' => $this->context->shop->name,
+                'potentialAction' => [
+                    '@type' => 'SearchAction',
+                    'target' => [
+                        '@type' => 'EntryPoint',
+                        'urlTemplate' => $this->context->link->getPageLink('search') . '?s={search_term_string}',
+                    ],
+                    'query-input' => 'required name=search_term_string',
+                ],
+            ],
+            'webpage' => [
+                '@context' => 'https://schema.org',
+                '@type' => 'WebPage',
+                'isPartOf' => [
+                    '@type' => 'WebSite',
+                    'url' => $this->getTemplateVarUrls()['pages']['index'],
+                    'name' => $this->context->shop->name,
+                ],
+                'name' => $this->getTemplateVarPage()['meta']['title'],
+                'url' => $this->getTemplateVarUrls()['current_url'],
+            ],
+        ];
+
+        // Add configured contact details to the organization
+        $phone = Configuration::get('PS_SHOP_PHONE');
+        if (!empty($phone)) {
+            $structuredData['organization']['telephone'] = $phone;
+        }
+        $email = Configuration::get('PS_SHOP_EMAIL');
+        if (!empty($email)) {
+            $structuredData['organization']['email'] = $email;
+        }
+
+        // Add the configured address to the organization
+        $shopAddress = $this->context->shop->getAddress();
+        $address = [];
+        if (!empty($shopAddress->address1) || !empty($shopAddress->address2)) {
+            $address['streetAddress'] = implode(', ', array_filter([$shopAddress->address1, $shopAddress->address2]));
+        }
+        if (!empty($shopAddress->city)) {
+            $address['addressLocality'] = $shopAddress->city;
+        }
+        if (!empty($shopAddress->id_state)) {
+            $address['addressRegion'] = (new State($shopAddress->id_state))->name;
+        }
+        if (!empty($shopAddress->postcode)) {
+            $address['postalCode'] = $shopAddress->postcode;
+        }
+        if (!empty($shopAddress->id_country)) {
+            $address['addressCountry'] = (new Country($shopAddress->id_country))->iso_code;
+        }
+        if (!empty($address)) {
+            $structuredData['organization']['address'] = array_merge(['@type' => 'PostalAddress'], $address);
+        }
+
+        // Add logo to organization if available
+        $logo = $this->getShopLogo();
+        if (!empty($logo['src'])) {
+            $structuredData['organization']['logo'] = [
+                '@type' => 'ImageObject',
+                'url' => $logo['src'],
+                'width' => $logo['width'],
+                'height' => $logo['height'],
+            ];
+        }
+
+        // Add breadcrumbs, if at least 2 links are present (home + at least one other)
+        $breadcrumbLinks = $this->getBreadcrumbLinks();
+        if (!empty($breadcrumbLinks['links'][1])) {
+            $breadcrumbStructuredData = [
+                '@context' => 'https://schema.org',
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => [],
+            ];
+            $counter = 1;
+            foreach ($breadcrumbLinks['links'] as $link) {
+                $breadcrumbStructuredData['itemListElement'][] = [
+                    '@type' => 'ListItem',
+                    'position' => $counter,
+                    'name' => $link['title'],
+                    'item' => $link['url'],
+                ];
+                ++$counter;
+            }
+            $structuredData['breadcrumbs'] = $breadcrumbStructuredData;
+        }
+
+        return $structuredData;
     }
 
     /**

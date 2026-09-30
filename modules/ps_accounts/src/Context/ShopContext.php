@@ -168,7 +168,8 @@ class ShopContext
      */
     public function execInShopContext($shopId, $closure)
     {
-        $backup = $this->configuration->getShopId();
+        $backupShopId = $this->configuration->getShopId();
+
         $this->configuration->setShopId($shopId);
 
         $exception = null;
@@ -181,7 +182,7 @@ class ShopContext
         } catch (\Exception $exception) {
         }
 
-        $this->configuration->setShopId($backup);
+        $this->configuration->setShopId($backupShopId);
 
         if (null !== $exception) {
             throw $exception;

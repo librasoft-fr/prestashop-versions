@@ -27,8 +27,7 @@ use PsCheckout\Api\ValueObject\PayPalOrderResponse;
 use PsCheckout\Core\Exception\PsCheckoutException;
 use PsCheckout\Core\PayPal\Order\Cache\PayPalOrderCacheInterface;
 use PsCheckout\Core\PayPal\Order\Exception\PayPalOrderException;
-use PsCheckout\Core\PayPal\OrderStatus\Configuration\PayPalOrderStatusConfiguration;
-use PsCheckout\Infrastructure\Repository\PayPalOrderRepository;
+use PsCheckout\Core\PayPal\Order\Repository\PayPalOrderRepositoryInterface;
 
 class PayPalOrderProvider implements PayPalOrderProviderInterface
 {
@@ -48,18 +47,26 @@ class PayPalOrderProvider implements PayPalOrderProviderInterface
     private $logger;
 
     /**
+     * @var PayPalOrderRepositoryInterface
+     */
+    private $payPalOrderRepository;
+
+    /**
      * @param PayPalOrderCacheInterface $payPalOrderCache
      * @param OrderHttpClientInterface $orderHttpClient
      * @param LoggerInterface $logger
+     * @param PayPalOrderRepositoryInterface $payPalOrderRepository
      */
     public function __construct(
         PayPalOrderCacheInterface $payPalOrderCache,
         OrderHttpClientInterface $orderHttpClient,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        PayPalOrderRepositoryInterface $payPalOrderRepository
     ) {
         $this->payPalOrderCache = $payPalOrderCache;
         $this->orderHttpClient = $orderHttpClient;
         $this->logger = $logger;
+        $this->payPalOrderRepository = $payPalOrderRepository;
     }
 
     /**
@@ -83,7 +90,9 @@ class PayPalOrderProvider implements PayPalOrderProviderInterface
 
         $payPalOrderResponse = $this->fetchOrder($id);
 
-        $orderToStoreInCache = !empty($data) ? array_replace_recursive($data, $payPalOrderResponse) : $payPalOrderResponse;
+        $orderToStoreInCache = !empty($data)
+            ? array_replace_recursive($data, array_filter($payPalOrderResponse, static function ($value) { return $value !== null; }))
+            : $payPalOrderResponse;
 
         if (!$orderToStoreInCache) {
             throw new PsCheckoutException('PayPal Order not found', PsCheckoutException::PAYPAL_ORDER_NOT_FOUND);
@@ -118,15 +127,10 @@ class PayPalOrderProvider implements PayPalOrderProviderInterface
             ]);
 
             if ($exception->getCode() === PayPalException::INVALID_RESOURCE_ID) {
-                \Db::getInstance()->update(
-                    PayPalOrderRepository::TABLE_NAME,
-                    [
-                        'status' => PayPalOrderStatusConfiguration::STATUS_CANCELED,
-                    ],
-                    'id = "' . pSQL($id) . '"'
-                );
-
-                return $data;
+                $order = $this->payPalOrderRepository->getOneBy(['id' => $id]);
+                if ($order !== null) {
+                    $this->payPalOrderRepository->softDelete($order);
+                }
             }
 
             throw $exception;
@@ -144,8 +148,8 @@ class PayPalOrderProvider implements PayPalOrderProviderInterface
     {
         return new PayPalOrderResponse(
             $data['id'],
-            $data['status'],
-            $data['intent'],
+            $data['status'] ?? '',
+            $data['intent'] ?? '',
             $data['payer'] ?? null,
             $data['payment_source'] ?? null,
             $data['purchase_units'],

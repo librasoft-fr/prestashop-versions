@@ -65,34 +65,39 @@ class OrderDetailRepository extends AbstractRepository implements RepositoryInte
             ->select('od.id_order_detail')
         ;
 
-        $refundRequest = '(SELECT osd.total_price_tax_incl
-            FROM ' . _DB_PREFIX_ . 'order_slip_detail osd
-            WHERE osd.id_order_detail = od.id_order_detail) AS refund';
-
-        $refundTaxExclRequest = '(SELECT osd.total_price_tax_excl
-            FROM ' . _DB_PREFIX_ . 'order_slip_detail osd
-            WHERE osd.id_order_detail = od.id_order_detail) AS refund_tax_excl';
-
         if ($withSelecParameters) {
+            // Refunds are aggregated with a plain LEFT JOIN + GROUP BY rather
+            // than the previous two correlated subqueries. Those subqueries sat
+            // in the SELECT list and were re-run once per output row, each a
+            // full scan of order_slip_detail (no index on id_order_detail: it
+            // is the 2nd column of the composite PK). The join runs once per
+            // page instead, and SUM handles details refunded across several
+            // slips (the scalar subquery errored on >1 row). GROUP BY on the
+            // id_order_detail PK keeps one row per detail.
             $this->query
+                ->leftJoin('order_slip_detail', 'osd', 'osd.id_order_detail = od.id_order_detail')
                 ->select('od.id_order')
                 ->select('od.product_id')
                 ->select('od.product_attribute_id')
                 ->select('od.product_quantity')
                 ->select('od.unit_price_tax_incl')
                 ->select('od.unit_price_tax_excl')
-                ->select($refundRequest)
-                ->select($refundTaxExclRequest)
+                ->select('SUM(osd.total_price_tax_incl) as refund')
+                ->select('SUM(osd.total_price_tax_excl) as refund_tax_excl')
                 ->select('c.iso_code as currency')
                 ->select('ps.id_category_default as category')
                 ->select('l.iso_code')
                 ->select('o.conversion_rate as conversion_rate')
+                ->groupBy('od.id_order_detail')
+                ->orderBy('od.id_order_detail ASC')
             ;
         }
     }
 
     /**
-     * @param int $offset
+     * Seek-based page: returns rows strictly after $lastSeekKey, ordered by od.id_order_detail.
+     *
+     * @param string|null $lastSeekKey
      * @param int $limit
      * @param string $langIso
      *
@@ -101,41 +106,15 @@ class OrderDetailRepository extends AbstractRepository implements RepositoryInte
      * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function retrieveContentsForFull($offset, $limit, $langIso)
+    public function retrieveContentsForFull($lastSeekKey, $limit, $langIso)
     {
         $this->generateFullQuery($langIso, true);
 
-        $context = \Context::getContext();
-
-        if ($context == null) {
-            throw new \PrestaShopException('Context is null');
+        if ($lastSeekKey !== null) {
+            $this->query->where('od.id_order_detail > ' . (int) $lastSeekKey);
         }
 
-        if ($context->shop === null) {
-            throw new \PrestaShopException('No shop context');
-        }
-
-        $seekStartIdResult = $this->db->executeS(
-            'SELECT id_order_detail
-            FROM ' . _DB_PREFIX_ . self::TABLE_NAME . '
-            WHERE id_shop = ' . (int) $context->shop->id . '
-            ORDER BY id_order_detail
-            LIMIT ' . (int) $offset . ', 1'
-        );
-
-        $seekStartId = 0;
-
-        if (
-            is_array($seekStartIdResult)
-            && !empty($seekStartIdResult)
-            && isset($seekStartIdResult[0]['id_order_detail'])
-        ) {
-            $seekStartId = (int) $seekStartIdResult[0]['id_order_detail'];
-        }
-
-        $this->query
-            ->where('od.id_order_detail >=' . $seekStartId)
-            ->limit((int) $limit);
+        $this->query->limit((int) $limit);
 
         return $this->runQuery();
     }
@@ -163,8 +142,9 @@ class OrderDetailRepository extends AbstractRepository implements RepositoryInte
     }
 
     /**
-     * @param int $offset
-     * @param int $limit
+     * Count rows with od.id_order_detail > cursor.
+     *
+     * @param string|null $lastSeekKey
      * @param string $langIso
      *
      * @return int
@@ -172,15 +152,18 @@ class OrderDetailRepository extends AbstractRepository implements RepositoryInte
      * @throws \PrestaShopException
      * @throws \PrestaShopDatabaseException
      */
-    public function countFullSyncContentLeft($offset, $limit, $langIso)
+    public function countFullSyncContentLeft($lastSeekKey, $langIso)
     {
-        $this->generateFullQuery($langIso, true);
+        $this->generateFullQuery($langIso, false);
 
-        $result = $this->db->executeS('
-            SELECT COUNT(*) - ' . (int) $offset . ' AS count
-                FROM (' . $this->query->build() . ') as subquery;
-        ');
+        if ($lastSeekKey !== null) {
+            $this->query->where('od.id_order_detail > ' . (int) $lastSeekKey);
+        }
 
-        return is_array($result) ? $result[0]['count'] : 0;
+        $this->query->select('COUNT(*) as count');
+
+        $result = $this->runQuery(true);
+
+        return !empty($result[0]['count']) ? (int) $result[0]['count'] : 0;
     }
 }

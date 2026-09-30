@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {if isset($blocks) && !empty($blocks)}
   <div class="blockreassurance blockreassurance--{$page.page_name}">
@@ -13,9 +13,9 @@
 
         <span class="reassurance__image">
           {if $block['custom_icon']}
-            <img {if $block['is_svg']}class="svg img-fluid invisible" {/if}src="{$block['custom_icon']}">
+            <img class="{if $block['is_svg']}svg invisible{/if} img-fluid" src="{$block['custom_icon']}" alt="">
           {elseif $block['icon']}
-            <img class="svg img-fluid invisible" src="{$block['icon']}">
+            <img class="svg img-fluid invisible" src="{$block['icon']}" alt="">
           {/if}
         </span>
 

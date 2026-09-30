@@ -1,0 +1,128 @@
+ps_ask_ai_chat_test:
+    path: ps-ask-ai/chat-test
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\ChatTestController::indexAction'
+
+ps_ask_ai_stream:
+    path: ps-ask-ai/stream
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::streamAction'
+
+# DEV/TEST ONLY — gated behind _PS_MODE_DEV_ in the action. Persists an
+# unanswered user message to a thread (orphan) so the sandbox can exercise
+# orphan healing / prompt folding. Remove together with the sandbox.
+ps_ask_ai_chat_test_orphan:
+    path: ps-ask-ai/chat-test/orphan
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\ChatTestController::orphanAction'
+
+ps_ask_ai_stream_resume:
+    path: ps-ask-ai/stream/resume
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::streamResumeAction'
+
+ps_ask_ai_stream_stop:
+    path: ps-ask-ai/stream/stop
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::stopAction'
+
+ps_ask_ai_history:
+    path: ps-ask-ai/history
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::historyAction'
+
+ps_ask_ai_models:
+    path: ps-ask-ai/models
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::modelsAction'
+        
+ps_ask_ai_conversations:
+    path: ps-ask-ai/conversations
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::listAction'
+
+ps_ask_ai_suggestions:
+    path: ps-ask-ai/suggestions
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::suggestionsAction'
+
+ps_ask_ai_model_select:
+    path: ps-ask-ai/models/select
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::selectModelAction'
+        
+ps_ask_ai_test_key:
+    path: ps-ask-ai/test-key
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::testKeyAction'
+        
+ps_ask_ai_track:
+    path: ps-ask-ai/track
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::trackAction'
+
+ps_ask_ai_upload:
+    path: ps-ask-ai/upload
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::uploadAction'
+
+ps_ask_ai_maintenance_disable:
+    path: ps-ask-ai/maintenance/disable
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::disableMaintenanceAction'
+
+ps_ask_ai_report_error:
+    path: ps-ask-ai/report-error
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::reportErrorAction'
+
+ps_ask_ai_enable_webservice:
+    path: ps-ask-ai/enable-webservice
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::enableWebserviceAction'
+
+ps_ask_ai_conversation_delete:
+    path: ps-ask-ai/conversations/delete
+    methods: [DELETE]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::deleteAction'
+
+ps_ask_ai_conversation_title:
+    path: ps-ask-ai/conversations/title
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::titleAction'
+
+ps_ask_ai_module_install:
+    path: ps-ask-ai/module/install
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::installModuleAction'
+
+ps_ask_ai_module_search:
+    path: ps-ask-ai/module/search
+    methods: [GET]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::searchModuleAction'
+
+ps_ask_ai_conversation_active_leaf:
+    path: ps-ask-ai/conversations/active-leaf
+    methods: [POST]
+    defaults:
+        _controller: 'PrestaShop\Module\PsAskAi\Controller\AskAiController::setActiveLeafAction'

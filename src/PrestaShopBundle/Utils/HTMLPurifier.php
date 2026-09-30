@@ -1,4 +1,5 @@
 <?php
+
 /**
  * For the full copyright and license information, please view the
  * docs/licenses/LICENSE.txt file that was distributed with this source code.
@@ -31,6 +32,7 @@ class HTMLPurifier
         // Cache for the serializer path
         $this->serializerPath = $this->cacheDir . 'purifier';
         $this->filesystem->mkdir($this->serializerPath);
+
         $config->set('Cache.SerializerPath', $this->serializerPath);
 
         $this->instance = new \HTMLPurifier($config);

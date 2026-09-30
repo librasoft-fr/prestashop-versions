@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {block name='order_products_table_line_no_return'}
   <div class="grid-table__row {if isset($is_last_product) && $is_last_product}rounded-bottom-0{/if}" role="row">
@@ -112,12 +112,13 @@
               <span class="customization">
                 <a class="btn btn-sm btn-link p-0" href="#" data-bs-toggle="modal"
                   data-bs-target="#product-customizations-modal-{$customization.id_customization}">
-                  <i class="material-icons">&#xE8F4;</i>
+                  <i class="material-icons" aria-hidden="true">&#xE8F4;</i>
                   {l s='Product customization' d='Shop.Theme.Catalog'}
                 </a>
               </span>
             {/foreach}
           {/if}
+          {hook h='displayOrderDetailProductLine' id_order=$product.id_order id_order_detail=$product.id_order_detail id_product=$product.id_product}
         </span>
       </span>
     </span>

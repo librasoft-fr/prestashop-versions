@@ -1,0 +1,110 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  ps_ask_ai.ps_accounts_installer:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Installer'
+    public: true
+    arguments:
+        - "7.0.7"
+
+  ps_ask_ai.ps_accounts_facade:
+    class: 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts'
+    public: true
+    arguments:
+        - "@ps_ask_ai.ps_accounts_installer"
+
+  ps_ask_ai.logger:
+    class: Monolog\Logger
+    factory:
+      [
+          'PrestaShop\Module\PsAskAi\Factory\PsAskAiLogger',
+          "create",
+      ]
+
+  PrestaShop\Module\PsAskAi\Service\McpServerService:
+    arguments:
+      - '@=service("prestashop.adapter.legacy.context").getContext()'
+
+  PrestaShop\Module\PsAskAi\Service\SentryReporter: ~
+
+  PrestaShop\Module\PsAskAi\Subscriber\SentryExceptionSubscriber:
+    arguments:
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\SentryReporter"
+    tags:
+        - { name: kernel.event_subscriber }
+
+  PrestaShop\Module\PsAskAi\Service\NeuronAiService:
+    arguments:
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\McpServerService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\LlmParamsService"
+        - "@ps_ask_ai.logger"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\SentryReporter"
+
+  PrestaShop\Module\PsAskAi\Service\ConversationService: ~
+
+  PrestaShop\Module\PsAskAi\Repository\PsAskAiConversationRepository: ~
+
+  PrestaShop\Module\PsAskAi\Service\PrepromptService:
+    arguments:
+        - "@http_client"
+        - "@ps_ask_ai.logger"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\SentryReporter"
+
+  PrestaShop\Module\PsAskAi\Service\LlmParamsService:
+    arguments:
+        - "@http_client"
+        - "@ps_ask_ai.logger"
+        
+  PrestaShop\Module\PsAskAi\Service\SuggestionsService:
+    arguments:
+        - "@http_client"
+        - "@ps_ask_ai.logger"
+
+  PrestaShop\Module\PsAskAi\Service\UpdateAvailabilityService:
+    arguments:
+        - "@ps_ask_ai.logger"
+
+  PrestaShop\Module\PsAskAi\Service\SegmentService:
+    arguments:
+        - "@http_client"
+        - '@=service("prestashop.adapter.legacy.context").getContext()'
+        - "@ps_ask_ai.logger"
+
+  PrestaShop\Module\PsAskAi\Service\ModuleInstallerService:
+    arguments:
+        - "@PrestaShop\\PrestaShop\\Core\\Module\\ModuleManager"
+        - "@http_client"
+        - "@ps_ask_ai.logger"
+        - "@ps_ask_ai.ps_accounts_facade"
+
+  PrestaShop\Module\PsAskAi\Service\ModuleCatalogService:
+    arguments:
+        - "@ps_ask_ai.ps_accounts_facade"
+        - "@http_client"
+        - '@=service("prestashop.adapter.legacy.context").getContext()'
+        - "@ps_ask_ai.logger"
+
+  PrestaShop\Module\PsAskAi\Controller\ChatTestController:
+    class: PrestaShop\Module\PsAskAi\Controller\ChatTestController
+    arguments:
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\NeuronAiService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\ConversationService"
+    public: true
+
+  PrestaShop\Module\PsAskAi\Controller\AskAiController:
+    class: PrestaShop\Module\PsAskAi\Controller\AskAiController
+    arguments:
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\NeuronAiService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\ConversationService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\McpServerService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\PrepromptService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\SuggestionsService"
+        - "@ps_ask_ai.logger"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\SegmentService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\ModuleInstallerService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\ModuleCatalogService"
+        - "@PrestaShop\\Module\\PsAskAi\\Service\\SentryReporter"
+    public: true

@@ -1,3 +1,7 @@
+{**
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ *}
 {*
  * This file allows you to customize your search page.
  * You can safely remove it if you want it to appear exactly like all other product listing pages
@@ -9,7 +13,12 @@
 {/block}
 
 {block name='error_content'}
-  <p>{l s='Search again what you are looking for.' d='Shop.Theme.Catalog'}</p>
+  <p>{l s='We couldn\'t find any matching products.' d='Shop.Theme.Catalog'}</p>
+  <ul>
+    <li>{l s='Check the spelling of your search term.' d='Shop.Theme.Catalog'}</li>
+    <li>{l s='Try a more general or different keyword.' d='Shop.Theme.Catalog'}</li>
+  </ul>
+  <a class="btn btn-primary" href="{$urls.pages.index}">{l s='Back to home' d='Shop.Theme.Catalog'}</a>
 {/block}
 
 {block name='product_list_header'}

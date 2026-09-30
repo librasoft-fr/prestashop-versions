@@ -96,6 +96,7 @@ return array(
     'ProxyManager\\' => array($vendorDir . '/friendsofphp/proxy-manager-lts/src/ProxyManager'),
     'PrestaShop\\TranslationToolsBundle\\' => array($vendorDir . '/prestashop/translationtools-bundle'),
     'PrestaShop\\PrestaShop\\' => array($baseDir . '/src'),
+    'PrestaShop\\Module\\PsOnePageCheckout\\' => array($baseDir . '/modules/ps_onepagecheckout/src'),
     'PrestaShop\\Module\\ProductComment\\' => array($baseDir . '/modules/productcomments/src'),
     'PrestaShop\\Module\\LinkList\\' => array($baseDir . '/modules/ps_linklist/src'),
     'PrestaShop\\Module\\FacetedSearch\\Tests\\' => array($baseDir . '/modules/ps_facetedsearch/tests/php/FacetedSearch'),

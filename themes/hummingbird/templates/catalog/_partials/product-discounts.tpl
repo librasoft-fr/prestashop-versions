@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 <section class="product__discounts js-product-discounts"
   {if !$product.show_price || !$product.quantity_discounts|count}
@@ -9,7 +9,7 @@
 >
   {if $product.quantity_discounts}
     {block name='product_discount_table'}
-      <table class="discounts-table">
+      <table class="discounts-table table">
         <thead>
           <tr>
             <th>{l s='Quantity' d='Shop.Theme.Catalog'}</th>

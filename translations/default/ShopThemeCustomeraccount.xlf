@@ -15,7 +15,7 @@
       <trans-unit id="58b3d8603dffe8484e90c0ca371921ac">
         <source>Add a message</source>
         <target>Add a message</target>
-        <note>File: themes/hummingbird/templates/customer/_partials/order-messages.tpl [Line: 32]</note>
+        <note>File: themes/hummingbird/templates/customer/_partials/order-messages.tpl [Line: 33]</note>
       </trans-unit>
       <trans-unit id="13c26452d76c3098204adbc07ff6ef6d">
         <source>Add a new address to your account.</source>
@@ -115,7 +115,7 @@
       <trans-unit id="c69e7f4e04439e0f04383334801c3790">
         <source>Enter a password between %s and %s characters</source>
         <target>Enter a password between %s and %s characters</target>
-        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 67]</note>
+        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 45]</note>
       </trans-unit>
       <trans-unit id="93aef17b1541efc1c3f8bd6679972096">
         <source>Fast and easy checkout</source>
@@ -130,7 +130,7 @@
       <trans-unit id="92dbb751eb9457441af82a53f3cfae54">
         <source>For example: QIIXJXNUI or QIIXJXNUI#1</source>
         <target>For example: QIIXJXNUI or QIIXJXNUI#1</target>
-        <note>File: themes/hummingbird/templates/customer/guest-login.tpl [Line: 33]</note>
+        <note>File: themes/hummingbird/templates/customer/guest-login.tpl [Line: 37]</note>
       </trans-unit>
       <trans-unit id="01a569ddc6cf67ddec2a683f0a5f5956">
         <source>Forgot your password?</source>
@@ -170,12 +170,12 @@
       <trans-unit id="bef8403608dc4cb3ade799f63dd4bf59">
         <source>If you wish to return one or more products, please mark the corresponding boxes and provide an explanation for the return. When complete, click the button below.</source>
         <target>If you wish to return one or more products, please mark the corresponding boxes and provide an explanation for the return. When complete, click the button below.</target>
-        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-return.tpl [Line: 202]</note>
+        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-return.tpl [Line: 203]</note>
       </trans-unit>
       <trans-unit id="d93651d012e77dac5581b08db33195b2">
         <source>If you would like to add a comment about your order, please write it in the field below.</source>
         <target>If you would like to add a comment about your order, please write it in the field below.</target>
-        <note>File: themes/hummingbird/templates/customer/_partials/order-messages.tpl [Line: 35]</note>
+        <note>File: themes/hummingbird/templates/customer/_partials/order-messages.tpl [Line: 36]</note>
       </trans-unit>
       <trans-unit id="a82be0f551b8708bc08eb33cd9ded0cf">
         <source>Information</source>
@@ -215,7 +215,7 @@
       <trans-unit id="3956298bcfc047e15b0e0d218492ce09">
         <source>Merchandise return</source>
         <target>Merchandise return</target>
-        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-return.tpl [Line: 188]</note>
+        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-return.tpl [Line: 189]</note>
       </trans-unit>
       <trans-unit id="e06d7593c1cd6dabef450be6c3da7091">
         <source>Merchandise returns</source>
@@ -245,7 +245,7 @@
       <trans-unit id="dc8350c8bd88911cabd243b705284f04">
         <source>My account (%firstname% %lastname%)</source>
         <target>My account (%firstname% %lastname%)</target>
-        <note>File: themes/hummingbird/templates/checkout/_partials/steps/personal-information.tpl [Line: 15]</note>
+        <note>File: themes/hummingbird/templates/checkout/_partials/steps/personal-information.tpl [Line: 19]</note>
       </trans-unit>
       <trans-unit id="a2b9439af1d404835095e78a68c88216">
         <source>My account navigation sidebar</source>
@@ -275,7 +275,7 @@
       <trans-unit id="82dc57da54e2a0ed4db0a04ce7dd1949">
         <source>Not you? [1]Sign out[/1]</source>
         <target>Not you? [1]Sign out[/1]</target>
-        <note>File: themes/hummingbird/templates/checkout/_partials/steps/personal-information.tpl [Line: 29]</note>
+        <note>File: themes/hummingbird/templates/checkout/_partials/steps/personal-information.tpl [Line: 33]</note>
       </trans-unit>
       <trans-unit id="a240fa27925a635b08dc28c9e4f9216d">
         <source>Order</source>
@@ -315,7 +315,7 @@
       <trans-unit id="99f0c07c3b8b3bc78f5f9733019ec3d5">
         <source>Order totals</source>
         <target>Order totals</target>
-        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-no-return.tpl [Line: 139]</note>
+        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-no-return.tpl [Line: 140]</note>
       </trans-unit>
       <trans-unit id="11035a6e3e5aceb6563c44c6e464e577">
         <source>Order tracking</source>
@@ -369,7 +369,7 @@
       <trans-unit id="a9e3d6296e9b194ee466230d8438935a">
         <source>Receive offers from our partners</source>
         <target>Receive offers from our partners</target>
-        <note>File: classes/form/CustomerFormatter.php [Line: 207]</note>
+        <note>File: modules/ps_onepagecheckout/src/Form/OnePageCheckoutFormatter.php [Line: 121]</note>
       </trans-unit>
       <trans-unit id="92a9774c2a5df29ac4bffb46219ea9cd">
         <source>Reminder</source>
@@ -379,7 +379,7 @@
       <trans-unit id="1af342a10e8238b722ba844facf5768b">
         <source>Request a return</source>
         <target>Request a return</target>
-        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-return.tpl [Line: 208]</note>
+        <note>File: themes/hummingbird/templates/customer/_partials/order-detail-return.tpl [Line: 209]</note>
       </trans-unit>
       <trans-unit id="32fe59513f5bbdd353b4527cc6af55ce">
         <source>Reset your password</source>
@@ -429,12 +429,12 @@
       <trans-unit id="f43333ea2272fed37fc121a2e09755c3">
         <source>The minimum score must be: %s</source>
         <target>The minimum score must be: %s</target>
-        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 72]</note>
+        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 50]</note>
       </trans-unit>
       <trans-unit id="d2948a89e47a4ad7eb8412c1c260ea88">
         <source>To track your order, please enter the following information:</source>
         <target>To track your order, please enter the following information:</target>
-        <note>File: themes/hummingbird/templates/customer/guest-login.tpl [Line: 17]</note>
+        <note>File: themes/hummingbird/templates/customer/guest-login.tpl [Line: 21]</note>
       </trans-unit>
       <trans-unit id="31d01d88284078b770b76117e306bbdf">
         <source>Toggle your account links</source>
@@ -547,17 +547,17 @@
       <trans-unit id="2ae49cd1041030cbd47f0167e9cdc58b">
         <source>Your password is too weak</source>
         <target>Your password is too weak</target>
-        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 47]</note>
+        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 25]</note>
       </trans-unit>
       <trans-unit id="adabee37688f9eff4b4f6c255dbbbffc">
         <source>Your password is valid</source>
         <target>Your password is valid</target>
-        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 52]</note>
+        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 30]</note>
       </trans-unit>
       <trans-unit id="aea83cdff1f4d31e83a909f8960ad293">
         <source>Your password length is invalid</source>
         <target>Your password length is invalid</target>
-        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 57]</note>
+        <note>File: themes/hummingbird/templates/components/password-policy-template.tpl [Line: 35]</note>
       </trans-unit>
       <trans-unit id="6335a00a08fde0fbb8f6d6630cdadd92">
         <source>Your personal information</source>

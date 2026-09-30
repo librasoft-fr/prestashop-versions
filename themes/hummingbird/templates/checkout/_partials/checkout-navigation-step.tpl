@@ -1,3 +1,7 @@
+{**
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ *}
 {$componentName = 'checkout-steps'}
 
 <li 
@@ -14,9 +18,6 @@
     data-bs-target="#{$step}"
     role="tab"
     data-ps-ref="step-button"
-    {if isset($virtual) && $virtual}
-      disabled
-    {/if}
   >
     {$title}
   </button>

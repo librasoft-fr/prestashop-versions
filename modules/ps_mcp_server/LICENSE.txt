@@ -1,0 +1,85 @@
+PROPRIETARY LICENSE AGREEMENT
+
+PS MCP Server
+Copyright (c) PrestaShop SA. All Rights Reserved.
+
+NOTICE: This software and its associated documentation (the "Module") are the 
+exclusive property of PrestaShop SA and are protected by applicable intellectual property laws. 
+No rights are granted to the user other than those expressly provided in this license.
+
+OWNERSHIP AND INTELLECTUAL PROPERTY RIGHTS
+
+PrestaShop SA is the sole owner of all intellectual property rights, including 
+but not limited to copyrights, trademarks, trade secrets, and any other 
+proprietary rights, in and to the PS MCP Server module and all of its code, 
+documentation, and related materials.
+
+The PS MCP Server module was developed by PrestaShop, which holds all associated 
+intellectual property rights. The license granted to the user does not entail any 
+transfer of rights. The user shall refrain from any act that may infringe upon 
+PrestaShop's rights and undertakes to strictly comply with the limitations of the 
+license set out below.
+
+GRANT OF LICENSE
+
+PrestaShop grants the user a personal, non-exclusive, non-transferable, and 
+non-sublicensable license to use the MCP Server module, worldwide and for the 
+entire duration of use of the module. This license is strictly limited to 
+installing the module and using it solely for the operation of the user's 
+PrestaShop store.
+
+RESTRICTIONS
+
+The following restrictions apply to your use of the Module:
+
+1. COPYING: You may NOT copy, reproduce, or duplicate the Module or any portion 
+   thereof, except as necessary for installation and backup purposes on your own 
+   PrestaShop store.
+
+2. REDISTRIBUTION: You may NOT redistribute, sublicense, lease, rent, or otherwise 
+   transfer the Module or any portion thereof to any third party.
+
+3. MODIFICATION: You may NOT modify, adapt, alter, translate, or create derivative 
+   works based upon the Module or any portion thereof.
+
+4. REVERSE ENGINEERING: You may NOT reverse engineer, decompile, disassemble, or 
+   otherwise attempt to derive the source code of the Module.
+
+5. COMMERCIAL USE: You may NOT sell, resell, or otherwise commercially exploit 
+   the Module or any portion thereof.
+
+6. UNAUTHORIZED USE: Any use of the Module not expressly authorized by this 
+   license is strictly prohibited.
+
+TERMINATION
+
+This license is effective until terminated. Your rights under this license will 
+terminate automatically without notice if you fail to comply with any of its 
+terms. Upon termination, you must immediately cease all use of the Module and 
+destroy all copies in your possession.
+
+DISCLAIMER OF WARRANTIES
+
+THE MODULE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL PRESTASHOP BE LIABLE 
+FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM OR IN CONNECTION WITH 
+THE USE OF THE MODULE.
+
+GOVERNING LAW
+
+This license agreement shall be governed by and construed in accordance with 
+French law. Any dispute arising from its interpretation or performance shall 
+be subject to the exclusive jurisdiction of the French courts.
+
+CONTACT
+
+For any questions regarding this license, please contact PrestaShop SA.
+
+---
+
+By installing, copying, or otherwise using the PS MCP Server module, you 
+acknowledge that you have read this license agreement, understand it, and agree 
+to be bound by its terms and conditions. If you do not agree to the terms of this 
+license, you may not install or use the Module.
+

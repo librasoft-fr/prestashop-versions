@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin-dev" source-language="en-US" target-language="es-ES" datatype="plaintext">
+    <body>
+      <trans-unit id="fe9076a6c615a9b5801a34deddb4e9dd">
+        <source>PrestaShop AskAI</source>
+        <target>PrestaShop AskAI</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="1fa9c4f38886941fb4eab287bed3d089">
+        <source>AI-powered assistant for your PrestaShop store.</source>
+        <target>Asistente potenciado por IA para tu tienda PrestaShop.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="f38f5974cdc23279ffe6d203641a8bdf">
+        <source>Settings updated.</source>
+        <target>Configuración actualizada.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="9c469b2957637b393eb5ccb77c2d6813">
+        <source>AsKAI configuration</source>
+        <target>Configuración de AsKAI</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="a52bb1093feac944c7a1c043a47ec1a5">
+        <source>After signing in, choose your AI provider and add your API key to activate Ask AI.</source>
+        <target>Tras iniciar sesión, elige tu proveedor de IA y añade tu clave API para activar Ask AI.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="bf7f6fd33ff7eb0598734c852ca7b4c9">
+        <source>Choose your AI provider and paste your API key to get started.</source>
+        <target>Elige tu proveedor de IA y pega tu clave API para empezar.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="7575efc133b1cb9083cc3b8321001c47">
+        <source>Configuration saved successfully.</source>
+        <target>Configuración guardada correctamente.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="a225bab948d9a88dc5d9d13924d12138">
+        <source>Your API key works, but you&apos;ve run out of credits on %s.</source>
+        <target>Tu clave API funciona, pero has agotado tus créditos en %s.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c2065c8d699b9ef8172e8d2cfc1ca5f3">
+        <source>We couldn&apos;t connect to %s with this API key. Check your key or try again later.</source>
+        <target>No hemos podido conectarnos a %s con esta clave API. Comprueba tu clave o inténtalo más tarde.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="27703c8f150ac4bb0a3a83a7857353af">
+        <source>Provider</source>
+        <target>Proveedor</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ae59bd1b45d49a2301270e1f0d78bfe7">
+        <source>Select a provider...</source>
+        <target>Selecciona un proveedor...</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="d876ff8da67c3731ae25d8335a4168b4">
+        <source>API Key</source>
+        <target>Clave API</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="0ebe6df8a3ac338e0512acc741823fdb">
+        <source>Replace</source>
+        <target>Reemplazar</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="0756c82865edc154cdb9bb2a8ab3bdfd">
+        <source>Your new key will replace the existing one when you save.</source>
+        <target>Tu nueva clave reemplazará la existente al guardar.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="8c2c86dca57753c13de1ab59e4082a0b">
+        <source>Enter your API key...</source>
+        <target>Introduce tu clave API...</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="92de0ade9abc80cf4a2aeff11684caa8">
+        <source>Show API key</source>
+        <target>Mostrar clave API</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="92cb002aab33d4fc467fbcc184af7a5e">
+        <source>Your API key is stored securely and never shared. It will be masked after saving.</source>
+        <target>Tu clave API se almacena de forma segura y nunca se comparte. Se enmascarará después de guardar.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ea4788705e6873b424c65e91c2846b19">
+        <source>Cancel</source>
+        <target>Cancelar</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="90529bd37ded6fc9ec68ad13eea44c7e">
+        <source>Change provider</source>
+        <target>Cambiar proveedor</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354">
+        <source>Save</source>
+        <target>Guardar</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="49c20044e894d8cc2da7783adbf79f16">
+        <source>Your store is in maintenance mode</source>
+        <target>Tu tienda está en modo mantenimiento</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="6d72728f918231174ab72bd05b3124dd">
+        <source>Ask AI cannot access your store data while maintenance mode is enabled. Disable it to use the assistant.</source>
+        <target>Ask AI no puede acceder a los datos de tu tienda mientras el modo de mantenimiento está activado. Desactívalo para usar el asistente.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="093586b1f3ef758c1cea8d476b072359">
+        <source>Disable maintenance mode</source>
+        <target>Desactivar el modo de mantenimiento</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="7fae746c1c229666b3efa6381979753d">
+        <source>Allow Ask AI to act on your store</source>
+        <target>Permitir a Ask AI actuar en tu tienda</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="97229ff2b28afd2caa6b6766d11f053d">
+        <source>Ask AI needs access to read and write your store data (products, orders, customers). Set &quot;Enable PrestaShop&apos;s webservice&quot; to ON, then come back here.</source>
+        <target>Ask AI necesita acceso de lectura y escritura a los datos de tu tienda (productos, pedidos, clientes). Activa «Habilitar el servicio web de PrestaShop» y vuelve aquí.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="d555980b82a42c54f0cef539cdb841a0">
+        <source>Enable store access</source>
+        <target>Activar el acceso a la tienda</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="3c0d93389e959b664c28d39bf9d502dd">
+        <source>Ask AI has access to your store data (products, orders, customers).</source>
+        <target>Ask AI tiene acceso a los datos de tu tienda (productos, pedidos, clientes).</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="a94c99687da977a3459aea1f055a9233">
+        <source>Disable store access</source>
+        <target>Desactivar el acceso a la tienda</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="aff5863a16c8ace29be3fc188e515c92">
+        <source>Please enter an API key.</source>
+        <target>Por favor, introduce una clave API.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="019062dcb861d8eb1aca417b23a6649e">
+        <source>Please select a valid provider.</source>
+        <target>Por favor, selecciona un proveedor válido.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="75b7ac3c209ac692c7f76d2f0314d72f">
+        <source>Where do I find my key?</source>
+        <target>¿Dónde encuentro mi clave?</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="e43ec38a93023bde02ff70f28b925702">
+        <source>Go to</source>
+        <target>Ve a</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="9a9e562ededd9c26c4d3c471c33ac70c">
+        <source>and sign in.</source>
+        <target>e inicia sesión.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c464db68f412002a99ab4d3edce18c6e">
+        <source>and sign in with Google.</source>
+        <target>e inicia sesión con Google.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="20202388a7d82e275bb9cb948ce6ce63">
+        <source>Click Create new secret key, give it a name, then confirm.</source>
+        <target>Haz clic en Crear nueva clave secreta, dale un nombre y confirma.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="0d71d91ac025e4edd88552b840f2055f">
+        <source>Copy the key immediately — it will not be shown again.</source>
+        <target>Copia la clave inmediatamente — no se volverá a mostrar.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="509892c2d8dc6c7dfc4ca6361061d1e1">
+        <source>A payment method must be set up on your OpenAI account for the key to work.</source>
+        <target>Se debe configurar un método de pago en tu cuenta de OpenAI para que la clave funcione.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="9c8e122fcfd21edcedeb7dc2d39d5175">
+        <source>Click Create Key, give it a name.</source>
+        <target>Haz clic en Crear clave, dale un nombre.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="cc676f39a22372bd7f88b190e12c5c45">
+        <source>Copy the key (starts with sk-ant-...) — it will not be shown again.</source>
+        <target>Copia la clave (empieza por sk-ant-...) — no se volverá a mostrar.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="abaaf79f1f136da042f58e8e5d7d9c66">
+        <source>A payment method must be set up for the key to work.</source>
+        <target>Se debe configurar un método de pago para que la clave funcione.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="9c8c4a1e706289ecfa8133f81161ac08">
+        <source>Click Create API key, then choose a project.</source>
+        <target>Haz clic en Crear clave API y elige un proyecto.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ede4517db2028f443a6dc1995e4892dc">
+        <source>Copy the key (starts with AIza...).</source>
+        <target>Copia la clave (empieza por AIza...).</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="3e6751736efb0f289c955da5988a73fd">
+        <source>In the left menu, go to API Keys → Create new key, give it a name.</source>
+        <target>En el menú izquierdo, ve a API Keys → Crear nueva clave, dale un nombre.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="7212fa6d97d6fa8a284cbcd444eb3d16">
+        <source>New version available</source>
+        <target>Nueva versión disponible</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="349838fb1d851d3e2014b9fe39203275">
+        <source>Install</source>
+        <target>Instalar</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="23e7139d74fb7ede3f59f9305b265db7">
+        <source>Dismiss the update notification</source>
+        <target>Descartar la notificación de actualización</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5d85443302a42d23dfe25406bedec1fe">
+        <source>Downloading…</source>
+        <target>Descargando…</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="a0852cb424119fda582eb7e36fa7a099">
+        <source>Installing…</source>
+        <target>Instalando…</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="98dd43dfae05b11befe1f140e0ec787a">
+        <source>Installed</source>
+        <target>Instalado</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="d7c8c85bf79bbe1b7188497c32c3b0ca">
+        <source>Failed</source>
+        <target>Error</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="86a25696a787a0067fa915de486702fc">
+        <source>Update installed</source>
+        <target>Actualización instalada</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5b7ae750cd57d8ce894a3152aadbb4e3">
+        <source>Refresh the page</source>
+        <target>Actualizar la página</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="7589e3454a8891d234e4c2b9155ca35c">
+        <source>The update failed.</source>
+        <target>La actualización ha fallado.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="6327b4e59f58137083214a1fec358855">
+        <source>Retry</source>
+        <target>Reintentar</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5f265dfcb9ab68a1258ec25393ffb886">
+        <source>Module Manager</source>
+        <target>Gestor de módulos</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

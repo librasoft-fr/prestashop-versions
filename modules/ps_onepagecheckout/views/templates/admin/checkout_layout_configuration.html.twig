@@ -1,0 +1,130 @@
+{#
+  Copyright since 2007 PrestaShop SA and Contributors
+  PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+#}
+
+{% if checkout_layout_css_url is defined and checkout_layout_css_url is not empty %}
+  <link rel="stylesheet" href="{{ checkout_layout_css_url }}">
+{% endif %}
+
+<div class="psopc-configuration" data-opc-configuration-key="{{ configuration_key }}">
+  {% if not is_single_shop_context %}
+    <div class="alert alert-warning" role="alert">
+      <p class="alert-text">{{ single_shop_context_warning }}</p>
+    </div>
+  {% else %}
+    <form action="{{ configuration_form_action }}" method="post">
+      <div class="d-flex justify-content-center w-100">
+        <div class="card">
+          <div class="card-body">
+            <div class="checkout-layout-header">
+              <h3 class="checkout-layout-title">{{ checkout_layout_title }}</h3>
+              <p class="checkout-layout-description">{{ checkout_layout_description }}</p>
+            </div>
+
+            <div class="form-wrapper">
+              <div id="{{ configuration_key }}" class="d-flex flex-row enriched-choice">
+                  {% for choice in choices %}
+                    <label class="form-check-radio form-check-label d-flex flex-row align-items-start p-3 m-0" for="{{ choice.id }}">
+                      <div class="d-flex align-items-start shrink-0 mr-3">
+                        <input
+                          type="radio"
+                          id="{{ choice.id }}"
+                          name="{{ configuration_key }}"
+                          value="{{ choice.value }}"
+                          {% if choice.checked %}checked="checked"{% endif %}
+                          required="required"
+                        >
+                        <i class="form-check-round"></i>
+                      </div>
+
+                      <div class="grow">
+                        <div class="enriched-choice-title d-flex flex-row align-items-center">
+                          <span class="enriched-choice-label">{{ choice.label }}</span>
+                          {% if choice.badge is not empty %}
+                            <span class="enriched-choice-badge">{{ choice.badge }}</span>
+                          {% endif %}
+                        </div>
+
+                        <div class="enriched-choice-body d-flex flex-row align-items-start">
+                          <div class="enriched-choice-text">
+                            {% if choice.description is not empty %}
+                              <p class="enriched-choice-description">{{ choice.description }}</p>
+                            {% endif %}
+                            {% if choice.features is not empty %}
+                              <ul class="enriched-choice-features">
+                                {% for feature in choice.features %}
+                                  <li>{{ feature }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                          </div>
+                          {% if choice.illustration is not empty %}
+                            <div class="enriched-choice-illustration d-flex justify-content-center align-items-start shrink-0 ml-3">
+                              <img src="{{ choice.illustration }}" alt="{{ choice.label }}">
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </label>
+                  {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" name="{{ maintenance_mode_input_name }}" id="psopc-maintenance-hidden" value="0">
+
+      <input type="hidden" name="{{ form_submit_action }}" value="1">
+
+      <div class="psopc-actions text-right">
+        <button type="button" id="psopc-save-btn" class="btn btn-primary">
+          {{ save_button_label }}
+        </button>
+      </div>
+    </form>
+
+    <div id="psopc-confirmation-modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" data-psopc-modal="opc-activation">{{ confirm_modal_compatibility_title }}</h4>
+            <h4 class="modal-title" data-psopc-modal="four-page-activation" style="display:none">{{ confirm_modal_title }}</h4>
+            <button class="close" type="button" data-dismiss="modal">×</button>
+          </div>
+          <div class="modal-body">
+            <p class="psopc-modal-intro" data-psopc-modal="opc-activation">{{ confirm_modal_compatibility_description }}</p>
+            <p class="psopc-modal-intro" data-psopc-modal="four-page-activation" style="display:none">{{ confirm_modal_description }}</p>
+            <div data-psopc-modal="opc-activation">
+              <p class="psopc-modal-checklist-title">{{ confirm_modal_checklist_title }}</p>
+              <ul class="psopc-modal-checklist">
+                {% for item in confirm_modal_checklist %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% if not is_maintenance_enabled %}
+              <div class="psopc-modal-warning">
+                <i class="material-icons psopc-modal-warning-icon">warning</i>
+                <span>{{ maintenance_mode_warning|raw }}</span>
+              </div>
+              <div class="psopc-maintenance-row">
+                <span>{{ maintenance_mode_label }}</span>
+                <label class="psopc-toggle">
+                  <input type="checkbox" id="psopc-maintenance-toggle">
+                  <span class="psopc-toggle-slider"></span>
+                </label>
+              </div>
+            {% endif %}
+          </div>
+          <div class="modal-footer">
+            <input type="button" class="btn btn-outline-secondary" data-dismiss="modal" value="{{ cancel_button_label }}"/>
+            <button type="button" class="btn btn-primary uppercase" id="psopc-confirm-btn">{{ confirm_button_label }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  {% endif %}
+</div>

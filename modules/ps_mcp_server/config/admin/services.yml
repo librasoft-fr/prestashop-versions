@@ -1,0 +1,24 @@
+imports:
+  - { resource: ../common.yml }
+
+services:
+  PrestaShop\Module\PsMcpServer\EventListener\ModuleEventListener:
+    tags:
+      - { name: 'kernel.event_subscriber' }
+    public: true
+  PrestaShop\Module\PsMcpServer\EventListener\SentryExceptionListener:
+    class: PrestaShop\Module\PsMcpServer\EventListener\SentryExceptionListener
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception }
+
+  PrestaShop\Module\PsMcpServer\Controller\Admin\McpServerConfigController:
+    class: PrestaShop\Module\PsMcpServer\Controller\Admin\McpServerConfigController
+    public: true
+
+  PrestaShop\Module\PsMcpServer\Controller\Admin\McpServerAjaxController:
+    class: PrestaShop\Module\PsMcpServer\Controller\Admin\McpServerAjaxController
+    public: true
+
+  PrestaShop\Module\PsMcpServer\Helper\ModuleHelper:
+    class: PrestaShop\Module\PsMcpServer\Helper\ModuleHelper
+    public: true

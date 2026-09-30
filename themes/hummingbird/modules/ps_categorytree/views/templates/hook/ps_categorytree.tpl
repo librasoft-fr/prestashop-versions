@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 
 {$componentName = 'category-tree'}
@@ -49,7 +49,7 @@
 
 {if !empty($categories.children)}
   <div class="ps-categorytree {$componentName} left-block">
-    <p class="left-block__title">
+    <p class="left-block__title h3">
       <a class="left-block__title-link" href="{$categories.link nofilter}">
         {$categories.name|escape:'htmlall':'UTF-8'}
       </a>

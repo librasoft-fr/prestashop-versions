@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 
 <div class="product-line">
@@ -108,7 +108,7 @@
 
         <div class="product-line__item product-line__item--availability">
           <div class="product-line__item-availability-message {$availability_class}">
-            <i class="product-line__item-availability-icon material-icons rtl-no-flip">&#x{$availability_icon};</i>
+            <i class="product-line__item-availability-icon material-icons rtl-no-flip" aria-hidden="true">&#x{$availability_icon};</i>
             {$product.availability_message}
           </div>
         </div>

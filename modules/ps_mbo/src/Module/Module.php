@@ -138,7 +138,7 @@ class Module implements ModuleInterface
      * @param array|null $disk
      * @param array|null $database
      */
-    public function __construct(array $attributes = null, array $disk = null, array $database = null)
+    public function __construct(?array $attributes = null, ?array $disk = null, ?array $database = null)
     {
         $this->attributes = new ParameterBag($this->attributes_default);
         $this->disk = new ParameterBag($this->disk_default);
@@ -438,23 +438,11 @@ class Module implements ModuleInterface
 
     public function getStatus(): string
     {
-        return (new TransitionModule(
-            $this->get('name'),
-            $this->getVersion(),
+        return ModuleStatus::fromFlags(
             (bool) $this->database->get('installed'),
-            $this->isMobileActive(),
-            $this->isActive())
-        )->getStatus();
+            $this->isActive(),
+            $this->isMobileActive()
+        )->value;
     }
 
-    private function getVersion(): string
-    {
-        $diskVersion = $this->disk->get('version');
-
-        if (null !== $diskVersion) {
-            return (string) $diskVersion;
-        }
-
-        return $this->database->get('version') ?? '';
-    }
 }

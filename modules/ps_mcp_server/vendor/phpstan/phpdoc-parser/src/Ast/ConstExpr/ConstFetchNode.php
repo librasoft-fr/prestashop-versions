@@ -1,0 +1,45 @@
+<?php declare(strict_types = 1);
+
+namespace PHPStan\PhpDocParser\Ast\ConstExpr;
+
+use PHPStan\PhpDocParser\Ast\NodeAttributes;
+
+class ConstFetchNode implements ConstExprNode
+{
+
+	use NodeAttributes;
+
+	
+	public string $className;
+
+	public string $name;
+
+	public function __construct(string $className, string $name)
+	{
+		$this->className = $className;
+		$this->name = $name;
+	}
+
+	public function __toString(): string
+	{
+		if ($this->className === '') {
+			return $this->name;
+
+		}
+
+		return "{$this->className}::{$this->name}";
+	}
+
+	
+	public static function __set_state(array $properties): self
+	{
+		$instance = new self($properties['className'], $properties['name']);
+		if (isset($properties['attributes'])) {
+			foreach ($properties['attributes'] as $key => $value) {
+				$instance->setAttribute($key, $value);
+			}
+		}
+		return $instance;
+	}
+
+}

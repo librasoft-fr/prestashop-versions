@@ -1,0 +1,8 @@
+<?php
+
+namespace Psr\Cache;
+
+
+interface CacheException extends \Throwable
+{
+}

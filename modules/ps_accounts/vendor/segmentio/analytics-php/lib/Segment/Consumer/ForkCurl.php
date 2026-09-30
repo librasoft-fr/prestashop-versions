@@ -44,7 +44,7 @@ class Segment_Consumer_ForkCurl extends Segment_QueueConsumer {
     $path = "/v1/batch";
     $url = $protocol . $host . $path;
 
-    $cmd = "curl -u ${secret}: -X POST -H 'Content-Type: application/json'";
+    $cmd = "curl -u {$secret}: -X POST -H 'Content-Type: application/json'";
     
     $tmpfname = "";
     if ($this->compress_request) {
@@ -79,7 +79,7 @@ class Segment_Consumer_ForkCurl extends Segment_QueueConsumer {
     $library = $messages[0]['context']['library'];
     $libName = $library['name'];
     $libVersion = $library['version'];
-    $cmd.= " -H 'User-Agent: ${libName}/${libVersion}'";
+    $cmd.= " -H 'User-Agent: {$libName}/{$libVersion}'";
 
     if (!$this->debug()) {
       $cmd .= " > /dev/null 2>&1 &";

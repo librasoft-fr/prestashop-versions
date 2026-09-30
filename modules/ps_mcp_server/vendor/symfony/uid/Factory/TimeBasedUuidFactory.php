@@ -1,0 +1,33 @@
+<?php
+
+
+
+namespace Symfony\Component\Uid\Factory;
+
+use Symfony\Component\Uid\TimeBasedUidInterface;
+use Symfony\Component\Uid\Uuid;
+
+class TimeBasedUuidFactory
+{
+    
+    private string $class;
+    private ?Uuid $node;
+
+    
+    public function __construct(string $class, ?Uuid $node = null)
+    {
+        $this->class = $class;
+        $this->node = $node;
+    }
+
+    public function create(?\DateTimeInterface $time = null): Uuid&TimeBasedUidInterface
+    {
+        $class = $this->class;
+
+        if (null === $time && null === $this->node) {
+            return new $class();
+        }
+
+        return new $class($class::generate($time, $this->node));
+    }
+}

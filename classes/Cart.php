@@ -244,11 +244,13 @@ class CartCore extends ObjectModel
 
     public function resetProductRelatedStaticCache()
     {
-        if (isset(self::$_nbProducts[$this->id])) {
-            unset(self::$_nbProducts[$this->id]);
+        $cacheKey = (int) $this->id;
+
+        if (isset(self::$_nbProducts[$cacheKey])) {
+            unset(self::$_nbProducts[$cacheKey]);
         }
-        if (isset(self::$_totalWeight[$this->id])) {
-            unset(self::$_totalWeight[$this->id]);
+        if (isset(self::$_totalWeight[$cacheKey])) {
+            unset(self::$_totalWeight[$cacheKey]);
         }
         $this->_products = null;
         $this->_products_with_separated_gifts = null;
@@ -1428,6 +1430,15 @@ class CartCore extends ObjectModel
             }
         }
 
+        // If the cart rule offers a gift product, verify it exists before inserting into cart_cart_rule
+        $giftProduct = null;
+        if ((int) $cartRule->gift_product) {
+            $giftProduct = new Product((int) $cartRule->gift_product);
+            if (!Validate::isLoadedObject($giftProduct)) {
+                return false;
+            }
+        }
+
         // Add the cart rule to the cart
         if (!Db::getInstance()->insert('cart_cart_rule', [
             'id_cart_rule' => (int) $id_cart_rule,
@@ -1447,7 +1458,8 @@ class CartCore extends ObjectModel
         Cache::clean('Cart::getOrderedCartRulesIds_' . $this->id . '-' . CartRule::FILTER_ACTION_GIFT . '-ids');
         Cache::clean('getContextualValue_*');
 
-        if ((int) $cartRule->gift_product) {
+        // Add the gift product to the cart
+        if ($giftProduct !== null) {
             $this->updateQty(
                 1,
                 $cartRule->gift_product,
@@ -2322,13 +2334,13 @@ class CartCore extends ObjectModel
      *
      * @param array $products list of products to calculate on
      * @param array $cartRules list of cart rules to apply
-     * @param int $id_carrier carrier id (fees calculation)
+     * @param int|null $id_carrier carrier id (fees calculation)
      * @param int|null $computePrecision
      * @param bool $keepOrderPrices When true use the Order saved prices instead of the most recent ones from catalog (if Order exists)
      *
      * @return Calculator
      */
-    public function newCalculator($products, $cartRules, $id_carrier, $computePrecision = null, bool $keepOrderPrices = false)
+    public function newCalculator($products, $cartRules, $id_carrier = null, $computePrecision = null, bool $keepOrderPrices = false)
     {
         $orderId = null;
         if ($keepOrderPrices) {
@@ -2640,7 +2652,8 @@ class CartCore extends ObjectModel
                 // With PS_ATCP_SHIPWRAP, wrapping fee is by default tax included
                 // so nothing to do here.
             } else {
-                if (!isset($address[$this->id])) {
+                $cacheKey = (int) $this->id;
+                if (!isset($address[$cacheKey])) {
                     // If no address ID was provided, we use the cart tax address ID
                     if ($id_address === null) {
                         $id_address = (int) $this->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
@@ -2653,13 +2666,13 @@ class CartCore extends ObjectModel
                      * again, but without any address specified.
                      */
                     try {
-                        $address[$this->id] = Address::initialize($id_address);
+                        $address[$cacheKey] = Address::initialize($id_address);
                     } catch (Exception $e) {
-                        $address[$this->id] = Address::initialize();
+                        $address[$cacheKey] = Address::initialize();
                     }
                 }
 
-                $tax_manager = TaxManagerFactory::getManager($address[$this->id], (int) Configuration::get('PS_GIFT_WRAPPING_TAX_RULES_GROUP'));
+                $tax_manager = TaxManagerFactory::getManager($address[$cacheKey], (int) Configuration::get('PS_GIFT_WRAPPING_TAX_RULES_GROUP'));
                 $tax_calculator = $tax_manager->getTaxCalculator();
                 $wrapping_fees = $tax_calculator->addTaxes($wrapping_fees);
             }
@@ -2682,14 +2695,16 @@ class CartCore extends ObjectModel
      */
     public function getNbOfPackages()
     {
-        if (!isset(static::$cacheNbPackages[$this->id])) {
-            static::$cacheNbPackages[$this->id] = 0;
+        $cacheKey = (int) $this->id . '_' . (int) $this->id_address_delivery;
+
+        if (!isset(static::$cacheNbPackages[$cacheKey])) {
+            static::$cacheNbPackages[$cacheKey] = 0;
             foreach ($this->getPackageList() as $by_address) {
-                static::$cacheNbPackages[$this->id] += count($by_address);
+                static::$cacheNbPackages[$cacheKey] += count($by_address);
             }
         }
 
-        return static::$cacheNbPackages[$this->id];
+        return static::$cacheNbPackages[$cacheKey];
     }
 
     /**
@@ -2908,8 +2923,10 @@ class CartCore extends ObjectModel
      */
     public function getDeliveryOptionList(?Country $default_country = null, $flush = false)
     {
-        if (isset(static::$cacheDeliveryOptionList[$this->id]) && !$flush) {
-            return static::$cacheDeliveryOptionList[$this->id];
+        $cacheKey = (int) $this->id . '_' . (int) $this->id_address_delivery;
+
+        if (isset(static::$cacheDeliveryOptionList[$cacheKey]) && !$flush) {
+            return static::$cacheDeliveryOptionList[$cacheKey];
         }
 
         $delivery_option_list = [];
@@ -2964,9 +2981,7 @@ class CartCore extends ObjectModel
                  * We can't just use empty($package['carrier_list']) because it looks like [0 => 0] if there are no carriers.
                  */
                 if (count($package['carrier_list']) == 1 && current($package['carrier_list']) == 0) {
-                    $cache[$this->id] = [];
-
-                    return $cache[$this->id];
+                    return [];
                 }
 
                 $carriers_price[$id_address][$id_package] = [];
@@ -3213,9 +3228,9 @@ class CartCore extends ObjectModel
             ]
         );
 
-        static::$cacheDeliveryOptionList[$this->id] = $delivery_option_list;
+        static::$cacheDeliveryOptionList[$cacheKey] = $delivery_option_list;
 
-        return static::$cacheDeliveryOptionList[$this->id];
+        return static::$cacheDeliveryOptionList[$cacheKey];
     }
 
     /**
@@ -4073,11 +4088,12 @@ class CartCore extends ObjectModel
         }
 
         // Otherwise, we return the total weight of the cart
-        if (!isset(self::$_totalWeight[$this->id])) {
-            $this->updateProductWeight($this->id);
+        $cacheKey = (int) $this->id;
+        if (!isset(self::$_totalWeight[$cacheKey])) {
+            $this->updateProductWeight($cacheKey);
         }
 
-        return self::$_totalWeight[(int) $this->id];
+        return self::$_totalWeight[$cacheKey];
     }
 
     /**
@@ -4337,17 +4353,18 @@ class CartCore extends ObjectModel
             return false;
         }
 
-        if (!isset(self::$_isVirtualCart[$this->id])) {
+        $cacheKey = (int) $this->id;
+        if (!isset(self::$_isVirtualCart[$cacheKey])) {
             if (!$this->hasProducts()) {
                 $isVirtual = false;
             } else {
                 $isVirtual = !$this->hasRealProducts();
             }
 
-            self::$_isVirtualCart[$this->id] = $isVirtual;
+            self::$_isVirtualCart[$cacheKey] = $isVirtual;
         }
 
-        return self::$_isVirtualCart[$this->id];
+        return self::$_isVirtualCart[$cacheKey];
     }
 
     /**

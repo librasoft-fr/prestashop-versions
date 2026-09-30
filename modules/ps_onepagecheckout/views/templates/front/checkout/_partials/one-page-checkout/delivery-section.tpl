@@ -1,0 +1,82 @@
+{**
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ *}
+
+{**
+ * OPC — Delivery method section
+ * Included by one-page-checkout.tpl.
+ * Also renderable standalone for AJAX refresh.
+ *
+ * Variables:
+ *   $delivery_options         - available carriers (may be empty on first load)
+ *   $delivery_option          - currently selected carrier key
+ *   $id_address_delivery      - current cart delivery address ID
+ *   $hookDisplayBeforeCarrier
+ *   $hookDisplayAfterCarrier
+ *}
+
+<section class="one-page-checkout__section js-opc-delivery-section">
+  <h2 class="one-page-checkout__title" id="opc-delivery-section-title">{l s='Delivery method' d='Modules.Onepagecheckout.Shop'}</h2>
+
+  <div id="delivery-options__hook">
+    {if isset($hookDisplayBeforeCarrier)}
+      {$hookDisplayBeforeCarrier nofilter}
+    {else}
+      {hook h='displayBeforeCarrier'}
+    {/if}
+  </div>
+
+  <div class="one-page-checkout__placeholder" id="opc-delivery-methods" data-id-address="{$id_address_delivery|intval}"
+    data-url-update="{url entity='order' params=['ajax' => 1, 'action' => 'opcSelectCarrier']}"
+    data-msg-no-carriers="{l s='Unfortunately, there are no carriers available for your delivery address.' d='Modules.Onepagecheckout.Shop'}"
+  >
+    {if $delivery_options|count}
+      {include file='module:ps_onepagecheckout/views/templates/front/checkout/_partials/one-page-checkout/carriers.tpl'
+        delivery_options=$delivery_options
+        delivery_option=$delivery_option
+      }
+    {else}
+      {include file='module:ps_onepagecheckout/views/templates/front/checkout/_partials/one-page-checkout/awaiting-address.tpl'
+        message={l s='Complete your delivery address above to see your delivery options.' d='Modules.Onepagecheckout.Shop'}
+      }
+    {/if}
+  </div>
+
+  <div class="delivery-options__display-after-carrier" id="hook-display-after-carrier">
+    {if isset($hookDisplayAfterCarrier)}
+      {$hookDisplayAfterCarrier nofilter}
+    {else}
+      {hook h='displayAfterCarrier'}
+    {/if}
+  </div>
+
+  <div class="delivery-options__extra-carrier" id="extra_carrier"></div>
+
+  {include file='module:ps_onepagecheckout/views/templates/front/checkout/_partials/one-page-checkout/order-options.tpl'
+    delivery_message=$delivery_message|default:''
+    recyclablePackAllowed=$recyclablePackAllowed|default:false
+    recyclable=$recyclable|default:false
+    gift=$gift|default:[]
+    has_carriers=$delivery_options|default:[]|count
+  }
+
+  <template id="opc-template-loader">
+    {include file='module:ps_onepagecheckout/views/templates/front/checkout/_partials/one-page-checkout/opc-loader.tpl'
+      message={l s='Loading delivery methods...' d='Modules.Onepagecheckout.Shop'}
+    }
+  </template>
+
+  <template id="opc-template-carriers-error">
+    {include file='module:ps_onepagecheckout/views/templates/front/checkout/_partials/one-page-checkout/opc-error.tpl'
+      message={l s="We couldn't load your delivery options. Please try again." d='Modules.Onepagecheckout.Shop'}
+      retry_label={l s='Retry' d='Modules.Onepagecheckout.Shop'}
+    }
+  </template>
+
+  <template id="opc-template-carriers-awaiting-address">
+    {include file='module:ps_onepagecheckout/views/templates/front/checkout/_partials/one-page-checkout/awaiting-address.tpl'
+      message={l s='Complete your delivery address above to see your delivery options.' d='Modules.Onepagecheckout.Shop'}
+    }
+  </template>
+</section>

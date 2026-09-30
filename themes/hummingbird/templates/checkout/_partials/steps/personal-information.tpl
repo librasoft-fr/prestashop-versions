@@ -1,3 +1,7 @@
+{**
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ *}
 {extends file='checkout/_partials/steps/checkout-step.tpl'}
 
 {$stepName = 'personnal-information'}
@@ -41,15 +45,7 @@
 
     <form id="checkout-continue-form" method="GET" action="{$urls.pages.order}">
       <div class="buttons-wrapper buttons-wrapper--end mt-3">
-        <button
-          class="btn btn-primary"
-          name="controller"
-          type="submit"
-          value="order"
-        >
-          {l s='Continue to Addresses' d='Shop.Theme.Actions'}
-          <i class="material-icons rtl-flip" aria-hidden="true">&#xE5C8;</i>
-        </button>
+        {include file='checkout/_partials/checkout-step-buttons.tpl' submit_name='controller' submit_value='order'}
       </div>
     </form>
   {else}

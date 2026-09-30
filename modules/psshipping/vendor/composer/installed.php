@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'prestashopcorp/psshipping',
-        'pretty_version' => 'dev-aae26448387f37b0dd7b6147985f71943a86705a',
-        'version' => 'dev-aae26448387f37b0dd7b6147985f71943a86705a',
-        'reference' => 'aae26448387f37b0dd7b6147985f71943a86705a',
+        'pretty_version' => 'dev-4ed8f08986745cbb8cc59a2b62b14662af13c0a2',
+        'version' => 'dev-4ed8f08986745cbb8cc59a2b62b14662af13c0a2',
+        'reference' => '4ed8f08986745cbb8cc59a2b62b14662af13c0a2',
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -185,9 +185,9 @@
             'dev_requirement' => false,
         ),
         'prestashopcorp/psshipping' => array(
-            'pretty_version' => 'dev-aae26448387f37b0dd7b6147985f71943a86705a',
-            'version' => 'dev-aae26448387f37b0dd7b6147985f71943a86705a',
-            'reference' => 'aae26448387f37b0dd7b6147985f71943a86705a',
+            'pretty_version' => 'dev-4ed8f08986745cbb8cc59a2b62b14662af13c0a2',
+            'version' => 'dev-4ed8f08986745cbb8cc59a2b62b14662af13c0a2',
+            'reference' => '4ed8f08986745cbb8cc59a2b62b14662af13c0a2',
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

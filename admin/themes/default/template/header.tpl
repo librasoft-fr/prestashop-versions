@@ -125,15 +125,31 @@
             <li class="divider"></li>
             {if isset($matchQuickLink)}
               <li>
-                <a id="quick-remove-link" href="javascript:void(0);" class="ajax-quick-link" data-method="remove"
-                  data-quicklink-id="{$matchQuickLink|intval}">
+                <a id="quick-remove-link"
+                   href="#"
+                   class="ajax-quick-link js-quick-link"
+                   data-method="remove"
+                   data-quicklink-id="{$matchQuickLink|intval}"
+                   data-post-link="{$quick_access_ajax_delete_url|escape:'html':'UTF-8'}"
+                   data-url=""
+                   data-prompt-text="{l s='Please name this shortcut:' d='Admin.Navigation.Header'}"
+                   data-link=""
+                >
                   <i class="material-icons">remove_circle</i>
-                  {l|escape s='Remove from QuickAccess' d='Admin.Navigation.Header'}
+                  {l|escape s='Remove from Quick Access' d='Admin.Navigation.Header'}
                 </a>
               </li>
             {else}
               <li>
-                <a id="quick-add-link" href="javascript:void(0);" class="ajax-quick-link" data-method="add">
+                <a id="quick-add-link"
+                   href="#"
+                   class="ajax-quick-link js-quick-link"
+                   data-method="add"
+                   data-url="{$link->getQuickLink($smarty.server.REQUEST_URI)|escape:'html':'UTF-8'}"
+                   data-post-link="{$quick_access_ajax_add_url|escape:'html':'UTF-8'}"
+                   data-link="{$quick_access_current_link_short_name|escape:'html':'UTF-8'}"
+                   data-icon="{$quick_access_current_link_icon|escape:'html':'UTF-8'}"
+                >
                   <i class="material-icons">add_circle</i>
                   {l|escape s='Add current page to QuickAccess' d='Admin.Navigation.Header'}
                 </a>
@@ -148,56 +164,54 @@
           </ul>
         </div>
       </div>
-      {$quick_access_current_link_name = " - "|explode:$quick_access_current_link_name}
-      <script>
-        $(function() {
-          $('.ajax-quick-link').on('click', function(e){
-            e.preventDefault();
 
-            var method = $(this).data('method');
-
-            if(method == 'add')
-              var name = prompt('{l|escape s='Please name this shortcut:' js=1 d='Admin.Navigation.Header'}', '{$quick_access_current_link_name.0|escape:"javascript"|truncate:32}}');
-
-            if(method == 'add' && name || method == 'remove')
-            {
-              $.ajax({
-                type: 'POST',
-                headers: { "cache-control": "no-cache" },
-                async: false,
-                url: "{$link->getAdminLink('AdminQuickAccesses', true, [], ['action' => 'GetUrl', 'rand' => (1|rand:200), 'ajax' => 1])}" + "&method=" + method + ( $(this).data('quicklink-id') ? "&id_quick_access=" + $(this).data('quicklink-id') : ""),
-                data: {
-                  "url": "{$link->getQuickLink($smarty.server['REQUEST_URI']|escape:'javascript')}",
-                  "name": name,
-                  "icon": "{$quick_access_current_link_icon|escape:'javascript'}"
-                },
-                dataType: "json",
-                success: function(data) {
-                  var quicklink_list ='';
-                  $.each(data, function(index,value){
-                    if (typeof data[index]['name'] !== 'undefined')
-                      quicklink_list += '<li><a href="' + data[index]['link'] + '">' + data[index]['name'] + '</a></li>';
-                  });
-
-                  if (typeof data['has_errors'] !== 'undefined' && data['has_errors'])
-                    $.each(data, function(index, value)
-                      {
-                        if (typeof data[index] == 'string')
-                          $.growl.error({ title: "", message: data[index]});
-                    });
-                  else if (quicklink_list)
-                  {
-                    $('#header_quick ul.dropdown-menu .divider').prevAll().remove();
-                    $('#header_quick ul.dropdown-menu').prepend(quicklink_list);
-                    $(e.target).remove();
-                    showSuccessMessage(update_success_msg);
-                  }
-                }
-              });
-            }
-          });
-        });
-      </script>
+      <div class="modal fade" id="quick-access-add-modal" tabindex="-1" role="dialog"
+           aria-labelledby="quick-access-add-modal-title" aria-modal="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"
+                      aria-label="{l s='Close' d='Admin.Actions'}">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 class="modal-title" id="quick-access-add-modal-title">
+                {l s='Add to Quick Access' d='Admin.Navigation.Header'}
+              </h4>
+            </div>
+            <div class="modal-body">
+              <div class="hidden" role="alert" id="quick-access-add-error"><div class="alert-text"></div></div>
+              <div class="form-group" id="quick-access-name-group">
+                <label for="quick-access-name">
+                  {l s='Shortcut name' d='Admin.Navigation.Header'}
+                </label>
+                <input type="text" id="quick-access-name" class="form-control" required aria-required="true" maxlength="32"
+                       data-required-message="{l s='Shortcut name is required' d='Admin.Navigation.Header'}">
+                <span class="help-block hidden" id="quick-access-name-error"><span class="js-error-text"></span></span>
+              </div>
+              <div class="form-group">
+                <label class="d-block">
+                  {l s='Open in new window' d='Admin.Navigation.Header'}
+                </label>
+                <span class="ps-switch">
+                  <input id="quick-access-new-window-off" name="quick_access_new_window" value="0" checked type="radio">
+                  <label for="quick-access-new-window-off">{l s='No' d='Admin.Global'}</label>
+                  <input id="quick-access-new-window-on" name="quick_access_new_window" value="1" type="radio">
+                  <label for="quick-access-new-window-on">{l s='Yes' d='Admin.Global'}</label>
+                  <span class="slide-button"></span>
+                </span>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">
+                {l s='Cancel' d='Admin.Actions'}
+              </button>
+              <button type="button" class="btn btn-primary btn-lg" id="quick-access-save-btn">
+                {l s='Save' d='Admin.Actions'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {* Search *}
       {include file="search_form.tpl" show_clear_btn=1}

@@ -1,6 +1,8 @@
 imports:
   - { resource: ./circuit_breaker.yml }
   - { resource: ./feature_flag.yml }
+  - { resource: ./multishop.yml }
+  - { resource: ./pricing.yml }
 
 services:
   PrestaShop\PrestaShop\Core\EnvironmentInterface:

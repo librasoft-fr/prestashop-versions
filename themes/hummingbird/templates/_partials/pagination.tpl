@@ -1,10 +1,10 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {$componentName = 'pagination'}
 
-<nav class="{$componentName}__container">
+<div class="{$componentName}__container">
   <div class="{$componentName}__number">
     {block name='pagination_summary'}
       {l s='Showing %from%-%to% of %total% item(s)' d='Shop.Theme.Catalog' sprintf=['%from%' => $pagination.items_shown_from ,'%to%' => $pagination.items_shown_to, '%total%' => $pagination.total_items]}
@@ -69,4 +69,4 @@
       </nav>
     {/block}
   </div>
-</nav>
+</div>

@@ -20,6 +20,7 @@
 
 namespace PsCheckout\Core\Order\Exception\Handler;
 
+use Exception;
 use PsCheckout\Api\Http\Exception\PayPalException;
 use PsCheckout\Core\Exception\PsCheckoutException;
 use PsCheckout\Infrastructure\Action\CustomerNotifyActionInterface;
@@ -56,7 +57,7 @@ class OrderCreationExceptionHandler implements OrderCreationExceptionHandlerInte
     /**
      * {@inheritDoc}
      */
-    public function handle(\Exception $exception, string $paypalOrderId)
+    public function handle(Exception $exception, string $paypalOrderId)
     {
         $exceptionMessageForCustomer = $this->translator->trans('Error processing payment, you could have been charged. Please check your order history in your account to check the status of the order or please contact our customer service to know more.');
         $notifyCustomerService = true;
@@ -332,9 +333,6 @@ class OrderCreationExceptionHandler implements OrderCreationExceptionHandlerInte
                     break;
                 case PayPalException::PAYEE_ACCOUNT_LOCKED_OR_CLOSED:
                 case PayPalException::PAYEE_ACCOUNT_RESTRICTED:
-                    $exceptionMessageForCustomer = $this->translator->trans('Payment cannot be processed at the moment. Please contact our customer service.');
-
-                    break;
                 case PayPalException::TRANSACTION_RECEIVING_LIMIT_EXCEEDED:
                     $exceptionMessageForCustomer = $this->translator->trans('Payment cannot be processed at the moment. Please contact our customer service.');
 
@@ -377,6 +375,89 @@ class OrderCreationExceptionHandler implements OrderCreationExceptionHandlerInte
                     'code' => (int) $exception->getCode() < 400 && $exception->getPrevious() !== null
                         ? (int) $exception->getPrevious()->getCode()
                         : (int) $exception->getCode(),
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function handleOrderCreateException(Exception $exception, ?string $fundingSource): array
+    {
+        $exceptionMessageForCustomer = $exception->getMessage();
+        $isClientError = false;
+
+        if ($exception instanceof PayPalException) {
+            switch ($exception->getCode()) {
+                case PayPalException::PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED:
+                    $isClientError = true;
+                    if ($fundingSource === 'pay_upon_invoice') {
+                        $exceptionMessageForCustomer = $this->translator->trans('The combination of your name and address could not be validated. Please correct your data and try again. You can find further information in the Ratepay Data Privacy Statement or you can contact Ratepay.');
+                    }
+
+                    break;
+                case PayPalException::PAYMENT_SOURCE_DECLINED_BY_PROCESSOR:
+                    $isClientError = true;
+                    if ($fundingSource === 'pay_upon_invoice') {
+                        $exceptionMessageForCustomer = $this->translator->trans('It is not possible to use the selected payment method. This decision is based on automated data processing. You can find further information in the Ratepay Data Privacy Statement or you can contact Ratepay.');
+                    }
+
+                    break;
+                case PayPalException::PAYMENT_SOURCE_CANNOT_BE_USED:
+                    $isClientError = true;
+                    $exceptionMessageForCustomer = $this->translator->trans('The selected payment method does not support this type of transaction. Please choose another payment method or contact support for assistance.');
+
+                    break;
+                case PayPalException::BILLING_ADDRESS_INVALID:
+                    $isClientError = true;
+                    $exceptionMessageForCustomer = $this->translator->trans('There is an error in your billing address. Please check it and try again.');
+
+                    break;
+                case PayPalException::SHIPPING_ADDRESS_INVALID:
+                    $isClientError = true;
+                    $exceptionMessageForCustomer = $this->translator->trans('There is an error in your shipping address. Please check it and try again.');
+
+                    break;
+            }
+        } elseif ($exception instanceof PsCheckoutException) {
+            switch ($exception->getCode()) {
+                case PsCheckoutException::CART_SHIPPING_ADDRESS_INVALID:
+                    $isClientError = true;
+                    $exceptionMessageForCustomer = $this->translator->trans('There is an error in your shipping address. Please check it and try again.');
+
+                    break;
+                case PsCheckoutException::CART_CUSTOMER_PHONE_INVALID:
+                    $isClientError = true;
+                    $exceptionMessageForCustomer = $this->translator->trans('Your phone number is invalid or missing. Please update your contact details and try again.');
+
+                    break;
+                case PsCheckoutException::CART_CUSTOMER_EMAIL_INVALID:
+                    $isClientError = true;
+                    $exceptionMessageForCustomer = $this->translator->trans('Your email address is invalid or missing. Please update your contact details and try again.');
+
+                    break;
+                case PsCheckoutException::CART_CUSTOMER_BIRTH_DATE_INVALID:
+                    $isClientError = true;
+                    $exceptionMessageForCustomer = $this->translator->trans('Your date of birth is invalid or missing. Please check and try again.');
+
+                    break;
+            }
+        }
+
+        if ($isClientError) {
+            $this->logger->notice('CreateOrder - Exception ' . $exception->getCode(), ['exception' => $exception]);
+        } else {
+            $this->logger->error('CreateOrder - Exception ' . $exception->getCode(), ['exception' => $exception]);
+        }
+
+        return [
+            'status' => false,
+            'httpCode' => $isClientError ? 400 : 500,
+            'body' => [
+                'error' => [
+                    'message' => $exceptionMessageForCustomer,
+                    'code' => $exception->getCode(),
                 ],
             ],
         ];

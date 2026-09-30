@@ -19,7 +19,7 @@
  */
 
 declare(strict_types=1);
-if (!defined('_PS_VERSION_') || version_compare(_PS_VERSION_, '8.0.2', '<')) {
+if (!defined('_PS_VERSION_') || version_compare(_PS_VERSION_, '9.0.0', '<')) {
     return;
 }
 
@@ -40,8 +40,11 @@ class ps_mbo extends Module
 {
     use PrestaShop\Module\Mbo\Traits\HaveTabs;
     use PrestaShop\Module\Mbo\Traits\UseHooks;
+    use PrestaShop\Module\Mbo\Traits\ResolvesServices;
 
-    public const VERSION = '5.2.2';
+    public const MODULE_NAME = 'ps_mbo';
+
+    public const VERSION = '5.3.2';
 
     public array $configurationList = [
         'PS_MBO_SHOP_ADMIN_UUID' => '', // 'ADMIN' because there will be only one for all shops in a multishop context
@@ -68,9 +71,9 @@ class ps_mbo extends Module
      */
     public function __construct()
     {
-        $this->name = 'ps_mbo';
         // This value must be hard-coded to respect Addons rules, so we must make sure that the const value is always synced with this one
-        $this->version = '5.2.2';
+        $this->name = 'ps_mbo';
+        $this->version = '5.3.2';
         $this->author = 'PrestaShop';
         $this->tab = 'administration';
         $this->module_key = '6cad5414354fbef755c7df4ef1ab74eb';
@@ -91,10 +94,6 @@ class ps_mbo extends Module
                 [],
                 'Modules.Mbo.Global'
             );
-
-        if (self::checkModuleStatus()) {
-            $this->bootHooks();
-        }
 
         $this->loadEnv();
     }
@@ -291,7 +290,7 @@ class ps_mbo extends Module
         }
     }
 
-    public function installTables(string $table = null): bool
+    public function installTables(?string $table = null): bool
     {
         $sqlQueries = [];
 

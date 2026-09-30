@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {extends file=$layout}
 
@@ -39,13 +39,13 @@
 
     <div class="product__right" data-ps-ref="product-right" tabindex="-1">
       {block name='product_header'}
-        <h1 class="product__name h2 {if !empty($product_manufacturer->name) && !empty($product_brand_url)}mb-1{/if}">
+        <h1 class="product__name h2 {if isset($product_manufacturer->id) && $product_manufacturer->active}mb-1{/if}">
           {block name='page_title'}{$product.name}{/block}
         </h1>
       {/block}
 
-      {block name='product_manufacturer'}
-        {if !empty($product_manufacturer->name) && !empty($product_manufacturer->url)}
+      {block name='product_header_manufacturer'}
+        {if isset($product_manufacturer->id) && $product_manufacturer->active}
           <div class="product__manufacturer">
             <a href="{$product_manufacturer->url}" aria-label="{l s='Product brand: %brand_name%' sprintf=['%brand_name%' => $product_manufacturer->name] d='Shop.Theme.Catalog'}">
               {$product_manufacturer->name}
@@ -165,7 +165,7 @@
                             href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}"
                             aria-label="{l s='Download %attachment_name%' sprintf=['%attachment_name%' => $attachment.name] d='Shop.Theme.Actions'}"
                           >
-                            <i class="material-icons">&#xE2C4;</i> {l s='Download' d='Shop.Theme.Actions'} ({$attachment.file_size_formatted})
+                            <i class="material-icons" aria-hidden="true">&#xE2C4;</i> {l s='Download' d='Shop.Theme.Actions'} ({$attachment.file_size_formatted})
                           </a>
                         </div>
                       {/foreach}

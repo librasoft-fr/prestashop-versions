@@ -33,6 +33,7 @@ class ConfigurationKeys extends Enum
     const PS_ACCOUNTS_SHOP_PROOF = 'PS_ACCOUNTS_SHOP_PROOF';
     const PS_ACCOUNTS_CACHED_SHOP_STATUS = 'PS_ACCOUNTS_SHOP_STATUS';
     const PS_ACCOUNTS_VALIDATION_LEEWAY = 'PS_ACCOUNTS_VALIDATION_LEEWAY';
+    const PS_ACCOUNTS_TOKEN_EXPIRATION_LEEWAY = 'PS_ACCOUNTS_TOKEN_EXPIRATION_LEEWAY';
 
     /** @deprecated  */
     const PS_ACCOUNTS_FIREBASE_ID_TOKEN = 'PS_ACCOUNTS_FIREBASE_ID_TOKEN';
@@ -58,4 +59,32 @@ class ConfigurationKeys extends Enum
     const PS_PSX_FIREBASE_REFRESH_DATE = 'PS_PSX_FIREBASE_REFRESH_DATE';
     /* @deprecated */
     const PS_PSX_FIREBASE_EMAIL = 'PS_PSX_FIREBASE_EMAIL';
+
+    /**
+     * Subset of keys that hold transient credentials (OAuth2 access tokens and Firebase
+     * id/refresh tokens). Recoverable through a normal refresh cycle, so safe to target
+     * with destructive multishop cleanup SQL. Identifiers, OAuth2 client credentials and
+     * email keys are intentionally excluded.
+     */
+    const TOKEN_KEYS = [
+        self::PS_ACCOUNTS_ACCESS_TOKEN,
+        self::PS_ACCOUNTS_FIREBASE_ID_TOKEN,
+        self::PS_ACCOUNTS_FIREBASE_REFRESH_TOKEN,
+        self::PS_ACCOUNTS_USER_FIREBASE_ID_TOKEN,
+        self::PS_ACCOUNTS_USER_FIREBASE_REFRESH_TOKEN,
+        self::PS_PSX_FIREBASE_ID_TOKEN,
+        self::PS_PSX_FIREBASE_REFRESH_TOKEN,
+    ];
+
+    /**
+     * Override Enum::cases() to keep only scalar key constants and exclude metadata
+     * arrays such as TOKEN_KEYS, which otherwise leak through ReflectionClass::getConstants()
+     * and break callers that join the result into a SQL string list.
+     *
+     * @return array<string, string>
+     */
+    public static function cases()
+    {
+        return array_filter(parent::cases(), 'is_string');
+    }
 }

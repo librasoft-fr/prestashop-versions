@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ps_mcp_tools</name>
+    <displayName><![CDATA[PrestaShop MCP Tools]]></displayName>
+    <version><![CDATA[1.0.2]]></version>
+    <description><![CDATA[Add some tools for managing your PrestaShop store, through ps_mcp module.]]></description>
+    <author><![CDATA[PrestaShop SA]]></author>
+    <tab><![CDATA[administration]]></tab>
+	<confirmUninstall><![CDATA[Do you really want to uninstall this module?]]></confirmUninstall>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>

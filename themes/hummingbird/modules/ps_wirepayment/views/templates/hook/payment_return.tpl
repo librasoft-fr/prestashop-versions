@@ -1,11 +1,11 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 
 <div class="card border-1 mb-3">
   <div class="card-body">
-    <p class="h2">{l s='Payment information' d='Shop.Theme.Checkout'}</p>
+    <h2>{l s='Payment information' d='Shop.Theme.Checkout'}</h2>
 
     <p class="h3 card-subtitle text-secondary mb-3">{l s='Pay by Bank Wire' d='Modules.Wirepayment.Shop'}</p>
 

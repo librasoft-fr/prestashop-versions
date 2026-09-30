@@ -1,0 +1,13 @@
+# Check Symfony documentation about service container
+# PrestaShop using Symfony 3.4 for PrestaShop 1.7.x.x
+# PrestaShop using Symfony 4.4 for PrestaShop 8.x.x
+# https://symfony.com/doc/3.4/service_container.html
+# https://symfony.com/doc/4.4/service_container.html
+# https://devdocs.prestashop-project.org/8/modules/concepts/services/
+# In PrestaShop you must configure services manually
+# Add services in this file allow use services only in a modern context (Symfony controller)
+# Declaring services in this file is necessary when you use components only available in a modern context
+# Example : using Symfony Form component
+imports:
+  - { resource: ./common.yml }
+  - { resource: ./admin.yml }

@@ -2,7 +2,7 @@
 <module>
     <name>psshipping</name>
     <displayName><![CDATA[PrestaShop Shipping]]></displayName>
-    <version><![CDATA[2.1.3]]></version>
+    <version><![CDATA[2.1.4]]></version>
     <description><![CDATA[Powered by Mail Boxes Etc, PrestaShop Shipping offers standard, pickup-point and express international delivery methods to your customers no matter where they are located.
             Have access to exclusive rates for each delivered and returned parcels by using our extensive network of trusted partners.]]></description>
     <author><![CDATA[PrestaShop]]></author>

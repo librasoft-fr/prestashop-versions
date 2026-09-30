@@ -46,6 +46,7 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
     const ORDER_MAPPING_IS_ACTIVATE = 'PS_SHIPPING_ORDER_MAPPING_IS_ACTIVATE';
     const ONBOARDING_IS_DONE = 'PS_SHIPPING_ONBOARDING_IS_DONE';
     const ADVANCED_ORDER_SETTING = 'PS_SHIPPING_ADVANCED_ORDER_SETTING';
+    const UPS_DAP_FIRST_LABEL_CREATED = 'PS_SHIPPING_UPS_DAP_FIRST_LABEL_CREATED';
 
     /** @var Psshipping */
     private $module;
@@ -82,6 +83,33 @@ class PsshippingConfigurationController extends FrameworkBundleAdminController
 
         return new Response(
             json_encode(!$onboardingIsDone),
+            200,
+            ['Content-Type' => 'application/json']
+        );
+    }
+
+    /**
+     * Mark that the merchant has created his first label with a UPS DAP carrier,
+     * so the mandatory consent checkbox is no longer displayed.
+     */
+    public function setUpsDapFirstLabelCreated(): Response
+    {
+        try {
+            $configuration = new Configuration();
+            $context = LegacyContext::getContext();
+            if (!empty($context) && !empty($context->shop)) {
+                $configuration->restrictUpdatesTo($context->shop);
+            }
+
+            $configuration->set(self::UPS_DAP_FIRST_LABEL_CREATED, true);
+        } catch (\Exception $e) {
+            throw new BadRequestException($e->getMessage(), $e->getCode());
+        }
+
+        return new Response(
+            json_encode([
+                'status' => true,
+            ]),
             200,
             ['Content-Type' => 'application/json']
         );

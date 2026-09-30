@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {extends file=$layout}
 
@@ -52,6 +52,10 @@
         {/block}
 
         <hr>
+
+        {block name='cart_below_summary'}
+          {hook h='displayCartBelowSummary'}
+        {/block}
 
         {block name='hook_reassurance'}
           {hook h='displayReassurance'}

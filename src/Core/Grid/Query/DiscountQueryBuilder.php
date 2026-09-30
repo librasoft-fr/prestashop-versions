@@ -11,6 +11,7 @@ namespace PrestaShop\PrestaShop\Core\Grid\Query;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use PrestaShop\PrestaShop\Core\ConfigurationInterface;
 use PrestaShop\PrestaShop\Core\Context\LanguageContext;
 use PrestaShop\PrestaShop\Core\Domain\Discount\DiscountSettings;
 use PrestaShop\PrestaShop\Core\Grid\Search\SearchCriteriaInterface;
@@ -25,6 +26,7 @@ class DiscountQueryBuilder extends AbstractDoctrineQueryBuilder
         string $dbPrefix,
         private readonly DoctrineSearchCriteriaApplicatorInterface $searchCriteriaApplicator,
         private readonly LanguageContext $languageContext,
+        private readonly ConfigurationInterface $configuration,
     ) {
         parent::__construct($connection, $dbPrefix);
     }
@@ -34,6 +36,19 @@ class DiscountQueryBuilder extends AbstractDoctrineQueryBuilder
      */
     public function getSearchQueryBuilder(SearchCriteriaInterface $searchCriteria): QueryBuilder
     {
+        $quantityUsedSubquery = sprintf(
+            '(SELECT COUNT(*)
+                FROM %sorders o
+                INNER JOIN %sorder_cart_rule ocr ON ocr.id_order = o.id_order
+                WHERE ocr.deleted = 0
+                AND ocr.id_cart_rule = cr.id_cart_rule
+                AND o.current_state != %d
+            )',
+            $this->dbPrefix,
+            $this->dbPrefix,
+            (int) $this->configuration->get('PS_OS_ERROR')
+        );
+
         $qb = $this->getQueryBuilder($searchCriteria->getFilters())
             ->select(
                 'cr.id_cart_rule AS id_discount,
@@ -49,6 +64,8 @@ class DiscountQueryBuilder extends AbstractDoctrineQueryBuilder
                     ELSE \'\'
                 END AS discount_type_badge,
                 cr.code,
+                ' . $quantityUsedSubquery . ' AS quantity_used,
+                cr.total_quantity,
                 cr.date_from,
                 cr.date_to,
                 cr.active'
@@ -124,7 +141,7 @@ class DiscountQueryBuilder extends AbstractDoctrineQueryBuilder
             'id_discount' => 'cr.id_cart_rule',
             'name' => 'crl.name',
             'code' => 'cr.code',
-            'discount_type' => 'crt.discount_type',
+            'discount_type' => 'crt.id_cart_rule_type',
             'active' => 'cr.active',
         ];
 
@@ -182,7 +199,7 @@ class DiscountQueryBuilder extends AbstractDoctrineQueryBuilder
 
     private function applyPeriodFilter(QueryBuilder $qb, mixed $value, DateTimeImmutable $now): void
     {
-        if (!is_string($value) || $value === '' || $value === DiscountSettings::PERIOD_FILTER_ALL) {
+        if (!is_string($value) || empty($value)) {
             return;
         }
 

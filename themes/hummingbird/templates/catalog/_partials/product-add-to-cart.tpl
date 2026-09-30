@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {if !$configuration.is_catalog}
   <div class="product__add-to-cart-container product-add-to-cart js-product-add-to-cart">
@@ -30,7 +30,7 @@
 
           {** And render the availability message with icon *}
           <div class="product__availability-status {$availability_class}" aria-live="off" data-ps-ref="product-availability">
-            <i class="product__availability-icon material-icons rtl-no-flip">&#x{$availability_icon};</i>
+            <i class="product__availability-icon material-icons rtl-no-flip" aria-hidden="true">&#x{$availability_icon};</i>
 
             <div class="product__availability-messages">
               <span class="visually-hidden">{l s='Product availability:' d='Shop.Theme.Global'}</span>

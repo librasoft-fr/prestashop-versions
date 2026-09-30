@@ -1,0 +1,176 @@
+<?php
+
+/**
+ * Copyright (c) 2026 PrestaShop SA
+ *
+ * This file is part of the PrestaShop AskAI solution.
+ * For license terms, see LICENSE.md in this module.
+ */
+
+declare(strict_types=1);
+
+namespace PrestaShop\Module\PsAskAi\Service;
+
+use Monolog\Logger;
+
+/**
+ * Detects whether a newer version of ps_ask_ai is available, by delegating to
+ * ps_mbo's ModulesHelper::findForUpdates(). MBO owns the source of truth
+ * (Distribution API list, 24h file cache in _PS_CACHE_DIR_/ps_mbo with a 1h
+ * freshness override), so no extra cache is layered here.
+ *
+ * The install URL it returns (`urls.upgrade`) targets the CORE route
+ * `admin_module_manage_action` (PrestaShopBundle\Controller\Admin\Improve\
+ * ModuleController::moduleAction), not any ps_mbo-owned controller. That core
+ * controller calls PrestaShop\PrestaShop\Core\Module\ModuleManager::upgrade(),
+ * the exact same call the built-in Module Manager UI makes for every
+ * third-party module — MBO's actual download engine still runs underneath via
+ * the `actionBeforeUpgradeModule` hook (legacy hook dispatch, independent of
+ * MBO's admin controllers/Symfony DI), it is just never reached through one of
+ * MBO's own HTTP endpoints. Same approach validated by the PE-1714 spike for
+ * installing third-party modules from the drawer.
+ *
+ * Every failure path (MBO absent/disabled, service missing, network error)
+ * resolves to "no update available" — an update indicator must never be a
+ * false positive.
+ */
+class UpdateAvailabilityService
+{
+    public const MODULE_NAME = 'ps_ask_ai';
+    private const MBO_MODULE_NAME = 'ps_mbo';
+    private const MBO_HELPER_CLASS = 'PrestaShop\Module\Mbo\Service\ModulesHelper';
+
+    /** @var array{available: bool, currentVersion: ?string, targetVersion: ?string, installUrl: ?string}|null */
+    private ?array $memoizedStatus = null;
+
+    public function __construct(
+        private readonly Logger $logger,
+    ) {
+    }
+
+    /**
+     * @return array{available: bool, currentVersion: ?string, targetVersion: ?string, installUrl: ?string}
+     */
+    public function getUpdateStatus(): array
+    {
+        // Memoized: the header hook and getContent() may both ask during one request.
+        if ($this->memoizedStatus !== null) {
+            return $this->memoizedStatus;
+        }
+
+        return $this->memoizedStatus = $this->resolveStatus();
+    }
+
+    /**
+     * @return array{available: bool, currentVersion: ?string, targetVersion: ?string, installUrl: ?string}
+     */
+    private function resolveStatus(): array
+    {
+        $none = ['available' => false, 'currentVersion' => null, 'targetVersion' => null, 'installUrl' => null];
+
+        // Dev-only escape hatch: the Distribution catalog does not list
+        // ps_ask_ai on a non-enterprise shop, so a real "update available" can
+        // never be observed locally. Setting PS_ASK_AI__FAKE_UPDATE_TARGET
+        // (e.g. "9.9.9") forces the detection to exercise the UI. The install
+        // URL is still real (core route, no ps_mbo dependency), so a full
+        // install can genuinely be exercised. Never set in production.
+        // $_SERVER first: the module bootstrap loads .env without putenv, so
+        // getenv() only sees real process env vars.
+        $fakeTarget = (string) ($_SERVER['PS_ASK_AI__FAKE_UPDATE_TARGET'] ?? getenv('PS_ASK_AI__FAKE_UPDATE_TARGET'));
+        if ($fakeTarget !== '') {
+            $module = \Module::getInstanceByName(self::MODULE_NAME);
+            if ($module instanceof \Module) {
+                return [
+                    'available' => true,
+                    'currentVersion' => (string) $module->version,
+                    'targetVersion' => $fakeTarget,
+                    'installUrl' => $this->buildCoreUpgradeUrl(),
+                ];
+            }
+        }
+
+        try {
+            if (!\Module::isEnabled(self::MBO_MODULE_NAME)) {
+                return $none;
+            }
+
+            $mbo = \Module::getInstanceByName(self::MBO_MODULE_NAME);
+            if ($mbo === false) {
+                return $none;
+            }
+
+            // class_exists only after getInstanceByName: loading ps_mbo.php is
+            // what registers MBO's autoloader.
+            if (!class_exists(self::MBO_HELPER_CLASS)) {
+                return $none;
+            }
+
+            $helper = $mbo->get(self::MBO_HELPER_CLASS);
+            if ($helper === null || !method_exists($helper, 'findForUpdates')) {
+                return $none;
+            }
+
+            $result = $helper->findForUpdates(self::MODULE_NAME);
+
+            $currentVersion = isset($result['current_version']) ? (string) $result['current_version'] : null;
+            $targetVersion = isset($result['available_version']) ? (string) $result['available_version'] : null;
+            $available = (bool) ($result['upgrade_available'] ?? false);
+            // Already the core admin_module_manage_action URL (action=upgrade),
+            // generated by MBO's own router — not an MBO controller endpoint.
+            $installUrl = isset($result['urls']['upgrade']) && is_string($result['urls']['upgrade']) && $result['urls']['upgrade'] !== ''
+                ? $result['urls']['upgrade']
+                : null;
+
+            if ($available && ($currentVersion === null || $targetVersion === null || $installUrl === null)) {
+                // Defensive: never announce an update we cannot name or install.
+                return $none;
+            }
+
+            return [
+                'available' => $available,
+                'currentVersion' => $currentVersion,
+                'targetVersion' => $targetVersion,
+                'installUrl' => $installUrl,
+            ];
+        } catch (\Throwable $e) {
+            $this->logger->warning('[ps_ask_ai] update availability check failed: ' . $e->getMessage());
+
+            return $none;
+        }
+    }
+
+    /**
+     * Generates the same core `admin_module_manage_action` (action=upgrade)
+     * URL that ModulesHelper::findForUpdates() would return, for the dev-only
+     * fake-detection path — no ps_mbo dependency, this route is pure
+     * PrestaShop core. Returns null when the router is unavailable.
+     */
+    private function buildCoreUpgradeUrl(): ?string
+    {
+        if (!class_exists(\PrestaShop\PrestaShop\Adapter\SymfonyContainer::class)) {
+            return null;
+        }
+
+        $container = \PrestaShop\PrestaShop\Adapter\SymfonyContainer::getInstance();
+        if ($container === null || !$container->has('router')) {
+            return null;
+        }
+
+        $router = $container->get('router');
+        if (!is_object($router) || !method_exists($router, 'generate')) {
+            return null;
+        }
+
+        try {
+            // 0 === Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL
+            // (not imported: keeps this service free of any hard Symfony dependency).
+            return (string) $router->generate(
+                'admin_module_manage_action',
+                ['action' => 'upgrade', 'module_name' => self::MODULE_NAME],
+                0
+            );
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+}

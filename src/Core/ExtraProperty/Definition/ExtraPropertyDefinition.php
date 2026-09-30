@@ -1,0 +1,1199 @@
+<?php
+
+/**
+ * For the full copyright and license information, please view the
+ * docs/licenses/LICENSE.txt file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace PrestaShop\PrestaShop\Core\ExtraProperty\Definition;
+
+use ObjectModelCore;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Exception\InvalidExtraPropertyDefinitionException;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Validation\ExtraPropertyValidator;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Value\ExtraPropertyValueCaster;
+use PrestaShop\PrestaShop\Core\Util\Inflector;
+use PrestaShop\TranslationToolsBundle\Translation\Helper\DomainHelper;
+use ReflectionProperty;
+use Symfony\Component\Validator\Constraint;
+use Throwable;
+
+/**
+ * Immutable value object representing an extra property definition.
+ *
+ * Serves as both the module-facing configuration object (passed to Module::registerExtraProperty())
+ * and the internal read DTO (returned by repository methods). All fields use typed Enum values
+ * instead of raw strings for type safety and PHPStan coverage.
+ *
+ * Fields used only at schema-creation time (not persisted in the registry):
+ *   - $nullable: NULL vs NOT NULL in the DDL
+ *   - $enumValues: ENUM literals for ExtraPropertyType::CHOICE fields
+ *
+ * Use the static factory ExtraPropertyDefinition::fromRow() to build an instance from a DB row.
+ * Use withModuleName() to derive a copy with injected module context.
+ *
+ * Constructor validation:
+ * - entityName and propertyName are required and must be non-empty.
+ * - associatedForms: each entry must match "formId[:path[:before|after]]"; no duplicate formId.
+ * - associatedGrids: each entry must match "gridId[:columnId[:before|after]]"; no duplicate gridId.
+ * - associatedApis: each entry must match "uriPath[:METHOD[,METHOD...]]"; uriPath is the operation URI template.
+ * - labelWording is required when associatedForms or associatedGrids is non-empty.
+ *
+ * @see ExtraPropertyRegistryInterface::register()
+ * @see \PrestaShop\PrestaShop\Core\ExtraProperty\Schema\ColumnDefinitionMapper
+ */
+final class ExtraPropertyDefinition
+{
+    /**
+     * Module-name key used in grouped arrays for fields that have no owning module (core fields).
+     */
+    public const CORE_MODULE_KEY = '_core';
+
+    /**
+     * Owning module technical name. Always null for core fields: '' and the '_core'
+     * sentinel are normalized to null at construction, so getModuleName() needs no
+     * defensive re-normalization by callers.
+     */
+    protected readonly ?string $moduleName;
+
+    /**
+     * Module key used in grouped extra-property arrays (reader output, writer input,
+     * bags, form field names): the module technical name, or '_core' for core fields.
+     * Computed once at construction — the exact counterpart of $moduleName.
+     */
+    protected readonly string $normalizedModuleKey;
+
+    /**
+     * Canonical entity name per known irregular core spelling, applied right after
+     * tableize() and BEFORE the class-based table resolution. Both directions of each
+     * irregular pair converge here: 'orders' (the Order table) and 'product_attribute'
+     * (the Combination table — including the 'ProductAttribute' class-name spelling,
+     * which must NEVER be class-resolved: the modern ProductAttribute class is the
+     * renamed Attribute entity and maps to the `attribute` table, so letting classify()
+     * win would silently store combination properties on the attribute table. The
+     * genuine attribute entity stays reachable as 'attribute').
+     *
+     * Most other entries follow the same rule as combination: the modern CQRS domain
+     * name is the canonical entity — those entities are headed for that rename — while
+     * their physical storage stays on the legacy table (mapped in
+     * CANONICAL_ENTITY_TABLES, since no ObjectModel class carries the modern name yet):
+     * 'cart_rule' → 'discount', 'specific_price_rule' → 'catalog_price_rule', 'cms' →
+     * 'cms_page', 'cms_category' → 'cms_page_category', 'gender' → 'title',
+     * 'order_slip' → 'credit_slip', 'request_sql' → 'sql_request'.
+     *
+     * Finally, table spellings of entities whose class and table names differ converge
+     * like 'orders' does ('connections'/'lang'/'webservice_account' are real base tables,
+     * so without an entry each would register as a second entity name on the same
+     * storage table as its class-named sibling), and so does the BO grid/menu spelling
+     * 'merchandise_return' (the order_return grid id).
+     */
+    protected const CANONICAL_ENTITY_NAMES = [
+        'cart_rule' => 'discount',
+        'cms' => 'cms_page',
+        'cms_category' => 'cms_page_category',
+        'connections' => 'connection',
+        'gender' => 'title',
+        'lang' => 'language',
+        'merchandise_return' => 'order_return',
+        'order_slip' => 'credit_slip',
+        'orders' => 'order',
+        'product_attribute' => 'combination',
+        'request_sql' => 'sql_request',
+        'specific_price_rule' => 'catalog_price_rule',
+        'webservice_account' => 'webservice_key',
+    ];
+
+    /**
+     * Physical table per canonical entity that has neither a table of its own nor an
+     * ObjectModel class to resolve one through ('combination' needs no entry — it
+     * resolves product_attribute through the Combination class; these modern names have
+     * no class yet). Consulted after the explicit tableName parameter and before class
+     * resolution. An entry must be dropped in the version that gives its entity real
+     * storage.
+     */
+    protected const CANONICAL_ENTITY_TABLES = [
+        'catalog_price_rule' => 'specific_price_rule',
+        'cms_page' => 'cms',
+        'cms_page_category' => 'cms_category',
+        'credit_slip' => 'order_slip',
+        'discount' => 'cart_rule',
+        'sql_request' => 'request_sql',
+        'title' => 'gender',
+    ];
+
+    /**
+     * BO controller name (the permission subject) per entity whose real tab does not
+     * follow the 'Admin' + pluralized entity name convention. Each value is the exact
+     * _legacy_controller the entity's page declares in routing (and a real
+     * install-dev/data/xml/tab.xml tab) — for entities managed inside another entity's
+     * page (shipment and combination live on the order and product pages) or without a
+     * migrated page of their own (shop_group, shop_url, feature_flag), the page that
+     * manages them. Every entity absent from this map follows the convention (product →
+     * AdminProducts, order → AdminOrders, cart_rule → AdminCartRules…) — see
+     * getControllerName().
+     */
+    protected const ENTITY_CONTROLLER_NAMES = [
+        'api_client' => 'AdminAdminAPI',
+        'attribute' => 'AdminAttributesGroups',
+        'attribute_group' => 'AdminAttributesGroups',
+        'catalog_price_rule' => 'AdminSpecificPriceRule',
+        'cms_page' => 'AdminCmsContent',
+        'cms_page_category' => 'AdminCmsContent',
+        'combination' => 'AdminProducts',
+        'credit_slip' => 'AdminSlip',
+        'discount' => 'AdminCartRules',
+        'feature_flag' => 'AdminFeatureFlag',
+        'feature_value' => 'AdminFeatures',
+        'image_type' => 'AdminImages',
+        'mail' => 'AdminEmails',
+        'meta' => 'AdminMeta',
+        'order_message' => 'AdminOrderMessage',
+        'order_return' => 'AdminReturn',
+        'order_return_state' => 'AdminStatuses',
+        'order_state' => 'AdminStatuses',
+        'shipment' => 'AdminOrders',
+        'shop_group' => 'AdminShopGroup',
+        'shop_url' => 'AdminShopUrl',
+        'sql_request' => 'AdminRequestSql',
+        'tax_rule' => 'AdminTaxRulesGroup',
+        'tax_rules_group' => 'AdminTaxRulesGroup',
+        'title' => 'AdminGenders',
+        'webservice_key' => 'AdminWebservice',
+    ];
+
+    /**
+     * Logical entity name, normalized to lower snake_case at construction and mapped to
+     * its canonical spelling (see CANONICAL_ENTITY_NAMES). For conventional entities it
+     * equals the table name ('product', 'cart'); for irregular ones it is the domain
+     * name ('order', 'combination') while $tableName carries the physical table.
+     */
+    protected readonly string $entityName;
+
+    /**
+     * Physical entity table name (without DB prefix) — the base of every storage table
+     * name ({table}_extra, {table}_extra_lang, {table}_extra_shop) and of the base-table
+     * existence checks. Resolved at construction: explicit constructor value (third-party
+     * ObjectModels whose entity name differs from their table) → the entity's ObjectModel
+     * class $definition['table'] ('combination' → 'product_attribute', 'order' → 'orders')
+     * → the entity name itself (bare-table registrations). Persisted in the registry
+     * (table_name column): the stored value always wins at hydration — fromRow() passes it
+     * back explicitly, freezing the storage location against later class changes.
+     */
+    protected readonly string $tableName;
+
+    /**
+     * Primary key column name of the entity — the FK column of the *_extra tables.
+     * Resolved at construction: explicit value (the repository injects the introspected
+     * live extra-table PK at hydration through the synthetic 'primary_key_name' row key)
+     * → the entity's ObjectModel class $definition['primary'] → null; getPrimaryKeyName()
+     * then falls back to the 'id_' + entityName convention. Not persisted — like
+     * nullable/enumValues, the live schema is the source of truth.
+     */
+    protected readonly ?string $primaryKeyName;
+
+    /**
+     * BO controller name OVERRIDE (the permission subject, e.g. for the grid toggle) —
+     * escape hatch for third-party entities whose BO page tab breaks the naming
+     * convention. Unlike $tableName this holds only the override, never the resolved
+     * value: an explicit value equal to the resolved default collapses to null at
+     * construction, and only the override is persisted (controller_name column). Core
+     * deductions (ENTITY_CONTROLLER_NAMES map, then the inflector convention) therefore
+     * run at read time and follow core code as BO tabs evolve — a permission subject
+     * must never be frozen, unlike a storage location. See getControllerName().
+     */
+    protected readonly ?string $controllerName;
+
+    /**
+     * Shops this definition is explicitly restricted to (values cast to int, deduplicated
+     * at construction). Three states:
+     *  - non-empty list: explicit restriction;
+     *  - null: no information — a hydrated definition without association rows, or an
+     *    incoming definition whose author did not decide anything (persisting it leaves
+     *    the stored association untouched);
+     *  - []: write-time "clear" marker — persisting it removes every association row,
+     *    reverting to the fallback rules. Hydrated definitions never carry it (no rows
+     *    hydrate to null), and availability treats it like null.
+     * See isAvailableForShops() for the fallback rules.
+     */
+    protected readonly ?array $associatedShopIds;
+
+    /**
+     * @param string $entityName Entity table name (e.g. 'product'). Required — must be non-empty. Normalized to lower snake_case at construction.
+     * @param string $propertyName Property name as declared by the module (e.g. 'video_link'). Required.
+     * @param ExtraPropertyType $type Field storage type. Determines the SQL column type via ColumnDefinitionMapper.
+     * @param ExtraPropertyScope $scope Storage scope: COMMON (entity-level), LANG (per-language), SHOP (per-shop)
+     * @param string|null $moduleName Owning module name. Null = core field ('' and '_core' are normalized to null). Auto-populated by Module::registerExtraProperty().
+     * @param list<string>|null $enumValues For CHOICE type: SQL ENUM allowed values. Not persisted — schema creation only.
+     * @param scalar|null $defaultValue Adds a DEFAULT clause in DDL. Also persisted in registry.
+     * @param bool $nullable Controls NULL vs NOT NULL in DDL. Not persisted — schema creation only.
+     * @param bool $required when true, marks the field as required in BO forms and in the Admin API (OpenAPI) schema
+     * @param int|null $size for STRING type: varchar column length (defaults to 255)
+     * @param ExtraPropertySqlIndex $sqlIndex SQL index strategy on the storage column
+     * @param bool $displayFront allow this field to be exposed in front-office presenters
+     * @param list<string>|null $associatedForms Form placement entries: "formId[:path[:before|after]]". Each formId must be unique.
+     * @param list<string>|null $associatedGrids Grid placement entries: "gridId[:columnId[:before|after]]". Each gridId must be unique.
+     * @param list<string>|null $associatedApis Admin API placement entries: "uriPath[:METHOD[,METHOD...]]", matched against the operation URI template (+ optional HTTP methods). No method modifier matches every method.
+     * @param string|null $formType fully-qualified Symfony Form type FQCN override for BO forms
+     * @param array<string, mixed>|null $formOptions extra options passed verbatim to the Symfony form type constructor
+     * @param list<Constraint>|null $constraints Symfony validation constraints applied to each value before persistence. Null/empty means no validation. Must be serializable (no Callback with a closure).
+     * @param string|null $labelWording Translation wording key shown in BO. Required when associatedForms or associatedGrids is set.
+     * @param string|null $labelDomain translation domain for label wording
+     * @param string|null $descriptionWording translation wording key shown as BO help text
+     * @param string|null $descriptionDomain translation domain for description wording
+     * @param bool|null $multiShop Whether values are stored per shop (the storage table carries an id_shop column). Not persisted — the live storage table schema is the source of truth (see ExtraPropertyDefinitionRepository::enrichRowsWithColumnMetadata()). Null = not introspected yet; isMultiShop() then falls back to the scope's structural default (SHOP → true, COMMON/LANG → false).
+     * @param list<int>|null $associatedShopIds Shops this definition is restricted to, persisted in the extra_property_definition_shop association table by the repository's save(). Null = no information — the stored association is left untouched on save, so a module re-registering without shop data cannot clobber a BO-configured restriction; [] = clear the stored association (revert to fallback); non-empty = explicit restriction. Without explicit rows, core-owned definitions apply to all shops and module-owned definitions follow their module's enabled shops (see isAvailableForShops()).
+     * @param string|null $tableName Physical entity table (without DB prefix). Usually omitted — deduced from the entity name (see the $tableName property docblock). Explicit value = escape hatch for third-party ObjectModels whose entity name differs from their table.
+     * @param string|null $primaryKeyName Entity primary key column. Usually omitted — deduced from the ObjectModel class or the 'id_' + entityName convention; the repository injects the introspected live value at hydration.
+     * @param string|null $controllerName BO controller name used as the permission subject (e.g. grid toggle). Usually omitted — deduced from the entity name (irregular-tab map, then 'Admin' + pluralized entity). Explicit value = escape hatch for third-party entities whose BO tab breaks the convention; a value equal to the deduction collapses to null (only genuine overrides are kept and persisted).
+     *
+     * @throws InvalidExtraPropertyDefinitionException when entityName or propertyName is empty or not a valid SQL identifier, when tableName/primaryKeyName is given but not a valid SQL identifier, when associatedForms/associatedGrids have invalid format or duplicates, when labelWording is missing despite being required, or when the computed storage column name exceeds 64 characters
+     */
+    public function __construct(
+        string $entityName,
+        protected readonly string $propertyName,
+        protected readonly ExtraPropertyType $type = ExtraPropertyType::STRING,
+        protected readonly ExtraPropertyScope $scope = ExtraPropertyScope::COMMON,
+        ?string $moduleName = null,
+        protected readonly ?array $enumValues = null,
+        protected readonly int|float|string|bool|null $defaultValue = null,
+        protected readonly bool $nullable = true,
+        protected readonly bool $required = false,
+        protected readonly ?int $size = null,
+        protected readonly ExtraPropertySqlIndex $sqlIndex = ExtraPropertySqlIndex::NONE,
+        protected readonly bool $displayFront = false,
+        protected readonly ?array $associatedForms = null,
+        protected readonly ?array $associatedGrids = null,
+        protected readonly ?array $associatedApis = null,
+        protected readonly ?string $formType = null,
+        protected readonly ?array $formOptions = null,
+        protected readonly ?array $constraints = null,
+        protected readonly ?string $labelWording = null,
+        protected readonly ?string $labelDomain = null,
+        protected readonly ?string $descriptionWording = null,
+        protected readonly ?string $descriptionDomain = null,
+        protected readonly ?bool $multiShop = null,
+        ?array $associatedShopIds = null,
+        ?string $tableName = null,
+        ?string $primaryKeyName = null,
+        ?string $controllerName = null,
+    ) {
+        // Normalize the explicit shop restriction values (int cast, deduplicated). The
+        // null / [] distinction is deliberately preserved: null means "no information"
+        // while [] is the write-time marker that clears the stored association — see the
+        // $associatedShopIds property docblock.
+        $this->associatedShopIds = null === $associatedShopIds
+            ? null
+            : array_values(array_unique(array_map('intval', $associatedShopIds)));
+
+        // Entity names are SQL identifier fragments (tables + primary key column):
+        // normalize to lower snake_case before validating and storing — tableize()
+        // converts CamelCase (ProductAttribute → product_attribute), then hyphens
+        // become underscores. Known irregular spellings then converge onto their
+        // canonical entity name ('orders' → 'order', 'product_attribute' →
+        // 'combination') so every spelling of one entity yields one stored definition.
+        $normalizedEntityName = str_replace('-', '_', Inflector::getInflector()->tableize($entityName));
+        $normalizedEntityName = self::CANONICAL_ENTITY_NAMES[$normalizedEntityName] ?? $normalizedEntityName;
+        if (!ExtraPropertyValidator::isTableOrIdentifier($normalizedEntityName)) {
+            throw new InvalidExtraPropertyDefinitionException(sprintf(
+                'ExtraPropertyDefinition: entityName "%s" must be a valid SQL identifier ([a-zA-Z0-9_-]+).',
+                $entityName
+            ));
+        }
+        $this->entityName = $normalizedEntityName;
+
+        // Physical table + primary key: explicit values win (validated — they are SQL
+        // identifiers embedded in every storage query); otherwise deduced from the
+        // entity's ObjectModel class definition; the table finally falls back to the
+        // entity name itself (bare-table registrations, today's behavior).
+        foreach (['tableName' => $tableName, 'primaryKeyName' => $primaryKeyName, 'controllerName' => $controllerName] as $parameterName => $identifier) {
+            if (null !== $identifier && !ExtraPropertyValidator::isTableOrIdentifier($identifier)) {
+                throw new InvalidExtraPropertyDefinitionException(sprintf(
+                    'ExtraPropertyDefinition: %s "%s" must be a valid SQL identifier ([a-zA-Z0-9_-]+).',
+                    $parameterName,
+                    $identifier
+                ));
+            }
+        }
+        // Class resolution only fills the gaps: when both explicit values are provided
+        // (notably fromRow() hydration passing the stored table_name and the introspected
+        // PK) no re-resolution happens at all.
+        $objectModelDefinition = (null === $tableName || null === $primaryKeyName)
+            ? $this->resolveObjectModelDefinition()
+            : [];
+        $this->tableName = $tableName ?? self::CANONICAL_ENTITY_TABLES[$this->entityName] ?? $objectModelDefinition['table'] ?? $this->entityName;
+        $this->primaryKeyName = $primaryKeyName ?? $objectModelDefinition['primary'] ?? null;
+        // Only a genuine override is kept: a value matching the deduction collapses to
+        // null, so re-registering with the conventional name also cleans a stored override.
+        $this->controllerName = $controllerName === $this->resolveDefaultControllerName() ? null : $controllerName;
+        if (!ExtraPropertyValidator::isTableOrIdentifier($propertyName)) {
+            throw new InvalidExtraPropertyDefinitionException(sprintf(
+                'ExtraPropertyDefinition: propertyName "%s" must be a valid SQL identifier ([a-zA-Z0-9_-]+).',
+                $propertyName
+            ));
+        }
+
+        // Non-empty, non-sentinel module names must match PrestaShop module naming rules.
+        // The normalized value is what gets stored: getModuleName() always returns null for core fields.
+        $resolvedModuleName = (null === $moduleName || '' === $moduleName || self::CORE_MODULE_KEY === $moduleName)
+            ? null
+            : $moduleName;
+        $this->moduleName = $resolvedModuleName;
+        $this->normalizedModuleKey = $resolvedModuleName ?? self::CORE_MODULE_KEY;
+        if (null !== $resolvedModuleName && !ExtraPropertyValidator::isModuleName($resolvedModuleName)) {
+            throw new InvalidExtraPropertyDefinitionException(sprintf(
+                'ExtraPropertyDefinition: moduleName "%s" is not a valid PrestaShop module name.',
+                $moduleName
+            ));
+        }
+
+        // Storage column names must be valid SQL identifiers (1–64 chars; hyphens were
+        // already normalized to underscores by buildStorageColumnName()).
+        // This is the safety contract DDL consumers (ExtraPropertySchemaManager) rely on:
+        // any identifier coming from a constructed definition is safe to embed in SQL.
+        $storageColumn = self::buildStorageColumnName($resolvedModuleName, $propertyName);
+        if (!ExtraPropertyValidator::isTableOrIdentifier($storageColumn)) {
+            throw new InvalidExtraPropertyDefinitionException(sprintf(
+                'ExtraPropertyDefinition: computed storage column name "%s" must be a valid SQL identifier (1–64 characters).',
+                $storageColumn
+            ));
+        }
+
+        if (!empty($associatedForms)) {
+            $seenFormIds = [];
+            foreach ($associatedForms as $entry) {
+                $parsed = AssociationEntryParser::assertValidFormEntry((string) $entry);
+                if (isset($seenFormIds[$parsed['formId']])) {
+                    throw new InvalidExtraPropertyDefinitionException(sprintf(
+                        'ExtraPropertyDefinition: duplicate formId "%s" in associatedForms.',
+                        $parsed['formId']
+                    ));
+                }
+                $seenFormIds[$parsed['formId']] = true;
+            }
+        }
+
+        if (!empty($associatedGrids)) {
+            $seenGridIds = [];
+            foreach ($associatedGrids as $entry) {
+                $parsed = AssociationEntryParser::assertValidGridEntry((string) $entry);
+                if (isset($seenGridIds[$parsed['gridId']])) {
+                    throw new InvalidExtraPropertyDefinitionException(sprintf(
+                        'ExtraPropertyDefinition: duplicate gridId "%s" in associatedGrids.',
+                        $parsed['gridId']
+                    ));
+                }
+                $seenGridIds[$parsed['gridId']] = true;
+            }
+        }
+
+        if (!empty($associatedApis)) {
+            foreach ($associatedApis as $entry) {
+                AssociationEntryParser::assertValidApiEntry((string) $entry);
+            }
+        }
+
+        if (null !== $constraints) {
+            foreach ($constraints as $constraint) {
+                if (!$constraint instanceof Constraint) {
+                    throw new InvalidExtraPropertyDefinitionException(sprintf(
+                        'ExtraPropertyDefinition: every constraint must be a %s instance, got "%s" (entity "%s", property "%s").',
+                        Constraint::class,
+                        get_debug_type($constraint),
+                        $entityName,
+                        $propertyName
+                    ));
+                }
+            }
+        }
+
+        if ((!empty($associatedForms) || !empty($associatedGrids)) && (null === $labelWording || '' === trim($labelWording))) {
+            throw new InvalidExtraPropertyDefinitionException(sprintf(
+                'ExtraPropertyDefinition: labelWording is required when associatedForms or associatedGrids is set (entity "%s", property "%s").',
+                $entityName,
+                $propertyName
+            ));
+        }
+
+        // Author-controlled display texts (label/help wording, enum literals) are rendered to
+        // every employee opening a form or grid the property is placed on, and the translation
+        // domains select a catalogue. Both are validated HERE, at construction — the one path
+        // every definition goes through, registered (write) or hydrated from a registry row
+        // (read) — so a value written straight into the table cannot render what a
+        // registration would have refused: on read the offending row is skipped and logged
+        // (see ExtraPropertyDefinitionRepository::hydrateRowSafely()).
+        foreach (['labelWording' => $labelWording, 'descriptionWording' => $descriptionWording] as $parameterName => $text) {
+            if (null !== $text && !ExtraPropertyValidator::isSafeDisplayText($text)) {
+                throw new InvalidExtraPropertyDefinitionException(sprintf(
+                    'ExtraPropertyDefinition: %s must not contain "<" or control characters (entity "%s", property "%s").',
+                    $parameterName,
+                    $entityName,
+                    $propertyName
+                ));
+            }
+        }
+        // Enum literals are display texts AND SQL ENUM literals read back from the live column
+        // (SHOW COLUMNS), where a backslash does not round-trip: refuse it as well.
+        foreach ($enumValues ?? [] as $enumValue) {
+            if (is_string($enumValue) && (!ExtraPropertyValidator::isSafeDisplayText($enumValue) || str_contains($enumValue, '\\'))) {
+                throw new InvalidExtraPropertyDefinitionException(sprintf(
+                    'ExtraPropertyDefinition: enum value "%s" must not contain "<", "\\" or control characters (entity "%s", property "%s").',
+                    $enumValue,
+                    $entityName,
+                    $propertyName
+                ));
+            }
+        }
+        foreach (['labelDomain' => $labelDomain, 'descriptionDomain' => $descriptionDomain] as $parameterName => $domain) {
+            if (null === $domain || '' === $domain) {
+                continue;
+            }
+            if (!ExtraPropertyValidator::isTranslationDomain($domain)) {
+                throw new InvalidExtraPropertyDefinitionException(sprintf(
+                    'ExtraPropertyDefinition: %s "%s" must be a translation domain of 2 or 3 dot-separated PascalCase segments, e.g. "Modules.Mymodule.Admin" (entity "%s", property "%s").',
+                    $parameterName,
+                    $domain,
+                    $entityName,
+                    $propertyName
+                ));
+            }
+            // A module owns its own "Modules.<Module>.*" domains only (the same base domain the
+            // translation system derives for it): declaring a core domain — or another module's —
+            // would let its wordings shadow that catalogue shop-wide.
+            if (null !== $resolvedModuleName) {
+                $moduleBaseDomain = DomainHelper::buildModuleBaseDomain($resolvedModuleName, true) . '.';
+                if (!str_starts_with($domain, $moduleBaseDomain)) {
+                    throw new InvalidExtraPropertyDefinitionException(sprintf(
+                        'ExtraPropertyDefinition: %s "%s" of a module-owned definition must belong to the module ("%s…") (entity "%s", property "%s", module "%s").',
+                        $parameterName,
+                        $domain,
+                        $moduleBaseDomain,
+                        $entityName,
+                        $propertyName,
+                        $resolvedModuleName
+                    ));
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Static factories
+    // -------------------------------------------------------------------------
+
+    /**
+     * Builds an instance from a raw registry DB row.
+     *
+     * The 'constraints' cell must already hold decoded Constraint objects, not the string stored in
+     * the registry: decoding belongs to the repository, which owns the normalizer and can report a
+     * rejected constraint with the row it came from. This value object stays free of that
+     * responsibility (see ExtraPropertyDefinitionRepository::enrichRowsWithDecodedConstraints()).
+     *
+     * Resolves the entity's ObjectModel definition ('table' + 'primary') from the
+     * canonical entity name: classify() gives the class name ('combination' →
+     * 'Combination', 'cart' → 'Cart'), which must exist and be an ObjectModel. The
+     * static $definition property is read directly (never ObjectModel::getDefinition(),
+     * which touches the legacy Cache) so resolution is side-effect free and safe in
+     * every container. Entities without a resolvable class ('my_custom_table') return
+     * an empty array — the caller falls back to the entity name / naming convention.
+     *
+     * @return array{table?: string, primary?: string}
+     */
+    protected function resolveObjectModelDefinition(): array
+    {
+        try {
+            $className = Inflector::getInflector()->classify($this->entityName);
+            if (!class_exists($className) || !is_subclass_of($className, ObjectModelCore::class)) {
+                return [];
+            }
+
+            // The class must DECLARE its own $definition: a subclass inheriting its
+            // parent's (e.g. ManufacturerAddress extends Address) would otherwise leak
+            // the parent's table/primary ('manufacturer_address' must never resolve to
+            // the address table). The declaring class is compared with its 'Core'
+            // suffix stripped, since legacy classes declare on the Core twin.
+            $declaringClass = (new ReflectionProperty($className, 'definition'))->getDeclaringClass()->getName();
+            if ($className !== preg_replace('/Core$/', '', $declaringClass)) {
+                return [];
+            }
+
+            $definition = $className::$definition ?? null;
+            if (!is_array($definition)) {
+                return [];
+            }
+
+            $resolved = [];
+            if (!empty($definition['table']) && is_string($definition['table'])) {
+                $resolved['table'] = $definition['table'];
+            }
+            if (!empty($definition['primary']) && is_string($definition['primary'])) {
+                $resolved['primary'] = $definition['primary'];
+            }
+
+            return $resolved;
+        } catch (Throwable) {
+            // A broken class autoload must never prevent constructing a definition.
+            return [];
+        }
+    }
+
+    /**
+     * nullable and enumValues are not persisted in the registry table: the live DB schema of
+     * the storage column is their source of truth. The repository injects them into the row
+     * under the synthetic 'nullable' and 'enum_values' keys (see
+     * ExtraPropertyDefinitionRepository::enrichRowsWithColumnMetadata()). When the keys are
+     * absent (e.g. storage column not created yet), safe defaults apply (nullable, no enum).
+     *
+     * @param array<string, mixed> $row
+     *
+     * @throws InvalidExtraPropertyDefinitionException when entityName or propertyName is empty in the row
+     */
+    public static function fromRow(array $row): self
+    {
+        $formOptions = ($raw = (string) ($row['form_options'] ?? '')) !== ''
+            ? json_decode($raw, true)
+            : null;
+
+        $associatedForms = array_values(array_filter(
+            (array) json_decode((string) ($row['associated_forms'] ?? ''), true),
+            static fn (mixed $v): bool => is_string($v) && '' !== $v
+        )) ?: null;
+
+        $associatedGrids = array_values(array_filter(
+            (array) json_decode((string) ($row['associated_grids'] ?? ''), true),
+            static fn (mixed $v): bool => is_string($v) && '' !== $v
+        )) ?: null;
+
+        $associatedApis = array_values(array_filter(
+            (array) json_decode((string) ($row['associated_apis'] ?? ''), true),
+            static fn (mixed $v): bool => is_string($v) && '' !== $v
+        )) ?: null;
+
+        $type = ExtraPropertyType::from((string) ($row['type'] ?? ExtraPropertyType::STRING->value));
+        $rawDefaultValue = isset($row['default_value']) && '' !== $row['default_value'] ? $row['default_value'] : null;
+
+        return new self(
+            entityName: (string) ($row['entity_name'] ?? ''),
+            propertyName: (string) ($row['property_name'] ?? ''),
+            type: $type,
+            scope: ExtraPropertyScope::from((string) ($row['scope'] ?? ExtraPropertyScope::COMMON->value)),
+            moduleName: isset($row['module_name']) ? (string) $row['module_name'] : null,
+            enumValues: isset($row['enum_values']) && is_array($row['enum_values']) && [] !== $row['enum_values'] ? array_values($row['enum_values']) : null,
+            defaultValue: null !== $rawDefaultValue ? ExtraPropertyValueCaster::castDefaultValueFromDb($type, (string) $rawDefaultValue) : null,
+            nullable: !array_key_exists('nullable', $row) || (bool) $row['nullable'],
+            required: !empty($row['required']),
+            size: isset($row['size']) && '' !== $row['size'] ? (int) $row['size'] : null,
+            sqlIndex: ExtraPropertySqlIndex::from((string) ($row['sql_index'] ?? ExtraPropertySqlIndex::NONE->value)),
+            displayFront: !empty($row['display_front']),
+            associatedForms: is_array($associatedForms) ? $associatedForms : null,
+            associatedGrids: is_array($associatedGrids) ? $associatedGrids : null,
+            associatedApis: is_array($associatedApis) ? $associatedApis : null,
+            formType: isset($row['form_type']) && '' !== $row['form_type'] ? (string) $row['form_type'] : null,
+            formOptions: is_array($formOptions) ? $formOptions : null,
+            constraints: is_array($row['constraints'] ?? null) && [] !== $row['constraints']
+                ? array_values($row['constraints'])
+                : null,
+            labelWording: isset($row['label_wording']) && '' !== $row['label_wording'] ? (string) $row['label_wording'] : null,
+            labelDomain: isset($row['label_domain']) && '' !== $row['label_domain'] ? (string) $row['label_domain'] : null,
+            descriptionWording: isset($row['description_wording']) && '' !== $row['description_wording'] ? (string) $row['description_wording'] : null,
+            descriptionDomain: isset($row['description_domain']) && '' !== $row['description_domain'] ? (string) $row['description_domain'] : null,
+            multiShop: array_key_exists('multi_shop', $row) ? (bool) $row['multi_shop'] : null,
+            associatedShopIds: isset($row['associated_shop_ids']) && is_array($row['associated_shop_ids']) ? $row['associated_shop_ids'] : null,
+            // Stored resolved at registration: passing it as the explicit value means
+            // hydration never re-resolves (a class disappearing later cannot repoint the
+            // storage). Null (rows predating the column) falls back to the constructor
+            // resolution, correct for every conventional entity.
+            tableName: isset($row['table_name']) && '' !== $row['table_name'] ? (string) $row['table_name'] : null,
+            // Synthetic key — the introspected live extra-table PK, injected by
+            // ExtraPropertyDefinitionRepository::enrichRowsWithColumnMetadata().
+            primaryKeyName: isset($row['primary_key_name']) && '' !== $row['primary_key_name'] ? (string) $row['primary_key_name'] : null,
+            // Stored override only — null rows resolve through the map/convention at read.
+            controllerName: isset($row['controller_name']) && '' !== $row['controller_name'] ? (string) $row['controller_name'] : null,
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // Copy-with methods
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns a copy of this definition with the given module name set.
+     *
+     * Used by Module::registerExtraProperty() to inject the calling module's name
+     * when moduleName was left null by the developer.
+     */
+    public function withModuleName(string $moduleName): self
+    {
+        return new self(
+            entityName: $this->entityName,
+            propertyName: $this->propertyName,
+            type: $this->type,
+            scope: $this->scope,
+            moduleName: $moduleName,
+            enumValues: $this->enumValues,
+            defaultValue: $this->defaultValue,
+            nullable: $this->nullable,
+            required: $this->required,
+            size: $this->size,
+            sqlIndex: $this->sqlIndex,
+            displayFront: $this->displayFront,
+            associatedForms: $this->associatedForms,
+            associatedGrids: $this->associatedGrids,
+            associatedApis: $this->associatedApis,
+            formType: $this->formType,
+            formOptions: $this->formOptions,
+            constraints: $this->constraints,
+            labelWording: $this->labelWording,
+            labelDomain: $this->labelDomain,
+            descriptionWording: $this->descriptionWording,
+            descriptionDomain: $this->descriptionDomain,
+            multiShop: $this->multiShop,
+            associatedShopIds: $this->associatedShopIds,
+            tableName: $this->tableName,
+            primaryKeyName: $this->primaryKeyName,
+            controllerName: $this->controllerName,
+        );
+    }
+
+    /**
+     * Returns a copy of this definition with the given fields overridden.
+     *
+     * Used by BO registry handlers to apply command overrides onto a freshly loaded
+     * definition without re-listing every untouched field. Keys match constructor
+     * parameter names; absent keys keep their current value (checked via array_key_exists
+     * so an override can legitimately be set back to null).
+     *
+     * @param array<string, mixed> $overrides
+     */
+    public function withOverrides(array $overrides): self
+    {
+        return new self(
+            entityName: array_key_exists('entityName', $overrides) ? $overrides['entityName'] : $this->entityName,
+            propertyName: array_key_exists('propertyName', $overrides) ? $overrides['propertyName'] : $this->propertyName,
+            type: array_key_exists('type', $overrides) ? $overrides['type'] : $this->type,
+            scope: array_key_exists('scope', $overrides) ? $overrides['scope'] : $this->scope,
+            moduleName: array_key_exists('moduleName', $overrides) ? $overrides['moduleName'] : $this->moduleName,
+            enumValues: array_key_exists('enumValues', $overrides) ? $overrides['enumValues'] : $this->enumValues,
+            defaultValue: array_key_exists('defaultValue', $overrides) ? $overrides['defaultValue'] : $this->defaultValue,
+            nullable: array_key_exists('nullable', $overrides) ? (bool) $overrides['nullable'] : $this->nullable,
+            required: array_key_exists('required', $overrides) ? (bool) $overrides['required'] : $this->required,
+            size: array_key_exists('size', $overrides) ? $overrides['size'] : $this->size,
+            sqlIndex: array_key_exists('sqlIndex', $overrides) ? $overrides['sqlIndex'] : $this->sqlIndex,
+            displayFront: array_key_exists('displayFront', $overrides) ? (bool) $overrides['displayFront'] : $this->displayFront,
+            associatedForms: array_key_exists('associatedForms', $overrides) ? $overrides['associatedForms'] : $this->associatedForms,
+            associatedGrids: array_key_exists('associatedGrids', $overrides) ? $overrides['associatedGrids'] : $this->associatedGrids,
+            associatedApis: array_key_exists('associatedApis', $overrides) ? $overrides['associatedApis'] : $this->associatedApis,
+            formType: array_key_exists('formType', $overrides) ? $overrides['formType'] : $this->formType,
+            formOptions: array_key_exists('formOptions', $overrides) ? $overrides['formOptions'] : $this->formOptions,
+            constraints: array_key_exists('constraints', $overrides) ? $overrides['constraints'] : $this->constraints,
+            labelWording: array_key_exists('labelWording', $overrides) ? $overrides['labelWording'] : $this->labelWording,
+            labelDomain: array_key_exists('labelDomain', $overrides) ? $overrides['labelDomain'] : $this->labelDomain,
+            descriptionWording: array_key_exists('descriptionWording', $overrides) ? $overrides['descriptionWording'] : $this->descriptionWording,
+            descriptionDomain: array_key_exists('descriptionDomain', $overrides) ? $overrides['descriptionDomain'] : $this->descriptionDomain,
+            multiShop: array_key_exists('multiShop', $overrides) ? $overrides['multiShop'] : $this->multiShop,
+            associatedShopIds: array_key_exists('associatedShopIds', $overrides) ? $overrides['associatedShopIds'] : $this->associatedShopIds,
+            tableName: array_key_exists('tableName', $overrides) ? $overrides['tableName'] : $this->tableName,
+            primaryKeyName: array_key_exists('primaryKeyName', $overrides) ? $overrides['primaryKeyName'] : $this->primaryKeyName,
+            controllerName: array_key_exists('controllerName', $overrides) ? $overrides['controllerName'] : $this->controllerName,
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // Getters
+    // -------------------------------------------------------------------------
+
+    /**
+     * Logical entity name — always lower snake_case, canonical spelling (normalized at
+     * construction). Use getTableName() for anything that becomes SQL.
+     */
+    public function getEntityName(): string
+    {
+        return $this->entityName;
+    }
+
+    /**
+     * Physical entity table name (without DB prefix) — see the $tableName property
+     * docblock for the resolution rules. Equals getEntityName() for conventional
+     * entities; differs for irregular ones ('combination' → 'product_attribute').
+     */
+    public function getTableName(): string
+    {
+        return $this->tableName;
+    }
+
+    /**
+     * Returns the primary key column name of the entity — also the FK column of the
+     * *_extra tables. Resolution: introspected/explicit value (see the $primaryKeyName
+     * property docblock) → the 'id_' + entityName naming convention. Centralized so
+     * callers holding a definition never build it manually.
+     */
+    public function getPrimaryKeyName(): string
+    {
+        return $this->primaryKeyName ?? 'id_' . $this->entityName;
+    }
+
+    /**
+     * BO controller name of the entity — the permission subject for any employee-permission
+     * check tied to this definition (e.g. the grid toggle endpoint). Resolution: explicit
+     * override (see the $controllerName property docblock) → ENTITY_CONTROLLER_NAMES map for
+     * irregular tabs → 'Admin' + pluralized classified entity name. A resolved name matching
+     * no existing tab is DENY-safe: Access::isGranted() grants nothing for unknown subjects.
+     */
+    public function getControllerName(): string
+    {
+        return $this->controllerName ?? $this->resolveDefaultControllerName();
+    }
+
+    /**
+     * The raw controller name OVERRIDE — null for every definition following the deduction
+     * (the constructor collapses a matching explicit value). This is what the repository
+     * persists in the controller_name column; use getControllerName() for the resolved value.
+     */
+    public function getControllerNameOverride(): ?string
+    {
+        return $this->controllerName;
+    }
+
+    private function resolveDefaultControllerName(): string
+    {
+        if (isset(self::ENTITY_CONTROLLER_NAMES[$this->entityName])) {
+            return self::ENTITY_CONTROLLER_NAMES[$this->entityName];
+        }
+
+        $inflector = Inflector::getInflector();
+
+        return 'Admin' . $inflector->pluralize($inflector->classify($this->entityName));
+    }
+
+    /**
+     * Owning module technical name — always null for core fields (normalized at construction).
+     */
+    public function getModuleName(): ?string
+    {
+        return $this->moduleName;
+    }
+
+    /**
+     * Returns true when this definition is owned by a module (as opposed to a core field).
+     * Module-owned definitions are read-only from the BO registry management UI.
+     */
+    public function isModuleOwned(): bool
+    {
+        return null !== $this->moduleName;
+    }
+
+    public function getPropertyName(): string
+    {
+        return $this->propertyName;
+    }
+
+    public function getType(): ExtraPropertyType
+    {
+        return $this->type;
+    }
+
+    public function getScope(): ExtraPropertyScope
+    {
+        return $this->scope;
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function getAssociatedApis(): ?array
+    {
+        return $this->associatedApis;
+    }
+
+    /**
+     * Returns the parsed Admin API placement entries.
+     *
+     * @return list<array{path: string, methods: list<string>|null}>
+     */
+    public function getApiEntries(): array
+    {
+        if (null === $this->associatedApis) {
+            return [];
+        }
+
+        return array_map(static fn (string $entry): array => self::parseApiEntry($entry), $this->associatedApis);
+    }
+
+    /**
+     * Returns true when this definition targets the given Admin API operation, identified by its
+     * URI template and HTTP method. Matching is purely URI-template based, so a definition never
+     * leaks onto a resource it does not explicitly list. An entry with no method modifier matches
+     * every HTTP method on that template.
+     */
+    public function matchesApi(string $uriTemplate, string $method): bool
+    {
+        if (null === $this->associatedApis) {
+            return false;
+        }
+
+        $normalizedTemplate = self::normalizeApiPath($uriTemplate);
+        $upperMethod = strtoupper($method);
+        foreach ($this->associatedApis as $entry) {
+            $parsed = self::parseApiEntry((string) $entry);
+            if ($parsed['path'] !== $normalizedTemplate) {
+                continue;
+            }
+            if (null === $parsed['methods'] || in_array($upperMethod, $parsed['methods'], true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isDisplayFront(): bool
+    {
+        return $this->displayFront;
+    }
+
+    public function isRequired(): bool
+    {
+        return $this->required;
+    }
+
+    public function isNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    /**
+     * Whether values of this property are stored per shop, i.e. the storage table carries
+     * an id_shop column. SHOP scope is per-shop by construction ({entity}_extra_shop mirrors
+     * the {entity}_shop PK); LANG scope depends on the base {entity}_lang table shape — only
+     * multilang-multishop entities (product, category, …) have id_shop there, so consumers
+     * (reader, writer, grid joins) must NOT reference id_shop when this returns false.
+     *
+     * Deduced from the live storage table schema by the repository (synthetic 'multi_shop'
+     * row key); when not introspected yet, falls back to the scope's structural default.
+     */
+    public function isMultiShop(): bool
+    {
+        return $this->multiShop ?? (ExtraPropertyScope::SHOP === $this->scope);
+    }
+
+    /**
+     * Shops this definition is explicitly restricted to, or null when it has no explicit
+     * restriction ([] is the transient write-time "clear" marker — see the property
+     * docblock). Distinct from isMultiShop(), which describes how VALUES are stored:
+     * this field describes on which shops the definition exists at all — a COMMON-scope
+     * definition can be restricted to specific shops (the restriction is then pure
+     * visibility, since its single storage row is shared by every shop).
+     *
+     * @return list<int>|null
+     */
+    public function getAssociatedShopIds(): ?array
+    {
+        return $this->associatedShopIds;
+    }
+
+    /**
+     * Returns true when this definition is available for at least one of the given shops.
+     *
+     * Availability rules:
+     *  - explicit restriction set → available when it intersects $shopIds;
+     *  - no restriction, core-owned → available everywhere;
+     *  - no restriction, module-owned → follows the owning module's enabled shops
+     *    ($moduleShopIds): an empty list means "the module is enabled on other shops
+     *    only" and excludes the definition, while null means "unknown or no shop rows
+     *    at all" and is treated as unrestricted — registration runs during install(),
+     *    before the module is enabled on any shop, so absence of data must not hide
+     *    the definition (same degenerate rule as
+     *    ExtraPropertyWriter::filterShopScopeByAssociations()).
+     *
+     * Pure array logic — resolving a ShopConstraint to shop ids and loading the module
+     * association is the job of ExtraPropertyDefinitionShopFilter.
+     *
+     * @param list<int> $shopIds shops in the current scope
+     * @param list<int>|null $moduleShopIds shops the owning module is enabled on, restricted or not to $shopIds
+     *                                      (ignored for core-owned definitions); null = unknown/unrestricted
+     */
+    public function isAvailableForShops(array $shopIds, ?array $moduleShopIds = null): bool
+    {
+        // An empty list is the transient write-time "clear" marker, equivalent to the
+        // no-restriction state it reverts to — only a non-empty set restricts.
+        if (!empty($this->associatedShopIds)) {
+            return [] !== array_intersect($this->associatedShopIds, $shopIds);
+        }
+
+        if (!$this->isModuleOwned() || null === $moduleShopIds) {
+            return true;
+        }
+
+        return [] !== array_intersect($moduleShopIds, $shopIds);
+    }
+
+    /**
+     * @return list<Constraint>|null
+     */
+    public function getConstraints(): ?array
+    {
+        return $this->constraints;
+    }
+
+    public function getFormType(): ?string
+    {
+        return $this->formType;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getFormOptions(): ?array
+    {
+        return $this->formOptions;
+    }
+
+    public function getSize(): ?int
+    {
+        return $this->size;
+    }
+
+    public function getSqlIndex(): ExtraPropertySqlIndex
+    {
+        return $this->sqlIndex;
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function getEnumValues(): ?array
+    {
+        return $this->enumValues;
+    }
+
+    public function getDefaultValue(): int|float|string|bool|null
+    {
+        return $this->defaultValue;
+    }
+
+    public function getLabelWording(): ?string
+    {
+        return $this->labelWording;
+    }
+
+    public function getLabelDomain(): ?string
+    {
+        return $this->labelDomain;
+    }
+
+    public function getDescriptionWording(): ?string
+    {
+        return $this->descriptionWording;
+    }
+
+    public function getDescriptionDomain(): ?string
+    {
+        return $this->descriptionDomain;
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function getAssociatedForms(): ?array
+    {
+        return $this->associatedForms;
+    }
+
+    /**
+     * Returns the fully-resolved placement entry for a specific form, or null if not associated.
+     *
+     * @return array{formId: string, mode: 'before'|'after'|null, path: string|null, anchor: string|null}|null
+     */
+    public function getFormEntry(string $formId): ?array
+    {
+        if (null === $this->associatedForms) {
+            return null;
+        }
+        foreach ($this->associatedForms as $entry) {
+            $parsed = self::parseFormEntry($entry);
+            if ($parsed['formId'] === $formId) {
+                return $parsed;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function getAssociatedGrids(): ?array
+    {
+        return $this->associatedGrids;
+    }
+
+    /**
+     * Returns the parsed placement entry for a specific grid, or null if not associated.
+     *
+     * @return array{gridId: string, columnId: string|null, mode: 'before'|'after'|null}|null
+     */
+    public function getGridEntry(string $gridId): ?array
+    {
+        if (null === $this->associatedGrids) {
+            return null;
+        }
+        foreach ($this->associatedGrids as $entry) {
+            $parsed = self::parseGridEntry($entry);
+            if ($parsed['gridId'] === $gridId) {
+                return $parsed;
+            }
+        }
+
+        return null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Naming helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the physical SQL storage column name for this definition.
+     */
+    public function getStorageColumnName(): string
+    {
+        return self::buildStorageColumnName($this->moduleName, $this->propertyName);
+    }
+
+    /**
+     * The property's flat field identifier, used identically by the back-office form (field name), the grid
+     * (column id / SELECT alias) and the Admin API (inline list key).
+     *
+     * A property is unique per module + property name, so the scope is intentionally not part of it — keeping
+     * identifiers short and predictable.
+     */
+    public function getFieldName(): string
+    {
+        return 'extra_' . $this->normalizedModuleKey . '_' . $this->propertyName;
+    }
+
+    /**
+     * Returns the module key used in grouped extra-property arrays: the module
+     * technical name, or the canonical '_core' key for core fields.
+     */
+    public function getNormalizedModuleKey(): string
+    {
+        return $this->normalizedModuleKey;
+    }
+
+    /**
+     * Returns the name of the extra value table (without DB prefix) for this definition's
+     * scope — always built from the PHYSICAL table name, so extra tables sit next to the
+     * base table they mirror ('combination' definitions store in product_attribute_extra).
+     */
+    public function getExtraTableName(): string
+    {
+        return self::buildExtraTableName($this->tableName, $this->scope);
+    }
+
+    /**
+     * Returns the name of the base entity table (without DB prefix) for this definition's scope.
+     *
+     * Used by SchemaManager to verify the base table exists before creating the extra table.
+     * LANG scope → {table}_lang, SHOP scope → {table}_shop, COMMON → {table}.
+     */
+    public function getBaseTableName(): string
+    {
+        return match ($this->scope) {
+            ExtraPropertyScope::LANG => $this->tableName . '_lang',
+            ExtraPropertyScope::SHOP => $this->tableName . '_shop',
+            default => $this->tableName,
+        };
+    }
+
+    /**
+     * Returns the extra value table name for a given entity TABLE and scope.
+     *
+     * $tableName is the physical table (ObjectModel $definition['table'], or the stored
+     * table_name registry column) — never the logical entity name, which may differ for
+     * irregular entities. Prefer getExtraTableName() whenever a definition instance is
+     * available. Use this static version only when none exists:
+     * ExtraPropertyWriter::deleteAll() (sweeps all scope tables regardless of registered
+     * definitions; its caller passes the ObjectModel table) and
+     * ExtraPropertyDefinitionRepository::enrichRowsWithColumnMetadata() (runs on raw rows
+     * before definitions can be constructed; reads the stored table_name).
+     *
+     * @return string e.g. 'product_extra', 'product_extra_lang', 'product_extra_shop'
+     */
+    public static function buildExtraTableName(string $tableName, ExtraPropertyScope $scope): string
+    {
+        return match ($scope) {
+            ExtraPropertyScope::LANG => $tableName . '_extra_lang',
+            ExtraPropertyScope::SHOP => $tableName . '_extra_shop',
+            default => $tableName . '_extra',
+        };
+    }
+
+    /**
+     * Returns the storage column name for a given module and property name.
+     *
+     * Prefer getStorageColumnName() whenever a definition instance is available. Use this
+     * static version only when none exists:
+     * ExtraPropertyDefinitionRepository::enrichRowsWithColumnMetadata() (runs on raw rows
+     * before definitions can be constructed).
+     */
+    public static function buildStorageColumnName(?string $moduleName, string $propertyName): string
+    {
+        // Hyphens are valid in property/entity names but not in unquoted SQL identifiers — normalize them.
+        $normalizedProperty = str_replace('-', '_', $propertyName);
+        if (null === $moduleName || '' === $moduleName || self::CORE_MODULE_KEY === $moduleName) {
+            return $normalizedProperty;
+        }
+
+        $normalizedModule = str_replace('-', '_', $moduleName);
+
+        return $normalizedModule . '_' . $normalizedProperty;
+    }
+
+    /**
+     * Parses one associated_grids entry into its components.
+     *
+     * Format: "gridId[:columnId[:before|after]]" — see AssociationEntryParser::parseGridEntry()
+     * for the full grammar.
+     *
+     * @return array{gridId: string, columnId: string|null, mode: 'before'|'after'|null}
+     */
+    protected static function parseGridEntry(string $entry): array
+    {
+        return AssociationEntryParser::parseGridEntry($entry);
+    }
+
+    /**
+     * Parses one associated_forms entry into its fully-resolved components.
+     *
+     * Format: "formId[:path[:before|after]]" — see AssociationEntryParser::parseFormEntry()
+     * for the full grammar and placement-resolution rules.
+     *
+     * @return array{formId: string, mode: 'before'|'after'|null, path: string|null, anchor: string|null}
+     */
+    protected static function parseFormEntry(string $entry): array
+    {
+        return AssociationEntryParser::parseFormEntry($entry);
+    }
+
+    /**
+     * Parses one associated_apis entry.
+     *
+     * Format: "uriPath[:METHOD[,METHOD...]]" — see AssociationEntryParser::parseApiEntry()
+     * for the full grammar.
+     *
+     * @return array{path: string, methods: list<string>|null}
+     */
+    protected static function parseApiEntry(string $entry): array
+    {
+        return AssociationEntryParser::parseApiEntry($entry);
+    }
+
+    /**
+     * Normalizes a URI path for comparison: trims, forces a single leading slash, and drops a
+     * trailing slash (except for the root "/").
+     */
+    protected static function normalizeApiPath(string $path): string
+    {
+        return AssociationEntryParser::normalizeApiPath($path);
+    }
+}

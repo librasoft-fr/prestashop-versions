@@ -71,9 +71,24 @@ class ArrayDenormalizer implements ContextAwareDenormalizerInterface, Denormaliz
             }
         }
 
+        if (\is_array($objectsToPopulate = $context[AbstractNormalizer::OBJECT_TO_POPULATE] ?? null)) {
+            unset($context[AbstractNormalizer::OBJECT_TO_POPULATE]);
+
+            if (array_is_list($objectsToPopulate)) {
+                // positions are not identities, the payload can list different items
+                $objectsToPopulate = [];
+            }
+        } else {
+            $objectsToPopulate = [];
+        }
+
         foreach ($data as $key => $value) {
             $subContext = $context;
             $subContext['deserialization_path'] = ($context['deserialization_path'] ?? false) ? \sprintf('%s[%s]', $context['deserialization_path'], $key) : "[$key]";
+
+            if (\is_object($objectsToPopulate[$key] ?? null) || \is_array($objectsToPopulate[$key] ?? null)) {
+                $subContext[AbstractNormalizer::OBJECT_TO_POPULATE] = $objectsToPopulate[$key];
+            }
 
             $this->validateKeyType($builtinTypes, $key, $subContext['deserialization_path']);
 

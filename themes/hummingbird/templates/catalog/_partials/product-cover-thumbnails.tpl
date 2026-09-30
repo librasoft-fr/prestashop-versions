@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 
 <div class="product__images js-images-container">
@@ -21,7 +21,7 @@
                     srcset="
                       {$image.bySize.default_xl.sources.avif} 400w,
                       {$image.bySize.product_main.sources.avif} 720w"
-                    sizes="(min-width: 992px) 50vw, (min-width: 360px) 33vw, 100vw"
+                    sizes="(min-width: 992px) 50vw, 100vw"
                     type="image/avif"
                   >
                 {/if}
@@ -31,7 +31,7 @@
                     srcset="
                       {$image.bySize.default_xl.sources.webp} 400w,
                       {$image.bySize.product_main.sources.webp} 720w"
-                    sizes="(min-width: 992px) 50vw, (min-width: 360px) 33vw, 100vw"
+                    sizes="(min-width: 992px) 50vw, 100vw"
                     type="image/webp"
                   >
                 {/if}
@@ -41,7 +41,7 @@
                   srcset="
                     {$image.bySize.default_xl.url} 400w,
                     {$image.bySize.product_main.url} 720w"
-                  sizes="(min-width: 992px) 50vw, (min-width: 360px) 33vw, 100vw"
+                  sizes="(min-width: 992px) 50vw, 100vw"
                   src="{$image.bySize.product_main.url}" 
                   width="{$image.bySize.product_main.width}"
                   height="{$image.bySize.product_main.height}"
@@ -74,7 +74,7 @@
 
       {block name='product_images_modal_button'}
         <button class="product__zoom btn btn-tertiary outline outline--rounded btn-square-icon" data-bs-toggle="modal" data-bs-target="#product-modal" aria-label="{l s='Open zoomed product image gallery' d='Shop.Theme.Global'}" title="{l s='Open zoomed product image gallery' d='Shop.Theme.Global'}">
-          <i class="material-icons">&#xE8B6;</i>
+          <i class="material-icons" aria-hidden="true">&#xE8B6;</i>
         </button>
       {/block}
     </div>
@@ -83,47 +83,51 @@
       <div class="product__thumbnails">
         <ul class="product__thumbnails-list">
           {foreach from=$product.images item=image key=key name=productThumbnails}
-            <button
-              class="product__thumbnail focus-ring js-thumb-container{if $image.id_image == $product.default_image.id_image} active{/if}"
-              data-bs-target="#product-images-{$product.id}"
-              data-bs-slide-to="{$key}"
-              {if $image.id_image == $product.default_image.id_image}
-                aria-current="true"
-              {/if}
-              aria-label="{l s='Slide to product image %number%' d='Shop.Theme.Catalog' sprintf=['%number%' => $key + 1]}"
-            >
-              <picture>
-                {if isset($image.bySize.default_xs.sources.avif)}
-                  <source 
-                    srcset="
-                      {$image.bySize.default_xs.sources.avif},
-                      {$image.bySize.default_xl.sources.avif} 2x"
-                    type="image/avif"
-                  >
+            <li class="product__thumbnails-item" data-ps-ref="product-thumbnail-item">
+              <button
+                type="button"
+                class="product__thumbnail focus-ring js-thumb-container{if $image.id_image == $product.default_image.id_image} active{/if}"
+                data-ps-ref="product-thumbnail"
+                data-bs-target="#product-images-{$product.id}"
+                data-bs-slide-to="{$key}"
+                {if $image.id_image == $product.default_image.id_image}
+                  aria-current="true"
                 {/if}
+                aria-label="{l s='Slide to product image %number%' d='Shop.Theme.Catalog' sprintf=['%number%' => $key + 1]}"
+              >
+                <picture>
+                  {if isset($image.bySize.default_xs.sources.avif)}
+                    <source 
+                      srcset="
+                        {$image.bySize.default_xs.sources.avif},
+                        {$image.bySize.default_xl.sources.avif} 2x"
+                      type="image/avif"
+                    >
+                  {/if}
 
-                {if isset($image.bySize.default_xs.sources.webp)}
-                  <source 
+                  {if isset($image.bySize.default_xs.sources.webp)}
+                    <source 
+                      srcset="
+                        {$image.bySize.default_xs.sources.webp},
+                        {$image.bySize.default_xl.sources.webp} 2x"
+                      type="image/webp"
+                    >
+                  {/if}
+
+                  <img
+                    class="product__thumbnail-image outline outline--rounded img-fluid js-thumb{if $image.id_image == $product.default_image.id_image} js-thumb-selected{/if}"
                     srcset="
-                      {$image.bySize.default_xs.sources.webp},
-                      {$image.bySize.default_xl.sources.webp} 2x"
-                    type="image/webp"
+                      {$image.bySize.default_xs.url},
+                      {$image.bySize.default_xl.url} 2x"
+                    width="{$image.bySize.default_xs.width}"
+                    height="{$image.bySize.default_xs.height}"
+                    loading="lazy"
+                    alt="{$image.legend}"
+                    title="{$image.legend}"
                   >
-                {/if}
-
-                <img
-                  class="product__thumbnail-image outline outline--rounded img-fluid js-thumb{if $image.id_image == $product.default_image.id_image} js-thumb-selected{/if}"
-                  srcset="
-                    {$image.bySize.default_xs.url},
-                    {$image.bySize.default_xl.url} 2x"
-                  width="{$image.bySize.default_xs.width}"
-                  height="{$image.bySize.default_xs.height}"
-                  loading="lazy"
-                  alt="{$image.legend}"
-                  title="{$image.legend}"
-                >
-              </picture>
-            </button>
+                </picture>
+              </button>
+            </li>
           {/foreach}
         </ul>
       </div>
@@ -140,7 +144,7 @@
             srcset="
               {$urls.no_picture_image.bySize.default_xl.sources.avif} 400w,
               {$urls.no_picture_image.bySize.product_main.sources.avif} 720w"
-            sizes="(min-width: 992px) 50vw, (min-width: 360px) 33vw, 100vw"
+            sizes="(min-width: 992px) 50vw, 100vw"
             type="image/avif"
           >
         {/if}
@@ -150,7 +154,7 @@
             srcset="
               {$urls.no_picture_image.bySize.default_xl.sources.webp} 400w,
               {$urls.no_picture_image.bySize.product_main.sources.webp} 720w"
-            sizes="(min-width: 992px) 50vw, (min-width: 360px) 33vw, 100vw"
+            sizes="(min-width: 992px) 50vw, 100vw"
             type="image/webp"
           >
         {/if}
@@ -160,7 +164,7 @@
           srcset="
             {$urls.no_picture_image.bySize.default_xl.url} 400w,
             {$urls.no_picture_image.bySize.product_main.url} 720w"
-          sizes="(min-width: 992px) 50vw, (min-width: 360px) 33vw, 100vw"
+          sizes="(min-width: 992px) 50vw, 100vw"
           width="{$urls.no_picture_image.bySize.product_main.width}"
           height="{$urls.no_picture_image.bySize.product_main.height}"
           src="{$urls.no_picture_image.bySize.default_xl.url}" 

@@ -21,6 +21,8 @@ use Symfony\Component\Messenger\Stamp\StampInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -35,15 +37,26 @@ class Serializer implements SerializerInterface
     public const MESSENGER_SERIALIZATION_CONTEXT = 'messenger_serialization';
     private const STAMP_HEADER_PREFIX = 'X-Message-Stamp-';
 
+    // these options hold a callable, or let the XML parser resolve external entities
+    private const CODE_AFFECTING_CONTEXT_OPTIONS = [
+        AbstractNormalizer::CALLBACKS => true,
+        AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => true,
+        AbstractObjectNormalizer::MAX_DEPTH_HANDLER => true,
+        XmlEncoder::LOAD_OPTIONS => true,
+    ];
+
     private SymfonySerializerInterface $serializer;
     private string $format;
     private array $context;
+    private array $stampContext;
 
     public function __construct(?SymfonySerializerInterface $serializer = null, string $format = 'json', array $context = [])
     {
         $this->serializer = $serializer ?? self::create()->serializer;
         $this->format = $format;
         $this->context = $context + [self::MESSENGER_SERIALIZATION_CONTEXT => true];
+        // stamps have no serialization metadata, so selecting the attributes of the message would encode them empty
+        $this->stampContext = array_diff_key($this->context, array_flip([AbstractNormalizer::ATTRIBUTES, AbstractNormalizer::GROUPS, AbstractNormalizer::IGNORED_ATTRIBUTES]));
     }
 
     public static function create(): self
@@ -119,14 +132,31 @@ class Serializer implements SerializerInterface
                 continue;
             }
 
+            $class = substr($name, \strlen(self::STAMP_HEADER_PREFIX));
+
+            if (!is_subclass_of($class, StampInterface::class)) {
+                throw new MessageDecodingFailedException(\sprintf('Could not decode stamp: "%s" is not a "%s".', $class, StampInterface::class));
+            }
+
+            // encoding strips these stamps, so they never come from a transport
+            if (is_subclass_of($class, NonSendableStampInterface::class)) {
+                continue;
+            }
+
             try {
-                $stamps[] = $this->serializer->deserialize($value, substr($name, \strlen(self::STAMP_HEADER_PREFIX)).'[]', $this->format, $this->context);
+                $stamps[] = $this->serializer->deserialize($value, $class.'[]', $this->format, $this->stampContext);
             } catch (ExceptionInterface $e) {
                 throw new MessageDecodingFailedException('Could not decode stamp: '.$e->getMessage(), $e->getCode(), $e);
             }
         }
         if ($stamps) {
             $stamps = array_merge(...$stamps);
+        }
+
+        foreach ($stamps as $i => $stamp) {
+            if ($stamp instanceof SerializerStamp) {
+                $stamps[$i] = new SerializerStamp(array_diff_key($stamp->getContext(), self::CODE_AFFECTING_CONTEXT_OPTIONS));
+            }
         }
 
         return $stamps;
@@ -140,7 +170,7 @@ class Serializer implements SerializerInterface
 
         $headers = [];
         foreach ($allStamps as $class => $stamps) {
-            $headers[self::STAMP_HEADER_PREFIX.$class] = $this->serializer->serialize($stamps, $this->format, $this->context);
+            $headers[self::STAMP_HEADER_PREFIX.$class] = $this->serializer->serialize($stamps, $this->format, $this->stampContext);
         }
 
         return $headers;

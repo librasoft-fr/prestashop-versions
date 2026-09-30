@@ -20,10 +20,12 @@
 
 namespace PsCheckout\Core\Order\Builder\Node;
 
+use PsCheckout\Core\Exception\PsCheckoutException;
 use PsCheckout\Core\Settings\Configuration\PayPalConfiguration;
-use PsCheckout\Infrastructure\Repository\CountryRepositoryInterface;
-use PsCheckout\Infrastructure\Repository\StateRepositoryInterface;
-use PsCheckout\Utility\Payload\OrderPayloadUtility;
+use PsCheckout\Core\Util\ExperienceContextHelper;
+use PsCheckout\Core\Util\PhoneParser;
+use PsCheckout\Infrastructure\Adapter\ValidateInterface;
+use Psr\Log\LoggerInterface;
 
 class CardPaymentSourceNodeBuilder implements CardPaymentSourceNodeBuilderInterface
 {
@@ -53,23 +55,37 @@ class CardPaymentSourceNodeBuilder implements CardPaymentSourceNodeBuilderInterf
     private $paypalConfiguration;
 
     /**
-     * @var CountryRepositoryInterface
+     * @var ExperienceContextHelper
      */
-    private $countryRepository;
+    private $experienceContextHelper;
 
     /**
-     * @var StateRepositoryInterface
+     * @var PhoneParser
      */
-    private $stateRepository;
+    private $phoneParser;
+
+    /**
+     * @var ValidateInterface
+     */
+    private $validate;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
         PayPalConfiguration $paypalConfiguration,
-        CountryRepositoryInterface $countryRepository,
-        StateRepositoryInterface $stateRepository
+        ExperienceContextHelper $experienceContextHelper,
+        PhoneParser $phoneParser,
+        ValidateInterface $validate,
+        LoggerInterface $logger
     ) {
         $this->paypalConfiguration = $paypalConfiguration;
-        $this->countryRepository = $countryRepository;
-        $this->stateRepository = $stateRepository;
+        $this->experienceContextHelper = $experienceContextHelper;
+        $this->phoneParser = $phoneParser;
+        $this->validate = $validate;
+        $this->logger = $logger;
     }
 
     /**
@@ -78,17 +94,13 @@ class CardPaymentSourceNodeBuilder implements CardPaymentSourceNodeBuilderInterf
     public function build(): array
     {
         $address = $this->cart['addresses']['invoice'];
-
-        $countryIso = $this->countryRepository->getCountryIsoCodeById($address->id_country);
-        $stateName = $countryIso === 'US' ?
-            $this->stateRepository->getIsoById($address->id_state)
-            : $this->stateRepository->getNameById($address->id_state);
+        $countryIso = $this->experienceContextHelper->getInvoiceCountryCode($this->cart);
 
         $node = [
             'payment_source' => [
                 'card' => [
-                    'name' => $this->cart['addresses']['invoice']->firstname . ' ' . $this->cart['addresses']['invoice']->lastname,
-                    'billing_address' => OrderPayloadUtility::getAddressPortable($address, $countryIso, $stateName),
+                    'name' => $address->firstname . ' ' . $address->lastname,
+                    'billing_address' => $this->experienceContextHelper->buildInvoicePortableAddress($this->cart),
                 ],
             ],
         ];
@@ -102,10 +114,12 @@ class CardPaymentSourceNodeBuilder implements CardPaymentSourceNodeBuilderInterf
             $node['payment_source']['card']['vault_id'] = $this->paypalVaultId;
         }
 
+        $customerAttributes = $this->buildCustomerAttributes($address, $countryIso);
         if ($this->paypalCustomerId) {
-            $node['payment_source']['card']['attributes']['customer'] = [
-                'id' => $this->paypalCustomerId,
-            ];
+            $customerAttributes['id'] = $this->paypalCustomerId;
+        }
+        if (!empty($customerAttributes)) {
+            $node['payment_source']['card']['attributes']['customer'] = $customerAttributes;
         }
 
         if ($this->savePaymentMethod) {
@@ -114,7 +128,72 @@ class CardPaymentSourceNodeBuilder implements CardPaymentSourceNodeBuilderInterf
             ];
         }
 
+        if ($this->paypalVaultId) {
+            $node['payment_source']['card']['stored_credential'] = [
+                'payment_initiator' => 'CUSTOMER',
+                'payment_type' => 'UNSCHEDULED',
+                'usage' => 'SUBSEQUENT',
+            ];
+        } elseif ($this->savePaymentMethod) {
+            $node['payment_source']['card']['stored_credential'] = [
+                'payment_initiator' => 'CUSTOMER',
+                'payment_type' => 'UNSCHEDULED',
+                'usage' => 'FIRST',
+            ];
+        }
+
+        $node['payment_source']['card']['experience_context'] = $this->experienceContextHelper->buildUrlContext();
+
         return $node;
+    }
+
+    /**
+     * @param mixed $address
+     *
+     * @return array<string, mixed>
+     *
+     * @throws PsCheckoutException
+     */
+    private function buildCustomerAttributes($address, string $countryIso): array
+    {
+        $attributes = [];
+
+        if (!empty($address->firstname) || !empty($address->lastname)) {
+            $attributes['name'] = [
+                'given_name' => (string) $address->firstname,
+                'surname' => (string) $address->lastname,
+            ];
+        }
+
+        $email = $this->experienceContextHelper->getCustomerEmail($this->cart);
+        if ($email === '' || !$this->validate->isPayPalEmail($email)) {
+            $this->logger->warning('Valid email is required for card payment.');
+
+            throw new PsCheckoutException('Valid email is required for card payment.', PsCheckoutException::CART_CUSTOMER_EMAIL_INVALID);
+        }
+        $attributes['email_address'] = $email;
+
+        $rawPhone = !empty($address->phone)
+            ? $address->phone
+            : (!empty($address->phone_mobile) ? $address->phone_mobile : '');
+
+        $cartId = isset($this->cart['cart']['id']) ? (int) $this->cart['cart']['id'] : null;
+
+        if (!empty($rawPhone)) {
+            $parsedPhone = $this->phoneParser->parsePhone($rawPhone, $countryIso, ['id_cart' => $cartId]);
+
+            if ($parsedPhone !== null) {
+                $attributes['phone'] = [
+                    'phone_number' => [
+                        'national_number' => (string) $parsedPhone->getNationalNumber(),
+                        'country_code' => (string) $parsedPhone->getCountryCode(),
+                    ],
+                    'phone_type' => $this->phoneParser->getPhoneType($parsedPhone),
+                ];
+            }
+        }
+
+        return $attributes;
     }
 
     /**

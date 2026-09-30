@@ -1,3 +1,7 @@
+{**
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ *}
 {block name='quick_view'}
   <button class="{$componentName}__quickview-button btn btn-tertiary btn-square-icon outline js-quickview"
     data-ps-action="open-quickview"
@@ -12,6 +16,6 @@
   <button class="{$componentName}__quickview-touch btn btn-tertiary btn-square-icon js-quickview"
     data-ps-action="open-quickview"
     aria-label="{l s='Quick view %product_name%' sprintf=['%product_name%' => $product.name] d='Shop.Theme.Actions'}">
-    <i class="material-icons">&#xE417;</i>
+    <i class="material-icons" aria-hidden="true">&#xE417;</i>
   </button>
 {/block}

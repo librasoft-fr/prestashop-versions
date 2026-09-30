@@ -1,18 +1,24 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
+{assign var='id_prefix' value=$id_prefix|default:''}
+{capture assign='field_attr'}
+  {foreach from=$field.attr|default:[] key="attrName" item="attrValue"}
+    {$attrName|escape:'html'}="{$attrValue|escape:'html'}"
+  {/foreach}
+{/capture}
 {if $field.type == 'hidden'}
 
   {block name='form_field_item_hidden'}
-    <input type="hidden" name="{$field.name}" value="{$field.value}">
+    <input type="hidden" name="{$field.name}" value="{$field.value}" {$field_attr nofilter}>
   {/block}
 
 {else}
 
   <div class="mb-3{if !empty($field.errors)} has-error{/if}">
     {if ($field.type !== 'checkbox')}
-      <label class="form-label{if $field.required} required{/if}" for="field-{$field.name}">
+      <label class="form-label{if $field.required} required{/if}" id="{$id_prefix}field-{$field.name}-label" for="{$id_prefix}field-{$field.name}">
         {if $field.type !== 'checkbox'}
           {$field.label}
         {/if}
@@ -22,7 +28,7 @@
     {if $field.type === 'select'}
 
       {block name='form_field_item_select'}
-        <select class="form-select" name="{$field.name}" id="field-{$field.name}" {if $field.required}required{/if}>
+        <select class="form-select" name="{$field.name}" id="{$id_prefix}field-{$field.name}" {if $field.required}required{/if} {$field_attr nofilter}>
           <option value disabled selected>{l s='-- please choose --' d='Shop.Forms.Labels'}</option>
           {foreach from=$field.availableValues item="label" key="value"}
             <option value="{$value}" {if $value eq $field.value} selected {/if}>{$label}</option>
@@ -36,8 +42,9 @@
         <select
         class="form-select js-country"
         name="{$field.name}"
-        id="field-{$field.name}"
+        id="{$id_prefix}field-{$field.name}"
         {if $field.required}required{/if}
+        {$field_attr nofilter}
         >
           <option value disabled selected>{l s='-- please choose --' d='Shop.Forms.Labels'}</option>
           {foreach from=$field.availableValues item="label" key="value"}
@@ -49,20 +56,19 @@
     {elseif $field.type === 'radio-buttons'}
 
       {block name='form_field_item_radio'}
-        <div aria-labelledby="field-{$field.name}-label">
-          <p class="visually-hidden" id="field-{$field.name}-label">{$field.label}</p>
+        <div aria-labelledby="{$id_prefix}field-{$field.name}-label">
           {foreach from=$field.availableValues item="label" key="value"}
             <div class="form-check form-check-inline">
               <input
                 class="form-check-input"
                 type="radio"
                 name="{$field.name}"
-                id="field-{$field.name}_{$value}"
+                id="{$id_prefix}field-{$field.name}_{$value}"
                 value="{$value}"
                 {if $field.required}required{/if}
                 {if $value eq $field.value} checked {/if}
               >
-              <label class="form-check-label" for="field-{$field.name}_{$value}">
+              <label class="form-check-label" for="{$id_prefix}field-{$field.name}_{$value}">
                 {$label}
               </label>
             </div>
@@ -79,11 +85,11 @@
             name="{$field.name}"
             type="checkbox"
             value="1"
-            id="field-{$field.name}"
+            id="{$id_prefix}field-{$field.name}"
             value="1" {if $field.value}checked="checked"{/if}
             {if $field.required}required{/if}
           >
-          <label class="form-check-label{if $field.required} required{/if}" for="field-{$field.name}">
+          <label class="form-check-label{if $field.required} required{/if}" for="{$id_prefix}field-{$field.name}">
             {$field.label nofilter}
           </label>
         </div>
@@ -92,7 +98,19 @@
     {elseif $field.type === 'date'}
 
       {block name='form_field_item_date'}
-        <input name="{$field.name}" class="form-control" type="date" id="field-{$field.name}" value="{$field.value}"{if isset($field.availableValues.placeholder)} placeholder="{$field.availableValues.placeholder}" aria-label="{$field.availableValues.placeholder}"{/if}>
+        <input
+          name="{$field.name}"
+          class="form-control"
+          type="date"
+          id="{$id_prefix}field-{$field.name}"
+          value="{$field.value}"
+          {if isset($field.availableValues.placeholder)}
+            placeholder="{$field.availableValues.placeholder}"
+            aria-label="{$field.availableValues.placeholder}"
+          {/if}
+          {if $field.required}required{/if}
+          {$field_attr nofilter}
+        >
         {if isset($field.availableValues.comment)}
           <span class="form-text">
             {$field.availableValues.comment}
@@ -103,7 +121,7 @@
     {elseif $field.type === 'birthday'}
 
       {block name='form_field_item_birthday'}
-        <div class="js-parent-focus">
+        <div class="js-parent-focus" role="group" aria-labelledby="{$id_prefix}field-{$field.name}-label">
           {html_select_date
           field_order=DMY
           time={$field.value}
@@ -125,23 +143,28 @@
     {elseif $field.type === 'password'}
 
       {block name='form_field_item_password'}
+        {* Enforce policy check only for new passwords (autocomplete="new-password") existing ones may predate the current policy and must stay usable. *}
+        {assign var='apply_password_policy' value=($field.autocomplete|default:'') === 'new-password'}
 
         <div class="input-group password-field">
           <input
             class="form-control"
             name="{$field.name}"
-            id="field-{$field.name}"
+            id="{$id_prefix}field-{$field.name}"
             type="password"
             {if $field.autocomplete}autocomplete="{$field.autocomplete}"{/if}
             value=""
-            minlength="{$configuration.password_policy.minimum_length|default:8}"
-            maxlength="{$configuration.password_policy.maximum_length|default:72}"
-            data-minscore="{$configuration.password_policy.minimum_score|default:3}"
-            data-bs-placement="top"
-            data-bs-trigger="manual"
-            data-ps-ref="password-policy-input"
+            {if $apply_password_policy}
+              minlength="{$configuration.password_policy.minimum_length|default:8}"
+              maxlength="{$configuration.password_policy.maximum_length|default:72}"
+              data-minscore="{$configuration.password_policy.minimum_score|default:3}"
+              data-bs-placement="top"
+              data-bs-trigger="manual"
+              data-ps-ref="password-policy-input"
+            {/if}
             spellcheck="false"
             {if $field.required}required{/if}
+            {$field_attr nofilter}
           >
 
           <button
@@ -151,21 +174,23 @@
             data-text-show="{l s='Show password' d='Shop.Theme.Actions'}"
             data-text-hide="{l s='Hide password' d='Shop.Theme.Actions'}"
             aria-label="{l s='Show password' d='Shop.Theme.Actions'}"
-            aria-controls="field-{$field.name}"
+            aria-controls="{$id_prefix}field-{$field.name}"
             aria-live="polite"
           >
             <i class="material-icons" aria-hidden="true">&#xE8F4;</i>
           </button>
         </div>
 
-        <div data-ps-target="password-feedback-target"></div>
+        {if $apply_password_policy}
+          <div data-ps-target="password-feedback-target"></div>
+        {/if}
       {/block}
 
     {elseif $field.type === 'textarea'}
 
       {block name='form_field_item_textarea'}
         <textarea
-          id="field-{$field.name}"
+          id="{$id_prefix}field-{$field.name}"
           class="form-control"
           name="{$field.name}"
           {if isset($field.availableValues.placeholder)}placeholder="{$field.availableValues.placeholder}"{/if}
@@ -173,6 +198,7 @@
           {if $field.required}required{/if}
           {if isset($field.availableValues.rows)}rows="{$field.availableValues.rows}"{/if}
           {if isset($field.availableValues.cols)}cols="{$field.availableValues.cols}"{/if}
+          {$field_attr nofilter}
         >{$field.value|default}</textarea>
         {if isset($field.availableValues.comment)}
           <span class="form-text">
@@ -187,7 +213,7 @@
         <input
           class="form-control"
           name="{$field.name}"
-          id="field-{$field.name}"
+          id="{$id_prefix}field-{$field.name}"
           type="{$field.type}"
           value="{$field.value}"
           {if $field.autocomplete}autocomplete="{$field.autocomplete}"{/if}
@@ -196,6 +222,7 @@
           {if !empty($field.minLength)}minlength="{$field.minLength}"{/if}
           aria-label="{$field.label}"
           {if $field.required}required{/if}
+          {$field_attr nofilter}
         >
         {if isset($field.availableValues.comment)}
           <span class="form-text">

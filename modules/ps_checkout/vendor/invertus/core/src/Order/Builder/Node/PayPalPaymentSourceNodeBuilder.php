@@ -20,8 +20,10 @@
 
 namespace PsCheckout\Core\Order\Builder\Node;
 
-use PsCheckout\Infrastructure\Adapter\ConfigurationInterface;
-use PsCheckout\Infrastructure\Adapter\LinkInterface;
+use PsCheckout\Core\Util\ExperienceContextHelper;
+use PsCheckout\Core\Util\PhoneParser;
+use PsCheckout\Infrastructure\Adapter\ValidateInterface;
+use Psr\Log\LoggerInterface;
 
 class PayPalPaymentSourceNodeBuilder implements PayPalPaymentSourceNodeBuilderInterface
 {
@@ -51,21 +53,50 @@ class PayPalPaymentSourceNodeBuilder implements PayPalPaymentSourceNodeBuilderIn
     private $isVirtualCart;
 
     /**
-     * @var ConfigurationInterface
+     * @var bool
      */
-    private $configuration;
+    private $isExpressCheckout = false;
 
     /**
-     * @var LinkInterface
+     * @var array|null
      */
-    private $link;
+    private $cart;
+
+    /**
+     * @var ExperienceContextHelper
+     */
+    private $experienceContextHelper;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var ValidateInterface
+     */
+    private $validate;
+
+    /**
+     * @var PhoneParser
+     */
+    private $phoneParser;
+
+    /**
+     * @var string
+     */
+    private $fundingSource;
 
     public function __construct(
-        ConfigurationInterface $configuration,
-        LinkInterface $link
+        ExperienceContextHelper $experienceContextHelper,
+        LoggerInterface $logger,
+        ValidateInterface $validate,
+        PhoneParser $phoneParser
     ) {
-        $this->configuration = $configuration;
-        $this->link = $link;
+        $this->experienceContextHelper = $experienceContextHelper;
+        $this->logger = $logger;
+        $this->validate = $validate;
+        $this->phoneParser = $phoneParser;
     }
 
     /**
@@ -90,12 +121,34 @@ class PayPalPaymentSourceNodeBuilder implements PayPalPaymentSourceNodeBuilderIn
             }
         }
 
-        $data['experience_context'] = [
-            'brand_name' => $this->configuration->get('PS_SHOP_NAME'),
-            'shipping_preference' => $this->isVirtualCart ? 'NO_SHIPPING' : ($this->shippingAddressExists ? 'SET_PROVIDED_ADDRESS' : 'GET_FROM_FILE'),
-            'return_url' => $this->link->getModuleLink('validate'),
-            'cancel_url' => $this->link->getModuleLink('cancel'),
-        ];
+        if ($this->cart !== null) {
+            $data = array_merge($data, $this->buildPayerData());
+        }
+
+        switch ($this->fundingSource) {
+            case 'paylater':
+                $paymentMethodSelected = 'PAYPAL_PAY_LATER';
+
+                break;
+            case 'credit':
+                $paymentMethodSelected = 'PAYPAL_CREDIT';
+
+                break;
+            default:
+                $paymentMethodSelected = 'PAYPAL';
+        }
+
+        $data['experience_context'] = array_merge(
+            [
+                'brand_name' => $this->experienceContextHelper->getBrandName(),
+                'shipping_preference' => $this->isVirtualCart ? 'NO_SHIPPING' : ($this->shippingAddressExists ? 'SET_PROVIDED_ADDRESS' : 'GET_FROM_FILE'),
+                'contact_preference' => $this->isExpressCheckout ? 'UPDATE_CONTACT_INFO' : 'NO_CONTACT_INFO',
+                'landing_page' => $this->fundingSource === 'card' ? 'GUEST_CHECKOUT' : 'LOGIN',
+                'payment_method_selected' => $paymentMethodSelected,
+                'user_action' => $this->isExpressCheckout ? 'CONTINUE' : 'PAY_NOW',
+            ],
+            $this->experienceContextHelper->buildUrlContext()
+        );
 
         if (empty($data)) {
             return [];
@@ -146,5 +199,76 @@ class PayPalPaymentSourceNodeBuilder implements PayPalPaymentSourceNodeBuilderIn
         $this->isVirtualCart = $isVirtualCart;
 
         return $this;
+    }
+
+    /** {@inheritDoc} */
+    public function setCart(array $cart): self
+    {
+        $this->cart = $cart;
+
+        return $this;
+    }
+
+    /** {@inheritDoc} */
+    public function setIsExpressCheckout(bool $isExpressCheckout): self
+    {
+        $this->isExpressCheckout = $isExpressCheckout;
+
+        return $this;
+    }
+
+    /** {@inheritDoc} */
+    public function setFundingSource(string $fundingSource): self
+    {
+        $this->fundingSource = $fundingSource;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildPayerData(): array
+    {
+        $data = [];
+
+        if (!isset($this->cart['addresses']['invoice'])) {
+            $this->logger->warning('Invoice address is missing in the cart.');
+
+            return $data;
+        }
+
+        $invoiceAddress = $this->cart['addresses']['invoice'];
+        $countryIsoCode = $this->experienceContextHelper->getInvoiceCountryCode($this->cart);
+
+        $data['name'] = [
+            'given_name' => isset($invoiceAddress->firstname) ? (string) $invoiceAddress->firstname : '',
+            'surname' => isset($invoiceAddress->lastname) ? (string) $invoiceAddress->lastname : '',
+        ];
+
+        $data['address'] = $this->experienceContextHelper->buildInvoicePortableAddress($this->cart);
+
+        $email = $this->experienceContextHelper->getCustomerEmail($this->cart);
+        if ($email !== '' && $this->validate->isPayPalEmail($email)) {
+            $data['email_address'] = $email;
+        }
+
+        if (!empty($this->cart['customer']->birthday) && $this->cart['customer']->birthday !== '0000-00-00') {
+            $data['birth_date'] = (string) $this->cart['customer']->birthday;
+        }
+
+        $cartId = isset($this->cart['cart']['id']) ? (int) $this->cart['cart']['id'] : null;
+        $parsedPhone = $this->phoneParser->parseFromAddress($invoiceAddress, $countryIsoCode, $cartId);
+        if ($parsedPhone !== null) {
+            $data['phone'] = [
+                'phone_number' => [
+                    'national_number' => (string) $parsedPhone->getNationalNumber(),
+                    'country_code' => (string) $parsedPhone->getCountryCode(),
+                ],
+                'phone_type' => $this->phoneParser->getPhoneType($parsedPhone),
+            ];
+        }
+
+        return array_filter($data);
     }
 }

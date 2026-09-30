@@ -1,9 +1,9 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 {block name='order_products_table'}
-  <div class="grid-table grid-table--collapse mb-0" role="table" aria-label="{l s='Products details' d='Shop.Theme.Customeraccount'}" aria-describedby="order_products_heading">
+  <div class="grid-table grid-table--collapse mb-0" role="table" aria-label="{l s='Products details' d='Shop.Theme.Customeraccount'}">
     <div class="grid-table__inner grid-table__inner--4" role="rowgroup">
       <div class="grid-table__header" role="row">
         <span class="grid-table__cell" role="columnheader">{l s='Product' d='Shop.Theme.Catalog'}</span>
@@ -110,12 +110,13 @@
                     <span class="customization">
                       <a class="btn btn-sm btn-link p-0" href="#" data-bs-toggle="modal"
                         data-bs-target="#product-customizations-modal-{$customization.id_customization}">
-                        <i class="material-icons">&#xE8F4;</i>
+                        <i class="material-icons" aria-hidden="true">&#xE8F4;</i>
                         {l s='Product customization' d='Shop.Theme.Catalog'}
                       </a>
                     </span>
                   {/foreach}
                 {/if}
+                {hook h='displayOrderDetailProductLine' id_order=$product.id_order id_order_detail=$product.id_order_detail id_product=$product.id_product}
               </span>
             </span>
           </span>

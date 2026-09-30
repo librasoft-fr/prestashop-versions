@@ -1,0 +1,46 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\PsMcpServer\Ps_mcp_server:
+    class: 'ps_mcp_server'
+    factory: ['Module', 'getInstanceByName']
+    arguments:
+      - 'ps_mcp_server'
+
+  ## REPOSITORIES ##
+  PrestaShop\Module\PsMcpServer\Repository\McpFeaturesRepository:
+    class: PrestaShop\Module\PsMcpServer\Repository\McpFeaturesRepository
+
+  PrestaShop\Module\PsMcpServer\Repository\McpModulesRepository:
+    class: PrestaShop\Module\PsMcpServer\Repository\McpModulesRepository
+
+  PrestaShop\Module\PsMcpServer\Repository\McpAllowedUsersRepository:
+    class: PrestaShop\Module\PsMcpServer\Repository\McpAllowedUsersRepository
+
+  ## SERVICES ##
+  PrestaShop\Module\PsMcpServer\Services\McpService:
+    class: PrestaShop\Module\PsMcpServer\Services\McpService
+    arguments:
+      - '@PrestaShop\Module\PsMcpServer\Ps_mcp_server'
+      - '@PrestaShop\Module\PsMcpServer\Services\McpModulesService'
+      - '@PrestaShop\Module\PsMcpServer\Services\McpFeaturesService'
+
+  PrestaShop\Module\PsMcpServer\Services\McpFeaturesService:
+    class: PrestaShop\Module\PsMcpServer\Services\McpFeaturesService
+    arguments:
+      - '@PrestaShop\Module\PsMcpServer\Repository\McpFeaturesRepository'
+      - '@PrestaShop\Module\PsMcpServer\Repository\McpModulesRepository'
+
+  PrestaShop\Module\PsMcpServer\Services\McpModulesService:
+    class: PrestaShop\Module\PsMcpServer\Services\McpModulesService
+    arguments:
+      - '@PrestaShop\Module\PsMcpServer\Repository\McpModulesRepository'
+
+  PrestaShop\Module\PsMcpServer\Services\McpAllowedUsersService:
+    class: PrestaShop\Module\PsMcpServer\Services\McpAllowedUsersService
+    arguments:
+      - '@PrestaShop\Module\PsMcpServer\Repository\McpAllowedUsersRepository'
+
+  PrestaShop\Module\PsMcpServer\Services\SentryService:
+    class: PrestaShop\Module\PsMcpServer\Services\SentryService

@@ -29,7 +29,6 @@ if (!defined('_PS_VERSION_')) {
 
 class statsbestproducts extends ModuleGrid
 {
-    private $html = null;
     private $query = null;
     private $columns = null;
     private $default_sort_column = null;
@@ -41,7 +40,7 @@ class statsbestproducts extends ModuleGrid
     {
         $this->name = 'statsbestproducts';
         $this->tab = 'administration';
-        $this->version = '2.1.0';
+        $this->version = '3.0.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
@@ -111,7 +110,7 @@ class statsbestproducts extends ModuleGrid
 
         $this->displayName = $this->trans('Best-selling products', [], 'Modules.Statsbestproducts.Admin');
         $this->description = $this->trans('Enrich your stats with a small list of your best-sellers to better know your customers.', [], 'Modules.Statsbestproducts.Admin');
-        $this->ps_versions_compliancy = ['min' => '1.7.6.0', 'max' => _PS_VERSION_];
+        $this->ps_versions_compliancy = ['min' => '8.2.0', 'max' => _PS_VERSION_];
     }
 
     public function install()
@@ -177,7 +176,7 @@ class statsbestproducts extends ModuleGrid
 
         if (Validate::IsName($this->_sort)) {
             $this->query .= ' ORDER BY `' . bqSQL($this->_sort) . '`';
-            if (isset($this->_direction) && Validate::isSortDirection($this->_direction)) {
+            if (!empty($this->_direction) && Validate::isSortDirection($this->_direction)) {
                 $this->query .= ' ' . $this->_direction;
             }
         }
@@ -186,6 +185,7 @@ class statsbestproducts extends ModuleGrid
             $this->query .= ' LIMIT ' . (int) $this->_start . ', ' . (int) $this->_limit;
         }
 
+        /** @var array<int, array<string, mixed>> $values */
         $values = Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($this->query);
         foreach ($values as &$value) {
             $value['avgPriceSold'] = $this->context->getCurrentLocale()->formatPrice($value['avgPriceSold'], $currency->iso_code);

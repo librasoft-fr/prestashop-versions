@@ -91,11 +91,18 @@ services:
     arguments:
       - '@ps_checkout.db'
 
+  PsCheckout\Infrastructure\Repository\PsCheckoutAddressRepository:
+    class: PsCheckout\Infrastructure\Repository\PsCheckoutAddressRepository
+    arguments:
+      - '@ps_checkout.db'
+
   PsCheckout\Infrastructure\Repository\OrderStateRepository:
     class: PsCheckout\Infrastructure\Repository\OrderStateRepository
 
   PsCheckout\Infrastructure\Repository\OrderHistoryRepository:
     class: PsCheckout\Infrastructure\Repository\OrderHistoryRepository
+    arguments:
+      - '@ps_checkout.db'
 
   PsCheckout\Infrastructure\Repository\ShippingTrackingRepository:
     class: PsCheckout\Infrastructure\Repository\ShippingTrackingRepository

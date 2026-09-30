@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ps_mcp_server</name>
+    <displayName><![CDATA[PrestaShop MCP Server]]></displayName>
+    <version><![CDATA[1.0.3]]></version>
+    <description><![CDATA[Connect your store with LLM through MCP server.]]></description>
+    <author><![CDATA[PrestaShop SA]]></author>
+    <tab><![CDATA[]]></tab>
+	<confirmUninstall><![CDATA[Do you really want to uninstall this module?]]></confirmUninstall>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

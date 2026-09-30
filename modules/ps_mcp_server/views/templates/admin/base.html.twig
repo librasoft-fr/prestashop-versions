@@ -1,0 +1,59 @@
+{#**
+ * Copyright (c) 2025 PrestaShop SA
+ *
+ * All Rights Reserved.
+ *
+ * This module is proprietary software owned by PrestaShop SA. All intellectual property rights, including copyrights, trademarks, and trade secrets, are reserved by PrestaShop SA.
+ *
+ * The PS MCP Server module was developed by PrestaShop, which holds all associated intellectual property rights. The license granted to the user does not entail any transfer of rights. The user shall refrain from any act that may infringe upon PrestaShop's rights and undertakes to strictly comply with the limitations of the license set out below. PrestaShop grants the user a personal, non-exclusive, non-transferable, and non-sublicensable license to use the MCP Server module, worldwide and for the entire duration of use of the module. This license is strictly limited to installing the module and using it solely for the operation of the user's PrestaShop store.
+ *#}
+{##}
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{# ---------- CSS / Styles ---------- #}
+{% block stylesheets %}
+  {{ parent() }}
+
+  {% if not LIVE_MODE_VUEJS %}
+    {# Preload CSS #}
+    {% if mcp_preload_urls is defined %}
+      {% for p in mcp_preload_urls %}
+        {% if p.rel == 'preload' and p.as == 'style' %}
+          <link rel="preload" as="style" href="{{ p.href }}">
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {# main CSS #}
+    <link rel="stylesheet" href="{{ mcp_css_url }}" type="text/css" media="all">
+  {% endif %}
+{% endblock %}
+
+
+{% block javascripts %}
+  {{ parent() }}
+
+  {% if LIVE_MODE_VUEJS %}
+    <script type="module" src="http://localhost:5173/@vite/client"></script>
+    <script type="module" src="http://localhost:5173/js/main.js"></script>
+  {% else %}
+    {# Preload chunks ESM (vendor + current language) #}
+    {% if mcp_preload_urls is defined %}
+      {% for p in mcp_preload_urls %}
+        {% if p.rel == 'modulepreload' %}
+          <link rel="modulepreload" href="{{ p.href }}">
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {# main script from manifest #}
+    <script type="module" src="{{ mcp_js_url }}"></script>
+  {% endif %}
+
+  <script src="{{ ps_account_cdn_url }}"></script>
+{% endblock %}
+
+
+{% block content %}
+  <div id="vue-app"></div>
+{% endblock %}

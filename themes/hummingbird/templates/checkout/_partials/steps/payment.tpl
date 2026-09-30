@@ -1,3 +1,7 @@
+{**
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
+ *}
 {extends file='checkout/_partials/steps/checkout-step.tpl'}
 
 {block name='step_content'}
@@ -33,7 +37,7 @@
 
             <label class="payment-option__label form-check-label" for="{$option.id}">
               {if $option.logo}
-                <img class="img-fluid" src="{$option.logo}" loading="lazy">
+                <img class="img-fluid" src="{$option.logo}" loading="lazy" alt="">
               {/if}
               {$option.call_to_action_text}
             </label>
@@ -152,10 +156,7 @@
   {/if}
 
   <div class="buttons-wrapper buttons-wrapper--split buttons-wrapper--invert-mobile mt-3">
-    <button class="btn btn-outline-primary js-back" type="button" data-step="checkout-delivery-step">
-      <div class="material-icons rtl-flip" aria-hidden="true">&#xE5C4;</div>
-      {l s='Back to Shipping' d='Shop.Theme.Actions'}
-    </button>
+    {include file='checkout/_partials/checkout-step-buttons.tpl' show_next_button=false}
 
     <div id="payment-confirmation" class="js-payment-confirmation">
       <div class="ps-shown-by-js">

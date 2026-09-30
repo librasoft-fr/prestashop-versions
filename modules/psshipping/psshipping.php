@@ -94,6 +94,7 @@ class Psshipping extends Module
         'displayAdminOrderContentShip',
         'displayAdminOrderTabShip',
         'displayCarrierExtraContent',
+        'displayBackOfficeHeader',
         'displayOrderConfirmation',
         'actionObjectCarrierUpdateAfter',
         'actionGetOrderShipments',
@@ -118,7 +119,7 @@ class Psshipping extends Module
     {
         $this->name = 'psshipping';
         $this->tab = 'shipping_logistics';
-        $this->version = '2.1.3';
+        $this->version = '2.1.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->module_key = '8a4eff554bcb2ec847b3d4c70286b0e2';
@@ -271,6 +272,43 @@ class Psshipping extends Module
         $hookDisplayHeader = $this->getService(HookDisplayHeader::class);
 
         $hookDisplayHeader->run();
+    }
+
+    public function hookDisplayBackOfficeHeader(): string
+    {
+        if (empty($this->context->controller)) {
+            return '';
+        }
+
+        $controller = $this->context->controller;
+
+        if (empty($controller->controller_name)) {
+            return '';
+        }
+
+        $controllerName = $controller->controller_name;
+
+        if ($controllerName !== 'AdminCarriers') {
+            return '';
+        }
+
+        if (empty($this->context->smarty)) {
+            return '';
+        }
+
+        /** @var CarrierRepository $carrierRepository */
+        $carrierRepository = $this->getService(CarrierRepository::class);
+
+        $carriers = array_filter($carrierRepository->getCarriers(), function ($carrier) {
+            /* @phpstan-ignore-next-line */
+            return stripos($carrier['name'], 'UPS') !== false && $carrier['deleted'] === 0;
+        });
+
+        if (count($carriers) === 0) {
+            return '';
+        }
+
+        return $this->display(__DIR__, 'views/templates/hook/upsTermsAndCondition.tpl');
     }
 
     /**
@@ -505,6 +543,8 @@ class Psshipping extends Module
             'orderId' => $order->id,
             'trackingNumber' => $trackingNumber ?? '',
             'saveTrackingNumberControllerLink' => (new PrestaShopAdapter($this))->generateRoute('save_tracking_number', ['route' => 'save_tracking_number']),
+            'upsDapFirstLabelCreated' => (bool) (new Configuration())->get(PsshippingConfigurationController::UPS_DAP_FIRST_LABEL_CREATED, false),
+            'setUpsDapFirstLabelCreatedControllerLink' => (new PrestaShopAdapter($this))->generateRoute('set_ups_dap_first_label_created', ['route' => 'set_ups_dap_first_label_created']),
         ];
     }
 
@@ -527,6 +567,7 @@ class Psshipping extends Module
 
         $shipmentDetail = $this->renderOrderDetail($order);
         $shipmentDetail['saveTrackingNumberControllerLink'] = $router->generate('save_tracking_number');
+        $shipmentDetail['setUpsDapFirstLabelCreatedControllerLink'] = $router->generate('set_ups_dap_first_label_created');
 
         return $this->render('@Modules/psshipping/views/templates/admin/shipping.html.twig', [
             'shipmentDetail' => $shipmentDetail,

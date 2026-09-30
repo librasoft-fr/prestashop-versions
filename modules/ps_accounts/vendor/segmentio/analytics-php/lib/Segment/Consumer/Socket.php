@@ -179,7 +179,7 @@ class Segment_Consumer_Socket extends Segment_QueueConsumer {
     $library = $content_json['batch'][0]['context']['library'];
     $libName = $library['name'];
     $libVersion = $library['version'];
-    $req.= "User-Agent: ${libName}/${libVersion}\r\n";
+    $req.= "User-Agent: {$libName}/{$libVersion}\r\n";
 
     // Compress content if compress_request is true
     if ($this->compress_request) {

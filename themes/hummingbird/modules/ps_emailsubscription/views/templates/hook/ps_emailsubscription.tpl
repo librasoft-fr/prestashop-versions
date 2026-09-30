@@ -1,6 +1,6 @@
 {**
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * For the full copyright and license information, please view the
+ * LICENSE.md file that was distributed with this source code.
  *}
 <section class="ps-emailsubscription bg-body-tertiary py-3 py-lg-4" id="emailsubscription_anchor_{$hookName}">
   <div class="container">
@@ -17,7 +17,8 @@
           </div>
         {/if}
         <div class="d-flex gap-2 align-items-center mb-2">
-          <input class="form-control flex-grow-1" type="email" name="email" value="{$value}" placeholder="{l s='Your email address' d='Modules.Emailsubscription.Shop'}" aria-label="{l s='Your email address' d='Modules.Emailsubscription.Shop'}" autocomplete="email" required />
+          <label for="emailsubscription_input" class="visually-hidden">{l s='Your email address' d='Modules.Emailsubscription.Shop'}</label>
+          <input class="form-control flex-grow-1" type="email" name="email" value="{$value}" placeholder="{l s='Your email address' d='Modules.Emailsubscription.Shop'}" id="emailsubscription_input" autocomplete="email" required />
           <input class="btn btn-primary" type="submit" name="submitNewsletter" value="{l s='Subscribe' d='Shop.Theme.Actions'}" aria-label="{l s='Subscribe to our newsletter' d='Modules.Emailsubscription.Shop'}" />
         </div>
         {capture name="display_gdpr_consent"}{hook h='displayGDPRConsent' id_module=$id_module}{/capture}

@@ -50,7 +50,7 @@
       <trans-unit id="85265e940fbb820dd2475946e7bc48d9">
         <source>Invalid configuration</source>
         <target>Invalid configuration</target>
-        <note>File: src/Core/MerchandiseReturn/Configuration/MerchandiseReturnOptionsConfiguration.php [Line: 44]</note>
+        <note>File: src/Core/OrderReturn/Configuration/OrderReturnOptionsConfiguration.php [Line: 44]</note>
       </trans-unit>
       <trans-unit id="db26e10564e958809d798e8048fcbc0a">
         <source>Invalid security token</source>
@@ -75,7 +75,7 @@
       <trans-unit id="5887e86df08049bc0eab95e975e057c4">
         <source>Please select theme's import source.</source>
         <target>Please select theme's import source.</target>
-        <note>File: src/PrestaShopBundle/Controller/Admin/Improve/Design/ThemeController.php [Line: 193]</note>
+        <note>File: src/PrestaShopBundle/Controller/Admin/Improve/Design/ThemeController.php [Line: 198]</note>
       </trans-unit>
       <trans-unit id="043f2b6920e5c8a140301051d18d8618">
         <source>Since December 30, 2019, you need to register for a [1]MaxMind[/1] account to get a license key to be able to download the geolocation data. Once downloaded, extract the data using Winrar or Gzip into the /app/Resources/geoip/ directory.</source>

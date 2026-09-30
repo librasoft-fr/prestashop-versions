@@ -1,0 +1,434 @@
+<?php
+
+/**
+ * For the full copyright and license information, please view the
+ * docs/licenses/LICENSE.txt file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
+namespace PrestaShop\PrestaShop\Core\ExtraProperty\Form;
+
+use InvalidArgumentException;
+use PrestaShop\PrestaShop\Core\Context\ShopContext;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Definition\ExtraPropertyDefinition;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Definition\ExtraPropertyDefinitionRepositoryInterface;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Definition\ExtraPropertyDefinitionShopFilterInterface;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Definition\ExtraPropertyScope;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Definition\ExtraPropertyType;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Validation\ExtraPropertyTypeCompatibility;
+use PrestaShop\PrestaShop\Core\ExtraProperty\Value\ExtraPropertyReaderInterface;
+use PrestaShopBundle\Form\Admin\Type\NavigationTabType;
+use PrestaShopBundle\Form\Admin\Type\TranslatableType;
+use PrestaShopBundle\Form\FormBuilderModifier;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormTypeInterface;
+use Symfony\Component\Form\ResolvedFormTypeInterface;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Throwable;
+
+/**
+ * Adds extra properties fields into an identifiable object form builder.
+ *
+ * Placement (associatedForms entry from the definition registry, format "formId[:path[:before|after]]"):
+ * - null/empty        => dedicated 'extra_fields.extra_properties' section (created if missing); on simple
+ *                        forms without tabs, fields are placed at root level instead.
+ * - path, no mode     => the path is a CONTAINER: navigate it (every segment must exist, throws
+ *                        InvalidArgumentException otherwise) and append the field inside it.
+ * - path:before       => the last path segment is an ANCHOR: navigate to the parent builder and insert the
+ *                        field BEFORE the anchor (anchor must exist, throws otherwise).
+ * - path:after        => same, inserting the field AFTER the anchor.
+ *
+ * The container vs anchor split is resolved once in ExtraPropertyDefinition::getFormEntry() (which returns
+ * the resolved 'path' + 'anchor') and shared with ExtraPropertiesFormDataPersister so placement and value
+ * retrieval cannot drift.
+ *
+ * Data mapping:
+ * - fields are added as unmapped; persistence reads submitted values from the FormInterface.
+ */
+class ExtraPropertiesFormBuilderModifier
+{
+    public const FALLBACK_FORM_SECTION = 'extra_properties';
+    public const DEFAULT_FALLBACK_TAB = 'extra_fields';
+
+    public function __construct(
+        protected readonly ExtraPropertyDefinitionRepositoryInterface $repository,
+        protected readonly ExtraPropertyReaderInterface $reader,
+        protected readonly TranslatorInterface $translator,
+        protected readonly ShopContext $shopContext,
+        protected readonly FormBuilderModifier $formBuilderModifier,
+        protected readonly ExtraPropertyFormTypeMap $formTypeMap,
+        protected readonly ExtraPropertyDefinitionShopFilterInterface $definitionShopFilter,
+        // The read-side policy enforcement below logs every option/type it drops.
+        protected readonly LoggerInterface $logger,
+    ) {
+    }
+
+    /**
+     * @param string $formId Form identifier (equals form block_prefix, e.g. 'product', 'category')
+     * @param int|null $entityId When null, no prefill is attempted (create form)
+     */
+    public function apply(FormBuilderInterface $formBuilder, string $formId, ?int $entityId): void
+    {
+        // A definition not available for the current shop scope renders no field at all —
+        // same filter as ExtraPropertiesFormDataPersister so a field is never built without
+        // its persistence (or the reverse).
+        $formDefinitions = $this->definitionShopFilter->filterByShopConstraint(
+            $this->repository->getAllDefinitions()->filterByForm($formId),
+            $this->shopContext->getShopConstraint()
+        );
+        if ($formDefinitions->isEmpty()) {
+            return;
+        }
+
+        $existingValues = null;
+        if (null !== $entityId && $entityId > 0) {
+            $existingValues = $this->reader->getExtraProperties(
+                $formDefinitions->first()->getTableName(),
+                $formDefinitions->first()->getPrimaryKeyName(),
+                $entityId,
+                null,
+                $this->shopContext->getShopConstraint(),
+                $formDefinitions
+            );
+        }
+
+        foreach ($formDefinitions as $definition) {
+            $formEntry = $definition->getFormEntry($formId);
+
+            $formFieldName = $definition->getFieldName();
+
+            [$type, $typeOptions] = $this->resolveFieldTypeAndOptions($definition);
+
+            if (null !== $existingValues) {
+                // The reader returns typed values (ExtraPropertyValueCaster applied on read),
+                // seeding the definition default when no value row exists yet.
+                $typeOptions['data'] = $this->resolveExistingValue($existingValues, $definition);
+            } elseif (null !== $definition->getDefaultValue() && ExtraPropertyScope::LANG !== $definition->getScope()) {
+                // Create form: prefill with the declared default, consistent with what the
+                // entity will read back if saved untouched. LANG stays empty — a single
+                // scalar default has no per-language meaning.
+                $typeOptions['data'] = $definition->getDefaultValue();
+            }
+
+            // A field of that name already present in the target builder belongs to the host
+            // form: it is left alone — neither replaced nor resolved and dropped below.
+            if (null === $formEntry || null === $formEntry['path']) {
+                $targetBuilder = $this->resolveOrCreateFallbackPath($formBuilder);
+                if ($targetBuilder->has($formFieldName)) {
+                    continue;
+                }
+                $targetBuilder->add($formFieldName, $type, $typeOptions);
+            } else {
+                $targetBuilder = $this->addAtPosition($formBuilder, $formEntry, $formFieldName, $type, $typeOptions);
+                if (null === $targetBuilder) {
+                    continue;
+                }
+            }
+
+            $this->resolveFieldOrDrop($targetBuilder, $formFieldName, $definition);
+        }
+    }
+
+    /**
+     * Resolves the field just added, so its options go through the form type's resolver and its
+     * buildForm() now rather than when the whole form is built, and drops it when that fails.
+     *
+     * The policy denies the options known to be unsafe; every other option — a custom type's own
+     * included — is validated by the type itself. On write that happens in FormOptionsValidator
+     * and refuses the definition. On read, a row written straight into the registry, a type
+     * whose options changed since the definition was saved, or a bug in a custom type must not
+     * take the whole entity form down: the offending field is removed and logged (with the
+     * exception), its siblings stay. Every throwable is caught on purpose — the type is module
+     * code, and a failing extra field is never worth a failing product or customer form.
+     * Placement errors (a container or anchor that does not exist) are thrown earlier, by
+     * addAtPosition(), outside this guard: they are a contract of the definition and keep failing.
+     */
+    protected function resolveFieldOrDrop(FormBuilderInterface $targetBuilder, string $formFieldName, ExtraPropertyDefinition $definition): void
+    {
+        try {
+            $targetBuilder->get($formFieldName);
+        } catch (Throwable $exception) {
+            $targetBuilder->remove($formFieldName);
+            $this->logger->error(
+                'Dropped the field of extra property "{property}": its form options do not build with form type "{type}" ({reason}).',
+                [
+                    'property' => $definition->getFieldName(),
+                    'type' => $definition->getFormType() ?? 'default',
+                    'reason' => $exception->getMessage(),
+                    'exception' => $exception,
+                ]
+            );
+        }
+    }
+
+    /**
+     * @return array{0: class-string<FormTypeInterface>, 1: array<string, mixed>}
+     */
+    protected function resolveFieldTypeAndOptions(ExtraPropertyDefinition $definition): array
+    {
+        $declaredType = $definition->getFormType();
+
+        // Read-side enforcement of ExtraPropertyFormOptionsPolicy — the very rules
+        // FormOptionsValidator applied when the definition was saved. A row written straight
+        // into the registry (bypassing the registry validation) must not render what its author
+        // could not have saved: refused options are dropped and logged. Options the policy does
+        // not know (a custom type's own) are checked by building the field, see apply().
+        $sanitized = ExtraPropertyFormOptionsPolicy::sanitize($definition->getFormOptions());
+        $extraOptions = $sanitized['options'];
+        if ([] !== $sanitized['dropped']) {
+            $this->logger->warning(
+                'Dropped form options ({options}) of extra property "{property}": not allowed by the extra property form options policy.',
+                ['options' => implode(', ', $sanitized['dropped']), 'property' => $definition->getFieldName()]
+            );
+        }
+
+        if (null !== $declaredType && is_subclass_of($declaredType, FormTypeInterface::class)) {
+            $baseType = $declaredType;
+            $baseOptions = [];
+        } else {
+            if (null !== $declaredType) {
+                $this->logger->warning(
+                    'Form type "{type}" of extra property "{property}" is not a Symfony form type: rendering the mapped default type instead.',
+                    ['type' => $declaredType, 'property' => $definition->getFieldName()]
+                );
+            }
+            [$baseType, $baseOptions] = $this->formTypeMap->getDefaultFor($definition->getType(), $definition->getEnumValues());
+        }
+
+        // Validation is fully constraint-based: attach the definition's Symfony constraints to the field so the
+        // form's own validation runs them and surfaces one error per failing constraint. Requiredness is the
+        // module's responsibility — it passes Assert\NotBlank when a value must be provided (no auto NotBlank).
+        $constraints = $definition->getConstraints() ?? [];
+        // Implicit type-compatibility safety net, ALWAYS attached: the same
+        // isValueCompatible() rule-set the registry applies to defaults and
+        // validateValue() to the ObjectModel/Admin API writes — so the BO form refuses
+        // the same values inline (mostly relevant for free-typed widgets: a JSON
+        // textarea, a module formType override). Wrapped in Assert\All for localized
+        // fields so each language leaf is checked like everywhere else.
+        $typeCompatibility = new ExtraPropertyTypeCompatibility($definition->getType(), $definition->getEnumValues());
+        $constraints[] = ExtraPropertyScope::LANG === $definition->getScope()
+            ? new All([$typeCompatibility])
+            : $typeCompatibility;
+
+        $label = $this->translateLabel($definition->getLabelWording(), $definition->getLabelDomain());
+        $help = $this->translateLabel($definition->getDescriptionWording(), $definition->getDescriptionDomain());
+
+        if (ExtraPropertyScope::LANG === $definition->getScope()) {
+            // In BO, use TranslatableType (data keyed by id_lang). Constraints are attached to the OUTER field so
+            // they validate the whole [id_lang => value] array — consistent with ExtraPropertyValidator: whole-array
+            // constraints (e.g. DefaultLanguage) see the array, per-language rules use Assert\All. The per-language
+            // children carry only $extraOptions (no constraints of their own).
+            return [
+                TranslatableType::class,
+                [
+                    'type' => $baseType,
+                    'label' => $label,
+                    'help' => $help,
+                    'mapped' => false,
+                    'required' => $definition->isRequired(),
+                    'constraints' => $constraints,
+                    'options' => array_merge($baseOptions, $extraOptions),
+                ],
+            ];
+        }
+
+        return [
+            $baseType,
+            array_merge(
+                $baseOptions,
+                [
+                    'mapped' => false,
+                    'required' => $definition->isRequired(),
+                    'label' => $label,
+                    'help' => $help,
+                    'constraints' => $constraints,
+                ],
+                $extraOptions
+            ),
+        ];
+    }
+
+    /**
+     * @param array<string, array<string, mixed>> $existingValues
+     *
+     * @return mixed
+     */
+    protected function resolveExistingValue(array $existingValues, ExtraPropertyDefinition $definition): mixed
+    {
+        $value = $existingValues[$definition->getNormalizedModuleKey()][$definition->getPropertyName()] ?? null;
+
+        if (ExtraPropertyScope::LANG === $definition->getScope()) {
+            return is_array($value) ? $value : [];
+        }
+
+        // JSON values are decoded structures on the read side; the BO widget is a plain
+        // TextareaType, so re-encode at this presentation boundary (pretty, for editing).
+        if (ExtraPropertyType::JSON === $definition->getType() && is_array($value)) {
+            return json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Adds a field at the position resolved by ExtraPropertyDefinition::getFormEntry().
+     *
+     * $formEntry already carries the resolved placement: path is the node the field belongs to and anchor
+     * is the optional sibling field (null for container placement).
+     * - anchor null => path is a container; append the field inside it.
+     * - anchor set  => insert the field before/after the anchor (per $formEntry['mode']) in path.
+     *
+     * @param array{mode: 'before'|'after'|null, path: string|null, anchor: string|null} $formEntry
+     * @param class-string<FormTypeInterface> $type
+     * @param array<string, mixed> $typeOptions
+     *
+     * @return FormBuilderInterface|null the builder the field was added to, or null when a field of
+     *                                   that name already existed there (left untouched)
+     *
+     * @throws InvalidArgumentException when a path segment (container or anchor parent) does not exist
+     */
+    protected function addAtPosition(
+        FormBuilderInterface $rootBuilder,
+        array $formEntry,
+        string $formFieldName,
+        string $type,
+        array $typeOptions,
+    ): ?FormBuilderInterface {
+        $targetBuilder = $this->resolvePath($rootBuilder, (string) $formEntry['path']);
+
+        if ($targetBuilder->has($formFieldName)) {
+            return null;
+        }
+
+        // Container placement (no mode): append the field directly inside the resolved node.
+        if (null === $formEntry['anchor']) {
+            $targetBuilder->add($formFieldName, $type, $typeOptions);
+
+            return $targetBuilder;
+        }
+
+        // Anchor placement: insert relative to the anchor field inside the parent builder.
+        // addBefore/addAfter throw InvalidArgumentException when the anchor does not exist.
+        if ('before' === $formEntry['mode']) {
+            $this->formBuilderModifier->addBefore($targetBuilder, $formEntry['anchor'], $formFieldName, $type, $typeOptions);
+        } else {
+            $this->formBuilderModifier->addAfter($targetBuilder, $formEntry['anchor'], $formFieldName, $type, $typeOptions);
+        }
+
+        return $targetBuilder;
+    }
+
+    /**
+     * Resolves (and creates if missing) the designated fallback area for extra fields.
+     *
+     * - Forms with tabs: resolves/creates 'extra_fields.extra_properties'.
+     * - Simple forms (no tabs): returns the root builder (fields injected at root level).
+     */
+    protected function resolveOrCreateFallbackPath(FormBuilderInterface $rootBuilder): FormBuilderInterface
+    {
+        if (!$rootBuilder->has(self::DEFAULT_FALLBACK_TAB) && !$this->isNavigationTabForm($rootBuilder)) {
+            return $rootBuilder;
+        }
+
+        if (!$rootBuilder->has(self::DEFAULT_FALLBACK_TAB)) {
+            $rootBuilder->add(self::DEFAULT_FALLBACK_TAB, FormType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => $this->translator->trans('Extra fields', domain: 'Admin.Global'),
+                'row_attr' => [],
+            ]);
+        }
+
+        /** @var FormBuilderInterface $tabBuilder */
+        $tabBuilder = $rootBuilder->get(self::DEFAULT_FALLBACK_TAB);
+
+        if (!$tabBuilder->has(self::FALLBACK_FORM_SECTION)) {
+            $tabBuilder->add(self::FALLBACK_FORM_SECTION, FormType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => false,
+                'row_attr' => [],
+            ]);
+        }
+
+        /** @var FormBuilderInterface $sectionBuilder */
+        $sectionBuilder = $tabBuilder->get(self::FALLBACK_FORM_SECTION);
+
+        return $sectionBuilder;
+    }
+
+    /**
+     * Strictly resolves a dot-separated path inside an existing form builder.
+     *
+     * An empty path resolves to the root builder itself.
+     *
+     * @throws InvalidArgumentException when any segment of the path does not exist
+     */
+    protected function resolvePath(FormBuilderInterface $rootBuilder, string $path): FormBuilderInterface
+    {
+        $segments = array_values(array_filter(array_map('trim', explode('.', $path)), static fn (string $s): bool => '' !== $s));
+        if (empty($segments)) {
+            return $rootBuilder;
+        }
+
+        $builder = $rootBuilder;
+        foreach ($segments as $segment) {
+            if (!$builder->has($segment)) {
+                throw new InvalidArgumentException(sprintf(
+                    'Extra property associated_forms path "%s": segment "%s" does not exist in the form.',
+                    $path,
+                    $segment
+                ));
+            }
+            /** @var FormBuilderInterface $builder */
+            $builder = $builder->get($segment);
+        }
+
+        return $builder;
+    }
+
+    protected function isNavigationTabForm(FormBuilderInterface $formBuilder): bool
+    {
+        if ($this->hasNavigationTabTypeInHierarchy($formBuilder->getType())) {
+            return true;
+        }
+        // Also check direct children: the root form is often a compound form
+        // whose tabs are NavigationTabType children, not its own type.
+        foreach ($formBuilder->all() as $childBuilder) {
+            if ($this->hasNavigationTabTypeInHierarchy($childBuilder->getType())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function hasNavigationTabTypeInHierarchy(ResolvedFormTypeInterface $resolvedType): bool
+    {
+        $current = $resolvedType;
+        while (null !== $current) {
+            if ($current->getInnerType() instanceof NavigationTabType) {
+                return true;
+            }
+            $current = $current->getParent();
+        }
+
+        return false;
+    }
+
+    /**
+     * Translates a wording/domain pair from a definition, falling back to $default.
+     */
+    protected function translateLabel(?string $wording, ?string $domain, ?string $default = null): ?string
+    {
+        if (null === $wording || '' === trim($wording)) {
+            return $default;
+        }
+
+        return $this->translator->trans($wording, [], $domain ?? 'Admin.Global');
+    }
+}
